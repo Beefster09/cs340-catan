@@ -1,5 +1,10 @@
 package shared.model;
 
+/**
+ * Represents the bank of resources available for purchase during the game.
+ * @author Jordan
+ *
+ */
 public class Bank {
 
 	private ResourceList resources;
