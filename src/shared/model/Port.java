@@ -3,6 +3,13 @@ package shared.model;
 import shared.definitions.ResourceType;
 import shared.locations.*;
 
+/**
+ * Represents a port of the board; contains a location, direction, as well as what kind
+ * of port it is (whether it is a 3:1 resource trading port, or a 2:1 resource trading port
+ * for a specific kind of resource)
+ * @author Jordan
+ *
+ */
 public class Port {
 	private ResourceType resource;
 	private HexLocation location;

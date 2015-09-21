@@ -2,6 +2,11 @@ package shared.model;
 
 import shared.definitions.CatanColor;
 
+/**
+ * Represents a player in a given game and everything associated with that player
+ * @author Jordan
+ *
+ */
 public class Player {
 	
 	private CatanColor color;
