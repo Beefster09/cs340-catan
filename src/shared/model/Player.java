@@ -117,7 +117,7 @@ public class Player {
 	/**
 	 * @return the discarded
 	 */
-	public boolean isDiscarded() {
+	public boolean hasDiscarded() {
 		return discarded;
 	}
 
@@ -145,7 +145,7 @@ public class Player {
 	/**
 	 * @return the playedDevCard
 	 */
-	public boolean isPlayedDevCard() {
+	public boolean hasPlayedDevCard() {
 		return playedDevCard;
 	}
 
