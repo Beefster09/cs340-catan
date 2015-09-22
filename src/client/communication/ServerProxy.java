@@ -21,7 +21,7 @@ public class ServerProxy implements IServer {
 
 	/**
 	 * @pre user with username and corresponding password already exists
-	 * @post player is signed in and can play.
+	 * @post player is signed in and can play.   :)
 	 * @author-Grant
 	 */
 	@Override
