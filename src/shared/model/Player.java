@@ -2,6 +2,11 @@ package shared.model;
 
 import shared.definitions.CatanColor;
 
+/**
+ * Represents a player in a given game and everything associated with that player
+ * @author Jordan
+ *
+ */
 public class Player {
 	
 	private CatanColor color;
@@ -26,6 +31,15 @@ public class Player {
 
 	public Player() {
 		
+	}
+	
+	/** Gives a PlayerReference that refers to this player. 
+	 * <p>Gives a PlayerReference such that a call to getPlayer() on the result of this 
+	 * function will return this instance of Player</p>
+	 * @return a corresponding PlayerReference
+	 */
+	public PlayerReference getReference() {
+		return null;
 	}
 
 	/**

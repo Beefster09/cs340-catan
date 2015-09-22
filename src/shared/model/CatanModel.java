@@ -2,6 +2,13 @@ package shared.model;
 
 import java.util.List;
 
+/**
+ * Contains all information about the current game: references the map, players, chat, and bank
+ * for the current game.  All information relevant to a particular game can be accessed through
+ * this class.
+ * @author Jordan
+ *
+ */
 public class CatanModel {
 	private List<MessageLine> chat;
 	private List<MessageLine> log;

@@ -2,6 +2,11 @@ package shared.model;
 
 import shared.locations.EdgeLocation;
 
+/**
+ * Represents an object (i.e. road) that exists on the edge of a hex.
+ * @author Jordan
+ *
+ */
 public class EdgeObject {
 	private PlayerReference owner;
 	private EdgeLocation location;
