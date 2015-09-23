@@ -31,7 +31,12 @@ public class ResourceList {
 	 * @throws IllegalArgumentException if count is negative.
 	 */
 	public ResourceList(int count) throws IllegalArgumentException {
-		
+		if (count < 0) {
+			throw new IllegalArgumentException("ResourceLists may not have negative counts.");
+		}
+		for (ResourceType type : ResourceType.values()) {
+			resources.put(type, count);
+		}
 	}
 	
 	/** Creates a ResourceList with the given resource amounts. Values will be copied.
@@ -39,6 +44,9 @@ public class ResourceList {
 	 * @throws IllegalArgumentException if any of the counts are negative.
 	 */
 	public ResourceList(Map<ResourceType, Integer> counts) throws IllegalArgumentException {
+		for (int count : counts.values()) {
+			if (count < 0) throw new IllegalArgumentException("ResourceLists may not have negative counts.");
+		}
 		resources = new HashMap<>(counts);
 	}
 
@@ -77,7 +85,9 @@ public class ResourceList {
 	 */
 	public void transferTo(ResourceList destination, ResourceType type, int amount)
 			throws InsufficientResourcesException {
-		
+		if (count(type) < amount) throw new InsufficientResourcesException();
+		this.resources.put(type, this.resources.get(type) - amount);
+		destination.resources.put(type, destination.resources.get(type) + amount);
 	}
 
 }

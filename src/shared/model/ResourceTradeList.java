@@ -2,8 +2,10 @@ package shared.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import shared.definitions.*;
+import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.TradeException;
 
 /** An immutable representation of an exchange of resources.
@@ -41,6 +43,35 @@ public class ResourceTradeList {
 	 * @throws TradeException if either of the preconditions are not met
 	 */
 	public void makeExchange(ResourceList offerer, ResourceList receiver) throws TradeException {
+		// Exception check. You can't just use transferTo and re-purpose the exception because
+		// trades are all-or-nothing transactions, and the transferTo could cause this method to
+		// be stopped part way through the trade (obviously bad)
+		for (Entry<ResourceType, Integer> resource : offered.entrySet()) {
+			if (offerer.count(resource.getKey()) < resource.getValue()) throw new TradeException();
+		}
+		for (Entry<ResourceType, Integer> resource : wanted.entrySet()) {
+			if (receiver.count(resource.getKey()) < resource.getValue()) throw new TradeException();
+		}
+		
+		// Implementation
+		for (Entry<ResourceType, Integer> resource : offered.entrySet()) {
+			try {
+				offerer.transferTo(receiver, resource.getKey(), resource.getValue());
+			} catch (InsufficientResourcesException e) {
+				// This should never happen! This is a critical error.
+				e.printStackTrace();
+				assert false;
+			}
+		}
+		for (Entry<ResourceType, Integer> resource : wanted.entrySet()) {
+			try {
+				receiver.transferTo(offerer, resource.getKey(), resource.getValue());
+			} catch (InsufficientResourcesException e) {
+				// This should never happen! This is a critical error.
+				e.printStackTrace();
+				assert false;
+			}
+		}
 		
 	}
 
