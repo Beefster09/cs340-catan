@@ -196,7 +196,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public CatanModel offerTrade(Session user, ResourceTradeList offer)
+	public CatanModel offerTrade(Session user, ResourceList offer)
 			throws ServerException, NotYourTurnException {
 		// TODO Auto-generated method stub
 		return null;
