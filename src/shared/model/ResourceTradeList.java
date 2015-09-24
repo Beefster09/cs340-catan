@@ -1,11 +1,16 @@
 package shared.model;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import shared.definitions.*;
 import shared.exceptions.InsufficientResourcesException;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.TradeException;
 
 /** An immutable representation of an exchange of resources.
@@ -16,6 +21,44 @@ public class ResourceTradeList {
 	
 	Map<ResourceType, Integer> offered;
 	Map<ResourceType, Integer> wanted;
+	
+	public static void main(String[] args) throws Exception {
+		JSONParser parser = new JSONParser();
+		Reader r = new BufferedReader(new FileReader("trade.json"));
+		Object parseResult = parser.parse(r);
+		ResourceTradeList trade = new ResourceTradeList((JSONObject) parseResult);
+
+		System.out.println(parseResult);
+		System.out.println(trade);
+		
+	}
+	
+	public ResourceTradeList(JSONObject json) throws SchemaMismatchException {
+		offered = new HashMap<>();
+		wanted = new HashMap<>();
+		try {
+			for (ResourceType type : ResourceType.values()) {
+				String key = type.toString().toLowerCase();
+				if (json.containsKey(key)) {
+					int count = (int) (long) json.get(key);
+					if (count > 0) {
+						offered.put(type, count);
+					}
+					if (count < 0) {
+						wanted.put(type, -count);
+					}
+				}
+				else {
+					throw new SchemaMismatchException("A resource count is missing from the " +
+							"given JSONObject:\n" + json.toJSONString());
+				}
+			}
+		} catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not match the expected schema" +
+					"for a ResourceTradeList:\n" + json.toJSONString());
+		}
+	}
 	
 	/**
 	 * @return a copy of the offered resources, as a Map
@@ -73,6 +116,15 @@ public class ResourceTradeList {
 			}
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ResourceTradeList [offered=" + offered + ", wanted=" + wanted
+				+ "]";
 	}
 
 }

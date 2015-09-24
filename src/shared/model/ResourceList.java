@@ -4,8 +4,11 @@ import java.util.Map;
 
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
+import shared.exceptions.SchemaMismatchException;
 
 import java.util.*;
+
+import org.json.simple.JSONObject;
 
 /** A ResourceList where all counts must be non-negative
  * and all mutations are <i>zero-sum</i> between two instances.
@@ -39,13 +42,34 @@ public class ResourceList {
 		}
 	}
 	
+	public ResourceList(JSONObject json) throws SchemaMismatchException {
+		resources = new HashMap<>();
+		try {
+			for (ResourceType type : ResourceType.values()) {
+				String key = type.toString().toLowerCase();
+				if (json.containsKey(key)) {
+					resources.put(type, (int) (long) json.get(key));
+				}
+				else {
+					throw new SchemaMismatchException("A resource count is missing from the " +
+							"given JSONObject:\n" + json.toJSONString());
+				}
+			}
+		} catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not match the expected schema" +
+					"for a ResourceList:\n" + json.toJSONString());
+		}
+	}
+	
 	/** Creates a ResourceList with the given resource amounts. Values will be copied.
 	 * @param counts a map representing the counts for each resource
 	 * @throws IllegalArgumentException if any of the counts are negative.
 	 */
 	public ResourceList(Map<ResourceType, Integer> counts) throws IllegalArgumentException {
 		for (int count : counts.values()) {
-			if (count < 0) throw new IllegalArgumentException("ResourceLists may not have negative counts.");
+			if (count < 0) throw new IllegalArgumentException("ResourceLists may not have " +
+					"negative counts.");
 		}
 		resources = new HashMap<>(counts);
 	}
@@ -70,8 +94,12 @@ public class ResourceList {
 	 * @post none
 	 */
 	public int count(ResourceType type) {
-		//TODO: incomplete; values might be null
-		return resources.get(type);
+		if (resources.containsKey(type)) {
+			return resources.get(type);
+		}
+		else {
+			return 0;
+		}
 	}
 
 	/** Transfers cards from one ResourceList to another
@@ -88,6 +116,14 @@ public class ResourceList {
 		if (count(type) < amount) throw new InsufficientResourcesException();
 		this.resources.put(type, this.resources.get(type) - amount);
 		destination.resources.put(type, destination.resources.get(type) + amount);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ResourceList [resources=" + resources + "]";
 	}
 
 }
