@@ -4,6 +4,12 @@ import java.util.List;
 
 import shared.locations.HexLocation;
 
+/**
+ * Contains references to the entire layout of the map at any given moment:
+ * ports, roads, settlements, cities, and the robber.
+ * @author Jordan
+ *
+ */
 public class Board {
 	private List<Hex> hexes;
 	private List<Port> ports;

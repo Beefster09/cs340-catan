@@ -3,6 +3,11 @@ package shared.model;
 import shared.definitions.TurnStatus;
 
 /*Keeps track of whose turn it is, as well what part of their turn it is.*/
+/**
+ * Keeps track of whose turn it is, as well as what part of their turn it is.
+ * @author Jordan
+ *
+ */
 public class TurnTracker {
 	private PlayerReference currentPlayer;
 	private TurnStatus status;
