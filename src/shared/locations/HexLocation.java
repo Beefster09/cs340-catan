@@ -1,5 +1,7 @@
 package shared.locations;
 
+import org.json.simple.JSONObject;
+
 /**
  * Represents the location of a hex on a hex map
  */
@@ -15,6 +17,10 @@ public class HexLocation
 		setY(y);
 	}
 	
+	public HexLocation(JSONObject jsonObject) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getX()
 	{
 		return x;

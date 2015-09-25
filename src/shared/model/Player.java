@@ -46,9 +46,15 @@ public class Player {
 		System.out.println(player);
 	}
 	
-	
+
 	public Player(CatanModel game) {
 		this.game = game;
+		// Do some stuff?
+	}
+	
+	public Player(CatanModel game, int index) {
+		this.game = game;
+		playerIndex = index;
 	}
 
 	public Player(CatanModel game, JSONObject json) throws SchemaMismatchException {

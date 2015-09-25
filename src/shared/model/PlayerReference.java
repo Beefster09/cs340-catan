@@ -27,4 +27,12 @@ public class PlayerReference {
 	public Player getPlayer() {
 		return game.getPlayers().get(playerIndex);
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "PlayerReference [playerIndex=" + playerIndex + "]";
+	}
 }
