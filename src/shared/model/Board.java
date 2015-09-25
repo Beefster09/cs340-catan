@@ -16,6 +16,10 @@ public class Board {
 	public Board() {
 		
 	}
+	
+	public Board(boolean hasRandomNumbers, boolean hasRandomHexes, boolean hasRandomPorts) {
+		
+	}
 
 	/**
 	 * @return the hexes
@@ -66,6 +70,12 @@ public class Board {
 		return robber;
 	}
 	
+	private void initializeNumbers(boolean hasRandomNumbers) {
+		
+	}
 	
+	private void intializeHexes(boolean hasRandomHexes) {
+		
+	}
 
 }

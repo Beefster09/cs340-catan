@@ -26,6 +26,13 @@ import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
+/**
+ * A proxy that acts as the server to the client. Contains all the methods
+ * that can be called on the server.  Each method bundles the given variables
+ * and gives it to the ClientCommunicator to send through the HTTP protocol.
+ * @author jchip
+ *
+ */
 public class ServerProxy implements IServer {
 
 	@Override

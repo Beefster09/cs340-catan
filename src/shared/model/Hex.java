@@ -17,6 +17,12 @@ public class Hex {
 	public Hex() {
 		
 	}
+	
+	public Hex(HexLocation location, ResourceType resource, int number) {
+		this.location = location;
+		this.resource = resource;
+		this.number = number;
+	}
 
 	/**
 	 * @return the location
