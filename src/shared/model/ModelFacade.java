@@ -1,27 +1,27 @@
+package shared.model;
+
 import shared.definitions.*;
 import shared.locations.*;
+import org.json.simple.JSONObject;
 
-public class ClientFacade {
 
-	/**
-	*	@pre
-	*	@post 
-	*	@return true if the player can send chat	
-	*	@return false otherwise
-	 */
-		boolean canSendChat() {
-			return true;
+public class ModelFacade {
+	
+		private CatanModel model;
+		
+		public ModelFacade(CatanModel startingModel) {
+			model = startingModel;
 		}
 		
-		boolean doSendChat() {
-			return true;
+		public synchronized void updateFromJSON(JSONObject json) {
 		}
+	
 		/**
 		 * @return true if it is the players turn, and 
 		 * they haven't rolled already
 		 * @return false otherwise
 		 */
-		boolean canRoll() {
+		public synchronized boolean canRoll(PlayerReference player) {
 			return true;
 		}
 		
@@ -30,12 +30,11 @@ public class ClientFacade {
 		 * @return true if the hex is not a desert hex.
 		 * @return false otherwise
 		 */
-		boolean canRob(HexLocation hexLoc) {
+		public synchronized boolean canRob(HexLocation hexLoc) {
 			return true;
 		}
 		
-		boolean doRob() {
-			return true;
+		public synchronized void doRob() {
 		}
 		
 		/**
@@ -43,11 +42,11 @@ public class ClientFacade {
 		 * @return true if the player has already rolled the die
 		 * @return false otherwise
 		 */
-		boolean canFinishTurn() {
+		public synchronized boolean canFinishTurn() {
 			return true;
 		}
 		
-		boolean doFinishTurn() {
+		public synchronized boolean doFinishTurn() {
 			return true;
 		}
 		
@@ -57,11 +56,11 @@ public class ClientFacade {
 		 * in their current hand.
 		 * @return false if otherwise
 		 */
-		boolean canBuyDevelopmentCard() {
+		public synchronized boolean canBuyDevelopmentCard() {
 			return true;
 		}
 		
-		boolean doBuyDevelopmentCard() {
+		public synchronized boolean doBuyDevelopmentCard() {
 			return true;
 		}
 		
@@ -74,11 +73,11 @@ public class ClientFacade {
 		 * no currently placed road at that location.
 		 * @return false otherwise
 		 */
-		boolean canBuildRoad(EdgeLocation edgeLoc) {
+		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {
 			return true;
 		}
 		
-		boolean doBuildRoad() {
+		public synchronized boolean doBuildRoad() {
 			return true;
 		}
 		
@@ -91,11 +90,11 @@ public class ClientFacade {
 		 * at least 2 vertices away from every other municipality (city/settlement)
 		 * @return false otherwise
 		 */
-		boolean canBuildSettlement(VertexLocation vertexLoc) {
+		public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
 			return true;
 		}
 		
-		boolean doBuildSettlement(VertexLocation vertexLoc) {
+		public synchronized boolean doBuildSettlement(VertexLocation vertexLoc) {
 			return true;
 		}
 		
@@ -108,7 +107,7 @@ public class ClientFacade {
 		 * at the given location.
 		 * @return false otherwise
 		 */
-		boolean canBuildCity(VertexLocation vertexLoc) {
+		public synchronized boolean canBuildCity(VertexLocation vertexLoc) {
 			return true;
 		}
 		/**
@@ -116,7 +115,7 @@ public class ClientFacade {
 		 * @param vertexLoc
 		 * @return
 		 */
-		boolean doBuildCity(VertexLocation vertexLoc) {
+		public synchronized boolean doBuildCity(VertexLocation vertexLoc) {
 			return true;
 		}
 		
@@ -125,11 +124,11 @@ public class ClientFacade {
 		 * @return true if the player owns at least one year of plenty card
 		 * @return false otherwise
 		 */
-		boolean canYearOfPlenty() {
+		public synchronized boolean canYearOfPlenty() {
 			return true;
 		}
 		
-		boolean doYearOfPlenty() {
+		public synchronized boolean doYearOfPlenty() {
 			return true;
 		}
 		
@@ -139,11 +138,11 @@ public class ClientFacade {
 		 * and has at least one unplaced road.
 		 * @return false otherwise
 		 */
-		boolean canRoadBuildingCard() {
+		public synchronized boolean canRoadBuildingCard() {
 			return true;
 		}
 		
-		boolean doRoadBuildCard() {
+		public synchronized boolean doRoadBuildCard() {
 			return true;
 		}
 		
@@ -152,11 +151,11 @@ public class ClientFacade {
 		 * @return true if the players owns at least one soldier card
 		 * @return false otherwise
 		 */
-		boolean canSoldier() {
+		public synchronized boolean canSoldier() {
 			return true;
 		}
 		
-		boolean doSoldier() {
+		public synchronized boolean doSoldier() {
 			return true;
 		}
 		
@@ -165,7 +164,7 @@ public class ClientFacade {
 		 * @return true if the player owns at least one monopoly card
 		 * @return false if player owns zero monopoly cards
 		 */
-		boolean canMonopoly() {
+		public synchronized boolean canMonopoly() {
 			return true;
 		}
 		
@@ -173,7 +172,7 @@ public class ClientFacade {
 		 * 
 		 * @return
 		 */
-		boolean doMonopoly() {
+		public synchronized boolean doMonopoly() {
 			return true;
 		}
 		
@@ -182,7 +181,7 @@ public class ClientFacade {
 		 * @return true if the player owns at least one monument card
 		 * @return false otherwise
 		 */
-		boolean canMonument() {
+		public synchronized boolean canMonument() {
 			return true;
 		}
 		
@@ -190,7 +189,7 @@ public class ClientFacade {
 		 * 
 		 * @return
 		 */
-		boolean doMonument() {
+		public synchronized boolean doMonument() {
 			return true;
 		}
 		
@@ -199,7 +198,7 @@ public class ClientFacade {
 		 * @return true if it is your turn and you have sufficient cards
 		 * @return false otherwise
 		 */
-		boolean canOfferTrade() {
+		public synchronized boolean canOfferTrade() {
 			return true;
 		}
 		
@@ -207,7 +206,7 @@ public class ClientFacade {
 		 * 
 		 * @return
 		 */
-		boolean doOfferTrade() {
+		public synchronized boolean doOfferTrade() {
 			return true;
 		}
 		
@@ -216,7 +215,7 @@ public class ClientFacade {
 		 * @return true if player has enough cards
 		 * @return false otherwise
 		 */
-		boolean canAcceptTrade() {
+		public synchronized boolean canAcceptTrade() {
 			
 			return true;
 		}
@@ -225,7 +224,7 @@ public class ClientFacade {
 		 * 
 		 * @return
 		 */
-		boolean doAcceptTrade() {
+		public synchronized boolean doAcceptTrade() {
 			return true;
 		}
 		
@@ -234,7 +233,7 @@ public class ClientFacade {
 		 * @return true if player has a settlement or city on a port.
 		 * @return false otherwise
 		 */
-		boolean canMaritimeTrade() {
+		public synchronized boolean canMaritimeTrade() {
 			return true;
 		}
 		
@@ -242,7 +241,7 @@ public class ClientFacade {
 		 * 
 		 * @return
 		 */
-		boolean doMaritimeTrade() {
+		public synchronized boolean doMaritimeTrade() {
 			return true;
 		}
 		
@@ -251,7 +250,7 @@ public class ClientFacade {
 		 * @return true if seven is rolled and amount of cards in hand is over seven
 		 * @return false otherwise
 		 */
-		boolean canDiscardCards() {
+		public synchronized boolean canDiscardCards() {
 			return true;
 		}
 		
@@ -259,7 +258,7 @@ public class ClientFacade {
 		 * 
 		 * @return
 		 */
-		boolean doDiscardCards() {
+		public synchronized boolean doDiscardCards() {
 			return true;
 		}
 }

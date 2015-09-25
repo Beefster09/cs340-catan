@@ -25,5 +25,19 @@ public enum CatanColor
 	{
 		return color;
 	}
+	
+	static public CatanColor getColorFromString(String input) throws IllegalArgumentException{
+		String lowerInput = input.toLowerCase();
+		if (lowerInput.equals("red")) return RED;
+		else if (lowerInput.equals("orange")) return ORANGE;
+		else if (lowerInput.equals("yellow")) return YELLOW;
+		else if (lowerInput.equals("green")) return GREEN;
+		else if (lowerInput.equals("blue")) return BLUE;
+		else if (lowerInput.equals("purple")) return PURPLE;
+		else if (lowerInput.equals("puce")) return PUCE;
+		else if (lowerInput.equals("white")) return WHITE;
+		else if (lowerInput.equals("brown")) return BROWN;
+		else throw new IllegalArgumentException();
+	}
 }
 
