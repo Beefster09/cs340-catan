@@ -26,6 +26,12 @@ import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
+/**
+ * A fake server that will send back hard-coded information
+ * This class is to be used for testing purposes only.
+ * @author jchip
+ *
+ */
 public class MockServer implements IServer {
 
 	@Override
@@ -196,7 +202,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public CatanModel offerTrade(Session user, ResourceTradeList offer)
+	public CatanModel offerTrade(Session user, ResourceList offer)
 			throws ServerException, NotYourTurnException {
 		// TODO Auto-generated method stub
 		return null;
@@ -235,6 +241,36 @@ public class MockServer implements IServer {
 	public void changeLogLevel(LogLevel level) throws ServerException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean saveGame(Session user, int gameID, String filename) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean loadGame(Session user, String filename) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAIPlayer(Session user, AIType type) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public CatanModel offerTrade(Session user, ResourceList offer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean changeLogLevel(LogLevel level) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
