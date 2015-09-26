@@ -111,12 +111,6 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public void addAIPlayer(Session user, AIType type) throws ServerException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public List<AIType> getAITypes(Session user) throws ServerException {
 		// TODO Auto-generated method stub
 		return null;
@@ -202,13 +196,6 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public CatanModel offerTrade(Session user, ResourceList offer)
-			throws ServerException, NotYourTurnException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public CatanModel respondToTrade(Session user, boolean accept)
 			throws ServerException, TradeException {
 		// TODO Auto-generated method stub
@@ -238,39 +225,20 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public void changeLogLevel(LogLevel level) throws ServerException {
+	public void addAIPlayer(Session user, AIType type) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public boolean saveGame(Session user, int gameID, String filename) {
+	public void changeLogLevel(LogLevel level) {
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
-	public boolean loadGame(Session user, String filename) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean addAIPlayer(Session user, AIType type) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public CatanModel offerTrade(Session user, ResourceList offer) {
+	public CatanModel offerTrade(Session user, ResourceList offer)
+			throws ServerException, NotYourTurnException {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public boolean changeLogLevel(LogLevel level) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }
