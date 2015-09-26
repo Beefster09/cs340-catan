@@ -10,6 +10,12 @@ import org.json.simple.JSONObject;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.HexLocation;
 
+/**
+ * Contains references to the entire layout of the map at any given moment:
+ * ports, roads, settlements, cities, and the robber.
+ * @author Jordan
+ *
+ */
 public class Board {
 	private Map<HexLocation, Hex> hexes;
 	// This is an internal representation of the size of the board. It differs from the JSON
