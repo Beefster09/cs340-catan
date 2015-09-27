@@ -23,8 +23,8 @@ public class HexLocation
 	}
 	
 	public static void main(String[] args) {
-		for (HexLocation loc : locationsWithinRadius(2)) {
-			System.out.println(loc);
+		for (HexLocation loc : locationsWithinRadius(3)) {
+			System.out.printf("%s (%d)\n", loc.toString(), loc.getDistanceFromCenter());
 		}
 	}
 	
