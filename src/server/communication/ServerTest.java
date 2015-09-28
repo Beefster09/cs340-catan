@@ -1,4 +1,4 @@
-package client.communication;
+package server.communication;
 
 import static org.junit.Assert.*;
 
@@ -29,9 +29,10 @@ import shared.model.CatanModel;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 
-public class ServerProxyTest {
+public class ServerTest {
 
-	private ServerProxy p;
+
+	private Server p;
 	
 	@Test
 	public void testLogin() throws UserException, ServerException {
