@@ -1,5 +1,7 @@
 package shared.locations;
 
+import org.json.simple.JSONObject;
+
 /**
  * Represents the location of a vertex on a hex map
  */
@@ -8,6 +10,13 @@ public class VertexLocation
 	
 	private HexLocation hexLoc;
 	private VertexDirection dir;
+	
+	public VertexLocation(JSONObject json) {
+		hexLoc = new HexLocation(json);
+		if (json.containsKey("direction"))
+			dir = VertexDirection.getDirectionFromString((String) json.get("direction"));
+		//else throw schema exception.
+	}
 	
 	public VertexLocation(HexLocation hexLoc, VertexDirection dir)
 	{

@@ -15,7 +15,7 @@ public class PlayerReference {
 	 * @param game
 	 * @param playerIndex
 	 */
-	PlayerReference(CatanModel game, int playerIndex) {
+	public PlayerReference(CatanModel game, int playerIndex) {
 		super();
 		this.game = game;
 		this.playerIndex = playerIndex;
