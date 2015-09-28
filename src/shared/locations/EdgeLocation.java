@@ -3,6 +3,7 @@ package shared.locations;
 import org.json.simple.JSONObject;
 
 import shared.definitions.ResourceType;
+import shared.exceptions.SchemaMismatchException;
 
 /**
  * Represents the location of an edge on a hex map
@@ -13,7 +14,7 @@ public class EdgeLocation
 	private HexLocation hexLoc;
 	private EdgeDirection dir;
 	
-	public EdgeLocation(JSONObject json) {
+	public EdgeLocation(JSONObject json) throws SchemaMismatchException {
 		hexLoc = new HexLocation(json);
 		if (json.containsKey("direction"))
 			dir = EdgeDirection.getDirectionFromString((String) json.get("direction"));

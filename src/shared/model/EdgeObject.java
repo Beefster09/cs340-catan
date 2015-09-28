@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
 
 /**
@@ -20,7 +21,7 @@ public class EdgeObject {
 		
 	}
 	
-	public EdgeObject(JSONObject json) {
+	public EdgeObject(JSONObject json) throws SchemaMismatchException {
 		try {
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();

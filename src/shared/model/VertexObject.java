@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import shared.exceptions.SchemaMismatchException;
+import shared.locations.EdgeLocation;
 import shared.locations.VertexLocation;
 
 /**
@@ -17,7 +19,7 @@ public class VertexObject {
 	private PlayerReference owner;
 	private VertexLocation location;
 
-	public VertexObject(JSONObject json) {
+	public VertexObject(JSONObject json) throws SchemaMismatchException {
 		try {
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();
@@ -46,14 +48,14 @@ public class VertexObject {
 	/**
 	 * @return the location
 	 */
-	public EdgeLocation getLocation() {
+	public VertexLocation getLocation() {
 		return location;
 	}
 
 	/**
 	 * @param location the location to set
 	 */
-	public void setLocation(EdgeLocation location) {
+	public void setLocation(VertexLocation location) {
 		this.location = location;
 	}
 

@@ -63,15 +63,15 @@ public class Board {
 			}
 			roads = new ArrayList<>();
 			for (Object obj : (List) json.get("roads")) {
-				//roads.add(new EdgeObject((JSONObject) obj));
+				roads.add(new EdgeObject((JSONObject) obj));
 			}
 			settlements = new ArrayList<>();
 			for (Object obj : (List) json.get("settlements")) {
-				//settlements.add(new VertexObject((JSONObject) obj));
+				settlements.add(new VertexObject((JSONObject) obj));
 			}
 			cities = new ArrayList<>();
 			for (Object obj : (List) json.get("cities")) {
-				//cities.add(new VertexObject((JSONObject) obj));
+				cities.add(new VertexObject((JSONObject) obj));
 			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
