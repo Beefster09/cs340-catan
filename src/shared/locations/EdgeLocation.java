@@ -1,5 +1,9 @@
 package shared.locations;
 
+import org.json.simple.JSONObject;
+
+import shared.definitions.ResourceType;
+
 /**
  * Represents the location of an edge on a hex map
  */
@@ -8,6 +12,13 @@ public class EdgeLocation
 	
 	private HexLocation hexLoc;
 	private EdgeDirection dir;
+	
+	public EdgeLocation(JSONObject json) {
+		hexLoc = new HexLocation(json);
+		if (json.containsKey("direction"))
+			dir = EdgeDirection.getDirectionFromString((String) json.get("direction"));
+		//else throw schema exception.
+	}
 	
 	public EdgeLocation(HexLocation hexLoc, EdgeDirection dir)
 	{

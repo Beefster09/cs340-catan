@@ -1,5 +1,10 @@
 package shared.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.simple.JSONObject;
+
 import shared.locations.EdgeLocation;
 
 /**
@@ -13,6 +18,25 @@ public class EdgeObject {
 
 	public EdgeObject() {
 		
+	}
+	
+	public EdgeObject(JSONObject json) {
+		try {
+			if (json.containsKey("roads")) {
+				List<Hex> hexData = new ArrayList<>();
+				for (Object obj : (List) json.get("roads")) {
+					//hexData.add(new Hex((JSONObject) obj));
+					int playerOwner = (int) (long) ((JSONObject)obj).get("owner");
+					location = new EdgeLocation((JSONObject)obj);
+				}
+			}
+			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
+					json.toJSONString());
+		} catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
+					"for an EdgeObject:\n" + json.toJSONString());
+		}
 	}
 
 	/** Gets the owner of the edge (road)

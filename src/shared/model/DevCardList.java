@@ -17,7 +17,7 @@ public class DevCardList {
 	 * 
 	 */
 	public DevCardList() {
-		
+		cards = new HashMap<DevCardType, Integer>();
 	}
 	
 	/** Creates a DevCardList with the specified amounts of cards
