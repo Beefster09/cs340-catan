@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import shared.exceptions.DuplicateKeyException;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.HexLocation;
 
@@ -30,14 +31,14 @@ public class Board {
 	private HexLocation robber;
 
 	public Board() {
-		
+		this(true, true, true);
 	}
 	
 	public Board(boolean hasRandomNumbers, boolean hasRandomHexes, boolean hasRandomPorts) {
 		
 	}
 	
-	public Board(List<Hex> hexList) {
+	public Board(List<Hex> hexList) throws DuplicateKeyException {
 		initializeHexesFromList(hexList);
 	}
 	
@@ -53,24 +54,52 @@ public class Board {
 			}
 			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
 					json.toJSONString());
+			
+			robber = new HexLocation((JSONObject) json.get("robber"));
+			
+			ports = new ArrayList<>();
+			for (Object obj : (List) json.get("ports")) {
+				ports.add(new Port((JSONObject) obj));
+			}
+			roads = new ArrayList<>();
+			for (Object obj : (List) json.get("roads")) {
+				//roads.add(new EdgeObject((JSONObject) obj));
+			}
+			settlements = new ArrayList<>();
+			for (Object obj : (List) json.get("settlements")) {
+				//settlements.add(new VertexObject((JSONObject) obj));
+			}
+			cities = new ArrayList<>();
+			for (Object obj : (List) json.get("cities")) {
+				//cities.add(new VertexObject((JSONObject) obj));
+			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
 			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
 					"for a Board:\n" + json.toJSONString());
 		}
+		catch (DuplicateKeyException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("Two (or more) hexes share the same location.\n"
+					+ json.toJSONString());
+		}
 	}
 	
 	/**
 	 * @param hexList
+	 * @throws DuplicateKeyException if any of the hexes are repeated.
 	 * @throws IndexOutOfBoundsException if any of the hex locations are outside the board's
 	 * boundaries, based on radius.
 	 */
-	private void initializeHexesFromList(List<Hex> hexList) {
+	private void initializeHexesFromList(List<Hex> hexList) throws DuplicateKeyException {
 		hexes = new HashMap<>();
 		for (Hex hex : hexList) {
 			if (hex.getLocation().getDistanceFromCenter() > radius) {
 				throw new IndexOutOfBoundsException();
+			}
+			if (hexes.containsKey(hex.getLocation())) {
+				throw new DuplicateKeyException();
 			}
 			hexes.put(hex.getLocation(), hex);
 		}
