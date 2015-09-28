@@ -5,30 +5,30 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import shared.definitions.MunicipalityType;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
+import shared.locations.VertexLocation;
 
 /**
- * Represents an object (i.e. road) that exists on the edge of a hex.
+ * Represents a city or a settlement that has been placed on a vertex between hexes.
+ * Contains reference to the vertex and the player that owns it.
  * @author Jordan
  *
  */
-public class EdgeObject {
+public class Municipality {
 	private PlayerReference owner;
-	private EdgeLocation location;
+	private VertexLocation location;
+	private MunicipalityType type;
 
-	public EdgeObject() {
-		
-	}
-	
-	public EdgeObject(JSONObject json) throws SchemaMismatchException {
+	public Municipality(JSONObject json) throws SchemaMismatchException {
 		try {
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();
-				for (Object obj : (List) json.get("roads")) {
+				for (Object obj : (List) json.get("settlement")) {
 					//hexData.add(new Hex((JSONObject) obj));
 					int playerOwner = (int) (long) ((JSONObject)obj).get("owner");
-					location = new EdgeLocation((JSONObject)obj);
+					location = new VertexLocation((JSONObject)obj);
 				}
 			}
 			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
@@ -40,7 +40,7 @@ public class EdgeObject {
 		}
 	}
 
-	/** Gets the owner of the edge (road)
+	/**
 	 * @return the owner
 	 */
 	public PlayerReference getOwner() {
@@ -48,23 +48,16 @@ public class EdgeObject {
 	}
 
 	/**
-	 * @param owner the owner to set
-	 */
-	public void setOwner(PlayerReference owner) {
-		this.owner = owner;
-	}
-
-	/**
 	 * @return the location
 	 */
-	public EdgeLocation getLocation() {
+	public VertexLocation getLocation() {
 		return location;
 	}
 
 	/**
 	 * @param location the location to set
 	 */
-	public void setLocation(EdgeLocation location) {
+	public void setLocation(VertexLocation location) {
 		this.location = location;
 	}
 

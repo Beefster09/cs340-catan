@@ -7,26 +7,28 @@ import org.json.simple.JSONObject;
 
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
-import shared.locations.VertexLocation;
 
 /**
- * Represents a city or a settlement that has been placed on a vertex between hexes.
- * Contains reference to the vertex and the player that owns it.
+ * Represents an object (i.e. road) that exists on the edge of a hex.
  * @author Jordan
  *
  */
-public class VertexObject {
+public class Road {
 	private PlayerReference owner;
-	private VertexLocation location;
+	private EdgeLocation location;
 
-	public VertexObject(JSONObject json) throws SchemaMismatchException {
+	public Road() {
+		
+	}
+	
+	public Road(JSONObject json) throws SchemaMismatchException {
 		try {
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();
-				for (Object obj : (List) json.get("settlement")) {
+				for (Object obj : (List) json.get("roads")) {
 					//hexData.add(new Hex((JSONObject) obj));
 					int playerOwner = (int) (long) ((JSONObject)obj).get("owner");
-					location = new VertexLocation((JSONObject)obj);
+					location = new EdgeLocation((JSONObject)obj);
 				}
 			}
 			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
@@ -38,7 +40,7 @@ public class VertexObject {
 		}
 	}
 
-	/**
+	/** Gets the owner of the edge (road)
 	 * @return the owner
 	 */
 	public PlayerReference getOwner() {
@@ -46,16 +48,23 @@ public class VertexObject {
 	}
 
 	/**
+	 * @param owner the owner to set
+	 */
+	public void setOwner(PlayerReference owner) {
+		this.owner = owner;
+	}
+
+	/**
 	 * @return the location
 	 */
-	public VertexLocation getLocation() {
+	public EdgeLocation getLocation() {
 		return location;
 	}
 
 	/**
 	 * @param location the location to set
 	 */
-	public void setLocation(VertexLocation location) {
+	public void setLocation(EdgeLocation location) {
 		this.location = location;
 	}
 

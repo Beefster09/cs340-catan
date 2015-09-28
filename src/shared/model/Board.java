@@ -24,9 +24,9 @@ public class Board {
 	private int radius = 2;
 	
 	private List<Port> ports;
-	private List<EdgeObject> roads;
-	private List<VertexObject> settlements;
-	private List<VertexObject> cities;
+	private List<Road> roads;
+	private List<Municipality> settlements;
+	private List<Municipality> cities;
 	
 	private HexLocation robber;
 
@@ -63,15 +63,15 @@ public class Board {
 			}
 			roads = new ArrayList<>();
 			for (Object obj : (List) json.get("roads")) {
-				roads.add(new EdgeObject((JSONObject) obj));
+				roads.add(new Road((JSONObject) obj));
 			}
 			settlements = new ArrayList<>();
 			for (Object obj : (List) json.get("settlements")) {
-				settlements.add(new VertexObject((JSONObject) obj));
+				settlements.add(new Municipality((JSONObject) obj));
 			}
 			cities = new ArrayList<>();
 			for (Object obj : (List) json.get("cities")) {
-				cities.add(new VertexObject((JSONObject) obj));
+				cities.add(new Municipality((JSONObject) obj));
 			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
@@ -127,21 +127,21 @@ public class Board {
 	/**
 	 * @return the roads
 	 */
-	public List<EdgeObject> getRoads() {
+	public List<Road> getRoads() {
 		return roads;
 	}
 
 	/**
 	 * @return the settlements
 	 */
-	public List<VertexObject> getSettlements() {
+	public List<Municipality> getSettlements() {
 		return settlements;
 	}
 
 	/**
 	 * @return the cities
 	 */
-	public List<VertexObject> getCities() {
+	public List<Municipality> getCities() {
 		return cities;
 	}
 
