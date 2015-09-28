@@ -1,6 +1,9 @@
 package shared.model;
 
+import org.json.simple.JSONObject;
+
 import shared.definitions.ResourceType;
+import shared.exceptions.SchemaMismatchException;
 import shared.locations.HexLocation;
 
 /**
@@ -22,6 +25,19 @@ public class Hex {
 		this.location = location;
 		this.resource = resource;
 		this.number = number;
+	}
+
+	public Hex(JSONObject json) throws SchemaMismatchException {
+		try {
+			location = new HexLocation((JSONObject) json.get("location"));
+			resource = ResourceType.getTypeFromString((String) json.get("resource"));
+			number = (int) (long) json.get("number");
+		}
+		catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
+					"for a Hex:\n" + json.toJSONString());
+		}
 	}
 
 	/**
