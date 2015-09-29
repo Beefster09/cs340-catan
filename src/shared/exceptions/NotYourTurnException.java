@@ -8,4 +8,9 @@ package shared.exceptions;
  */
 public class NotYourTurnException extends InvalidActionException {
 
+	public NotYourTurnException(String string) {
+		super(string);
+		// TODO Auto-generated constructor stub
+	}
+
 }

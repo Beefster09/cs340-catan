@@ -8,8 +8,12 @@ import shared.communication.IServer;
 
 
 /**
- * @author Justin Snyder
- * A ServerPoller periodically hits the server to get the status of a particular game.
+ * The ServerPoller periodically calls the server to check if there is an updated game model,
+ * and if so, it retrieves the model and informs other relevant classes to update their model.
+ * This is needed due to the fact that the server cannot send the information at any given point
+ * to the client, only the client can ping the server.
+ * @author Jordan Chipman
+ * 
  */
 public class ServerPoller {
 	/**

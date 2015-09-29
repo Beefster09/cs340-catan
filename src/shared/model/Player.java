@@ -1,31 +1,100 @@
 package shared.model;
 
-import shared.definitions.CatanColor;
+import java.io.*;
 
-public class Player {
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import shared.definitions.CatanColor;
+import shared.exceptions.SchemaMismatchException;
+
+/**
+ * Represents a player in a given game and everything associated with that player
+ * @author Jordan
+ *
+ */
+public class Player {	
+	// Meta-information
+	private CatanModel game; // This is so you can get PlayerReferences.
+	private int playerIndex;
 	
-	private CatanColor color;
+	private int playerID = -1337; // Arbitrary default.
 	private String name;
+	private CatanColor color;
 	
 	private DevCardList newDevCards;
 	private DevCardList oldDevCards;
 	private ResourceList resources;
 	
-	private boolean playedDevCard;
-	private boolean discarded;
+	private boolean playedDevCard 	= false;
+	private boolean discarded 		= false;
 	
-	private int cities;
-	private int roads;
-	private int settlements;
-	private int soldiers;
-	private int monuments;
-	private int victoryPoints;
+	private int cities 			= 4;
+	private int settlements 	= 5;
+	private int roads 			= 15;
+	private int soldiers		= 0;
+	private int monuments		= 0;
+	private int victoryPoints 	= 0;
 	
-	private int playerIndex;
-	private int playerID;
+	public static void main(String[] args) throws Exception {
+		JSONParser parser = new JSONParser();
+		Reader r = new BufferedReader(new FileReader("player.json"));
+		Object parseResult = parser.parse(r);
+		Player player = new Player(null, (JSONObject) parseResult);
 
-	public Player() {
+		System.out.println(parseResult);
+		System.out.println(player);
+	}
+	
+
+	public Player(CatanModel game) {
+		this.game = game;
+		// Do some stuff?
+	}
+	
+	public Player(CatanModel game, int index) {
+		this.game = game;
+		playerIndex = index;
+	}
+
+	public Player(CatanModel game, JSONObject json) throws SchemaMismatchException {
+		this.game = game;
 		
+		try {
+			playerIndex	= (int) (long) json.get("playerIndex");
+			playerID	= (int) (long) json.get("playerID");
+			
+			name = (String) json.get("name");
+			color = CatanColor.getColorFromString((String) json.get("color"));
+			
+			resources = new ResourceList((JSONObject) json.get("resources")); 
+			newDevCards = new DevCardList((JSONObject) json.get("newDevCards")); 
+			oldDevCards = new DevCardList((JSONObject) json.get("oldDevCards")); 
+
+			playedDevCard	= (boolean) json.get("playedDevCard");
+			discarded		= (boolean) json.get("discarded");
+			
+			settlements 	= (int) (long) json.get("settlements");
+			cities 			= (int) (long) json.get("cities");
+			roads 			= (int) (long) json.get("roads");
+			soldiers		= (int) (long) json.get("soldiers");
+			monuments		= (int) (long) json.get("monuments");
+			victoryPoints	= (int) (long) json.get("victoryPoints");
+		}
+		catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
+					"for a Player:\n" + json.toJSONString());
+		}
+	}
+	
+	/** Gives a PlayerReference that refers to this player. 
+	 * <p>Gives a PlayerReference such that a call to getPlayer() on the result of this 
+	 * function will return this instance of Player</p>
+	 * @return a corresponding PlayerReference
+	 */
+	public PlayerReference getReference() {
+		return new PlayerReference(game, playerIndex);
 	}
 
 	/**
@@ -108,7 +177,7 @@ public class Player {
 	/**
 	 * @return the discarded
 	 */
-	public boolean isDiscarded() {
+	public boolean hasDiscarded() {
 		return discarded;
 	}
 
@@ -136,7 +205,7 @@ public class Player {
 	/**
 	 * @return the playedDevCard
 	 */
-	public boolean isPlayedDevCard() {
+	public boolean hasPlayedDevCard() {
 		return playedDevCard;
 	}
 
@@ -166,6 +235,22 @@ public class Player {
 	 */
 	public int getPlayerID() {
 		return playerID;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Player [game=" + game + ", playerIndex=" + playerIndex
+				+ ", playerID=" + playerID + ", name=" + name + ", color="
+				+ color + ", newDevCards=" + newDevCards + ", oldDevCards="
+				+ oldDevCards + ", resources=" + resources + ", playedDevCard="
+				+ playedDevCard + ", discarded=" + discarded + ", cities="
+				+ cities + ", settlements=" + settlements + ", roads=" + roads
+				+ ", soldiers=" + soldiers + ", monuments=" + monuments
+				+ ", victoryPoints=" + victoryPoints + "]";
 	}
 	
 	

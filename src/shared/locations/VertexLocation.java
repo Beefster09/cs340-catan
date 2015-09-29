@@ -1,5 +1,13 @@
 package shared.locations;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.json.simple.JSONObject;
+
+import shared.exceptions.SchemaMismatchException;
+
 /**
  * Represents the location of a vertex on a hex map
  */
@@ -9,10 +17,17 @@ public class VertexLocation
 	private HexLocation hexLoc;
 	private VertexDirection dir;
 	
+	public VertexLocation(JSONObject json) throws SchemaMismatchException {
+		hexLoc = new HexLocation(json);
+		if (json.containsKey("direction"))
+			dir = VertexDirection.getDirectionFromString((String) json.get("direction"));
+		//else throw schema exception.
+	}
+	
 	public VertexLocation(HexLocation hexLoc, VertexDirection dir)
 	{
-		setHexLoc(hexLoc);
-		setDir(dir);
+		this.hexLoc = hexLoc;
+		this.dir = dir;
 	}
 	
 	public HexLocation getHexLoc()
@@ -20,23 +35,109 @@ public class VertexLocation
 		return hexLoc;
 	}
 	
-	private void setHexLoc(HexLocation hexLoc)
-	{
-		if(hexLoc == null)
-		{
-			throw new IllegalArgumentException("hexLoc cannot be null");
-		}
-		this.hexLoc = hexLoc;
-	}
-	
 	public VertexDirection getDir()
 	{
 		return dir;
 	}
 	
-	private void setDir(VertexDirection direction)
-	{
-		this.dir = direction;
+	/** Gives the three edges that are/would be connected to this VertexLocation
+	 * @return
+	 */
+	public Collection<EdgeLocation> getEdges() {
+		VertexLocation normal = getNormalizedLocation();
+		HexLocation northHex = normal.hexLoc.getNeighborLoc(EdgeDirection.North);
+		List<EdgeLocation> edges = new ArrayList<>();
+		edges.add(new EdgeLocation(normal.hexLoc, EdgeDirection.North));
+		switch (normal.dir) {
+		case NorthWest:
+			edges.add(new EdgeLocation(normal.hexLoc, EdgeDirection.NorthWest));
+			edges.add(new EdgeLocation(northHex, EdgeDirection.SouthWest));
+			break;
+		case NorthEast:
+			edges.add(new EdgeLocation(normal.hexLoc, EdgeDirection.NorthEast));
+			edges.add(new EdgeLocation(northHex, EdgeDirection.SouthEast));
+			break;
+		default:
+			assert false;
+			break;
+		}
+		return edges;
+	}
+	
+	public Collection<HexLocation> getHexes() {
+		VertexLocation normal = getNormalizedLocation();
+		List<HexLocation> hexes = new ArrayList<>();
+		hexes.add(normal.hexLoc);
+		hexes.add(normal.hexLoc.getNeighborLoc(EdgeDirection.North));
+		switch (normal.dir) {
+		case NorthWest:
+			hexes.add(normal.hexLoc.getNeighborLoc(EdgeDirection.NorthWest));
+			break;
+		case NorthEast:
+			hexes.add(normal.hexLoc.getNeighborLoc(EdgeDirection.NorthEast));
+			break;
+		default:
+			assert false;
+			break;
+		}
+		return hexes;
+	}
+	
+	public Collection<VertexLocation> getNeighbors() {
+		VertexLocation normal = getNormalizedLocation();
+		List<VertexLocation> neighbors = new ArrayList<>();
+		HexLocation nearHex;
+		switch (normal.dir) {
+		case NorthWest:
+			neighbors.add(new VertexLocation(hexLoc, VertexDirection.NorthEast));
+			nearHex = hexLoc.getNeighborLoc(EdgeDirection.NorthWest);
+			neighbors.add(new VertexLocation(nearHex, VertexDirection.NorthEast));
+			neighbors.add(new VertexLocation(nearHex, VertexDirection.SouthEast));
+			break;
+		case NorthEast:
+			neighbors.add(new VertexLocation(hexLoc, VertexDirection.NorthWest));
+			nearHex = hexLoc.getNeighborLoc(EdgeDirection.NorthEast);
+			neighbors.add(new VertexLocation(nearHex, VertexDirection.NorthWest));
+			neighbors.add(new VertexLocation(nearHex, VertexDirection.SouthWest));
+			break;
+		default:
+			assert false;
+			break;
+		}
+		return neighbors;
+	}
+	
+	public boolean isAdjacent(VertexLocation other) {
+		if (this.equals(other)) return false;
+		VertexLocation self = getNormalizedLocation();
+		other = other.getNormalizedLocation();
+		
+		if (self.hexLoc.equals(other.hexLoc)) return true;
+		if (!self.hexLoc.isAdjacent(other.hexLoc)) return false;
+
+		int dx = other.hexLoc.getX() - self.hexLoc.getX();
+		int dy = other.hexLoc.getY() - self.hexLoc.getY();
+		
+		switch (self.dir) {
+		case NorthWest:
+			return dx == -1 && other.dir == VertexDirection.NorthEast;
+		case NorthEast:
+			return dx == 1 && other.dir == VertexDirection.NorthWest;
+		default:
+			assert false;
+			return false;
+		}
+	}
+	
+	public int getDistanceFromCenter() {
+		int closestDist = Integer.MAX_VALUE;
+		for (HexLocation hex : getHexes()) {
+			int dist = hex.getDistanceFromCenter();
+			if (dist < closestDist) {
+				closestDist = dist;
+			}
+		}
+		return closestDist;
 	}
 	
 	@Override
@@ -49,9 +150,10 @@ public class VertexLocation
 	public int hashCode()
 	{
 		final int prime = 31;
+		VertexLocation self = getNormalizedLocation();
 		int result = 1;
-		result = prime * result + ((dir == null) ? 0 : dir.hashCode());
-		result = prime * result + ((hexLoc == null) ? 0 : hexLoc.hashCode());
+		result = prime * result + ((self.dir == null) ? 0 : self.dir.hashCode());
+		result = prime * result + ((self.hexLoc == null) ? 0 : self.hexLoc.hashCode());
 		return result;
 	}
 	
@@ -64,15 +166,16 @@ public class VertexLocation
 			return false;
 		if(getClass() != obj.getClass())
 			return false;
-		VertexLocation other = (VertexLocation)obj;
-		if(dir != other.dir)
+		VertexLocation other = ((VertexLocation) obj).getNormalizedLocation();
+		VertexLocation self = getNormalizedLocation();
+		if(self.dir != other.dir)
 			return false;
-		if(hexLoc == null)
+		if(self.hexLoc == null)
 		{
 			if(other.hexLoc != null)
 				return false;
 		}
-		else if(!hexLoc.equals(other.hexLoc))
+		else if(!self.hexLoc.equals(other.hexLoc))
 			return false;
 		return true;
 	}

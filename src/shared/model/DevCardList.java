@@ -17,7 +17,7 @@ public class DevCardList {
 	 * 
 	 */
 	public DevCardList() {
-		
+		cards = new HashMap<DevCardType, Integer>();
 	}
 	
 	/** Creates a DevCardList with the specified amounts of cards
@@ -40,7 +40,15 @@ public class DevCardList {
 	 * @throws IllegalArgumentException if any of parameters are negative
 	 */
 	public DevCardList(int soldiers, int special, int monuments) throws IllegalArgumentException {
-		
+		for (DevCardType type : DevCardType.values()) {
+			String cardName = type.toString().toLowerCase();
+			if (cardName == "soldiers")
+				cards.put(type, soldiers);
+			else if (cardName == "monuments")
+				cards.put(type, monuments);
+			else
+				cards.put(type, special);
+		}
 	}
 	
 	/** Gives a count of all cards of all types

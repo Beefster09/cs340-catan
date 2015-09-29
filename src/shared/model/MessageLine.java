@@ -1,5 +1,12 @@
 package shared.model;
 
+import java.util.List;
+
+import org.json.simple.JSONObject;
+
+import shared.exceptions.SchemaMismatchException;
+import shared.locations.EdgeLocation;
+
 /** An immutable representation of a chat message
  * @author beefster
  *
@@ -10,6 +17,22 @@ public class MessageLine {
 
 	public MessageLine() {
 		
+	}
+	
+	public MessageLine(JSONObject json) throws SchemaMismatchException {
+		JSONObject chat = (JSONObject) json.get("chat");
+		try {
+			if (chat.containsKey("lines")) {
+				for (Object obj : (List) json.get("lines")) {
+					message = (String) ((JSONObject)obj).get("message");
+					source = (String) ((JSONObject)obj).get("source");
+				}
+			}
+		} catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
+					"for an EdgeObject:\n" + json.toJSONString());
+		}
 	}
 
 	/**
