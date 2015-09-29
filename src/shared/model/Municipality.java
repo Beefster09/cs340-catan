@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import shared.definitions.MunicipalityType;
+import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
 import shared.locations.VertexLocation;
@@ -21,7 +22,7 @@ public class Municipality {
 	private VertexLocation location;
 	private MunicipalityType type;
 
-	public Municipality(JSONObject json) throws SchemaMismatchException {
+	public Municipality(List<Player> players, JSONObject json, MunicipalityType type) throws SchemaMismatchException {
 		try {
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();
@@ -53,12 +54,25 @@ public class Municipality {
 	public VertexLocation getLocation() {
 		return location;
 	}
-
-	/**
-	 * @param location the location to set
+	
+	public MunicipalityType getType() {
+		return type;
+	}
+	
+	public int getPointValue() {
+		return type.getPointValue();
+	}
+	
+	/** Upgrades a settlement to a city
+	 * @pre This municipality is a settlement
+	 * @post This municipality will be a city
+	 * @throws InvalidActionException if this is already a city
 	 */
-	public void setLocation(VertexLocation location) {
-		this.location = location;
+	public void upgrade() throws InvalidActionException {
+		if (type != MunicipalityType.SETTLEMENT) {
+			throw new InvalidActionException("Attempt to upgrade an already upgraded city.");
+		}
+		type = MunicipalityType.CITY;
 	}
 
 }

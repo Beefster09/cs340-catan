@@ -1,6 +1,9 @@
 package shared.locations;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.json.simple.JSONObject;
@@ -105,6 +108,21 @@ public class HexLocation
 		}
 	}
 	
+	public boolean isAdjacent(HexLocation other) {
+		if (this.equals(other)) return false;
+		int dx, dy;
+		dx = x - other.x;
+		dy = y - other.y;
+		// North/South
+		if (dx == 0 && Math.abs(dy) == 1) return true;
+		// NorthWest/SouthEast
+		if (dy == 0 && Math.abs(dx) == 1) return true;
+		// NorthEast/SouthWest
+		if (dx == -dy && Math.abs(dx) == 1) return true;
+		
+		return false;
+	}
+	
 	/** Tells you how many hexes away from the center this location is.
 	 * @return the distance from the center. 0 if the location IS the center.
 	 */
@@ -123,11 +141,35 @@ public class HexLocation
 		/* And the obtuse section is a little more... obtuse
 		 * It's like the diagonals of the square grid.
 		 * Draw a picture using the adjacency rules in getNeighborLoc()
-		 * It SHOULD work.
+		 * I promise, it works.
 		 */
 		else {
 			return Math.max(Math.abs(x), Math.abs(y));
 		}
+	}
+	
+	public Collection<VertexLocation> getVertices()	{
+		List<VertexLocation> vertices = new ArrayList<>();
+		for (VertexDirection dir : VertexDirection.values()) {
+			vertices.add(new VertexLocation(this, dir));
+		}
+		return vertices;
+	}
+	
+	public Collection<EdgeLocation> getEdges()	{
+		List<EdgeLocation> edges = new ArrayList<>();
+		for (EdgeDirection dir : EdgeDirection.values()) {
+			edges.add(new EdgeLocation(this, dir));
+		}
+		return edges;
+	}
+	
+	public Collection<HexLocation> getNeighbors()	{
+		List<HexLocation> neighbors = new ArrayList<>();
+		for (EdgeDirection dir : EdgeDirection.values()) {
+			neighbors.add(getNeighborLoc(dir));
+		}
+		return neighbors;
 	}
 	
 	/** Returns an iterator of all locations within a certain distance of the center

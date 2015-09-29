@@ -7,4 +7,12 @@ package shared.exceptions;
  */
 public class InvalidActionException extends Exception {
 
+	public InvalidActionException(String string) {
+		super(string);
+	}
+
+	public InvalidActionException() {
+		super();
+	}
+
 }

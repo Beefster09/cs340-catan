@@ -7,4 +7,12 @@ package shared.exceptions;
  */
 public class InsufficientResourcesException extends InvalidActionException {
 
+	public InsufficientResourcesException(String string) {
+		super(string);
+	}
+
+	public InsufficientResourcesException() {
+		super();
+	}
+
 }

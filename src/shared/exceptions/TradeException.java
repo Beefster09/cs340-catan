@@ -7,4 +7,12 @@ package shared.exceptions;
  */
 public class TradeException extends InsufficientResourcesException {
 
+	public TradeException(String string) {
+		super(string);
+	}
+
+	public TradeException() {
+		super();
+	}
+
 }

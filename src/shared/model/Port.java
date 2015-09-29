@@ -18,8 +18,7 @@ import shared.locations.*;
  */
 public class Port {
 	private ResourceType resource; // null = any resource
-	private HexLocation location;
-	private EdgeDirection direction;
+	private EdgeLocation location;
 	private int ratio;
 	
 	public static void main(String args[]) throws Exception {
@@ -44,8 +43,10 @@ public class Port {
 			else {
 				resource = null;
 			}
-			location = new HexLocation((JSONObject) json.get("location"));
-			direction = EdgeDirection.getDirectionFromString((String) json.get("direction"));
+			HexLocation hexLoc = new HexLocation((JSONObject) json.get("location"));
+			EdgeDirection direction = EdgeDirection.getDirectionFromString(
+					(String) json.get("direction"));
+			location = new EdgeLocation(hexLoc, direction);
 			ratio = (int) (long) json.get("ratio");
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
@@ -65,15 +66,8 @@ public class Port {
 	/**
 	 * @return the location
 	 */
-	public HexLocation getLocation() {
+	public EdgeLocation getLocation() {
 		return location;
-	}
-
-	/**
-	 * @return the direction
-	 */
-	public EdgeDirection getDirection() {
-		return direction;
 	}
 
 	/**
@@ -89,6 +83,6 @@ public class Port {
 	@Override
 	public String toString() {
 		return "Port [resource=" + resource + ", location=" + location
-				+ ", direction=" + direction + ", ratio=" + ratio + "]";
+				 + ", ratio=" + ratio + "]";
 	}
 }
