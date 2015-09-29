@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 
 /**
  * 
@@ -30,8 +32,10 @@ public class ClientCommunicator {
 	 * @pre JSON Object is valid, and contains a location to be sent as well as "Get" or "Post"
 	 * @post Response from the server will be given
 	 * @return response object from server
+	 * @throws ServerException
+	 * @throws UserException 
 	 */
-	public JSONObject send(JSONObject o) throws ServerException{
+	public JSONObject send(JSONObject o) throws ServerException, UserException{
 		try{
 			URL url = new URL((String) o.get("url"));
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -56,7 +60,7 @@ public class ClientCommunicator {
 				JSONObject JSONOutput = (JSONObject) parser.parse(str.toString());
 				return JSONOutput;
 			}
-			throw new ServerException();
+			throw new UserException();
 		}
 		catch(IOException | ParseException e){
 			throw new ServerException();
