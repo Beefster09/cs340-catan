@@ -7,6 +7,11 @@ public class PlayerHeader {
 	private String name;
 	private int id;
 	
+	public PlayerHeader(CatanColor color, String name, int id){
+		this.color = color;
+		this.name = name;
+		this.id = id;
+	}
 	/**
 	 * @return the color
 	 */
