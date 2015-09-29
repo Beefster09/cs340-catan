@@ -2,6 +2,8 @@ package shared.communication;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.definitions.*;
@@ -77,7 +79,7 @@ public interface IServer {
 	 * @post corresponding model is returned
 	 * @author-Grant
 	 */
-	public CatanModel getModel(Session user, int version)
+	public JSONObject getModel(Session user, int version)
 			throws ServerException;
 	/**
 	 * @pre
@@ -178,6 +180,13 @@ public interface IServer {
 	 */
 	public CatanModel monopoly(Session user, ResourceType type)
 			throws ServerException, InvalidActionException;
+	
+	/**
+	 * 
+	 */
+	public CatanModel monument(Session user)
+			throws ServerException, InvalidActionException;
+	
 	/**
 	 * @pre edge location is specified and must be connected to existing road, settlement, or city owned by player
 	 * @post road is built at specified location
