@@ -58,7 +58,7 @@ public class Board {
 	
 	public Board(JSONObject json) throws SchemaMismatchException {
 		try {
-			radius = (int) (long) json.get("radius") - 2;
+			radius = (int) (long) json.get("radius") - 1; // Remove center from radius
 			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
 				for (Object obj : (List) json.get("hexes")) {
@@ -272,10 +272,25 @@ public class Board {
 	}
 	
 	public boolean canBuildRoadAt(PlayerReference player, EdgeLocation location) {
+		if (location.getDistanceFromCenter() > radius) return false;
 		if (getRoadAt(location) == null) {
+			// Adjacent road
 			for (EdgeLocation neighbor : location.getNeighbors()) {
 				Road road = getRoadAt(neighbor);
-				if (road != null && road.getOwner() == player) return true;
+				if (road != null && road.getOwner() == player) {
+					// check if blocked by opponent's municipality
+					VertexLocation townLoc = neighbor.getVertexBetween(location);
+					Municipality town = getMunicipalityAt(townLoc);
+					if (town != null && !player.equals(town.getOwner())) {
+						continue;
+					}
+					return true;
+				}
+			}
+			// Adjacent municipality
+			for (VertexLocation vertex : location.getVertices()) {
+				Municipality town = getMunicipalityAt(vertex);
+				if (town != null && player.equals(town.getOwner())) return true;
 			}
 		}
 		return false;
@@ -341,10 +356,10 @@ public class Board {
 		if (location.equals(robber)) {
 			return false;
 		}
-		if (getHexAt(location).getResource() == null) { // Can't move to the desert
+		if (location.getDistanceFromCenter() > radius) { // Robber must stay on the board.
 			return false;
 		}
-		if (location.getDistanceFromCenter() > radius) { // Robber must stay on the board.
+		if (getHexAt(location).getResource() == null) { // Can't move to the desert
 			return false;
 		}
 		return true;

@@ -21,11 +21,12 @@ import shared.locations.VertexLocation;
 public class BoardTest {
 	
 	private Board board;
+	private PlayerReference red, green, blue;
 
-	List<Hex> hexList;
-	List<Port> portList;
-	List<Road> roadList;
-	List<Municipality> townList;
+	private List<Hex> hexList;
+	private List<Port> portList;
+	private List<Road> roadList;
+	private List<Municipality> townList;
 	
 	private static final ResourceType[] resources = {
 		ResourceType.WHEAT,
@@ -65,7 +66,6 @@ public class BoardTest {
 		roadList = new ArrayList<Road>();
 		townList = new ArrayList<Municipality>();
 		
-		PlayerReference red, green, blue;
 		red = new PlayerReference(null, 0);
 		green = new PlayerReference(null, 1);
 		blue = new PlayerReference(null, 2);
@@ -102,20 +102,24 @@ public class BoardTest {
 		roadList.add(new Road(new EdgeLocation(-1, 1, EdgeDirection.NorthWest), green));
 		roadList.add(new Road(new EdgeLocation(-1, 0, EdgeDirection.SouthWest), green));
 		roadList.add(new Road(new EdgeLocation( 1,-1, EdgeDirection.SouthEast), green));
+		roadList.add(new Road(new EdgeLocation(-2, 0, EdgeDirection.NorthEast), green));
+		roadList.add(new Road(new EdgeLocation(-2, 0, EdgeDirection.SouthEast), green));
+		roadList.add(new Road(new EdgeLocation(-1, 1, EdgeDirection.SouthWest), green));
+		roadList.add(new Road(new EdgeLocation(-1, 1, EdgeDirection.South),     green));
+		roadList.add(new Road(new EdgeLocation(-1,-1, EdgeDirection.NorthWest), green));
 		townList.add(new Municipality(new VertexLocation(-2, 1, VertexDirection.NorthEast),
 				MunicipalityType.SETTLEMENT, green));
 		townList.add(new Municipality(new VertexLocation(-2, 1, VertexDirection.SouthEast),
 				MunicipalityType.SETTLEMENT, green));
-		townList.add(new Municipality(new VertexLocation(-1, 0, VertexDirection.SouthEast),
-				MunicipalityType.SETTLEMENT, green));
 		townList.add(new Municipality(new VertexLocation( 1,-1, VertexDirection.East),
 				MunicipalityType.SETTLEMENT, green));
 
-		roadList.add(new Road(new EdgeLocation( 0,-1, EdgeDirection.NorthWest), blue));
 		roadList.add(new Road(new EdgeLocation( 2, 0, EdgeDirection.North),     blue));
 		roadList.add(new Road(new EdgeLocation( 2, 0, EdgeDirection.NorthEast), blue));
 		roadList.add(new Road(new EdgeLocation( 2, 0, EdgeDirection.SouthEast), blue));
 		roadList.add(new Road(new EdgeLocation( 2,-1, EdgeDirection.SouthEast), blue));
+		roadList.add(new Road(new EdgeLocation( 1, 0, EdgeDirection.North),     blue));
+		roadList.add(new Road(new EdgeLocation( 1, 0, EdgeDirection.NorthEast), blue));
 		townList.add(new Municipality(new VertexLocation(-1,-1, VertexDirection.SouthEast),
 				MunicipalityType.SETTLEMENT, blue));
 		townList.add(new Municipality(new VertexLocation( 2,-1, VertexDirection.East),
@@ -148,9 +152,9 @@ public class BoardTest {
 		Collection<Municipality> towns = board.getMunicipalities();
 
 		// Check that there are the right number of ports, roads, and towns
-		assertEquals(9, ports.size());
-		assertEquals(14, roads.size());
-		assertEquals(11, towns.size());
+		assertEquals(portList.size(), ports.size());
+		assertEquals(roadList.size(), roads.size());
+		assertEquals(townList.size(), towns.size());
 		
 		assertEquals(ResourceType.WOOD, board.getPortAt(new EdgeLocation( 0,-2, EdgeDirection.North)).getResource());
 		assertEquals(ResourceType.WHEAT, board.getPortAt(new EdgeLocation( 1,-2, EdgeDirection.NorthEast)).getResource());
@@ -161,11 +165,21 @@ public class BoardTest {
 		assertEquals(null, board.getPortAt(new EdgeLocation(-2, 2, EdgeDirection.SouthWest)).getResource());
 		assertEquals(ResourceType.ORE, board.getPortAt(new EdgeLocation(-2, 1, EdgeDirection.NorthWest)).getResource());
 		assertEquals(null, board.getPortAt(new EdgeLocation(-1,-1, EdgeDirection.NorthWest)).getResource());
+		
+		// TODO test for fails
 	}
 	
 	@Test
 	public void testGetHexesByNumber() {
-		fail("Not yet implemented");
+		assertEquals(1, board.getHexesByNumber(2).size());
+		assertEquals(1, board.getHexesByNumber(12).size());
+		
+		for (int i=3; i<=11; ++i) {
+			if (i == 7) continue;
+			assertEquals(2, board.getHexesByNumber(i).size());
+		}
+		
+		// TODO: this needs work.
 	}
 
 	@Test
@@ -185,12 +199,49 @@ public class BoardTest {
 
 	@Test
 	public void testCanBuildRoadAt() {
-		fail("Not yet implemented");
+		assertFalse(board.canBuildRoadAt(red,
+				new EdgeLocation( 0, 0, EdgeDirection.South))); // already your road there
+		assertFalse(board.canBuildRoadAt(red,
+				new EdgeLocation(-1, 0, EdgeDirection.South))); // already opponent's road there
+		assertFalse(board.canBuildRoadAt(green,
+				new EdgeLocation(-1,-2, EdgeDirection.SouthWest))); // just outside board, but still connected
+
+		assertTrue(board.canBuildRoadAt(green,
+				new EdgeLocation( 0, 0, EdgeDirection.NorthWest)));
+		assertTrue(board.canBuildRoadAt(red,
+				new EdgeLocation( 0, 0, EdgeDirection.NorthWest)));
+		assertTrue(board.canBuildRoadAt(blue,
+				new EdgeLocation( 0,-1, EdgeDirection.NorthWest))); // No road, only a settlement (can't technically happen... whatever)
+		
+		assertFalse(board.canBuildRoadAt(green,
+				new EdgeLocation( 0, 1, EdgeDirection.SouthWest))); // opponent's settlement is in the way
 	}
 
 	@Test
 	public void testCanBuildSettlement() {
-		fail("Not yet implemented");
+		assertFalse(board.canBuildSettlement(red, 
+				new VertexLocation(-1, 1, VertexDirection.SouthEast))); // already your settlement there
+		assertFalse(board.canBuildSettlement(red, 
+				new VertexLocation(-1, 10, VertexDirection.SouthEast))); // outside the board
+		assertFalse(board.canBuildSettlement(red, 
+				new VertexLocation(0,0, VertexDirection.East))); // already your city there
+		assertFalse(board.canBuildSettlement(blue, 
+				new VertexLocation(0,0, VertexDirection.East))); // already another player's city there
+		assertFalse(board.canBuildSettlement(red, 
+				new VertexLocation(1,0, VertexDirection.SouthWest))); // no roads to location
+		assertFalse(board.canBuildSettlement(green, 
+				new VertexLocation(1,0, VertexDirection.NorthEast))); // distance rule
+		assertFalse(board.canBuildSettlement(blue, 
+				new VertexLocation(0,0, VertexDirection.West))); // roads belong to another player
+		assertFalse(board.canBuildSettlement(red, 
+				new VertexLocation(-1,-1, VertexDirection.West))); // roads belong to another player
+		
+		assertTrue(board.canBuildSettlement(green, 
+				new VertexLocation(0,0, VertexDirection.West)));
+		assertTrue(board.canBuildSettlement(red, 
+				new VertexLocation(0,0, VertexDirection.West)));
+		assertTrue(board.canBuildSettlement(green, 
+				new VertexLocation(-1,-1, VertexDirection.West)));
 	}
 
 	@Test
@@ -200,7 +251,12 @@ public class BoardTest {
 
 	@Test
 	public void testCanMoveRobberTo() {
-		fail("Not yet implemented");
+		assertFalse(board.canMoveRobberTo(new HexLocation(1, 0))); // Desert
+		assertFalse(board.canMoveRobberTo(new HexLocation(1, 1))); // Same place as before
+		assertFalse(board.canMoveRobberTo(new HexLocation(20, 20))); // Off the board
+
+		assertTrue(board.canMoveRobberTo(new HexLocation(2, 0)));
+		assertTrue(board.canMoveRobberTo(new HexLocation(0,-2)));
 	}
 
 }

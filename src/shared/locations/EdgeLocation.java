@@ -2,7 +2,9 @@ package shared.locations;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -265,6 +267,23 @@ public class EdgeLocation
 		}
 		
 		return neighbors;
+	}
+	
+	public VertexLocation getVertexBetween(EdgeLocation other) {
+		if (!this.isAdjacent(other)) {
+			throw new IllegalArgumentException();
+		}
+		Set<VertexLocation> a, b;
+		a = new HashSet<>(getVertices());
+		b = new HashSet<>(other.getVertices());
+		
+		a.retainAll(b);
+		
+		for (VertexLocation loc: a) {
+			return loc;
+		}
+		assert false;
+		return null;
 	}
 }
 
