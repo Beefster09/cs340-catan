@@ -1,11 +1,33 @@
 package shared.communication;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+
+import shared.exceptions.SchemaMismatchException;
 
 public class GameHeader {
 	private String title;
 	private int id;
 	private List<PlayerHeader> players;
+	
+	public GameHeader(JSONObject json) throws SchemaMismatchException {
+		try {
+			title = (String) json.get("title");
+			id = (int) (long) json.get("id");
+			players = new ArrayList<>();
+			for (Object obj : (List) json.get("players")) {
+				players.add(new PlayerHeader((JSONObject) obj));
+			}
+		}
+		catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
+					"for a GameHeader:\n" + json.toJSONString());
+		}
+	}
+	
 	/**
 	 * @return the title
 	 */

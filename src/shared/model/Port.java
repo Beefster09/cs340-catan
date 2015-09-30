@@ -34,6 +34,12 @@ public class Port {
 	public Port() {
 		
 	}
+
+	public Port(EdgeLocation location, ResourceType resource) {
+		this.location = location;
+		this.resource = resource;
+		ratio = (resource == null) ? 3 : 2;
+	}
 	
 	public Port(JSONObject json) throws SchemaMismatchException {
 		try {

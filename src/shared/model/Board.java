@@ -39,11 +39,21 @@ public class Board {
 	}
 	
 	public Board(boolean hasRandomNumbers, boolean hasRandomHexes, boolean hasRandomPorts) {
-		
+		// TODO: when implementing server
 	}
 	
-	public Board(List<Hex> hexList) throws DuplicateKeyException {
+	public Board(int boardRadius, List<Hex> hexList, List<Port> ports,
+			List<Road> roads, List<Municipality> towns,	HexLocation robberLocation)
+					throws DuplicateKeyException, InvalidActionException {
+		radius = boardRadius;
 		initializeHexesFromList(hexList);
+		initializePortsFromList(ports);
+		initializeRoadsFromList(roads);
+		initializeMunicipalitiesFromList(towns);
+		if (robberLocation.getDistanceFromCenter() > boardRadius) {
+			throw new IndexOutOfBoundsException();
+		}
+		robber = robberLocation;
 	}
 	
 	public Board(JSONObject json) throws SchemaMismatchException {
@@ -169,6 +179,10 @@ public class Board {
 			hexes.put(location, hex);
 		}
 	}
+	
+	public Map<HexLocation, Hex> getHexes() {
+		return new HashMap<>(hexes);
+	}
 
 	/**
 	 * @return the hexes
@@ -180,6 +194,16 @@ public class Board {
 		else {
 			throw new IndexOutOfBoundsException();
 		}
+	}
+	
+	public Collection<Hex> getHexesByNumber(int number) {
+		List<Hex> result = new ArrayList<>();
+		for (Hex hex : hexes.values()) {
+			if (hex.getNumber() == number) {
+				result.add(hex);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -214,6 +238,22 @@ public class Board {
 			}
 		}
 		return port;
+	}
+	
+	public PlayerReference getPortOwner(Port port) {
+		for (VertexLocation location : port.getLocation().getVertices()) {
+			Municipality town = getMunicipalityAt(location);
+			if (town != null) return town.getOwner();
+		}
+		return null;
+	}
+	
+	public PlayerReference getOwnerOfPortAt(EdgeLocation edge) {
+		Port port = getPortAt(edge);
+		if (port == null) {
+			throw new IllegalArgumentException("There is no Port at that location!");
+		}
+		else return getPortOwner(port);
 	}
 
 	/**
@@ -260,7 +300,7 @@ public class Board {
 	 * @return
 	 */
 	public boolean canBuildSettlement(PlayerReference player, VertexLocation location) {
-		if (getMunicipalityAt(location) == null) {
+		if (getMunicipalityAt(location) == null) { // spot is open
 			// Apply Distance Rule
 			for (VertexLocation neighbor : location.getNeighbors()) {
 				Municipality town = getMunicipalityAt(neighbor);
@@ -274,6 +314,13 @@ public class Board {
 		}
 		return false;
 	}
+	
+	public boolean canBuildCity(PlayerReference player, VertexLocation location) {
+		Municipality town = getMunicipalityAt(location);
+		if (town == null) return false; // no settlement at that location
+		return (town.getType() == MunicipalityType.SETTLEMENT
+				&& player.equals(town.getOwner()));
+	}
 
 	/** This gives the radius that is needed by the HexGrid constructor.
 	 * @return the radius, including the center hex and water hexes. 
@@ -283,10 +330,30 @@ public class Board {
 	}
 
 	/**
-	 * @return the robber
+	 * @return the location of the robber
 	 */
-	public HexLocation getRobber() {
+	public HexLocation getRobberLocation() {
 		return robber;
+	}
+	
+	public boolean canMoveRobberTo(HexLocation location) {
+		if (location.equals(robber)) {
+			return false;
+		}
+		if (getHexAt(location).getResource() == null) { // Can't move to the desert
+			return false;
+		}
+		if (location.getDistanceFromCenter() > radius) { // Robber must stay on the board.
+			return false;
+		}
+		return true;
+	}
+	
+	public void moveRobber(HexLocation location) throws InvalidActionException {
+		if (!canMoveRobberTo(location))  {
+			throw new InvalidActionException("The robber cannot be moved there.");
+		}
+		robber = location;
 	}
 	
 	private void initializeNumbers(boolean hasRandomNumbers) {
