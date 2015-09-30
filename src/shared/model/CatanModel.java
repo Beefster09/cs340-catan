@@ -149,6 +149,38 @@ public class CatanModel {
 		return winner;
 	}
 
+	public void setChat(List<MessageLine> chat) {
+		this.chat = chat;
+	}
+
+	public void setLog(List<MessageLine> log) {
+		this.log = log;
+	}
+
+	public void setMap(Board map) {
+		this.map = map;
+	}
+
+	public void setTurnTracker(TurnTracker turnTracker) {
+		this.turnTracker = turnTracker;
+	}
+
+	public void setBank(Bank bank) {
+		this.bank = bank;
+	}
+
+	public void setPlayers(List<Player> players) {
+		this.players = players;
+	}
+
+	public void setWinner(PlayerReference winner) {
+		this.winner = winner;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
 	/**
 	 * @return the version
 	 */

@@ -3,7 +3,13 @@ package client.communication;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.simple.JSONObject;
+
 import shared.communication.IServer;
+import shared.communication.Session;
+import shared.exceptions.ServerException;
+import shared.model.CatanModel;
+import shared.model.ModelFacade;
 
 
 
@@ -23,6 +29,9 @@ public class ServerPoller {
 	
 	private IServer server;
 	private Timer poller = null;
+	ClientCommunicator comm;
+	Session user;
+	ModelFacade modelHandler;
 
 	/**
 	 * Creates the Poller
@@ -30,8 +39,9 @@ public class ServerPoller {
 	 * @pre the server passed in is valid
 	 * @post a ServerPoller object will be created.
 	 */
-	public ServerPoller(IServer server) {
+	public ServerPoller(IServer server, Session user) {
 		this.server = server;	
+		this.user = user;
 	}
 	
 	/** Tells you whether this poller is running or not
@@ -56,8 +66,17 @@ public class ServerPoller {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				
+				try {
+					//JSONObject modelRequest = new JSONObject();
+					JSONObject model = server.getModel(user, modelHandler.getVersion());
+					if (model != null) {
+						modelHandler.updateFromJSON(model);
+					}
+					
+				} catch (ServerException e) {
+					System.out.println("Server error, could not connect");
+					e.printStackTrace();
+				}
 			}
 			
 		}, 0, interval);

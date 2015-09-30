@@ -28,6 +28,12 @@ public class GameHeader {
 		}
 	}
 	
+	public GameHeader(String title, int id, List<PlayerHeader> players){
+		this.title = title;
+		this.id = id;
+		this.players = players;
+	}
+
 	/**
 	 * @return the title
 	 */
