@@ -215,8 +215,8 @@ public class ModelFacade {
 		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {
 			
 			Board map = model.getMap();
-			Map<EdgeLocation, Road> roads = map.getRoads();
-			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Map<EdgeLocation, Road> roads = map.getRoadMap();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
 			if(roads.get(edgeLoc) != null)
@@ -262,8 +262,8 @@ public class ModelFacade {
 		public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
 			
 			Board map = model.getMap();
-			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
-			Map<EdgeLocation, Road> roads = map.getRoads();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
+			Map<EdgeLocation, Road> roads = map.getRoadMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
 			//iterate through map of municipalities
@@ -303,7 +303,7 @@ public class ModelFacade {
 		public synchronized boolean canBuildCity(VertexLocation vertexLoc) {
 			
 			Board map = model.getMap();
-			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
 			//iterates through all municipalities
@@ -504,8 +504,8 @@ public class ModelFacade {
 		public synchronized boolean canMaritimeTrade() {
 			
 			Board map = model.getMap();
-			Map<EdgeLocation, Port> ports = map.getPorts();
-			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Map<EdgeLocation, Port> ports = map.getPortMap();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
 			
