@@ -28,7 +28,7 @@ public class ModelFacade {
 		
 		public static void main(String args[]) throws Exception {
 			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_sample.json"));
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
 			Object parseResult = parser.parse(r);
 			JSONObject model = ((JSONObject) parseResult);
 			
@@ -36,7 +36,7 @@ public class ModelFacade {
 			ModelFacade test = new ModelFacade(temp);
 			test.updateFromJSON(model);
 			
-			System.out.println(parseResult);
+			//System.out.println(parseResult);
 			//System.out.println(port);
 		}
 		
@@ -55,13 +55,30 @@ public class ModelFacade {
 				
 				//PLAYERS
 				List<Player> players = new ArrayList<Player>();
-				while (json.containsKey("playerID")) {
-					players.add(new Player(model,json));
+				for (Object obj : (List) json.get("players")) {
+					JSONObject player = (JSONObject) obj;
+					if (player != null)
+						players.add(new Player(model, player));
 				}
 				model.setPlayers(players);
 				
 				//TURNTRACKER
-				model.setTurnTracker(new TurnTracker(players,json));
+				if (json.containsKey("turnTracker")) {
+					object = (JSONObject) json.get("turnTracker");
+					model.setTurnTracker(new TurnTracker(players,object));
+					
+					//LARGEST ARMY
+					if (object.containsKey("largestArmy")) {
+						int longestRoadPlayer = (int) (long) object.get("largestArmy");
+						model.setLongestRoad(new PlayerReference(model, longestRoadPlayer));
+					}
+					
+					//LONGEST ROAD
+					if (object.containsKey("longestRoad")) {
+						int longestRoadPlayer = (int) (long) object.get("longestRoad");
+						model.setLongestRoad(new PlayerReference(model, longestRoadPlayer));
+					}
+				}
 				
 				//TRADEOFFER
 				if (json.containsKey("tradeOffer")) {
@@ -70,10 +87,16 @@ public class ModelFacade {
 				}
 				
 				//CHAT NOT DONE
-				List<MessageLine> chats = new ArrayList<MessageLine>();
-				//model.setChat(chat);
+				if (json.containsKey("chat")) {
+					object = (JSONObject) json.get("chat");
+					model.setChat(new MessageList(object));
+				}
 				
 				//LOG NOT DONE
+				if (json.containsKey("log")) {
+					object = (JSONObject) json.get("log");
+					model.setLog(new MessageList(object));
+				}
 				
 				//WINNER
 				int winner = (int) (long) json.get("winner");
