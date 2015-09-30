@@ -2,7 +2,16 @@ package shared.model;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.junit.Before;
 import org.junit.Test;
 
 import shared.locations.EdgeDirection;
@@ -13,10 +22,22 @@ import shared.locations.VertexLocation;
 
 public class ModelFacadeTest {
 
-	private CatanModel model1 = new CatanModel();
-	private ModelFacade m = new ModelFacade(model1);
+	private CatanModel model1;
+	private ModelFacade m;
 
 	
+	@Before
+	public void setup() throws IOException, ParseException {
+		
+		JSONParser parser = new JSONParser();
+		Reader r = new BufferedReader(new FileReader("json_test.json"));
+		Object parseResult = parser.parse(r);
+		JSONObject model = ((JSONObject) parseResult);
+		
+		model1 = new CatanModel();
+		m = new ModelFacade(model1);
+		m.updateFromJSON(model);
+	}
 	
 	@Test
 	public void testUpdateFromJSON() {
@@ -27,7 +48,7 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanRoll() {
-		
+			
 		CatanModel model = new CatanModel();
 		
 		PlayerReference player = new PlayerReference(model, 1);
@@ -51,6 +72,8 @@ public class ModelFacadeTest {
 	public void testCanFinishTurn() {
 		
 		boolean can = m.canFinishTurn();
+		
+		assertFalse(can);
 	}
 	
 	@Test
