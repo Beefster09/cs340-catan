@@ -100,35 +100,35 @@ public interface IServer {
 	 * @post commands will be executed
 	 * @author-Grant
 	 */
-	public JSONObject executeCommands(Session user, List<Command> commands)
+	public JSONObject executeCommands(List<Command> commands)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre AI type must be specified and valid
 	 * @post an AIPlayer must be added
 	 * @author-Grant
 	 */
-	public void addAIPlayer(Session user, AIType type)
+	public void addAIPlayer(AIType type)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post the list of AITypes are returned
 	 * @author-Grant
 	 */
-	public List<AIType> getAITypes(Session user)
+	public List<String> getAITypes()
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre message string must not be empty
 	 * @post message is sent
 	 * @author-Grant
 	 */
-	public JSONObject sendChat(Session user, String message)
+	public JSONObject sendChat(PlayerReference user, String message)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post dice is rolled
 	 * @author-Grant
 	 */
-	public JSONObject rollDice(Session user, int number)
+	public JSONObject rollDice(PlayerReference user, int number)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -136,7 +136,7 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public JSONObject robPlayer(Session user,
+	public JSONObject robPlayer(PlayerReference user,
 			HexLocation newRobberLocation, PlayerReference victim)
 					throws ServerException, InvalidActionException;
 	/**
@@ -144,7 +144,7 @@ public interface IServer {
 	 * @post Development card is bought
 	 * @author-Grant
 	 */
-	public JSONObject buyDevCard(Session user)
+	public JSONObject buyDevCard(PlayerReference user)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre two types of valid resources are specified
@@ -152,7 +152,7 @@ public interface IServer {
 	 * @post player receives two specified resources
 	 * @author-Grant
 	 */
-	public JSONObject yearOfPlenty(Session user, ResourceType type1, ResourceType type2)
+	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1, ResourceType type2)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre edge locations must be connected to exisiting road that is owned by player
@@ -160,7 +160,7 @@ public interface IServer {
 	 * @post two roads are built at specified edge locations
 	 * @author-Grant
 	 */
-	public JSONObject roadBuilding(Session user, EdgeLocation road1, EdgeLocation road2)
+	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -169,7 +169,7 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public JSONObject soldier(Session user, 
+	public JSONObject soldier(PlayerReference user, 
 			HexLocation newRobberLocation, PlayerReference victim)
 					throws ServerException, InvalidActionException;
 	/**
@@ -178,13 +178,13 @@ public interface IServer {
 	 * @post player receives all cards of specified resource type from all other players
 	 * @author-Grant
 	 */
-	public JSONObject monopoly(Session user, ResourceType type)
+	public JSONObject monopoly(PlayerReference user, ResourceType type)
 			throws ServerException, InvalidActionException;
 	
 	/**
 	 * 
 	 */
-	public JSONObject monument(Session user)
+	public JSONObject monument(PlayerReference user)
 			throws ServerException, InvalidActionException;
 	
 	/**
@@ -192,7 +192,7 @@ public interface IServer {
 	 * @post road is built at specified location
 	 * @author-Grant
 	 */
-	public JSONObject buildRoad(Session user, EdgeLocation location, boolean free)
+	public JSONObject buildRoad(PlayerReference user, EdgeLocation location, boolean free)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre vertex location is specified and must be connected to road owned by player.  Must be at least two
@@ -200,28 +200,29 @@ public interface IServer {
 	 * @post settlement is built at existing location
 	 * @author-Grant
 	 */
-	public JSONObject buildSettlement(Session user, VertexLocation location, boolean free)
+	public JSONObject buildSettlement(PlayerReference user, VertexLocation location, boolean free)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre vertex location is specified and settlement that is owned by the player already exists at vertex location
 	 * @post city replaces settlement
 	 * @author-Grant
 	 */
-	public JSONObject buildCity(Session user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, VertexLocation location)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre offer is specified and player must have at least as many resources in his hand as his offer does
 	 * @post offer is made to another player
 	 * @author-Grant
 	 */
-	public JSONObject offerTrade(Session user, ResourceList offer)
-			throws ServerException, InvalidActionException;
+	public JSONObject offerTrade(PlayerReference user, ResourceList offer,
+			PlayerReference receiver)
+					throws ServerException, InvalidActionException;
 	/**
 	 * @pre user chooses to accept or decline trade
 	 * @post trade is declined or accepted according to user's decision
 	 * @author-Grant
 	 */
-	public JSONObject respondToTrade(Session user, boolean accept)
+	public JSONObject respondToTrade(PlayerReference user, boolean accept)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre user must have correct ratio for trade that he wants to do
@@ -230,7 +231,7 @@ public interface IServer {
 	 * @post user trades in specified resources for specified resource
 	 * @author-Grant
 	 */
-	public JSONObject maritimeTrade(Session user,
+	public JSONObject maritimeTrade(PlayerReference user,
 			ResourceType inResource, ResourceType outResource, int ratio)
 					throws ServerException, InvalidActionException;
 	/**
@@ -238,14 +239,14 @@ public interface IServer {
 	 * @post player loses half of his cards, rounding down
 	 * @author-Grant
 	 */
-	public JSONObject discardCards(Session user, ResourceList cards)
+	public JSONObject discardCards(PlayerReference user, ResourceList cards)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre player must have rolled
 	 * @post player ends turn
 	 * @author-Grant
 	 */
-	public JSONObject finishTurn(Session user)
+	public JSONObject finishTurn(PlayerReference user)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre

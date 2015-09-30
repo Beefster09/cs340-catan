@@ -217,19 +217,11 @@ public class ClientCommunicator {
 
 				JSONParser parser = new JSONParser();
 				JSONObject JSONOutput;
-//				if(str.charAt(0) == '{'){
-					JSONOutput = (JSONObject) parser.parse(str.toString());
-					return JSONOutput;
-//				}
-//				else if(str.charAt(0) == '['){
-//					str = new StringBuilder("{" + str + "}");
-//					JSONOutput = (JSONObject) parser.parse(str.toString());
-//					return JSONOutput;
-//				}
-//				else{
-//					JSONOutput = new JSONObject();
-//					return JSONOutput;
-//				}
+				if(str.charAt(0) == '['){
+					str = new StringBuilder("{\"list\":" + str + "}");
+				}
+				JSONOutput = (JSONObject) parser.parse(str.toString());
+				return JSONOutput;
 			}
 			throw new InvalidActionException();
 		}
