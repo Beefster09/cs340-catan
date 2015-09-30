@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -11,21 +12,23 @@ import shared.locations.EdgeLocation;
  * @author beefster
  *
  */
-public class MessageLine {
-	private String message;
-	private String source;
+public class MessageList {
+	private List<String> message;
+	private List<String> source;
 
-	public MessageLine() {
+	public MessageList() {
 		
 	}
 	
-	public MessageLine(JSONObject json) throws SchemaMismatchException {
-		JSONObject chat = (JSONObject) json.get("chat");
+	public MessageList(JSONObject json) throws SchemaMismatchException {
+		//JSONObject chat = (JSONObject) json.get("chat");
 		try {
-			if (chat.containsKey("lines")) {
+			if (json.containsKey("lines")) {
+				message = new ArrayList<String>();
+				source = new ArrayList<String>();
 				for (Object obj : (List) json.get("lines")) {
-					message = (String) ((JSONObject)obj).get("message");
-					source = (String) ((JSONObject)obj).get("source");
+					message.add((String) ((JSONObject)obj).get("message"));
+					source.add((String) ((JSONObject)obj).get("source"));
 				}
 			}
 		} catch (ClassCastException | IllegalArgumentException e) {
@@ -38,14 +41,14 @@ public class MessageLine {
 	/**
 	 * @return the message
 	 */
-	public String getMessage() {
+	public List<String> getMessage() {
 		return message;
 	}
 
 	/**
 	 * @return the source
 	 */
-	public String getSource() {
+	public List<String> getSource() {
 		return source;
 	}
 

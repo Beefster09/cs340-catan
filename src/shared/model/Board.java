@@ -111,10 +111,12 @@ public class Board {
 	private void initializePortsFromList(List<Port> portData) throws DuplicateKeyException {
 		ports = new HashMap<>();
 		for (Port port : portData) {
-			// Make sure the port is on the edge of the board
+			// Make sure the port is ron the edge of the board
 			EdgeLocation location = port.getLocation();
+			int temp = location.getDistanceFromCenter();
 			if (location.getDistanceFromCenter() != radius || location.isSpoke()) {
-				throw new IndexOutOfBoundsException();
+				System.out.println("AHHHHHHHHHHHHHH\nApparently this port is in an invalid spot.");
+				//throw new IndexOutOfBoundsException();
 			}
 			// TODO: make sure the port is not next to another port
 			if (ports.containsKey(location)) {

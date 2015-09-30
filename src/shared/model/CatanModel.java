@@ -10,8 +10,8 @@ import java.util.List;
  *
  */
 public class CatanModel {
-	private List<MessageLine> chat;
-	private List<MessageLine> log;
+	private MessageList chat;
+	private MessageList log;
 	private Board map;
 	private TradeOffer tradeOffer;
 	private TurnTracker turnTracker;
@@ -40,7 +40,7 @@ public class CatanModel {
 	 * @param winner
 	 * @param version
 	 */
-	public CatanModel(List<MessageLine> chat, List<MessageLine> log, Board map,
+	public CatanModel(MessageList chat, MessageList log, Board map,
 			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
 			List<Player> players, PlayerReference longestRoad,
 			PlayerReference largestArmy, PlayerReference winner, int version) {
@@ -61,14 +61,14 @@ public class CatanModel {
 	/**
 	 * @return the chat
 	 */
-	public List<MessageLine> getChat() {
+	public MessageList getChat() {
 		return chat;
 	}
 
 	/**
 	 * @return the log
 	 */
-	public List<MessageLine> getLog() {
+	public MessageList getLog() {
 		return log;
 	}
 
@@ -149,11 +149,11 @@ public class CatanModel {
 		return winner;
 	}
 
-	public void setChat(List<MessageLine> chat) {
+	public void setChat(MessageList chat) {
 		this.chat = chat;
 	}
 
-	public void setLog(List<MessageLine> log) {
+	public void setLog(MessageList log) {
 		this.log = log;
 	}
 

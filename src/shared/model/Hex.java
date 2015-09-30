@@ -30,8 +30,14 @@ public class Hex {
 	public Hex(JSONObject json) throws SchemaMismatchException {
 		try {
 			location = new HexLocation((JSONObject) json.get("location"));
-			resource = ResourceType.getTypeFromString((String) json.get("resource"));
-			number = (int) (long) json.get("number");
+			if (json.containsKey("resource")) {
+				resource = ResourceType.getTypeFromString((String) json.get("resource"));
+				number = (int) (long) json.get("number");
+			}
+			else {
+				resource = null;
+				number = 0;
+			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();

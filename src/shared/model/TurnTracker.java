@@ -22,6 +22,8 @@ import shared.exceptions.SchemaMismatchException;
 public class TurnTracker {
 	private PlayerReference currentPlayer;
 	private TurnStatus status;
+	private PlayerReference longestRoad;
+	private PlayerReference largestArmy;
 	
 	public static void main(String[] args) throws Exception {
 		List<Player> players = new ArrayList<>();
@@ -47,6 +49,20 @@ public class TurnTracker {
 		try {
 			currentPlayer = players.get((int) (long) json.get("currentTurn")).getReference();
 			status = TurnStatus.getStatusFromString((String) json.get("status"));
+			/*
+			 * MIGHT NEED TO CHANGE THIS IMPLEMENTATION.  WHAT IF NOBODY HAS THESE, SHOULD
+			 * THEY BE SET TO NULL OR INDEXED TO -1???
+			 */
+//			if (json.containsKey("longestRoad")) {
+//				int playerWithLongestRoad = (int) (long) json.get("longestRoad");
+//				if (playerWithLongestRoad != -1)
+//					longestRoad = players.get((int) (long) json.get("longestRoad")).getReference();
+//			}
+//			if (json.containsKey("largestArmy")) {
+//				int playerWithLargestArmy = (int) (long) json.get("largestArmy");
+//				if (playerWithLargestArmy != -1)
+//					largestArmy = players.get((int) (long) json.get("largestArmy")).getReference();
+//			}
 		}
 		catch (ClassCastException | IllegalArgumentException | NullPointerException e) {
 			e.printStackTrace();

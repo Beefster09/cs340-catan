@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import shared.communication.IServer;
 import shared.communication.Session;
+import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
 import shared.model.CatanModel;
 import shared.model.ModelFacade;
@@ -68,12 +69,12 @@ public class ServerPoller {
 			public void run() {
 				try {
 					//JSONObject modelRequest = new JSONObject();
-					JSONObject model = server.getModel(user, modelHandler.getVersion());
+					JSONObject model = server.getModel(modelHandler.getVersion());
 					if (model != null) {
 						modelHandler.updateFromJSON(model);
 					}
 					
-				} catch (ServerException e) {
+				} catch (ServerException | InvalidActionException e) {
 					System.out.println("Server error, could not connect");
 					e.printStackTrace();
 				}
