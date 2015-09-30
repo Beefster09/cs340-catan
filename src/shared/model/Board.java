@@ -404,6 +404,18 @@ public class Board {
 		robber = location;
 	}
 	
+	public Map<EdgeLocation, Port> getPortMap() {
+		return ports;
+	}
+	
+	public Map<VertexLocation, Municipality> getMunicipalityMap() {
+		return municipalities;
+	}
+	
+	public Map<EdgeLocation, Road> getRoadMap() {
+		return roads;
+	}
+	
 	private void initializeNumbers(boolean hasRandomNumbers) {
 		
 	}
@@ -411,5 +423,7 @@ public class Board {
 	private void intializeHexes(boolean hasRandomHexes) {
 		
 	}
+
+
 
 }
