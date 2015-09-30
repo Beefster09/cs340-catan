@@ -1,5 +1,9 @@
 package shared.model;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import shared.definitions.*;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.*;
@@ -86,6 +90,7 @@ public class ModelFacade {
 			} catch (SchemaMismatchException e) {
 				e.printStackTrace();
 			}
+
 		}
 	
 		/**
@@ -94,7 +99,14 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canRoll(PlayerReference player) {
-			return true;
+			
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			if(currentPlayer.equals(player) && !currentPlayer.hasRolled()) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		
 		/**
@@ -103,10 +115,25 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canRob(HexLocation hexLoc) {
-			return true;
+			
+			Board map = model.getMap();
+			Hex tile = map.getHexAt(hexLoc);
+			
+			if(tile.getResource().equals(ResourceType.BRICK) ||	
+					tile.getResource().equals(ResourceType.WOOD) ||	
+					tile.getResource().equals(ResourceType.WHEAT) || 
+					tile.getResource().equals(ResourceType.SHEEP) || 
+					tile.getResource().equals(ResourceType.ORE)) 
+			{
+				return true;
+			}
+			else
+				return false;
+			
 		}
 		
 		public synchronized void doRob() {
+				
 		}
 		
 		/**
@@ -115,7 +142,13 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canFinishTurn() {
-			return true;
+			
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			if(currentPlayer.hasRolled())
+				return true;
+			else
+				return false;
 		}
 		
 		public synchronized boolean doFinishTurn() {
@@ -129,8 +162,18 @@ public class ModelFacade {
 		 * @return false if otherwise
 		 */
 		public synchronized boolean canBuyDevelopmentCard() {
-			return true;
+			
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			ResourceList hand = currentPlayer.getResources();
+			
+			if(hand.count(ResourceType.SHEEP) > 0 &&
+					hand.count(ResourceType.ORE) > 0 &&
+					hand.count(ResourceType.WHEAT) > 0)
+				return true;
+			else
+				return false;
 		}
+		
 		
 		public synchronized boolean doBuyDevelopmentCard() {
 			return true;
@@ -145,8 +188,39 @@ public class ModelFacade {
 		 * no currently placed road at that location.
 		 * @return false otherwise
 		 */
+		//What do I do if there is an enemy city in the way?
 		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {
-			return true;
+			
+			Board map = model.getMap();
+			Map<EdgeLocation, Road> roads = map.getRoads();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			if(roads.get(edgeLoc) != null)
+				return false;
+				
+			//iterate through map of roads
+			for(Map.Entry<EdgeLocation, Road> entry : roads.entrySet()) {
+				
+				//if there is an adjacent road and that road is owned by the current player, build
+				if(edgeLoc.isAdjacent(entry.getKey()) && currentPlayer.equals(entry.getValue().getOwner()))
+					return true;
+				}
+			
+			//iterate through map of municipalities
+			for(Map.Entry<VertexLocation, Municipality> entry : municipalities.entrySet()) {
+				
+				VertexLocation vertexLoc = entry.getKey();
+				Municipality municipality = entry.getValue();			
+				Collection<EdgeLocation> adjacentEdges = vertexLoc.getEdges();
+				
+				//goes through all municipalities and sees if the edge is adjacent to a municipality owned by the owner.  If so, build.
+				for(EdgeLocation e : adjacentEdges) {
+					if(edgeLoc.equals(e) && currentPlayer.equals(municipality.getOwner()))
+						return true;
+				}
+			}
+			return false;
 		}
 		
 		public synchronized boolean doBuildRoad() {
@@ -163,7 +237,31 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
-			return true;
+			
+			Board map = model.getMap();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Map<EdgeLocation, Road> roads = map.getRoads();
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			//iterate through map of municipalities
+			for(Map.Entry<VertexLocation, Municipality> entry : municipalities.entrySet()) {
+				//check if where you want to build is adjacent to any existing municipality
+				if(vertexLoc.isAdjacent(entry.getKey()))
+					return false;
+			}
+			
+			Collection<EdgeLocation> adjacentEdges = vertexLoc.getEdges();
+						
+			//iterate through map of roads
+			for(Map.Entry<EdgeLocation, Road> entry : roads.entrySet()) {
+				//iterates through edges stemming off of vertex
+				for(EdgeLocation edge : adjacentEdges) {
+					//if there is existing road there that is owned by the current player, then he can build.
+					if(edge.equals(entry.getKey()) && currentPlayer.equals(entry.getValue().getOwner()))
+						return true;
+					}	
+			}
+			return false;
 		}
 		
 		public synchronized boolean doBuildSettlement(VertexLocation vertexLoc) {
@@ -180,7 +278,19 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canBuildCity(VertexLocation vertexLoc) {
-			return true;
+			
+			Board map = model.getMap();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			//iterates through all municipalities
+			for(Map.Entry<VertexLocation, Municipality> entry : municipalities.entrySet()) {
+				Municipality municipality = entry.getValue();
+				//if settlement exists at given location that is owned by the current player, go ahead and build
+				if(vertexLoc.equals(entry.getKey()) && currentPlayer.equals(municipality.getOwner()) && municipality.getType().equals(MunicipalityType.SETTLEMENT))
+					return true;
+			}
+			return false;
 		}
 		/**
 		 * 
@@ -197,7 +307,13 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canYearOfPlenty() {
-			return true;
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			DevCardList list = currentPlayer.getOldDevCards();
+			
+			if(list.count(DevCardType.YEAR_OF_PLENTY) > 0)
+				return true;
+			
+			return false;
 		}
 		
 		public synchronized boolean doYearOfPlenty() {
@@ -211,7 +327,13 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canRoadBuildingCard() {
-			return true;
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			DevCardList list = currentPlayer.getOldDevCards();
+			
+			if(list.count(DevCardType.ROAD_BUILD) > 0)
+				return true;
+			
+			return false;
 		}
 		
 		public synchronized boolean doRoadBuildCard() {
@@ -224,7 +346,13 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canSoldier() {
-			return true;
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			DevCardList list = currentPlayer.getOldDevCards();
+			
+			if(list.count(DevCardType.SOLDIER) > 0)
+				return true;
+			
+			return false;
 		}
 		
 		public synchronized boolean doSoldier() {
@@ -237,7 +365,13 @@ public class ModelFacade {
 		 * @return false if player owns zero monopoly cards
 		 */
 		public synchronized boolean canMonopoly() {
-			return true;
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			DevCardList list = currentPlayer.getOldDevCards();
+			
+			if(list.count(DevCardType.MONOPOLY) > 0)
+				return true;
+			
+			return false;
 		}
 		
 		/**
@@ -254,7 +388,13 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canMonument() {
-			return true;
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			DevCardList list = currentPlayer.getOldDevCards();
+			
+			if(list.count(DevCardType.MONUMENT) > 0)
+				return true;
+			
+			return false;
 		}
 		
 		/**
@@ -271,7 +411,24 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canOfferTrade() {
+			
+			TradeOffer tradeOffer = model.getTradeOffer();
+			ResourceTradeList tradeList = tradeOffer.getOffer();
+			Map<ResourceType, Integer> offered = tradeList.getOffered();
+			
+			Player offeringPlayer = tradeOffer.getSender().getPlayer();
+			ResourceList list = offeringPlayer.getResources();
+			
+			//iterate through all resources in the offer
+			for(Map.Entry<ResourceType, Integer> entry : offered.entrySet()) {
+				
+				//check to see if there are as many resources in the hand of the offering player as there are in the offer
+				if(!(list.count(entry.getKey()) >= entry.getValue()))
+					return false;
+				
+			}
 			return true;
+			
 		}
 		
 		/**
@@ -288,6 +445,22 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canAcceptTrade() {
+			
+			TradeOffer tradeOffer = model.getTradeOffer();
+			ResourceTradeList tradeList = tradeOffer.getOffer();
+			Map<ResourceType, Integer> wanted = tradeList.getWanted();
+			
+			Player receivingPlayer = tradeOffer.getReceiver().getPlayer();
+			ResourceList list = receivingPlayer.getResources();
+			
+			//iterate through all resources in the offer
+			for(Map.Entry<ResourceType, Integer> entry : wanted.entrySet()) {
+				
+				//check to see if there are as many resources in the hand of the receiving player as there are in the offer
+				if(!(list.count(entry.getKey()) >= entry.getValue()))
+					return false;
+				
+			}
 			
 			return true;
 		}
@@ -306,7 +479,33 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canMaritimeTrade() {
-			return true;
+			
+			Board map = model.getMap();
+			Map<EdgeLocation, Port> ports = map.getPorts();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			
+			//iterate through all ports
+			for(Map.Entry<EdgeLocation, Port> entry : ports.entrySet()) {
+				EdgeLocation edge = entry.getKey();
+				
+				//get vertices off of port edge
+				Collection<VertexLocation> vertices = edge.getVertices();
+				
+				//iterate through all municipalities
+				for(Map.Entry<VertexLocation, Municipality> Mentry : municipalities.entrySet()) {
+					Municipality municipality = Mentry.getValue();
+					
+					//if municipality is on the port and it is owned by the player, you're good
+					for(VertexLocation vertexLoc : vertices) {
+						if(municipality.getLocation().equals(vertexLoc) && municipality.getOwner().equals(currentPlayer))
+							return true;
+					}
+				}
+			}
+			
+			return false;
 		}
 		
 		/**
@@ -322,7 +521,11 @@ public class ModelFacade {
 		 * @return true if seven is rolled and amount of cards in hand is over seven
 		 * @return false otherwise
 		 */
+		//what the.... what am I supposed to do?
 		public synchronized boolean canDiscardCards() {
+			
+			//List<Player> players = model.getPlayers();
+			
 			return true;
 		}
 		

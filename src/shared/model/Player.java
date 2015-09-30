@@ -28,6 +28,7 @@ public class Player {
 	
 	private boolean playedDevCard 	= false;
 	private boolean discarded 		= false;
+	private boolean hasRolled 		= false;
 	
 	private int cities 			= 4;
 	private int settlements 	= 5;
@@ -237,6 +238,13 @@ public class Player {
 		return playerID;
 	}
 
+	public boolean hasRolled() {
+		return hasRolled;
+	}
+
+	public void setHasRolled(boolean hasRolled) {
+		this.hasRolled = hasRolled;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
