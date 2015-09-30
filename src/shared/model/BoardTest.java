@@ -54,7 +54,7 @@ public class BoardTest {
 	
 	private static final int[] numbers = {
 		4,
-		9, 5, 0, 11, 6, 3,
+		9, 5, Hex.EMPTY_NUMBER, 11, 6, 3,
 		4, 11, 2, 6, 10, 3, 8, 9, 12, 10, 5, 8
 	};
 
@@ -212,9 +212,11 @@ public class BoardTest {
 				new EdgeLocation( 0, 0, EdgeDirection.NorthWest)));
 		assertTrue(board.canBuildRoadAt(blue,
 				new EdgeLocation( 0,-1, EdgeDirection.NorthWest))); // No road, only a settlement (can't technically happen... whatever)
-		
+
 		assertFalse(board.canBuildRoadAt(green,
 				new EdgeLocation( 0, 1, EdgeDirection.SouthWest))); // opponent's settlement is in the way
+		assertTrue(board.canBuildRoadAt(blue,
+				new EdgeLocation( 2, 0, EdgeDirection.NorthWest))); // Your settlement is "in the way" (but the move is still valid)
 	}
 
 	@Test
@@ -246,7 +248,22 @@ public class BoardTest {
 
 	@Test
 	public void testCanBuildCity() {
-		fail("Not yet implemented");
+		assertFalse(board.canBuildSettlement(green, 
+				new VertexLocation(-1, 1, VertexDirection.SouthEast))); // opponent's settlement
+//		assertFalse(board.canBuildSettlement(green, 
+//				new VertexLocation(-1, 1, VertexDirection.NorthEast))); // no settlement there, but valid place for settlement
+		assertFalse(board.canBuildSettlement(blue, 
+				new VertexLocation(-1, 8, VertexDirection.SouthEast))); // outside board
+		assertFalse(board.canBuildSettlement(red, 
+				new VertexLocation( 0, 0, VertexDirection.East))); // already your own city there
+		assertFalse(board.canBuildSettlement(blue, 
+				new VertexLocation( 0, 0, VertexDirection.East))); // opponent's city there
+		
+		assertTrue(board.canBuildSettlement(red, 
+				new VertexLocation(-1, 1, VertexDirection.SouthEast)));
+		assertTrue(board.canBuildSettlement(green, 
+				new VertexLocation(-1, 1, VertexDirection.West)));
+		
 	}
 
 	@Test

@@ -42,6 +42,15 @@ public class HexLocation
 					"for a HexLocation:\n" + json.toJSONString());
 		}
 	}
+	
+	public JSONObject toJSONObject() {
+		JSONObject json = new JSONObject();
+
+		json.put("x", x);
+		json.put("y", y);
+		
+		return json;
+	}
 
 	public int getX()
 	{
