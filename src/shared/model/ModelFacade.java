@@ -1,8 +1,15 @@
 package shared.model;
 
 import shared.definitions.*;
+import shared.exceptions.SchemaMismatchException;
 import shared.locations.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.Reader;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 
 public class ModelFacade {
@@ -13,7 +20,38 @@ public class ModelFacade {
 			model = startingModel;
 		}
 		
+		public static void main(String args[]) throws Exception {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_sample.json"));
+			Object parseResult = parser.parse(r);
+			JSONObject model = ((JSONObject) parseResult);
+			
+			CatanModel temp = new CatanModel();
+			ModelFacade test = new ModelFacade(temp);
+			test.updateFromJSON(model);
+			
+			System.out.println(parseResult);
+			//System.out.println(port);
+		}
+		
 		public synchronized void updateFromJSON(JSONObject json) {
+			//BANK
+			JSONObject object = (JSONObject) json.get("bank");
+			try {
+				model.setBank(new Bank(object));
+				//model.setBoard(new Board(object));
+				//model.setMessageLine(new MessageLine(object));
+			} catch (SchemaMismatchException e) {
+				System.out.println("Can't update");
+				e.printStackTrace();
+			}
+		}
+		public synchronized void updateBankFromJSON(JSONObject json) {
+			try {
+				model.setBank(new Bank(json));
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
 		}
 	
 		/**
@@ -260,5 +298,9 @@ public class ModelFacade {
 		 */
 		public synchronized boolean doDiscardCards() {
 			return true;
+		}
+		
+		public synchronized int getVersion() {
+			return model.getVersion();
 		}
 }
