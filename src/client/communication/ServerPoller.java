@@ -67,7 +67,7 @@ public class ServerPoller {
 			@Override
 			public void run() {
 				try {
-					JSONObject modelRequest = new JSONObject();
+					//JSONObject modelRequest = new JSONObject();
 					JSONObject model = server.getModel(user, modelHandler.getVersion());
 					if (model != null) {
 						modelHandler.updateFromJSON(model);

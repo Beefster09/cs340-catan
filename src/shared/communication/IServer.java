@@ -58,7 +58,7 @@ public interface IServer {
 	 * @post player joins the game
 	 * @author-Grant
 	 */
-	public Session joinGame(Session user, int gameID, CatanColor color)
+	public int joinGame(Session user, int gameID, CatanColor color)
 			throws JoinGameException, ServerException;
 	/**
 	 * @pre game filename must not be empty string

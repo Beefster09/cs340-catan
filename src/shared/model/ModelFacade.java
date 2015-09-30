@@ -1,12 +1,19 @@
 package shared.model;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import shared.definitions.*;
+import shared.exceptions.SchemaMismatchException;
 import shared.locations.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.Reader;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 
 public class ModelFacade {
@@ -17,11 +24,40 @@ public class ModelFacade {
 			model = startingModel;
 		}
 		
+		public static void main(String args[]) throws Exception {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_sample.json"));
+			Object parseResult = parser.parse(r);
+			JSONObject model = ((JSONObject) parseResult);
+			
+			CatanModel temp = new CatanModel();
+			ModelFacade test = new ModelFacade(temp);
+			test.updateFromJSON(model);
+			
+			System.out.println(parseResult);
+			//System.out.println(port);
+		}
+		
 		public synchronized void updateFromJSON(JSONObject json) {
-			
-			
-			
-			
+
+			//BANK
+			JSONObject object = (JSONObject) json.get("bank");
+			try {
+				model.setBank(new Bank(object));
+				//model.setBoard(new Board(object));
+				//model.setMessageLine(new MessageLine(object));
+			} catch (SchemaMismatchException e) {
+				System.out.println("Can't update");
+				e.printStackTrace();
+			}
+		}
+		public synchronized void updateBankFromJSON(JSONObject json) {
+			try {
+				model.setBank(new Bank(json));
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
+
 		}
 	
 		/**
@@ -127,14 +163,9 @@ public class ModelFacade {
 			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
-			//iterate through map of roads
-			for(Map.Entry<EdgeLocation, Road> entry : roads.entrySet()) {
+			if(roads.get(edgeLoc) != null)
+				return false;
 				
-				//if road already exists there, do not build.
-				if(entry.getKey().equals(edgeLoc))
-					return false;
-			}
-			
 			//iterate through map of roads
 			for(Map.Entry<EdgeLocation, Road> entry : roads.entrySet()) {
 				
@@ -348,13 +379,23 @@ public class ModelFacade {
 		 */
 		public synchronized boolean canOfferTrade() {
 			
-			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
-			ResourceList list = currentPlayer.getResources();
+			TradeOffer tradeOffer = model.getTradeOffer();
+			ResourceTradeList tradeList = tradeOffer.getOffer();
+			Map<ResourceType, Integer> offered = tradeList.getOffered();
 			
-			if(list.count() > 0)
-				return true;
-			else
-				return false;
+			Player offeringPlayer = tradeOffer.getSender().getPlayer();
+			ResourceList list = offeringPlayer.getResources();
+			
+			//iterate through all resources in the offer
+			for(Map.Entry<ResourceType, Integer> entry : offered.entrySet()) {
+				
+				//check to see if there are as many resources in the hand of the offering player as there are in the offer
+				if(!(list.count(entry.getKey()) >= entry.getValue()))
+					return false;
+				
+			}
+			return true;
+			
 		}
 		
 		/**
@@ -371,6 +412,22 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		public synchronized boolean canAcceptTrade() {
+			
+			TradeOffer tradeOffer = model.getTradeOffer();
+			ResourceTradeList tradeList = tradeOffer.getOffer();
+			Map<ResourceType, Integer> wanted = tradeList.getWanted();
+			
+			Player receivingPlayer = tradeOffer.getReceiver().getPlayer();
+			ResourceList list = receivingPlayer.getResources();
+			
+			//iterate through all resources in the offer
+			for(Map.Entry<ResourceType, Integer> entry : wanted.entrySet()) {
+				
+				//check to see if there are as many resources in the hand of the receiving player as there are in the offer
+				if(!(list.count(entry.getKey()) >= entry.getValue()))
+					return false;
+				
+			}
 			
 			return true;
 		}
@@ -392,14 +449,30 @@ public class ModelFacade {
 			
 			Board map = model.getMap();
 			Map<EdgeLocation, Port> ports = map.getPorts();
+			Map<VertexLocation, Municipality> municipalities = map.getMunicipalities();
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
+			
+			//iterate through all ports
 			for(Map.Entry<EdgeLocation, Port> entry : ports.entrySet()) {
 				EdgeLocation edge = entry.getKey();
 				
+				//get vertices off of port edge
+				Collection<VertexLocation> vertices = edge.getVertices();
 				
+				//iterate through all municipalities
+				for(Map.Entry<VertexLocation, Municipality> Mentry : municipalities.entrySet()) {
+					Municipality municipality = Mentry.getValue();
+					
+					//if municipality is on the port and it is owned by the player, you're good
+					for(VertexLocation vertexLoc : vertices) {
+						if(municipality.getLocation().equals(vertexLoc) && municipality.getOwner().equals(currentPlayer))
+							return true;
+					}
+				}
 			}
 			
-			return true;
+			return false;
 		}
 		
 		/**
@@ -415,7 +488,11 @@ public class ModelFacade {
 		 * @return true if seven is rolled and amount of cards in hand is over seven
 		 * @return false otherwise
 		 */
+		//what the.... what am I supposed to do?
 		public synchronized boolean canDiscardCards() {
+			
+			//List<Player> players = model.getPlayers();
+			
 			return true;
 		}
 		
@@ -428,7 +505,6 @@ public class ModelFacade {
 		}
 		
 		public synchronized int getVersion() {
-			
 			return model.getVersion();
 		}
 }
