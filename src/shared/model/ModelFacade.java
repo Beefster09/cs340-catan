@@ -7,6 +7,8 @@ import shared.locations.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,12 +37,44 @@ public class ModelFacade {
 		}
 		
 		public synchronized void updateFromJSON(JSONObject json) {
-			//BANK
-			JSONObject object = (JSONObject) json.get("bank");
+			//int newVersion = (int) (long) json.get("version");
+			//if (getVersion() == newVersion)
+			//	return;
 			try {
+				//BANK
+				JSONObject object = (JSONObject) json.get("bank");
 				model.setBank(new Bank(object));
-				//model.setBoard(new Board(object));
-				//model.setMessageLine(new MessageLine(object));
+				
+				//BOARD
+				object = (JSONObject) json.get("map");
+				model.setMap(new Board(object));
+				
+				//PLAYERS
+				List<Player> players = new ArrayList<Player>();
+				while (json.containsKey("playerID")) {
+					players.add(new Player(model,json));
+				}
+				model.setPlayers(players);
+				
+				//TURNTRACKER
+				model.setTurnTracker(new TurnTracker(players,json));
+				
+				//TRADEOFFER
+				if (json.containsKey("tradeOffer")) {
+					JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
+					model.setTradeOffer(new TradeOffer(players,tradeOffer));
+				}
+				
+				//CHAT NOT DONE
+				List<MessageLine> chats = new ArrayList<MessageLine>();
+				//model.setChat(chat);
+				
+				//LOG NOT DONE
+				
+				//WINNER
+				int winner = (int) (long) json.get("winner");
+				model.setWinner(new PlayerReference(model, winner));
+				
 			} catch (SchemaMismatchException e) {
 				System.out.println("Can't update");
 				e.printStackTrace();

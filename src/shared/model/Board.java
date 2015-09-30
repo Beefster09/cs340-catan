@@ -49,9 +49,9 @@ public class Board {
 	public Board(JSONObject json) throws SchemaMismatchException {
 		try {
 			radius = (int) (long) json.get("radius") - 2;
-			if (json.containsKey("map")) {
+			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
-				for (Object obj : (List) json.get("map")) {
+				for (Object obj : (List) json.get("hexes")) {
 					hexData.add(new Hex((JSONObject) obj));
 				}
 				initializeHexesFromList(hexData);
