@@ -34,6 +34,14 @@ public class VertexLocation
 		this.hexLoc = new HexLocation(x, y);
 		this.dir = dir;
 	}
+	
+	public JSONObject toJSONObject() {
+		JSONObject json = hexLoc.toJSONObject();
+		
+		json.put("direction", dir.getSymbolString());
+		
+		return json;
+	}
 
 	public HexLocation getHexLoc()
 	{

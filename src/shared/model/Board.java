@@ -111,7 +111,7 @@ public class Board {
 	private void initializePortsFromList(List<Port> portData) throws DuplicateKeyException {
 		ports = new HashMap<>();
 		for (Port port : portData) {
-			// Make sure the port is ron the edge of the board
+			// Make sure the port is on the edge of the board
 			EdgeLocation location = port.getLocation();
 			int temp = location.getDistanceFromCenter();
 			if (location.getDistanceFromCenter() != radius || location.isSpoke()) {
@@ -333,11 +333,41 @@ public class Board {
 		return false;
 	}
 	
+	/** Tells you if the given location is a valid place for the given player to build a city.
+	 * This does NOT check resource requirements!
+	 * @param player
+	 * @param location
+	 * @return true if settlement belonging to the player is at the given location
+	 * @return false otherwise.
+	 */
 	public boolean canBuildCity(PlayerReference player, VertexLocation location) {
+		if (location.getDistanceFromCenter() > radius) return false;
 		Municipality town = getMunicipalityAt(location);
 		if (town == null) return false; // no settlement at that location
 		return (town.getType() == MunicipalityType.SETTLEMENT
 				&& player.equals(town.getOwner()));
+	}
+	
+	/** Tells if the location is a valid location for a starting settlement/road
+	 * @param settlement
+	 * @param road
+	 * @return
+	 */
+	public boolean canPlaceStartingPieces(VertexLocation settlement, EdgeLocation road) {
+		// The road must be next to the settlement
+		if (!road.getVertices().contains(settlement)) return false;
+		// There must not be a road at the location
+		if (getRoadAt(road) != null) return false;
+		
+		if (getMunicipalityAt(settlement) == null) { // spot is open
+			// Apply Distance Rule
+			for (VertexLocation neighbor : settlement.getNeighbors()) {
+				Municipality town = getMunicipalityAt(neighbor);
+				if (town != null) return false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/** This gives the radius that is needed by the HexGrid constructor.

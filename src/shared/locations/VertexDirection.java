@@ -5,6 +5,7 @@ public enum VertexDirection
 	West, NorthWest, NorthEast, East, SouthEast, SouthWest;
 	
 	private VertexDirection opposite;
+	private String symbolString;
 	
 	static
 	{
@@ -14,6 +15,13 @@ public enum VertexDirection
 		East.opposite = West;
 		SouthEast.opposite = NorthWest;
 		SouthWest.opposite = NorthEast;
+
+		West.symbolString = "W";
+		NorthWest.symbolString = "NW";
+		NorthEast.symbolString = "NE";
+		East.symbolString = "E";
+		SouthEast.symbolString = "SE";
+		SouthWest.symbolString = "SW";
 	}
 	
 	public VertexDirection getOppositeDirection()
@@ -30,6 +38,10 @@ public enum VertexDirection
 		else if (lowerInput.equals("e")  || lowerInput.equals("south"))     return East;
 		else if (lowerInput.equals("sw") || lowerInput.equals("southeast")) return SouthEast;
 		else throw new IllegalArgumentException();
+	}
+
+	public Object getSymbolString() {
+		return symbolString;
 	}
 }
 

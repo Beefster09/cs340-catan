@@ -18,14 +18,11 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
 import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.CatanModel;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 
@@ -286,8 +283,8 @@ public class ServerProxy implements IServer {
 		o.put("url","http://localhost:8081/game/model");
 		o.put("requestType", "GET");
 		o.put("version", version);
-		JSONObject returned = commuincator.send(o);
-		return returned;
+
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -297,8 +294,8 @@ public class ServerProxy implements IServer {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/reset");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
-		return returned;
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -310,214 +307,314 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "GET");
 		JSONObject returned = commuincator.send(o);
 		//TODO figure out how the list is returned
-		List<Command> returnList = (List<Command>) returned.get("commands");
-		return returnList;
+		return (List<Command>) returned.get("commands");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject executeCommands(Session user, List<Command> commands)
+	public JSONObject executeCommands(List<Command> commands)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/commands");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("commands", commands);
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void addAIPlayer(Session user, AIType type)
+	public void addAIPlayer(AIType type)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/addAI");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
-		
+		o.put("AIType", type.toString());
+		commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AIType> getAITypes(Session user)
+	public List<String> getAITypes()
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/listAI");
 		o.put("requestType", "GET");
 		JSONObject returned = commuincator.send(o);
+		
+		return (List<String>)returned.get("list");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject sendChat(Session user, String message)
+	public JSONObject sendChat(PlayerReference user, String message)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/sendChat");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("playerIndex", user.getIndex());
+		o.put("type", "sendChat");
+		o.put("content", message);
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject rollDice(Session user, int number)
+	public JSONObject rollDice(PlayerReference user, int number)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/rollNumber");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "rollNumber");
+		o.put("playerIndex",user.getIndex());
+		o.put("number", number);
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject robPlayer(Session user, HexLocation newRobberLocation,
+	public JSONObject robPlayer(PlayerReference user, HexLocation newRobberLocation,
 			PlayerReference victim)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/robPlayer");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "robPlayer");
+		o.put("playerIndex", user.getIndex());
+		o.put("victimIndex", victim.getIndex());
+		JSONObject location = new JSONObject();
+		location.put("x", newRobberLocation.getX());
+		location.put("y", newRobberLocation.getY());
+		o.put("location", location);
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject buyDevCard(Session user)
+	public JSONObject buyDevCard(PlayerReference user)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buyDevCard");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "buyDevCard");
+		o.put("playerIndex", user.getIndex());
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject yearOfPlenty(Session user, ResourceType type1,
+	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1,
 			ResourceType type2)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Year_of_Plenty");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "year_of_Plenty");
+		o.put("playerIndex", user.getIndex());
+		o.put("resource1", type1.toString());
+		o.put("resource2", type2.toString());
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject roadBuilding(Session user, EdgeLocation road1,
+	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1,
 			EdgeLocation road2)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Road_Building");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "Road_Building");
+		o.put("playerIndex", user.getIndex());
+		JSONObject firstRoad = road1.toJSONObject();
+		JSONObject secondRoad = road2.toJSONObject();
+		o.put("spot1", firstRoad);
+		o.put("spot2", secondRoad);
+		
+		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject soldier(Session user, HexLocation newRobberLocation,
+	public JSONObject soldier(PlayerReference user, HexLocation newRobberLocation,
 			PlayerReference victim)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Solder");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "Soldier");
+		o.put("playerIndex", user.getIndex());
+		o.put("victimIndex", victim.getIndex());
+		JSONObject location = new JSONObject();
+		location.put("x", newRobberLocation.getX());
+		location.put("y", newRobberLocation.getY());
+		o.put("location", location);
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject monopoly(Session user, ResourceType type)
+	public JSONObject monopoly(PlayerReference user, ResourceType type)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Monopoly");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "Monopoly");
+		o.put("resource", type.toString());
+		o.put("playerIndex", user.getIndex());
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject buildRoad(Session user, EdgeLocation location,
+	public JSONObject buildRoad(PlayerReference user, EdgeLocation location,
 			boolean free)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buildRoad");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "buildRoad");
+		o.put("playerIndex", user.getIndex());
+		JSONObject roadLocation = location.toJSONObject();		
+		o.put("location", roadLocation);
+		o.put("free", free);
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject buildSettlement(Session user, VertexLocation location,
+	public JSONObject buildSettlement(PlayerReference user, VertexLocation location,
 			boolean free)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buildSettlement");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "buildSettlement");
+		o.put("playerIndex", user.getIndex());
+		JSONObject vertexLocation = location.toJSONObject();
+		o.put("location", vertexLocation);
+		o.put("free", free);
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject buildCity(Session user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, VertexLocation location)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buildCity");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "buildCity");
+		o.put("playerIndex", user.getIndex());
+		JSONObject vertexLocation = location.toJSONObject();
+		o.put("location", vertexLocation);
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject offerTrade(Session user, ResourceList offer)
-			throws ServerException, InvalidActionException {
+	public JSONObject offerTrade(PlayerReference user, ResourceList offer,
+			PlayerReference receiver)
+					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/offerTrade");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "offerTrade");
+		o.put("playerIndex", user.getIndex());
+		o.put("offer", offer.toString());
+		o.put("receiver", receiver.getIndex());
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject respondToTrade(Session user, boolean accept)
+	public JSONObject respondToTrade(PlayerReference user, boolean accept)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/acceptTrade");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "acceptTrade");
+		o.put("playerIndex", user.getIndex());
+		o.put("willAccept", accept);
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject maritimeTrade(Session user, ResourceType inResource,
+	public JSONObject maritimeTrade(PlayerReference user, ResourceType inResource,
 			ResourceType outResource, int ratio)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/maritimeTrade");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "maritimeTrade");
+		o.put("playerIndex", user.getIndex());
+		o.put("ratio", ratio);
+		o.put("inputResource", inResource.toString());
+		o.put("outputResource", outResource.toString());
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject discardCards(Session user, ResourceList cards)
+	public JSONObject discardCards(PlayerReference user, ResourceList cards)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/discardCards");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "discardCards");
+		o.put("playerIndex", user.getIndex());
+		o.put("discardedCards", cards.toJSONObject());
+		
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject finishTurn(Session user)
+	public JSONObject finishTurn(PlayerReference user)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/finishTurn");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "finishTurn");
+		o.put("playerIndex", user.getIndex());
+		return commuincator.send(o);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void changeLogLevel(LogLevel level)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/");
 		o.put("requestType", "POST");
-		JSONObject returned = commuincator.send(o);
+		o.put("logLevel", level.toString());
+		commuincator.send(o);
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject monument(Session user)
+	public JSONObject monument(PlayerReference user)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Monument");
 		o.put("requestType", "GET");
-		JSONObject returned = commuincator.send(o);
+		o.put("type", "Monument");
+		o.put("playerIndex", user.getIndex());
+		
+		return commuincator.send(o);
 	}}

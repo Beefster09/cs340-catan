@@ -212,12 +212,21 @@ public class ModelFacade {
 		 * @return false otherwise
 		 */
 		//What do I do if there is an enemy city in the way?
-		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {
+		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {			
 			
 			Board map = model.getMap();
 			Map<EdgeLocation, Road> roads = map.getRoadMap();
 			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			ResourceList hand = currentPlayer.getResources();
+			
+			//checks if player has enough resources in his hand to build Road
+			if(!(hand.count(ResourceType.WOOD) > 0 &&
+					hand.count(ResourceType.BRICK) > 0 ))
+				return false;
+			
+			
 			
 			if(roads.get(edgeLoc) != null)
 				return false;
@@ -266,6 +275,15 @@ public class ModelFacade {
 			Map<EdgeLocation, Road> roads = map.getRoadMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 			
+			ResourceList hand = currentPlayer.getResources();
+			
+			//checks if player has enough resources in his hand to buy a settlement
+			if(!(hand.count(ResourceType.SHEEP) > 0 &&
+					hand.count(ResourceType.WOOD) > 0 &&
+					hand.count(ResourceType.WHEAT) > 0 &&
+					hand.count(ResourceType.BRICK) > 0))
+				return false;
+			
 			//iterate through map of municipalities
 			for(Map.Entry<VertexLocation, Municipality> entry : municipalities.entrySet()) {
 				//check if where you want to build is adjacent to any existing municipality
@@ -305,6 +323,13 @@ public class ModelFacade {
 			Board map = model.getMap();
 			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
 			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			ResourceList hand = currentPlayer.getResources();
+			
+			//checks if player has enough resources in his hand to build city
+			if(!(hand.count(ResourceType.WHEAT) >= 2 &&
+					hand.count(ResourceType.ORE) >= 3))
+				return false;
 			
 			//iterates through all municipalities
 			for(Map.Entry<VertexLocation, Municipality> entry : municipalities.entrySet()) {

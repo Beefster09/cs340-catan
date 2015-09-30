@@ -6,6 +6,7 @@ public enum EdgeDirection
 	NorthWest, North, NorthEast, SouthEast, South, SouthWest;
 	
 	private EdgeDirection opposite;
+	private String symbolString;
 	
 	static
 	{
@@ -15,6 +16,13 @@ public enum EdgeDirection
 		SouthEast.opposite = NorthWest;
 		South.opposite = North;
 		SouthWest.opposite = NorthEast;
+		
+		NorthWest.symbolString = "NW";
+		North.symbolString = "N";
+		NorthEast.symbolString = "NE";
+		SouthEast.symbolString = "SE";
+		South.symbolString = "S";
+		SouthWest.symbolString = "SW";
 	}
 	
 	public EdgeDirection getOppositeDirection()
@@ -31,6 +39,10 @@ public enum EdgeDirection
 		else if (lowerInput.equals("s")  || lowerInput.equals("south"))     return South;
 		else if (lowerInput.equals("sw") || lowerInput.equals("southeast")) return SouthWest;
 		else throw new IllegalArgumentException();
+	}
+
+	public Object getSymbolString() {
+		return symbolString;
 	}
 }
 

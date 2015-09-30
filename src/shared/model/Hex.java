@@ -13,6 +13,7 @@ import shared.locations.HexLocation;
  *
  */
 public class Hex {
+	public static final int EMPTY_NUMBER = -1;
 	private HexLocation location;
 	private ResourceType resource;
 	private int number;
@@ -24,7 +25,7 @@ public class Hex {
 	public Hex(HexLocation location, ResourceType resource, int number) {
 		this.location = location;
 		this.resource = resource;
-		this.number = number;
+		setNumber(number);
 	}
 
 	public Hex(JSONObject json) throws SchemaMismatchException {
@@ -32,11 +33,11 @@ public class Hex {
 			location = new HexLocation((JSONObject) json.get("location"));
 			if (json.containsKey("resource")) {
 				resource = ResourceType.getTypeFromString((String) json.get("resource"));
-				number = (int) (long) json.get("number");
+				setNumber((int) (long) json.get("number"));
 			}
 			else {
 				resource = null;
-				number = 0;
+				number = EMPTY_NUMBER;
 			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
@@ -65,6 +66,13 @@ public class Hex {
 	 */
 	public int getNumber() {
 		return number;
+	}
+	
+	private void setNumber(int number) {
+		if (number != EMPTY_NUMBER && (number < 2 || number > 12 || number == 7)) {
+			throw new IllegalArgumentException("Invalid number for a Hex.");
+		}
+		this.number = number;
 	}
 
 }

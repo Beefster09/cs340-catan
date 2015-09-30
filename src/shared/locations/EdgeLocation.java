@@ -110,6 +110,14 @@ public class EdgeLocation
 		}
 	}
 	
+	public JSONObject toJSONObject() {
+		JSONObject json = hexLoc.toJSONObject();
+		
+		json.put("direction", dir.getSymbolString());
+		
+		return json;
+	}
+	
 	/** Gives the distance from the center of the bordering hex that is closest to the center.
 	 * @return
 	 */
