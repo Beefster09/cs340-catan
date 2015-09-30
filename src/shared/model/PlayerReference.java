@@ -6,6 +6,7 @@ package shared.model;
  *
  */
 public class PlayerReference {
+	// FUTURE: use UUIDs as indices into a global Player table
 	private CatanModel game;
 	private int playerIndex;
 	
@@ -26,6 +27,10 @@ public class PlayerReference {
 	 */
 	public Player getPlayer() {
 		return game.getPlayers().get(playerIndex);
+	}
+	
+	public int getIndex() {
+		return playerIndex;
 	}
 
 	/* (non-Javadoc)

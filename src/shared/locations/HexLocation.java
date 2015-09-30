@@ -206,7 +206,13 @@ public class HexLocation
 						HexLocation next = location;
 						
 						if (curRadius == 0) {
-							location = new HexLocation(0, -1);
+							if (maxRadius > 0) {
+								location = new HexLocation(0, -1);
+							}
+							else {
+								location = null;
+								return next;
+							}
 							curRadius = 1;
 							spiralIndex = 0;
 							return next;
