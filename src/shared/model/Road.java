@@ -40,6 +40,11 @@ public class Road {
 		}
 	}
 
+	public Road(EdgeLocation location, PlayerReference owner) {
+		this.location = location;
+		this.owner = owner;
+	}
+
 	/** Gets the owner of the edge (road)
 	 * @return the owner
 	 */

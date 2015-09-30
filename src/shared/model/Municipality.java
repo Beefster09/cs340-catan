@@ -42,6 +42,18 @@ public class Municipality {
 	}
 
 	/**
+	 * @param owner
+	 * @param location
+	 * @param type
+	 */
+	Municipality(VertexLocation location, MunicipalityType type, PlayerReference owner) {
+		super();
+		this.owner = owner;
+		this.location = location;
+		this.type = type;
+	}
+
+	/**
 	 * @return the owner
 	 */
 	public PlayerReference getOwner() {

@@ -116,6 +116,7 @@ public class Board {
 			if (location.getDistanceFromCenter() != radius || location.isSpoke()) {
 				throw new IndexOutOfBoundsException();
 			}
+			// TODO: make sure the port is not next to another port
 			if (ports.containsKey(location)) {
 				throw new DuplicateKeyException();
 			}
@@ -180,12 +181,12 @@ public class Board {
 		}
 	}
 	
-	public Map<HexLocation, Hex> getHexes() {
-		return new HashMap<>(hexes);
+	public Collection<Hex> getHexes() {
+		return hexes.values();
 	}
 
 	/**
-	 * @return the hexes
+	 * @return the hex at the given location
 	 */
 	public Hex getHexAt(HexLocation location) {
 		if (hexes.containsKey(location)) {
@@ -209,8 +210,8 @@ public class Board {
 	/**
 	 * @return the ports
 	 */
-	public Map<EdgeLocation, Port> getPorts() {
-		return new HashMap<>(ports);
+	public Collection<Port> getPorts() {
+		return ports.values();
 	}
 	
 	/** Returns a port (if there is one) at the given location
@@ -259,8 +260,8 @@ public class Board {
 	/**
 	 * @return the roads
 	 */
-	public Map<EdgeLocation, Road> getRoads() {
-		return new HashMap<>(roads);
+	public Collection<Road> getRoads() {
+		return roads.values();
 	}
 	
 	public Road getRoadAt(EdgeLocation location) {
@@ -283,8 +284,8 @@ public class Board {
 	/**
 	 * @return the settlements
 	 */
-	public Map<VertexLocation, Municipality> getMunicipalities() {
-		return new HashMap<>(municipalities);
+	public Collection<Municipality> getMunicipalities() {
+		return municipalities.values();
 	}
 	
 	public Municipality getMunicipalityAt(VertexLocation location) {

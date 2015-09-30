@@ -6,7 +6,7 @@ package shared.model;
  *
  */
 public class PlayerReference {
-	// FUTURE: use UUIDs as indices into a global Player table
+	// TODO FUTURE: use UUIDs as indices into a global Player table
 	private CatanModel game;
 	private int playerIndex;
 	
@@ -31,6 +31,36 @@ public class PlayerReference {
 	
 	public int getIndex() {
 		return playerIndex;
+	}
+	
+	// TODO: incomplete... needed by boards;
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + playerIndex;
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlayerReference other = (PlayerReference) obj;
+		if (playerIndex != other.playerIndex)
+			return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
