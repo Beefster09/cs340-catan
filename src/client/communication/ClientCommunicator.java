@@ -223,6 +223,19 @@ public class ClientCommunicator {
 				JSONOutput = (JSONObject) parser.parse(str.toString());
 				return JSONOutput;
 			}
+			InputStream input = con.getErrorStream();
+			int len = 0;
+			
+			byte[] buffer = new byte[1024];
+			StringBuilder str = new StringBuilder();
+			while(-1 != (len = input.read(buffer))){
+				str.append(new String(buffer, 0, len));
+			}
+
+			if(str.charAt(0) == '['){
+				str = new StringBuilder("{\"list\":" + str + "}");
+			}
+			System.out.println(str.toString());
 			throw new InvalidActionException();
 		}
 		catch(IOException | ParseException e){
