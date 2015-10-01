@@ -214,7 +214,7 @@ public interface IServer {
 	 * @post offer is made to another player
 	 * @author-Grant
 	 */
-	public JSONObject offerTrade(PlayerReference user, ResourceList offer,
+	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
 			PlayerReference receiver)
 					throws ServerException, InvalidActionException;
 	/**

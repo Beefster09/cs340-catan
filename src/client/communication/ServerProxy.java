@@ -25,6 +25,7 @@ import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
+import shared.model.ResourceTradeList;
 
 /**
  * A proxy that acts as the server to the client. Contains all the methods
@@ -38,84 +39,12 @@ public class ServerProxy implements IServer {
 	private ClientCommunicator commuincator = new ClientCommunicator();
 	
 	public static void main(String[] args) throws UserException, ServerException, InvalidActionException, GameInitializationException, IllegalArgumentException, JoinGameException{
-		ServerProxy SP = new ServerProxy();
-		
-		Session test;
-
-		test = SP.login("Sam", "sam");
-		System.out.println("Login:");
-		System.out.println("Username: " + test.getUsername());
-		System.out.println("Password: " + test.getPassword());
-		System.out.println("ID:       " + test.getPlayerID() + "\n");
-
-		try{
-			test = SP.register("spulse4", "123456");
-			System.out.println("Register:");
-			System.out.println("Username: " + test.getUsername());
-			System.out.println("Password: " + test.getPassword());
-			System.out.println("ID:       " + test.getPlayerID() + "\n");
-		}
-		catch(UserException e){
-			test = SP.login("spulse4", "123456");
-			System.out.println("Login:");
-			System.out.println("Username: " + test.getUsername());
-			System.out.println("Password: " + test.getPassword());
-			System.out.println("ID:       " + test.getPlayerID() + "\n");
-		}
-		
-		List<GameHeader> test2 = SP.getGameList();
-		for(GameHeader game : test2){
-			System.out.println("GetGameList:");
-			System.out.println("Title: " + game.getTitle());
-			System.out.println("ID:    " + game.getId());
-			System.out.println("Players:");
-			for(PlayerHeader player : game.getPlayers()){
-				if(player == null){
-					System.out.println("   {}");
-					continue;
-				}
-				System.out.println("   Name:  " + player.getName());
-				System.out.println("   ID:    " + player.getId());
-				System.out.println("   Color: " + player.getColor());
-			}
-			System.out.println();
-		}
-		
-		GameHeader test3 = SP.createGame("Test3", true, true, true);
-		System.out.println("CreateGame:");
-		System.out.println("Title: " + test3.getTitle());
-		System.out.println("ID:    " + test3.getId());
-		System.out.println("Players:");
-		for(PlayerHeader player : test3.getPlayers()){
-			if(player == null){
-				System.out.println("   {}");
-				continue;
-			}
-			System.out.println("   Name:  " + player.getName());
-			System.out.println("   ID:    " + player.getId());
-			System.out.println("   Color: " + player.getColor());
-		}
-		System.out.println();
-		
-		boolean test4 = SP.joinGame(3, CatanColor.getColorFromString("red"));
-		System.out.println("JoinGame");
-		System.out.println(test4);
-
-		test4 = SP.joinGame(4, CatanColor.getColorFromString("blue"));
-		System.out.println(test4);
-		System.out.println();
-		
-		SP.saveGame(4, "doneWithThis");
-		SP.loadGame("doneWithThis");
 }
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Session login(String username, String password)
 			throws UserException, ServerException {
-		if(username == null || password == null){
-			throw new UserException();
-		}
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/user/login");
 		o.put("requestType", "POST");
@@ -132,9 +61,6 @@ public class ServerProxy implements IServer {
 	@Override
 	public Session register(String username, String password)
 			throws UserException, ServerException {
-		if(username == null || password == null){
-			throw new UserException();
-		}
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/user/register");
 		o.put("requestType", "POST");
@@ -188,9 +114,6 @@ public class ServerProxy implements IServer {
 	public GameHeader createGame(String name,
 			boolean randomTiles, boolean randomNumbers, boolean randomPorts)
 			throws GameInitializationException, ServerException, InvalidActionException {
-		if(name == null){
-			throw new InvalidActionException();
-		}
 		try{
 			JSONObject o = new JSONObject();
 			o.put("url","http://localhost:8081/games/create");
@@ -483,7 +406,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildRoad");
 		o.put("playerIndex", user.getIndex());
 		JSONObject roadLocation = location.toJSONObject();		
-		o.put("location", roadLocation);
+		o.put("roadLocation", roadLocation);
 		o.put("free", free);
 		
 		return commuincator.send(o);
@@ -500,7 +423,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildSettlement");
 		o.put("playerIndex", user.getIndex());
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("location", vertexLocation);
+		o.put("vertexLocation", vertexLocation);
 		o.put("free", free);
 		
 		return commuincator.send(o);
@@ -516,14 +439,14 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildCity");
 		o.put("playerIndex", user.getIndex());
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("location", vertexLocation);
+		o.put("vertexLocation", vertexLocation);
 		
 		return commuincator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject offerTrade(PlayerReference user, ResourceList offer,
+	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
 			PlayerReference receiver)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
@@ -531,7 +454,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
 		o.put("playerIndex", user.getIndex());
-		o.put("offer", offer.toString());
+		o.put("offer", offer.toJSONObject());
 		o.put("receiver", receiver.getIndex());
 		
 		return commuincator.send(o);
