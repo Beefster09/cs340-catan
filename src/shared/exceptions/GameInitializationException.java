@@ -7,4 +7,12 @@ package shared.exceptions;
  */
 public class GameInitializationException extends Exception {
 
+	public GameInitializationException(String string) {
+		super(string);
+	}
+
+	public GameInitializationException() {
+		super();
+	}
+
 }

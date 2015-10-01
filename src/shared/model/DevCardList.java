@@ -3,8 +3,12 @@ package shared.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import shared.definitions.DevCardType;
+import shared.definitions.ResourceType;
 import shared.exceptions.InvalidActionException;
+import shared.exceptions.SchemaMismatchException;
 
 /**
  * Manages the development cards that a player or the bank has.
@@ -18,6 +22,27 @@ public class DevCardList {
 	 */
 	public DevCardList() {
 		cards = new HashMap<DevCardType, Integer>();
+	}
+	
+	public DevCardList(JSONObject json) throws SchemaMismatchException {
+		cards = new HashMap<>();
+		try {
+			for (DevCardType type : DevCardType.values()) {
+				String key = type.toString().toLowerCase();
+				if (json.containsKey(key)) {
+					cards.put(type, (int) (long) json.get(key));
+				}
+				else {
+					throw new SchemaMismatchException("A card count is missing from the " +
+							"given JSONObject:\n" + json.toJSONString());
+				}
+			}
+		} catch (ClassCastException | IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new SchemaMismatchException("The JSON does not match the expected schema" +
+					"for a DevCardList:\n" + json.toJSONString());
+		}
+		
 	}
 	
 	/** Creates a DevCardList with the specified amounts of cards
