@@ -28,7 +28,7 @@ public class DevCardList {
 		cards = new HashMap<>();
 		try {
 			for (DevCardType type : DevCardType.values()) {
-				String key = type.toString().toLowerCase();
+				String key = type.toString();
 				if (json.containsKey(key)) {
 					cards.put(type, (int) (long) json.get(key));
 				}
