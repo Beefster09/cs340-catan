@@ -125,5 +125,38 @@ public class ResourceList {
 	public String toString() {
 		return "ResourceList [resources=" + resources + "]";
 	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject toJSONObject() {
+		JSONObject o = new JSONObject();
+		int brick = 0;
+		int ore = 0;
+		int wood = 0;
+		int wheat = 0;
+		int sheep = 0;
+		
+		if(resources.containsKey(ResourceType.BRICK)){
+			brick = resources.get(ResourceType.BRICK);
+		}
+		if(resources.containsKey(ResourceType.ORE)){
+			brick = resources.get(ResourceType.ORE);
+		}
+		if(resources.containsKey(ResourceType.WOOD)){
+			brick = resources.get(ResourceType.WOOD);
+		}
+		if(resources.containsKey(ResourceType.WHEAT)){
+			brick = resources.get(ResourceType.WHEAT);
+		}
+		if(resources.containsKey(ResourceType.SHEEP)){
+			brick = resources.get(ResourceType.SHEEP);
+		}
+
+		o.put("brick", brick);
+		o.put("ore", ore);
+		o.put("wood", wood);
+		o.put("wheat", wheat);
+		o.put("sheep", sheep);
+		return o;
+	}
 
 }
