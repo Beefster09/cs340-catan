@@ -156,7 +156,6 @@ public class ModelFacade {
 			}
 			else
 				return false;
-			
 		}
 		
 		public synchronized void doRob() {
