@@ -26,6 +26,10 @@ public class ModelFacade {
 			model = startingModel;
 		}
 		
+		public CatanModel getCatanModel(){
+			return model;
+		}
+		
 		public static void main(String args[]) throws Exception {
 			JSONParser parser = new JSONParser();
 			Reader r = new BufferedReader(new FileReader("json_test.json"));
