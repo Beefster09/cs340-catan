@@ -22,7 +22,7 @@ import shared.locations.VertexLocation;
 
 public class ModelFacadeTest {
 
-	private CatanModel model1;
+	private CatanModel model;
 	private ModelFacade m;
 
 	
@@ -32,18 +32,18 @@ public class ModelFacadeTest {
 		JSONParser parser = new JSONParser();
 		Reader r = new BufferedReader(new FileReader("json_test.json"));
 		Object parseResult = parser.parse(r);
-		JSONObject model = ((JSONObject) parseResult);
+		JSONObject json = ((JSONObject) parseResult);
 		
-		model1 = new CatanModel();
-		m = new ModelFacade(model1);
-		m.updateFromJSON(model);
+		model = new CatanModel();
+		m = new ModelFacade(model);
+		m.updateFromJSON(json);
 	}
 	
 	@Test
 	public void testUpdateFromJSON() {
 		
-		JSONObject json = new JSONObject();
-		m.updateFromJSON(json);
+		
+		//m.updateFromJSON(json);
 	}
 	
 	@Test
@@ -51,15 +51,24 @@ public class ModelFacadeTest {
 			
 		CatanModel model = new CatanModel();
 		
+		
+		//test if player it's players current turn and he hasn't rolled
 		PlayerReference player = new PlayerReference(model, 1);
 		boolean can = m.canRoll(player);
-	}
+		
+		//test if its not player's current turn
+		
+		//test if it is player's turn but he has already rolled
+		}
 	
 	@Test
 	public void testCanRob() {
 		
+		//test if hex is desert
 		HexLocation hexLoc = new HexLocation(0, 0);
 		boolean can = m.canRob(hexLoc);
+		
+		//test if hex is anything else
 	}
 	
 	@Test 
@@ -71,9 +80,11 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanFinishTurn() {
 		
+		//test if current player has not rolled
 		boolean can = m.canFinishTurn();
-		
 		assertFalse(can);
+		
+		//test if current player has rolled
 	}
 	
 	@Test
@@ -85,7 +96,12 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanBuyDevelopmentCard() {
 		
+		
+		//test empty hand
 		boolean can = m.canBuyDevelopmentCard();
+		assertFalse(can);
+		
+		//test hand with sufficient resources
 	}
 	
 	@Test
@@ -97,9 +113,17 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanBuildRoad() {
 		
+		
 		HexLocation hexLoc = new HexLocation(0, 0);
 		EdgeLocation edgeLoc = new EdgeLocation(hexLoc, EdgeDirection.North);
 		boolean can = m.canBuildRoad(edgeLoc);
+		
+		//test no connecting municipality or road
+		assertFalse(can);
+		
+		//test connecting road
+		
+		//test connecting municipality
 	}
 
 	@Test
@@ -113,7 +137,14 @@ public class ModelFacadeTest {
 		
 		HexLocation hexLoc = new HexLocation(0, 0);
 		VertexLocation vertexLoc = new VertexLocation(hexLoc, VertexDirection.East);
-		boolean can = m.canBuildSettlement(vertexLoc);	
+		boolean can = m.canBuildSettlement(vertexLoc);
+		
+		//test no connection
+		assertFalse(can);
+		
+		//test with connecting road, but adjacent municiaplity
+		
+		//test connecting road
 	}
 	
 	@Test
@@ -127,7 +158,11 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanYearOfPlenty() {
 		
+		//test with empty hand
 		boolean can = m.canYearOfPlenty();
+		assert(false);
+		
+		//test with yearOfPlenty card in hand
 	}
 	
 	@Test
@@ -139,7 +174,11 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanRoadBuildingCard() {
 		
+		//test with empty hand
 		boolean can = m.canRoadBuildingCard();
+		assert(false);
+		
+		//test with roadBuilding card in hand
 	}
 	
 	@Test
@@ -151,7 +190,11 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanSoldier() {
 		
+		//test with empty hand
 		boolean can = m.canSoldier();
+		assert(false);
+		
+		//test with soldier card in hand
 	}
 	
 	@Test
@@ -163,7 +206,15 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanMonopoly() {
 		
+		//Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+		//DevCardList devCards = new DevCardList(0, 0, 1); 
+		//currentPlayer.setOldDevCards(devCards);
+		
+		//test with empty hand
 		boolean can = m.canMonopoly();
+		assert(false);
+		
+		//test with monopoly card in hand
 	}
 	
 	@Test
@@ -175,7 +226,11 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanMonument() {
 		
+		//test with empty hand
 		boolean can = m.canMonument();
+		assert(false);
+		
+		//test with monument card in hand
 	}
 	
 	@Test
@@ -186,7 +241,9 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanOfferTrade() {
+		//test with insufficient cards in hand for trade
 		
+		//test with sufficient cards in hand for trade
 		boolean can = m.canOfferTrade();
 	}
 	
@@ -198,6 +255,10 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanAcceptTrade() {
+		
+		//test with insufficient cards in hand for trade
+		
+		//test with sufficient cards in hand for trade
 		
 		boolean can = m.canAcceptTrade();
 	}
@@ -211,7 +272,11 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanMaritimeTrade() {
 		
+		//test without municipality on port
 		boolean can = m.canMaritimeTrade();
+		assert(false);
+		
+		//test with municipality on port
 	}
 	
 	@Test
@@ -223,6 +288,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testCanDiscardCards() {
 		
+		//still don't know how to do this one
 		boolean can = m.canDiscardCards();
 	}
 	

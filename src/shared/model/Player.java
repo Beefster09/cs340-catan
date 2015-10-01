@@ -260,6 +260,11 @@ public class Player {
 				+ ", soldiers=" + soldiers + ", monuments=" + monuments
 				+ ", victoryPoints=" + victoryPoints + "]";
 	}
+
+
+	public void setOldDevCards(DevCardList devCards) {
+		this.oldDevCards = devCards;
+	}
 	
 	
 
