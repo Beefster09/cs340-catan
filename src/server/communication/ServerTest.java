@@ -19,6 +19,7 @@ import shared.exceptions.GamePersistenceException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.NotYourTurnException;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.TradeException;
 import shared.exceptions.UserException;
@@ -31,6 +32,7 @@ import shared.model.CatanModel;
 import shared.model.ModelFacade;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
+import shared.model.ResourceTradeList;
 
 public class ServerTest {
 
@@ -221,7 +223,8 @@ public class ServerTest {
 		
 		PlayerReference victim = new PlayerReference(testModel, 1);
 		
-		model = p.robPlayer(user, newRobberLocation, victim);
+		PlayerReference userReference = new PlayerReference(testModel, 2); 
+		JSONObject model = p.robPlayer(userReference, newRobberLocation, victim);
 	}
 	
 	@Test
@@ -230,9 +233,8 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.buyDevCard(user);
+		PlayerReference user = new PlayerReference(testModel, 1);
+		JSONObject model = p.buyDevCard(user);
 	}
 	
 	@Test
@@ -240,10 +242,9 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		
-		CatanModel model = p.yearOfPlenty(user, ResourceType.BRICK, ResourceType.ORE);
+		JSONObject model = p.yearOfPlenty(user, ResourceType.BRICK, ResourceType.ORE);
 	}
 	
 	@Test
@@ -251,7 +252,7 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		HexLocation one = new HexLocation(1, 1);
 		HexLocation two = new HexLocation(2, 2);
@@ -259,7 +260,7 @@ public class ServerTest {
 		EdgeLocation road1 = new EdgeLocation(one, EdgeDirection.North);
 		EdgeLocation road2 = new EdgeLocation(two, EdgeDirection.North);
 		
-		CatanModel model = p.roadBuilding(user, road1, road2);
+		JSONObject model = p.roadBuilding(user, road1, road2);
 	}
 	
 	@Test
@@ -267,16 +268,16 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		HexLocation newRobberLocation = new HexLocation(2, 2);
 		
 		int version = 1;
-		CatanModel model = p.getModel(user, version);
+		JSONObject model = p.getModel(version);
 		
-		PlayerReference victim = new PlayerReference(model, 1);
+		PlayerReference victim = new PlayerReference(testModel, 1);
 		
-		model = p.soldier(user, newRobberLocation, victim);
+		JSONObject newModel = p.soldier(user, newRobberLocation, victim);
 	}
 	
 	@Test
@@ -284,9 +285,9 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		CatanModel model = p.monopoly(user, ResourceType.BRICK);
+		JSONObject model = p.monopoly(user, ResourceType.BRICK);
 	}
 	
 	@Test
@@ -294,12 +295,12 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		HexLocation one = new HexLocation(1, 1);
 		EdgeLocation location = new EdgeLocation(one, EdgeDirection.North);
 		
-		CatanModel model = p.buildRoad(user, location, true);
+		JSONObject model = p.buildRoad(user, location, true);
 	}
 	
 	@Test
@@ -307,11 +308,11 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		HexLocation one = new HexLocation(1, 1);
 		VertexLocation location = new VertexLocation(one, VertexDirection.East);
 		
-		CatanModel model = p.buildSettlement(user, location, true);
+		JSONObject model = p.buildSettlement(user, location, true);
 	}
 	
 	@Test
@@ -320,33 +321,40 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		HexLocation one = new HexLocation(1, 1);
 		VertexLocation location = new VertexLocation(one, VertexDirection.East);
 		
-		CatanModel model = p.buildCity(user, location);
+		JSONObject model = p.buildCity(user, location);
 	}
 	
 	@Test
-	public void testOfferTrade() throws UserException, ServerException, NotYourTurnException {	
+	public void testOfferTrade() throws UserException, ServerException, SchemaMismatchException, InvalidActionException {	
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
+		PlayerReference secondUser = new PlayerReference(testModel, 2);
 		
-		ResourceList offer = new ResourceList();
+		JSONObject tradeJSON = new JSONObject();
+		tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0L);
+		tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+		tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0L);
+		tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), -1L);
+		tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1L);
+		ResourceTradeList offer = new ResourceTradeList(tradeJSON);
 		
-		CatanModel model = p.offerTrade(user, offer);
+		JSONObject model = p.offerTrade(user, offer, secondUser);
 	}
 	
 	@Test
-	public void testRespondToTrade() throws UserException, ServerException, TradeException {
+	public void testRespondToTrade() throws UserException, ServerException, InvalidActionException {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		CatanModel model = p.respondToTrade(user, true);	
+		JSONObject model = p.respondToTrade(user, true);	
 	}
 	
 	@Test
@@ -354,10 +362,10 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		int ratio = 3;
 		
-		CatanModel model = p.maritimeTrade(user, ResourceType.BRICK, ResourceType.WOOD, ratio);
+		JSONObject model = p.maritimeTrade(user, ResourceType.BRICK, ResourceType.WOOD, ratio);
 	}
 	
 	@Test
@@ -365,20 +373,20 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		ResourceList cards = new ResourceList();
 		
-		CatanModel model = p.discardCards(user, cards);
+		JSONObject model = p.discardCards(user, cards);
 	}
 	
 	@Test
-	public void testFinishTurn() {
+	public void testFinishTurn() throws ServerException, InvalidActionException {
 		String username = "John";
 		String password = "password";
 		
-		//Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		//CatanModel model = p.finishTurn(user);
+		JSONObject model = p.finishTurn(user);
 		
 	}
 }
