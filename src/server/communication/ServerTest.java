@@ -44,7 +44,6 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
 		int version = 1;
 		testModel = facade.updateFromJSON(p.getModel(version));
 	}
@@ -242,6 +241,7 @@ public class ServerTest {
 		String password = "password";
 		
 		Session user = p.register(username, password);
+		
 		
 		CatanModel model = p.yearOfPlenty(user, ResourceType.BRICK, ResourceType.ORE);
 	}
