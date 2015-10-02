@@ -96,6 +96,7 @@ public class DevCardList {
 	 * @post none
 	 */
 	public int count(DevCardType type) {
+		
 		return cards.get(type);
 	}
 	
@@ -132,6 +133,10 @@ public class DevCardList {
 	 */
 	public void useCard(DevCardType type) throws InvalidActionException {
 		
+	}
+	
+	public Map<DevCardType, Integer> getCards() {
+		return cards;
 	}
 
 }

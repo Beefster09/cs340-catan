@@ -37,7 +37,7 @@ public enum EdgeDirection
 		else if (lowerInput.equals("ne") || lowerInput.equals("northeast")) return NorthEast;
 		else if (lowerInput.equals("se") || lowerInput.equals("southwest")) return SouthEast;
 		else if (lowerInput.equals("s")  || lowerInput.equals("south"))     return South;
-		else if (lowerInput.equals("sw") || lowerInput.equals("southeast")) return SouthEast;
+		else if (lowerInput.equals("sw") || lowerInput.equals("southeast")) return SouthWest;
 		else throw new IllegalArgumentException();
 	}
 

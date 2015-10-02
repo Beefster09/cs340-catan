@@ -184,6 +184,7 @@ public class Board {
 		hexes = new HashMap<>();
 		for (Hex hex : hexList) {
 			HexLocation location = hex.getLocation();
+			int hash = location.hashCode();
 			if (location.getDistanceFromCenter() > radius) {
 				throw new IndexOutOfBoundsException();
 			}
