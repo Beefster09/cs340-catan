@@ -1,12 +1,23 @@
 package client.communication;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
@@ -37,208 +48,374 @@ public class MockServer implements IServer {
 	@Override
 	public Session login(String username, String password)
 			throws UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new Session("SAM", "sam", 1);
 	}
 
 	@Override
 	public Session register(String username, String password)
 			throws UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new Session("JOE", "joe", 1);
 	}
 
 	@Override
-	public List<GameHeader> getGameList() throws ServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<GameHeader> getGameList() throws ServerException,
+			InvalidActionException {
+		
+		List<GameHeader> returnList = new ArrayList<GameHeader>();
+		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 1));
+		GameHeader returnGame = new GameHeader("GameTest", 1, players);
+		returnList.add(returnGame);
+		return returnList;
 	}
 
 	@Override
-	public GameHeader createGame(Session user, String name,
-			boolean randomTiles, boolean randomNumbers, boolean randomPorts)
-			throws GameInitializationException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+	public GameHeader createGame(String name, boolean randomTiles,
+			boolean randomNumbers, boolean randomPorts)
+			throws GameInitializationException, InvalidActionException,
+			ServerException {
+		
+		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 1));
+		GameHeader returnGame = new GameHeader("GameTest", 1, players);
+		
+		return returnGame;
 	}
 
 	@Override
-	public Session joinGame(Session user, int gameID, CatanColor color)
+	public boolean joinGame(int gameID, CatanColor color)
 			throws JoinGameException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return true;
 	}
 
 	@Override
 	public void saveGame(int gameID, String filename)
-			throws GamePersistenceException, ServerException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void loadGame(String filename) throws GamePersistenceException,
+			throws GamePersistenceException, InvalidActionException,
 			ServerException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public CatanModel getModel(Session user, int version)
-			throws ServerException {
+	public void loadGame(String filename) throws ServerException,
+			InvalidActionException {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public JSONObject getModel(int version) throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel resetGame(Session user) throws ServerException,
-			GameInitializationException {
-		// TODO Auto-generated method stub
+	public JSONObject resetGame() throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public List<Command> getCommands(Session user) throws ServerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel executeCommands(Session user, List<Command> commands)
-			throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<AIType> getAITypes(Session user) throws ServerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel sendChat(Session user, String message)
-			throws ServerException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel rollDice(Session user, int number)
-			throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel robPlayer(Session user, HexLocation newRobberLocation,
-			PlayerReference victim) throws ServerException,
+	public List<Command> getCommands() throws ServerException,
 			InvalidActionException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public CatanModel buyDevCard(Session user) throws ServerException,
-			InvalidActionException {
+	public JSONObject executeCommands(List<Command> commands)
+			throws ServerException, InvalidActionException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public CatanModel yearOfPlenty(Session user, ResourceType type1,
+	public void addAIPlayer(AIType type) throws ServerException,
+			InvalidActionException {
+		
+		//return "Success";
+		
+	}
+
+	@Override
+	public List<String> getAITypes() throws ServerException,
+			InvalidActionException {
+		
+		List<String> aiTypes = new ArrayList<String>();
+		aiTypes.add("LARGEST_ARMY");
+		return aiTypes;
+	}
+
+	@Override
+	public JSONObject sendChat(PlayerReference user, String message)
+			throws ServerException, InvalidActionException {
+		// TODO Auto-generated method stub
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+		
+	}
+
+	@Override
+	public JSONObject rollDice(PlayerReference user, int number)
+			throws ServerException, InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject robPlayer(PlayerReference user,
+			HexLocation newRobberLocation, PlayerReference victim)
+			throws ServerException, InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+		
+	}
+
+	@Override
+	public JSONObject buyDevCard(PlayerReference user) throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1,
 			ResourceType type2) throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel roadBuilding(Session user, EdgeLocation road1,
+	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1,
 			EdgeLocation road2) throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel soldier(Session user, HexLocation newRobberLocation,
-			PlayerReference victim) throws ServerException,
-			InvalidActionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel monopoly(Session user, ResourceType type)
+	public JSONObject soldier(PlayerReference user,
+			HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel buildRoad(Session user, EdgeLocation location,
+	public JSONObject monopoly(PlayerReference user, ResourceType type)
+			throws ServerException, InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject monument(PlayerReference user) throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject buildRoad(PlayerReference user, EdgeLocation location,
 			boolean free) throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel buildSettlement(Session user, VertexLocation location,
-			boolean free) throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
+	public JSONObject buildSettlement(PlayerReference user,
+			VertexLocation location, boolean free) throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel buildCity(Session user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, VertexLocation location)
 			throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel respondToTrade(Session user, boolean accept)
-			throws ServerException, TradeException {
-		// TODO Auto-generated method stub
+	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
+			PlayerReference receiver) throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
 		return null;
 	}
 
 	@Override
-	public CatanModel maritimeTrade(Session user, ResourceType inResource,
-			ResourceType outResource, int ratio) throws ServerException,
+	public JSONObject respondToTrade(PlayerReference user, boolean accept)
+			throws ServerException, InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject maritimeTrade(PlayerReference user,
+			ResourceType inResource, ResourceType outResource, int ratio)
+			throws ServerException, InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject discardCards(PlayerReference user, ResourceList cards)
+			throws ServerException, InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public JSONObject finishTurn(PlayerReference user) throws ServerException,
+			InvalidActionException {
+		
+		try {
+			JSONParser parser = new JSONParser();
+			Reader r = new BufferedReader(new FileReader("json_test.json"));
+			Object parseResult = parser.parse(r);
+			return ((JSONObject) parseResult);
+		} catch (IOException | ParseException e) {
+		}
+		return null;
+	}
+
+	@Override
+	public void changeLogLevel(LogLevel level) throws ServerException,
 			InvalidActionException {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel discardCards(Session user, ResourceList cards)
-			throws ServerException, InvalidActionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CatanModel finishTurn(Session user) throws ServerException,
-			InvalidActionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addAIPlayer(Session user, AIType type) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void changeLogLevel(LogLevel level) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public CatanModel offerTrade(Session user, ResourceList offer)
-			throws ServerException, NotYourTurnException {
-		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 }
