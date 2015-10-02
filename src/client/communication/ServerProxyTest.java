@@ -302,7 +302,7 @@ public class ServerProxyTest {
 			resources.put(ResourceType.WHEAT.toString().toLowerCase(), 0L);
 			resources.put(ResourceType.WOOD.toString().toLowerCase(), 0L);
 
-			ResourceList cards = new ResourceList(resources);
+			ResourceList cards = new ResourceList((JSONObject)resources);
 			SP.discardCards(steve, cards);
 			System.out.println("Steve discarded 4 Brick");
 			
