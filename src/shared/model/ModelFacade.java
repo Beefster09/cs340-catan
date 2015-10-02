@@ -143,6 +143,14 @@ public class ModelFacade {
 			}
 		}
 		
+		public synchronized void doRoll(PlayerReference player) {
+			
+			
+			Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
+			
+			currentPlayer.setHasRolled(true);
+		}
+		
 		/**
 		 * @param hexLoc The location on the map where the robber is to be placed
 		 * @return true if the hex is not a desert hex.
