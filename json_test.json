@@ -300,6 +300,17 @@
     "wheat": 24,
     "ore": 24
   },
+  "tradeOffer": {
+ "sender": 1,
+ "receiver": 0,
+ "offer": {
+ "brick": 1,
+ "ore": 1,
+ "sheep": 1,
+ "wheat": 1,
+ "wood": 1
+ }
+},
   "turnTracker": {
     "status": "FirstRound",
     "currentTurn": 0,
