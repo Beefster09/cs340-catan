@@ -197,12 +197,13 @@ public class ClientCommunicator {
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestProperty("Cookie", cookies);
 			con.setRequestMethod((String) o.get("requestType"));
-			con.setDoOutput(true);
+			if((o.get("requestType")).equals("POST") || (o.get("requestType")).equals("http://localhost:8081/game/model")){
+				con.setDoOutput(true);
+				OutputStreamWriter output = new OutputStreamWriter(con.getOutputStream());
+				output.write(o.toString());
+				output.flush();
+			}
 			con.connect();
-			
-			OutputStreamWriter output = new OutputStreamWriter(con.getOutputStream());
-			output.write(o.toString());
-			output.flush();
 			
 			if (con.getResponseCode() == HttpURLConnection.HTTP_OK){
 				

@@ -2,6 +2,8 @@ package client.communication;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -9,8 +11,10 @@ import shared.communication.GameHeader;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.locations.EdgeLocation;
+import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import shared.model.PlayerReference;
+import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
 public class ServerProxyTest {
@@ -22,21 +26,29 @@ public class ServerProxyTest {
 		SP = new ServerProxy();
 		try{
 			SP.register("Steve", "steve");
-			GameHeader game = SP.createGame("test", false, false, false);
-			SP.joinGame(game.getId(), CatanColor.PURPLE);
 			System.out.println("Registered Steve");
+			GameHeader game = SP.createGame("test", false, false, false);
+			System.out.println("Created game");
+			
+			SP.getGameList();
+			System.out.println("Got the list of games");
+			SP.joinGame(game.getId(), CatanColor.PURPLE);
+			System.out.println("Steve joined the game");
 			
 			SP.register("Justin", "123");
-			SP.joinGame(game.getId(), CatanColor.BLUE);
 			System.out.println("Registered Justin");
+			SP.joinGame(game.getId(), CatanColor.BLUE);
+			System.out.println("Justin joined the game");
 			
 			SP.register("Jordan", "Jordan");
-			SP.joinGame(game.getId(), CatanColor.GREEN);
 			System.out.println("Registered Jordan");
+			SP.joinGame(game.getId(), CatanColor.GREEN);
+			System.out.println("Jordan joined the game");
 			
 			SP.register("Grant", "abc_123");
-			SP.joinGame(game.getId(), CatanColor.ORANGE);
 			System.out.println("Registered Grant");
+			SP.joinGame(game.getId(), CatanColor.ORANGE);
+			System.out.println("Grant joined the game");
 						
 			PlayerReference steve = new PlayerReference(null, 0);
 			PlayerReference justin = new PlayerReference(null, 1);
@@ -44,7 +56,9 @@ public class ServerProxyTest {
 			PlayerReference grant = new PlayerReference(null, 3);
 			
 			SP.login("Steve", "steve");
+			System.out.println("Steve logged in");
 			SP.joinGame(game.getId(), CatanColor.PURPLE);
+			System.out.println("Steve rejoined the game");
 
 			JSONObject location = new JSONObject();
 			location.put("x", 0L);
@@ -62,10 +76,7 @@ public class ServerProxyTest {
 			System.out.println("Steve Built a Settlement");
 			SP.finishTurn(steve);
 			System.out.println("Steve finished his Turn");
-			
-//			SP.login("Justin", "123");
-//			SP.joinGame(game.getId(), CatanColor.BLUE);
-			
+						
 			location = new JSONObject();
 			location.put("x", -1L);
 			location.put("y", 2L);
@@ -82,10 +93,7 @@ public class ServerProxyTest {
 			System.out.println("Justin Built a Settlement");
 			SP.finishTurn(justin);
 			System.out.println("Justin finished his Turn");
-			
-//			SP.login("Jordan", "Jordan");
-//			SP.joinGame(game.getId(), CatanColor.GREEN);
-			
+						
 			location = new JSONObject();
 			location.put("x", 1L);
 			location.put("y", 1L);
@@ -102,9 +110,6 @@ public class ServerProxyTest {
 			System.out.println("Jordan Built a Settlement");
 			SP.finishTurn(jordan);
 			System.out.println("Jordan finished his Turn");
-
-//			SP.login("Grant", "abc_123");
-//			SP.joinGame(game.getId(), CatanColor.ORANGE);
 			
 			location = new JSONObject();
 			location.put("x", -2L);
@@ -139,10 +144,7 @@ public class ServerProxyTest {
 			System.out.println("Grant Built a 2nd Settlement");
 			SP.finishTurn(grant);
 			System.out.println("Grant finished his Turn");
-			
-//			SP.login("Jordan", "Jordan");
-//			SP.joinGame(game.getId(), CatanColor.GREEN);
-			
+						
 			location = new JSONObject();
 			location.put("x", 2L);
 			location.put("y", 0L);
@@ -159,9 +161,6 @@ public class ServerProxyTest {
 			System.out.println("Jordan Built a 2nd Settlement");
 			SP.finishTurn(jordan);
 			System.out.println("Jordan finished his Turn");
-
-//			SP.login("Justin", "123");
-//			SP.joinGame(game.getId(), CatanColor.BLUE);
 			
 			location = new JSONObject();
 			location.put("x", -1L);
@@ -179,9 +178,6 @@ public class ServerProxyTest {
 			System.out.println("Justin Built a 2nd Settlement");
 			SP.finishTurn(justin);
 			System.out.println("Justin finished his Turn");
-
-//			SP.login("Steve", "steve");
-//			SP.joinGame(game.getId(), CatanColor.PURPLE);
 
 			location = new JSONObject();
 			location.put("x", 1L);
@@ -219,12 +215,11 @@ public class ServerProxyTest {
 			System.out.println("Steve built a 4th road");
 			
 			JSONObject tradeJSON = new JSONObject();
-			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 1);
-			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 1);
-			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 1);
-			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 0);
-			
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), -1L);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), -1L);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), -1L);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 0L);
 			ResourceTradeList trade = new ResourceTradeList(tradeJSON);
 			
 			SP.offerTrade(steve, trade, jordan);
@@ -233,12 +228,11 @@ public class ServerProxyTest {
 			System.out.println("Jordan accepted trade");
 			
 			tradeJSON = new JSONObject();
-			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1);
-			
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), -1L);
 			trade = new ResourceTradeList(tradeJSON);
 			
 			SP.offerTrade(steve, trade, justin);
@@ -247,11 +241,12 @@ public class ServerProxyTest {
 			System.out.println("Justin declined trade");
 	
 			tradeJSON = new JSONObject();
-			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), -1);
-			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 0);
-			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1);
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 1L);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), -1L);
+			trade = new ResourceTradeList(tradeJSON);
 
 			SP.offerTrade(steve, trade, justin);
 			System.out.println("Steve offered trade to Justin");
@@ -263,8 +258,317 @@ public class ServerProxyTest {
 			location.put("y", -2L);
 			location.put("direction", "NW");
 			vertexLocation = new VertexLocation(location);
+			
 			SP.buildSettlement(steve, vertexLocation, false);
 			System.out.println("Steve built a 3rd settlement");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+			
+			SP.rollDice(justin, 4);
+			System.out.println("Justin rolled a 4");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 4);
+			System.out.println("Jordan rolled a 4");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+			
+			SP.rollDice(grant, 4);
+			System.out.println("Grant rolled a 4");
+
+			tradeJSON = new JSONObject();
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), -1L);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 1L);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 0L);
+			trade = new ResourceTradeList(tradeJSON);
+			
+			SP.offerTrade(grant, trade, justin);
+			System.out.println("Grant offered trade to Justin");
+			SP.respondToTrade(justin, true);
+			System.out.println("Justin accepted trade");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 7);
+			System.out.println("Steve rolled a 7");
+						
+			JSONObject resources = new JSONObject();
+			resources.put(ResourceType.BRICK.toString().toLowerCase(), 4L);
+			resources.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+			resources.put(ResourceType.SHEEP.toString().toLowerCase(), 0L);
+			resources.put(ResourceType.WHEAT.toString().toLowerCase(), 0L);
+			resources.put(ResourceType.WOOD.toString().toLowerCase(), 0L);
+
+			ResourceList cards = new ResourceList(resources);
+			SP.discardCards(steve, cards);
+			System.out.println("Steve discarded 4 Brick");
+			
+			HexLocation hexLocation = new HexLocation(-2,1);
+			SP.robPlayer(steve, hexLocation, grant);
+			System.out.println("Steve moved the robber and robbed Grant");
+			location = new JSONObject();
+			location.put("x", 0L);
+			location.put("y", 0L);
+			location.put("direction", "NE");
+			edgeLocation = new EdgeLocation(location);
+			SP.buildRoad(steve, edgeLocation, false);
+			System.out.println("Steve built a 5th road");
+			SP.sendChat(steve, "Why did nobody do anything last round?");
+			System.out.println("Steve sent a chat");
+			
+			tradeJSON = new JSONObject();
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0L);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), -1L);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1L);
+			trade = new ResourceTradeList(tradeJSON);
+
+			SP.offerTrade(steve, trade, justin);
+			System.out.println("Steve offered trade to Justin");
+			SP.sendChat(jordan, "You took all of our resources!");
+			System.out.println("Jordan sent a chat");
+			SP.respondToTrade(justin, true);
+			System.out.println("Justin accepted trade");
+			
+			location = new JSONObject();
+			location.put("x", 0L);
+			location.put("y", 0L);
+			location.put("direction", "E");
+			vertexLocation = new VertexLocation(location);
+
+			SP.buildSettlement(steve, vertexLocation, false);
+			System.out.println("Steve built a 4th settlement");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+			
+			SP.rollDice(justin, 11);
+			System.out.println("Justin rolled an 11");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 9);
+			System.out.println("Jordan rolled a 9");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 9);
+			System.out.println("Grant rolled a 9");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+
+			SP.rollDice(steve, 11);
+			System.out.println("Steve rolled an 11");
+			SP.buildCity(steve, vertexLocation);
+			System.out.println("Steve built a city");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+			
+			SP.rollDice(justin, 11);
+			System.out.println("Justin rolled an 11");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 9);
+			System.out.println("Jordan rolled a 9");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 11);
+			System.out.println("Grant rolled an 11");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 9);
+			System.out.println("Steve rolled a 9");
+			
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", -1L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			
+			SP.buildCity(steve, vertexLocation);
+			System.out.println("Steve built a 2nd city");
+			
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", 1L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			
+			SP.buildCity(steve, vertexLocation);
+			System.out.println("Steve built a 3rd city");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+			
+			
+			//////this is where I finished keeping track of things//////////////
+			
+			SP.rollDice(justin, 9);
+			System.out.println("Justin rolled a 9");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 9);
+			System.out.println("Jordan rolled a 9");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 9);
+			System.out.println("Grant rolled a 9");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 9);
+			System.out.println("Steve rolled a 9");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+
+			SP.rollDice(justin, 11);
+			System.out.println("Justin rolled an 11");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 11);
+			System.out.println("Jordan rolled an 11");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 11);
+			System.out.println("Grant rolled an 11");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 11);
+			System.out.println("Steve rolled an 11");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+
+			SP.rollDice(justin, 11);
+			System.out.println("Justin rolled an 11");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 11);
+			System.out.println("Jordan rolled an 11");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 11);
+			System.out.println("Grant rolled an 11");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 11);
+			System.out.println("Steve rolled an 11");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+
+			SP.rollDice(justin, 11);
+			System.out.println("Justin rolled an 11");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 11);
+			System.out.println("Jordan rolled an 11");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 11);
+			System.out.println("Grant rolled an 11");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			/////////////////////////////////////////////////////////////////
+			SP.rollDice(steve, 10);
+			System.out.println("Steve rolled a 10");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+
+			SP.rollDice(justin, 10);
+			System.out.println("Justin rolled a 10");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 10);
+			System.out.println("Jordan rolled a 10");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 10);
+			System.out.println("Grant rolled a 10");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 10);
+			System.out.println("Steve rolled a 10");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+			
+			SP.rollDice(justin, 10);
+			System.out.println("Justin rolled a 10");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 10);
+			System.out.println("Jordan rolled a 10");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 10);
+			System.out.println("Grant rolled a 10");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 10);
+			System.out.println("Steve rolled a 10");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+
+			SP.rollDice(justin, 10);
+			System.out.println("Justin rolled a 10");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 10);
+			System.out.println("Jordan rolled a 10");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 10);
+			System.out.println("Grant rolled a 10");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			
+			SP.rollDice(steve, 9);
+			System.out.println("Steve rolled a 9");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+			
+			SP.rollDice(justin, 9);
+			System.out.println("Justin rolled a 9");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his turn");
+			
+			SP.rollDice(jordan, 9);
+			System.out.println("Jordan rolled a 9");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his turn");
+
+			SP.rollDice(grant, 9);
+			System.out.println("Grant rolled a 9");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his turn");
+			////////////////////////////////////////////////////////////////////
+			SP.rollDice(steve, 11);
+			System.out.println("Steve rolled an 11");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his turn");
+
+
 
 		}
 		catch(Exception e){

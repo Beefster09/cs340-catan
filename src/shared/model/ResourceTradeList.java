@@ -132,11 +132,11 @@ public class ResourceTradeList {
 		JSONObject tradeList = new JSONObject();
 		for (ResourceType type : ResourceType.values()) {
 			String resource = type.toString().toLowerCase();
-			if(wanted.containsKey(resource)){
-				tradeList.put(resource, -wanted.get(resource));
+			if(wanted.containsKey(type)){
+				tradeList.put(resource, -wanted.get(type));
 			}
-			else if(offered.containsKey(resource)){
-				tradeList.put(resource, offered.get(resource));
+			else if(offered.containsKey(type)){
+				tradeList.put(resource, offered.get(type));
 			}
 			else{
 				tradeList.put(resource, 0);
