@@ -2,8 +2,6 @@ package client.communication;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-
 import org.json.simple.JSONObject;
 import org.junit.Test;
 
@@ -302,7 +300,7 @@ public class ServerProxyTest {
 			resources.put(ResourceType.WHEAT.toString().toLowerCase(), 0L);
 			resources.put(ResourceType.WOOD.toString().toLowerCase(), 0L);
 
-			ResourceList cards = new ResourceList((JSONObject)resources);
+			ResourceList cards = new ResourceList(resources);
 			SP.discardCards(steve, cards);
 			System.out.println("Steve discarded 4 Brick");
 			
