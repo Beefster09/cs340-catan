@@ -92,6 +92,13 @@ public class TurnTracker {
 		return currentPlayer;
 	}
 	
+	public PlayerReference getLongestRoad() {
+		return longestRoad;
+	}
+	
+	public PlayerReference getLargestArmy() {
+		return largestArmy;
+	}
 	/** Passes the turn to the next player
 	 * @pre The current player has finished all mandatory actions
 	 * @post Control is passed onto the next player

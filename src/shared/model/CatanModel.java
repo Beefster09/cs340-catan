@@ -40,6 +40,7 @@ public class CatanModel {
 	 * @param winner
 	 * @param version
 	 */
+	
 	public CatanModel(MessageList chat, MessageList log, Board map,
 			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
 			List<Player> players, PlayerReference longestRoad,

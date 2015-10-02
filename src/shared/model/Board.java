@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import shared.definitions.MunicipalityType;
 import shared.exceptions.DuplicateKeyException;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
@@ -44,7 +45,7 @@ public class Board {
 	
 	public Board(int boardRadius, List<Hex> hexList, List<Port> ports,
 			List<Road> roads, List<Municipality> towns,	HexLocation robberLocation)
-					throws DuplicateKeyException, InvalidActionException {
+					throws DuplicateKeyException, GameInitializationException {
 		radius = boardRadius;
 		initializeHexesFromList(hexList);
 		initializePortsFromList(ports);
@@ -56,7 +57,8 @@ public class Board {
 		robber = robberLocation;
 	}
 	
-	public Board(JSONObject json) throws SchemaMismatchException {
+	public Board(JSONObject json)
+			throws SchemaMismatchException, GameInitializationException {
 		try {
 			radius = (int) (long) json.get("radius") - 1; // Remove center from radius
 			if (json.containsKey("hexes")) {
@@ -87,7 +89,6 @@ public class Board {
 			for (Object obj : (List) json.get("settlements")) {
 				towns.add(new Municipality(null, (JSONObject) obj, MunicipalityType.SETTLEMENT));
 			}
-			List<Municipality> cities = new ArrayList<>();
 			for (Object obj : (List) json.get("cities")) {
 				towns.add(new Municipality(null, (JSONObject) obj, MunicipalityType.CITY));
 			}
@@ -102,23 +103,31 @@ public class Board {
 			e.printStackTrace();
 			throw new SchemaMismatchException("Two (or more) objects share the same location:\n"
 					+ json.toJSONString());
-		} catch (InvalidActionException e) {
+		} catch (GameInitializationException e) {
 			throw new SchemaMismatchException(e.getMessage() + ":\n"
 					+ json.toJSONString());
 		}
 	}
 	
-	private void initializePortsFromList(List<Port> portData) throws DuplicateKeyException {
+	private void initializePortsFromList(List<Port> portData)
+			throws DuplicateKeyException, GameInitializationException {
 		ports = new HashMap<>();
 		for (Port port : portData) {
 			// Make sure the port is on the edge of the board
 			EdgeLocation location = port.getLocation();
-			int temp = location.getDistanceFromCenter();
+			/*
+			 * This function doesn't work for the moment.
 			if (location.getDistanceFromCenter() != radius || location.isSpoke()) {
-				System.out.println("AHHHHHHHHHHHHHH\nApparently this port is in an invalid spot.");
-				//throw new IndexOutOfBoundsException();
+				throw new IndexOutOfBoundsException();
 			}
-			// TODO: make sure the port is not next to another port
+			*/
+			// Ensure ports are not too close together
+			for (EdgeLocation neighbor : location.getNeighbors()) {
+				if (ports.containsKey(neighbor)) {
+					throw new GameInitializationException();
+				}
+			}
+			// Ensure there aren't two ports at the same location
 			if (ports.containsKey(location)) {
 				throw new DuplicateKeyException();
 			}
@@ -142,7 +151,7 @@ public class Board {
 	}
 
 	private void initializeMunicipalitiesFromList(List<Municipality> towns)
-			throws DuplicateKeyException, InvalidActionException {
+			throws DuplicateKeyException, GameInitializationException {
 		municipalities = new HashMap<>();
 		for (Municipality town : towns) {
 			// make sure the city is on the board.
@@ -153,7 +162,7 @@ public class Board {
 			// enforce Distance Rule
 			for (VertexLocation neighbor : location.getNeighbors()) {
 				if (municipalities.containsKey(neighbor)) {
-					throw new InvalidActionException("Distance Rule violation!");
+					throw new GameInitializationException("Distance Rule violation!");
 				}
 			}
 			if (municipalities.containsKey(location)) {
@@ -168,8 +177,10 @@ public class Board {
 	 * @throws DuplicateKeyException if any of the hexes are repeated.
 	 * @throws IndexOutOfBoundsException if any of the hex locations are outside the board's
 	 * boundaries, based on radius.
+	 * @throws GameInitializationException if there are not enough hexes to fill the board
 	 */
-	private void initializeHexesFromList(List<Hex> hexList) throws DuplicateKeyException {
+	private void initializeHexesFromList(List<Hex> hexList)
+			throws DuplicateKeyException, GameInitializationException {
 		hexes = new HashMap<>();
 		for (Hex hex : hexList) {
 			HexLocation location = hex.getLocation();
@@ -182,16 +193,31 @@ public class Board {
 			}
 			hexes.put(location, hex);
 		}
+		
+		for (HexLocation location : HexLocation.locationsWithinRadius(radius)) {
+			if (!hexes.containsKey(location)) {
+				throw new GameInitializationException("Some hexes are missing.");
+			}
+		}
 	}
 	
+	/**
+	 * @return a Collection of the all the hexes on the board (in no particular order)
+	 */
 	public Collection<Hex> getHexes() {
 		return hexes.values();
 	}
 
-	/**
+	/** Gets the Hex at the given location
 	 * @return the hex at the given location
+	 * @pre the location is actually on the board
+	 * @post none
+	 * @throws IndexOutOfBoundsException if the location is outside the board
 	 */
 	public Hex getHexAt(HexLocation location) {
+		if (location.getDistanceFromCenter() > radius) {
+			throw new IndexOutOfBoundsException();
+		}
 		if (hexes.containsKey(location)) {
 			return hexes.get(location);
 		}
@@ -200,6 +226,10 @@ public class Board {
 		}
 	}
 	
+	/** Gives a collection of all Hexes with the given number
+	 * @param number the number to search for
+	 * @return A Collection containing the hexes with the given number
+	 */
 	public Collection<Hex> getHexesByNumber(int number) {
 		List<Hex> result = new ArrayList<>();
 		for (Hex hex : hexes.values()) {
@@ -211,7 +241,7 @@ public class Board {
 	}
 
 	/**
-	 * @return the ports
+	 * @return a Collection of all the ports on the board (in no particular order)
 	 */
 	public Collection<Port> getPorts() {
 		return ports.values();
@@ -223,13 +253,25 @@ public class Board {
 	 * @return null otherwise
 	 */
 	public Port getPortAt(EdgeLocation location) {
+		if (location.getDistanceFromCenter() > radius) {
+			throw new IndexOutOfBoundsException();
+		}
 		if (ports.containsKey(location)) {
 			return ports.get(location);
 		}
 		else return null;
 	}
 	
+
+	/** Returns a port (if there is one) at the given location
+	 * @param location the VertexLocation to check
+	 * @return the port if there is a port at the given edge
+	 * @return null otherwise
+	 */
 	public Port getPortAt(VertexLocation location) {
+		if (location.getDistanceFromCenter() > radius) {
+			throw new IndexOutOfBoundsException();
+		}
 		Port port = null;
 		for (EdgeLocation loc: location.getEdges()) {
 			Port p = getPortAt(loc);
@@ -244,6 +286,10 @@ public class Board {
 		return port;
 	}
 	
+	/** Gets the owner of a particular port on the board
+	 * @param port
+	 * @return
+	 */
 	public PlayerReference getPortOwner(Port port) {
 		for (VertexLocation location : port.getLocation().getVertices()) {
 			Municipality town = getMunicipalityAt(location);
@@ -252,6 +298,10 @@ public class Board {
 		return null;
 	}
 	
+	/** Gets the owner of a port at a specific location on the board. (Useful?)
+	 * @param edge
+	 * @return
+	 */
 	public PlayerReference getOwnerOfPortAt(EdgeLocation edge) {
 		Port port = getPortAt(edge);
 		if (port == null) {
@@ -261,19 +311,38 @@ public class Board {
 	}
 
 	/**
-	 * @return the roads
+	 * @return a Collection of all the roads on the board (in no particular order)
 	 */
 	public Collection<Road> getRoads() {
 		return roads.values();
 	}
 	
+	/**
+	 * @param location
+	 * @return the road at the specified location
+	 * @return null if there is no road there
+	 * @pre the location is on the board
+	 * @throws IndexOutOfBoundsException if the road outside the boundaries of the board
+	 */
 	public Road getRoadAt(EdgeLocation location) {
+		if (location.getDistanceFromCenter() > radius) {
+			throw new IndexOutOfBoundsException();
+		}
 		if (roads.containsKey(location)) {
 			return roads.get(location);
 		}
 		else return null;
 	}
 	
+	/** Tells you if the given location is a valid place for the given player to build a road.
+	 * This does NOT check resource requirements!
+	 * @param player
+	 * @param location
+	 * @return true if the location is a legal place for the player to build a road
+	 * @return false otherwise
+	 * @pre none
+	 * @post none
+	 */
 	public boolean canBuildRoadAt(PlayerReference player, EdgeLocation location) {
 		if (location.getDistanceFromCenter() > radius) return false;
 		if (getRoadAt(location) == null) {
@@ -300,25 +369,32 @@ public class Board {
 	}
 
 	/**
-	 * @return the settlements
+	 * @return a Collection of all the municipalities on the board (in no particular order)
 	 */
 	public Collection<Municipality> getMunicipalities() {
 		return municipalities.values();
 	}
 	
 	public Municipality getMunicipalityAt(VertexLocation location) {
+		if (location.getDistanceFromCenter() > radius) {
+			throw new IndexOutOfBoundsException();
+		}
 		if (municipalities.containsKey(location)) {
 			return municipalities.get(location);
 		}
 		else return null;
 	}
 	
-	/**
+	/** Tells you if the given location is a valid place for the given player to build a settlement.
+	 * This does NOT check resource requirements!
 	 * @param player
 	 * @param location
-	 * @return
+	 * @return true if the given location is a valid place for the player to build a settlement
 	 */
 	public boolean canBuildSettlement(PlayerReference player, VertexLocation location) {
+		if (location.getDistanceFromCenter() > radius) {
+			return false;
+		}
 		if (getMunicipalityAt(location) == null) { // spot is open
 			// Apply Distance Rule
 			for (VertexLocation neighbor : location.getNeighbors()) {
@@ -357,6 +433,9 @@ public class Board {
 	public boolean canPlaceStartingPieces(VertexLocation settlement, EdgeLocation road) {
 		// The road must be next to the settlement
 		if (!road.getVertices().contains(settlement)) return false;
+		// Needs to be on the board
+		if (road.getDistanceFromCenter() > radius) return false;
+		if (settlement.getDistanceFromCenter() > radius) return false;
 		// There must not be a road at the location
 		if (getRoadAt(road) != null) return false;
 		
@@ -406,15 +485,15 @@ public class Board {
 	}
 	
 	public Map<EdgeLocation, Port> getPortMap() {
-		return ports;
+		return new HashMap<>(ports);
 	}
 	
 	public Map<VertexLocation, Municipality> getMunicipalityMap() {
-		return municipalities;
+		return new HashMap<>(municipalities);
 	}
 	
 	public Map<EdgeLocation, Road> getRoadMap() {
-		return roads;
+		return new HashMap<>(roads);
 	}
 	
 	private void initializeNumbers(boolean hasRandomNumbers) {

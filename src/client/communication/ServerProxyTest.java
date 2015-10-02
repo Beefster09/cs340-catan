@@ -2,367 +2,274 @@ package client.communication;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-
+import org.json.simple.JSONObject;
 import org.junit.Test;
 
-import server.ai.AIType;
-import shared.communication.Command;
 import shared.communication.GameHeader;
-import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
-import shared.exceptions.GameInitializationException;
-import shared.exceptions.GamePersistenceException;
-import shared.exceptions.InvalidActionException;
-import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
-import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
-import shared.exceptions.UserException;
-import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
-import shared.locations.HexLocation;
-import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
-import shared.model.CatanModel;
 import shared.model.PlayerReference;
-import shared.model.ResourceList;
+import shared.model.ResourceTradeList;
 
 public class ServerProxyTest {
+	ServerProxy SP;
 
-	private ServerProxy p;
-	
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testLogin() throws UserException, ServerException {
-		String username = "John";
-		String password = "password";
-		
-		Session first = p.login(username, password);
-	}
+	public void testOne() {
+		SP = new ServerProxy();
+		try{
+			SP.register("Steve", "steve");
+			GameHeader game = SP.createGame("test", false, false, false);
+			SP.joinGame(game.getId(), CatanColor.PURPLE);
+			System.out.println("Registered Steve");
+			
+			SP.register("Justin", "123");
+			SP.joinGame(game.getId(), CatanColor.BLUE);
+			System.out.println("Registered Justin");
+			
+			SP.register("Jordan", "Jordan");
+			SP.joinGame(game.getId(), CatanColor.GREEN);
+			System.out.println("Registered Jordan");
+			
+			SP.register("Grant", "abc_123");
+			SP.joinGame(game.getId(), CatanColor.ORANGE);
+			System.out.println("Registered Grant");
+						
+			PlayerReference steve = new PlayerReference(null, 0);
+			PlayerReference justin = new PlayerReference(null, 1);
+			PlayerReference jordan = new PlayerReference(null, 2);
+			PlayerReference grant = new PlayerReference(null, 3);
+			
+			SP.login("Steve", "steve");
+			SP.joinGame(game.getId(), CatanColor.PURPLE);
 
-	@Test
-	public void testRegister() throws UserException, ServerException {
-		String username = "John";
-		String password = "password";
-		
-		Session first = p.register(username, password);		
-	}
+			JSONObject location = new JSONObject();
+			location.put("x", 0L);
+			location.put("y", 1L);
+			location.put("direction", "NE");
+			EdgeLocation edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", 1L);
+			location.put("direction", "NW");
+			VertexLocation vertexLocation = new VertexLocation(location);
+			SP.buildRoad(steve, edgeLocation, true);
+			System.out.println("Steve Built a Road");
+			SP.buildSettlement(steve, vertexLocation, true);
+			System.out.println("Steve Built a Settlement");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his Turn");
+			
+//			SP.login("Justin", "123");
+//			SP.joinGame(game.getId(), CatanColor.BLUE);
+			
+			location = new JSONObject();
+			location.put("x", -1L);
+			location.put("y", 2L);
+			location.put("direction", "NW");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", -1L);
+			location.put("y", 2L);
+			location.put("direction", "W");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(justin, edgeLocation, true);
+			System.out.println("Justin Built a Road");
+			SP.buildSettlement(justin, vertexLocation, true);
+			System.out.println("Justin Built a Settlement");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his Turn");
+			
+//			SP.login("Jordan", "Jordan");
+//			SP.joinGame(game.getId(), CatanColor.GREEN);
+			
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", 1L);
+			location.put("direction", "NE");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", 1L);
+			location.put("direction", "E");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(jordan, edgeLocation, true);
+			System.out.println("Jordan Built a Road");
+			SP.buildSettlement(jordan, vertexLocation, true);
+			System.out.println("Jordan Built a Settlement");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his Turn");
+
+//			SP.login("Grant", "abc_123");
+//			SP.joinGame(game.getId(), CatanColor.ORANGE);
+			
+			location = new JSONObject();
+			location.put("x", -2L);
+			location.put("y", 2L);
+			location.put("direction", "N");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", -2L);
+			location.put("y", 2L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(grant, edgeLocation, true);
+			System.out.println("Grant Built a Road");
+			SP.buildSettlement(grant, vertexLocation, true);
+			System.out.println("Grant Built a Settlement");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his Turn");
+			
+			location = new JSONObject();
+			location.put("x", -1L);
+			location.put("y", 1L);
+			location.put("direction", "NW");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", -1L);
+			location.put("y", 1L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(grant, edgeLocation, true);
+			System.out.println("Grant Built a 2nd Road");
+			SP.buildSettlement(grant, vertexLocation, true);
+			System.out.println("Grant Built a 2nd Settlement");
+			SP.finishTurn(grant);
+			System.out.println("Grant finished his Turn");
+			
+//			SP.login("Jordan", "Jordan");
+//			SP.joinGame(game.getId(), CatanColor.GREEN);
+			
+			location = new JSONObject();
+			location.put("x", 2L);
+			location.put("y", 0L);
+			location.put("direction", "NW");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", 2L);
+			location.put("y", 0L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(jordan, edgeLocation, true);
+			System.out.println("Jordan Built a 2nd Road");
+			SP.buildSettlement(jordan, vertexLocation, true);
+			System.out.println("Jordan Built a 2nd Settlement");
+			SP.finishTurn(jordan);
+			System.out.println("Jordan finished his Turn");
+
+//			SP.login("Justin", "123");
+//			SP.joinGame(game.getId(), CatanColor.BLUE);
+			
+			location = new JSONObject();
+			location.put("x", -1L);
+			location.put("y", 2L);
+			location.put("direction", "N");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", -1L);
+			location.put("y", 2L);
+			location.put("direction", "NE");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(justin, edgeLocation, true);
+			System.out.println("Justin Built a 2nd Road");
+			SP.buildSettlement(justin, vertexLocation, true);
+			System.out.println("Justin Built a 2nd Settlement");
+			SP.finishTurn(justin);
+			System.out.println("Justin finished his Turn");
+
+//			SP.login("Steve", "steve");
+//			SP.joinGame(game.getId(), CatanColor.PURPLE);
+
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", -1L);
+			location.put("direction", "NW");
+			edgeLocation = new EdgeLocation(location);
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", -1L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			SP.buildRoad(steve, edgeLocation, true);
+			System.out.println("Steve Built a 2nd Road");
+			SP.buildSettlement(steve, vertexLocation, true);
+			System.out.println("Steve Built a 2nd Settlement");
+			SP.finishTurn(steve);
+			System.out.println("Steve finished his Turn");
+
+			SP.rollDice(steve, 4);
+			System.out.println("Steve rolled a 4");
+			location = new JSONObject();
+			location.put("x", 0L);
+			location.put("y", -1L);
+			location.put("direction", "NE");
+			edgeLocation = new EdgeLocation(location);
+			SP.buildRoad(steve, edgeLocation, false);
+			System.out.println("Steve built a 3rd road");
+			
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", -2L);
+			location.put("direction", "NW");
+			edgeLocation = new EdgeLocation(location);
+			SP.buildRoad(steve, edgeLocation, false);
+			System.out.println("Steve built a 4th road");
+			
+			JSONObject tradeJSON = new JSONObject();
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 1);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 1);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 1);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 0);
+			
+			ResourceTradeList trade = new ResourceTradeList(tradeJSON);
+			
+			SP.offerTrade(steve, trade, jordan);
+			System.out.println("Steve offered trade to Jordan");
+			SP.respondToTrade(jordan, true);
+			System.out.println("Jordan accepted trade");
+			
+			tradeJSON = new JSONObject();
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1);
+			
+			trade = new ResourceTradeList(tradeJSON);
+			
+			SP.offerTrade(steve, trade, justin);
+			System.out.println("Steve offered trade to Justin");
+			SP.respondToTrade(justin, false);
+			System.out.println("Justin declined trade");
 	
-	@Test
-	public void testGetGameList() throws UserException, ServerException {
-		
-		List<GameHeader> gameHeaders= p.getGameList();
-	}
-	
-	@Test
-	public void testCreateGame() throws UserException, ServerException, GameInitializationException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		String name = "Fun Game!";
-		boolean randomTiles = false;
-		boolean randomNumbers = false;
-		boolean randomPorts = false;
-		
-		p.createGame(user, name, randomTiles, randomNumbers, randomPorts);
-	}
-	
-	@Test
-	public void testJoinGame() throws UserException, ServerException, JoinGameException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		int gameID = 0;
-		p.joinGame(user, gameID, CatanColor.BLUE);
-	}
-	
-	
-	@Test
-	public void testSameGame() throws GamePersistenceException, ServerException {
-		
-		int gameID = 1;
-		String filename = "Catan";
-		p.saveGame(gameID, filename);
-		
-	}
-	
-	@Test
-	public void testLoadGame() throws GamePersistenceException, ServerException {
-		
-		int gameID = 1;
-		String filename = "Catan";
-		p.saveGame(gameID, filename);
-		
-		p.loadGame(filename);
-	}
-	
-	@Test
-	public void testGetModel() throws UserException, ServerException{
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		int version = 1;
-		CatanModel model = p.getModel(user, version);
-	}
-	
-	@Test
-	public void testResetGame() throws UserException, ServerException, GameInitializationException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.resetGame(user);
-	}
-	
-	@Test
-	public void testGetCommands() throws UserException, ServerException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		List<Command> commands = p.getCommands(user);
-	}
-	
-	@Test
-	public void testExecuteCommands() throws UserException, ServerException, InvalidActionException {	
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		List<Command> commands = p.getCommands(user);
-		
-		CatanModel model = p.executeCommands(user, commands);
-	}
-	
-	public void testAddAIPlayer() throws UserException, ServerException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		//p.addAIPlayer(user, type);
-	}
-	
-	public void testGetAITypes() throws UserException, ServerException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		//p.addAIPlayer(user, type);
-		
-		List<AIType> AITypes = p.getAITypes(user);
-	}
-	
-	@Test
-	public void testSendChat() throws UserException, ServerException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		String message = "yoyo wutup dawg";
-		
-		CatanModel model = p.sendChat(user, message);
-	}
-	
-	@Test
-	public void testRollDice() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		int number = 1;
-		
-		CatanModel model = p.rollDice(user, number);
-	}
-	
-	@Test
-	public void restRobPlayer() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		HexLocation newRobberLocation = new HexLocation(2, 2);
-		
-		int version = 1;
-		CatanModel model = p.getModel(user, version);
-		
-		PlayerReference victim = new PlayerReference(model, 1);
-		
-		model = p.robPlayer(user, newRobberLocation, victim);
-	}
-	
-	@Test
-	public void testBuyDevCard() throws UserException, ServerException, InvalidActionException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.buyDevCard(user);
-	}
-	
-	@Test
-	public void testYearOfPlenty() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.yearOfPlenty(user, ResourceType.BRICK, ResourceType.ORE);
-	}
-	
-	@Test
-	public void testRoadBuilding() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		HexLocation one = new HexLocation(1, 1);
-		HexLocation two = new HexLocation(2, 2);
-		
-		EdgeLocation road1 = new EdgeLocation(one, EdgeDirection.North);
-		EdgeLocation road2 = new EdgeLocation(two, EdgeDirection.North);
-		
-		CatanModel model = p.roadBuilding(user, road1, road2);
-	}
-	
-	@Test
-	public void testSolder() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		HexLocation newRobberLocation = new HexLocation(2, 2);
-		
-		int version = 1;
-		CatanModel model = p.getModel(user, version);
-		
-		PlayerReference victim = new PlayerReference(model, 1);
-		
-		model = p.soldier(user, newRobberLocation, victim);
-	}
-	
-	@Test
-	public void testMonopoly() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.monopoly(user, ResourceType.BRICK);
-	}
-	
-	@Test
-	public void testBuildRoad() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		HexLocation one = new HexLocation(1, 1);
-		EdgeLocation location = new EdgeLocation(one, EdgeDirection.North);
-		
-		CatanModel model = p.buildRoad(user, location, true);
-	}
-	
-	@Test
-	public void testBuildSettlement() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		HexLocation one = new HexLocation(1, 1);
-		VertexLocation location = new VertexLocation(one, VertexDirection.East);
-		
-		CatanModel model = p.buildSettlement(user, location, true);
-	}
-	
-	@Test
-	public void testBuildCity() throws UserException, ServerException, InvalidActionException {
-		
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		HexLocation one = new HexLocation(1, 1);
-		VertexLocation location = new VertexLocation(one, VertexDirection.East);
-		
-		CatanModel model = p.buildCity(user, location);
-	}
-	
-	@Test
-	public void testOfferTrade() throws UserException, ServerException, NotYourTurnException {	
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		ResourceList offer = new ResourceList();
-		
-		CatanModel model = p.offerTrade(user, offer);
-	}
-	
-	@Test
-	public void testRespondToTrade() throws UserException, ServerException, TradeException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.respondToTrade(user, true);	
-	}
-	
-	@Test
-	public void testMaritimeTrade() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		int ratio = 3;
-		
-		CatanModel model = p.maritimeTrade(user, ResourceType.BRICK, ResourceType.WOOD, ratio);
-	}
-	
-	@Test
-	public void testDiscardCards() throws UserException, ServerException, InvalidActionException {
-		String username = "John";
-		String password = "password";
-		
-		Session user = p.register(username, password);
-		ResourceList cards = new ResourceList();
-		
-		CatanModel model = p.discardCards(user, cards);
-	}
-	
-	@Test
-	public void testFinishTurn() {
-		String username = "John";
-		String password = "password";
-		
-		//Session user = p.register(username, password);
-		
-		//CatanModel model = p.finishTurn(user);
-		
+			tradeJSON = new JSONObject();
+			tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), -1);
+			tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), 0);
+			tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1);
+
+			SP.offerTrade(steve, trade, justin);
+			System.out.println("Steve offered trade to Justin");
+			SP.respondToTrade(justin, true);
+			System.out.println("Justin accepted trade");
+			
+			location = new JSONObject();
+			location.put("x", 1L);
+			location.put("y", -2L);
+			location.put("direction", "NW");
+			vertexLocation = new VertexLocation(location);
+			SP.buildSettlement(steve, vertexLocation, false);
+			System.out.println("Steve built a 3rd settlement");
+
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			fail("Test1");
+		}
 	}
 }

@@ -4,7 +4,10 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +15,9 @@ import org.junit.Test;
 
 import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
+import shared.exceptions.DuplicateKeyException;
+import shared.exceptions.GameInitializationException;
+import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
@@ -166,35 +172,312 @@ public class BoardTest {
 		assertEquals(ResourceType.ORE, board.getPortAt(new EdgeLocation(-2, 1, EdgeDirection.NorthWest)).getResource());
 		assertEquals(null, board.getPortAt(new EdgeLocation(-1,-1, EdgeDirection.NorthWest)).getResource());
 		
-		// TODO test for fails
+		// test for fails/exceptions
+		List<Hex> badHexes;
+		List<Port> badPorts;
+		List<Road> badRoads;
+		List<Municipality> badTowns;
+
+		// Hex out of bounds
+		try {
+			badHexes = new ArrayList<>(hexList);
+			badHexes.add(new Hex(new HexLocation( 3,-1), ResourceType.BRICK, 4));
+			new Board(2, badHexes, portList, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+		
+		// 2 Hexes at same location
+		try {
+			badHexes = new ArrayList<>(hexList);
+			badHexes.add(new Hex(new HexLocation(-1, 1), ResourceType.BRICK, 4));
+			new Board(2, badHexes, portList, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (DuplicateKeyException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+		
+		// 1 Hex is missing
+		try {
+			badHexes = new ArrayList<>(hexList);
+			badHexes.remove(3);
+			new Board(2, badHexes, portList, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (GameInitializationException e) {
+			assertEquals("Some hexes are missing.", e.getMessage());
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+
+		// Duplicate port
+		try {
+			badPorts = new ArrayList<>(portList);
+			badPorts.add(new Port(new EdgeLocation( 2, 0, EdgeDirection.SouthEast), ResourceType.SHEEP));
+			new Board(2, hexList, badPorts, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (DuplicateKeyException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+
+		// 2 ports too close to each other
+		try {
+			badPorts = new ArrayList<>(portList);
+			badPorts.add(new Port(new EdgeLocation( 2, 0, EdgeDirection.NorthEast), null));
+			new Board(2, hexList, badPorts, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (GameInitializationException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+
+		// Port in middle of board
+		try {
+			badPorts = new ArrayList<>(portList);
+			badPorts.add(new Port(new EdgeLocation( 0, 0, EdgeDirection.South), ResourceType.WOOD));
+			new Board(2, hexList, badPorts, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+
+		// Port outside board
+		try {
+			badPorts = new ArrayList<>(portList);
+			badPorts.add(new Port(new EdgeLocation( 0, -5, EdgeDirection.North), ResourceType.WOOD));
+			new Board(2, hexList, badPorts, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+		
+		// Duplicate road
+		try {
+			badRoads = new ArrayList<>(roadList);
+			badRoads.add(new Road(new EdgeLocation( 2, 0, EdgeDirection.NorthEast), blue));
+			new Board(2, hexList, portList, badRoads, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (DuplicateKeyException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+		
+		// Two roads at same location
+		try {
+			badRoads = new ArrayList<>(roadList);
+			badRoads.add(new Road(new EdgeLocation( 3,-1, EdgeDirection.SouthWest), red));
+			new Board(2, hexList, portList, badRoads, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (DuplicateKeyException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		}
+		
+		// Road outside board
+		try {
+			badRoads = new ArrayList<>(roadList);
+			badRoads.add(new Road(new EdgeLocation( 30,-1, EdgeDirection.SouthWest), red));
+			new Board(2, hexList, portList, badRoads, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// duplicate municipality
+		try {
+			badTowns = new ArrayList<>(townList);
+			badTowns.add(new Municipality(new VertexLocation(-1,-1, VertexDirection.SouthEast),
+					MunicipalityType.SETTLEMENT, blue));
+			new Board(2, hexList, portList, roadList, badTowns, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (DuplicateKeyException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// 2 municipalities at same location
+		try {
+			badTowns = new ArrayList<>(townList);
+			badTowns.add(new Municipality(new VertexLocation(0,-1, VertexDirection.West),
+					MunicipalityType.SETTLEMENT, red));
+			new Board(2, hexList, portList, roadList, badTowns, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (DuplicateKeyException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// settlement outside board
+		try {
+			badTowns = new ArrayList<>(townList);
+			badTowns.add(new Municipality(new VertexLocation(10,-5, VertexDirection.NorthEast),
+					MunicipalityType.SETTLEMENT, green));
+			new Board(2, hexList, portList, roadList, badTowns, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// distance rule violation
+		try {
+			badTowns = new ArrayList<>(townList);
+			badTowns.add(new Municipality(new VertexLocation( 1, 0, VertexDirection.NorthEast),
+					MunicipalityType.SETTLEMENT, green));
+			new Board(2, hexList, portList, roadList, badTowns, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (GameInitializationException e) {
+			assertEquals("Distance Rule violation!", e.getMessage());
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// Robber outside board
+		try {
+			new Board(2, hexList, portList, roadList, townList, new HexLocation(10,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// Smaller board radius
+		try {
+			new Board(1, hexList, portList, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (IndexOutOfBoundsException e) {
+			// ANYTHING could be out of bounds
+		} catch (Exception e) {
+			fail("Wrong exception");
+		} 
+		
+		// Larger board radius
+		try {
+			new Board(4, hexList, portList, roadList, townList, new HexLocation(1,1));
+			fail("expected an exception.");
+		} catch (Exception e) {
+			// Which exception is thrown doesn't really matter.
+		} 
+		
 	}
 	
 	@Test
 	public void testGetHexesByNumber() {
 		assertEquals(1, board.getHexesByNumber(2).size());
 		assertEquals(1, board.getHexesByNumber(12).size());
+		assertEquals(1, board.getHexesByNumber(Hex.EMPTY_NUMBER).size());
+		assertEquals(0, board.getHexesByNumber(7).size());
 		
 		for (int i=3; i<=11; ++i) {
 			if (i == 7) continue;
 			assertEquals(2, board.getHexesByNumber(i).size());
 		}
 		
-		// TODO: this needs work.
-	}
+		Collection<Hex> setA, setB, setC;
+		setA = board.getHexesByNumber(4);
+		setB = board.getHexesByNumber(8);
+		setC = board.getHexesByNumber(11);
 
-	@Test
-	public void testGetPortAtVertexLocation() {
-		fail("Not yet implemented");
+		assertTrue(setA.contains(new Hex( 0, 0, ResourceType.WHEAT, 4)));
+		assertTrue(setA.contains(new Hex( 0,-2, ResourceType.WHEAT, 4)));
+		assertTrue(setB.contains(new Hex(-1,-1, ResourceType.WOOD, 8)));
+		assertTrue(setB.contains(new Hex( 0, 2, ResourceType.SHEEP, 8)));
+		assertTrue(setC.contains(new Hex( 0, 1, ResourceType.ORE, 11)));
+		assertTrue(setC.contains(new Hex( 1,-2, ResourceType.WOOD, 11)));
+		
+		List<Hex> bigBoard = new ArrayList<>();
+		Map<Integer, List<Hex>> numberTable = new HashMap<>();
+		
+		Random rand = new Random(12345L); // We need a consistent random to make this test better.
+		final int radius = 5;
+		
+		for (HexLocation loc : HexLocation.locationsWithinRadius(radius)) {
+			int number = rand.nextInt(10);
+			number += (number < 5) ? 2 : 3;
+			
+			if (!numberTable.containsKey(number)) {
+				numberTable.put(number, new ArrayList<Hex>());
+			}
+			
+			// Resource type doesn't matter.
+			Hex hex = new Hex(loc, ResourceType.SHEEP, number);
+			numberTable.get(number).add(hex);
+			bigBoard.add(hex);
+		}
+		
+		try {
+			Board testBoard = new Board(radius, bigBoard, new ArrayList<Port>(),
+					new ArrayList<Road>(), new ArrayList<Municipality>(), new HexLocation(0,0));
+			
+			for (int i=2; i<=12; ++i) {
+				if (i == 7) continue;
+				Collection<Hex> a = numberTable.get(i);
+				Collection<Hex> b = testBoard.getHexesByNumber(i);
+				// Confirm that they contain the same hexes
+				assertTrue(a.containsAll(b));
+				assertTrue(b.containsAll(a));
+			}
+			
+		} catch (DuplicateKeyException e) {
+			e.printStackTrace();
+			fail("Unexpected exception");
+		} catch (GameInitializationException e) {
+			e.printStackTrace();
+			fail("Unexpected exception");
+		}
 	}
 
 	@Test
 	public void testGetPortOwner() {
-		fail("Not yet implemented");
+		assertEquals(blue, board.getPortOwner(
+				new Port(new EdgeLocation( 2, 0, EdgeDirection.SouthEast), ResourceType.SHEEP)));
+		assertEquals(blue, board.getPortOwner(
+				new Port(new EdgeLocation( 2,-1, EdgeDirection.NorthEast), null)));
+		assertEquals(null, board.getPortOwner(
+				new Port(new EdgeLocation(-1, 2, EdgeDirection.South), ResourceType.BRICK)));
 	}
 
 	@Test
 	public void testGetOwnerOfPortAt() {
-		fail("Not yet implemented");
+		assertEquals(blue, board.getOwnerOfPortAt(new EdgeLocation(2, 0, EdgeDirection.SouthEast)));
+		assertEquals(blue, board.getOwnerOfPortAt(new EdgeLocation(2,-1, EdgeDirection.NorthEast)));
+
+		// Location in middle of board
+		try {
+			board.getOwnerOfPortAt(new EdgeLocation(0, 0, EdgeDirection.South));
+			fail("expected an exception.");
+		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
+			fail("Wrong Exception");
+		}
+		
+		// Location on edge with no port
+		try {
+			board.getOwnerOfPortAt(new EdgeLocation(0,-2, EdgeDirection.NorthWest));
+			fail("expected an exception.");
+		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
+			fail("Wrong Exception");
+		}
 	}
 
 	@Test
@@ -248,20 +531,20 @@ public class BoardTest {
 
 	@Test
 	public void testCanBuildCity() {
-		assertFalse(board.canBuildSettlement(green, 
+		assertFalse(board.canBuildCity(green, 
 				new VertexLocation(-1, 1, VertexDirection.SouthEast))); // opponent's settlement
-//		assertFalse(board.canBuildSettlement(green, 
-//				new VertexLocation(-1, 1, VertexDirection.NorthEast))); // no settlement there, but valid place for settlement
-		assertFalse(board.canBuildSettlement(blue, 
+		assertFalse(board.canBuildCity(green, 
+				new VertexLocation(-1, 1, VertexDirection.NorthEast))); // no settlement there, but valid place for settlement
+		assertFalse(board.canBuildCity(blue, 
 				new VertexLocation(-1, 8, VertexDirection.SouthEast))); // outside board
-		assertFalse(board.canBuildSettlement(red, 
+		assertFalse(board.canBuildCity(red, 
 				new VertexLocation( 0, 0, VertexDirection.East))); // already your own city there
-		assertFalse(board.canBuildSettlement(blue, 
+		assertFalse(board.canBuildCity(blue, 
 				new VertexLocation( 0, 0, VertexDirection.East))); // opponent's city there
 		
-		assertTrue(board.canBuildSettlement(red, 
+		assertTrue(board.canBuildCity(red, 
 				new VertexLocation(-1, 1, VertexDirection.SouthEast)));
-		assertTrue(board.canBuildSettlement(green, 
+		assertTrue(board.canBuildCity(green, 
 				new VertexLocation(-1, 1, VertexDirection.West)));
 		
 	}
@@ -274,6 +557,36 @@ public class BoardTest {
 
 		assertTrue(board.canMoveRobberTo(new HexLocation(2, 0)));
 		assertTrue(board.canMoveRobberTo(new HexLocation(0,-2)));
+	}
+	
+	@Test
+	public void testCanPlaceStartingPieces () {
+		// In theory, we would do this on a FRESH board, but the stock test board will do just fine.
+		assertTrue(board.canPlaceStartingPieces(
+				new VertexLocation( 0, 0, VertexDirection.West),
+				new EdgeLocation(   0, 0, EdgeDirection.NorthWest)));
+		assertTrue(board.canPlaceStartingPieces(
+				new VertexLocation( 1, 1, VertexDirection.NorthWest),
+				new EdgeLocation(   1, 1, EdgeDirection.NorthWest)));
+		
+		assertFalse(board.canPlaceStartingPieces( // Road spot taken
+				new VertexLocation( 0, 0, VertexDirection.West),
+				new EdgeLocation(   0, 0, EdgeDirection.SouthWest)));
+		assertFalse(board.canPlaceStartingPieces( // Town spot taken
+				new VertexLocation( 0, 0, VertexDirection.East),
+				new EdgeLocation(   0, 0, EdgeDirection.NorthEast)));
+		assertFalse(board.canPlaceStartingPieces( // Distance Rule
+				new VertexLocation( 0, 0, VertexDirection.NorthEast),
+				new EdgeLocation(   0, 0, EdgeDirection.North)));
+		assertFalse(board.canPlaceStartingPieces( // Road off the board
+				new VertexLocation( 1, 1, VertexDirection.SouthEast),
+				new EdgeLocation(   2, 1, EdgeDirection.SouthWest)));
+		assertFalse(board.canPlaceStartingPieces( // Both off the board
+				new VertexLocation(10, 2, VertexDirection.West),
+				new EdgeLocation(  10, 2, EdgeDirection.SouthWest)));
+		assertFalse(board.canPlaceStartingPieces( // Settlement not adjacent to road
+				new VertexLocation( 0, 0, VertexDirection.West),
+				new EdgeLocation(   1, 0, EdgeDirection.SouthWest)));
 	}
 
 }

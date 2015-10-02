@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cs340-catan" default="build">
+
+<target name="clean">
+  <delete dir="bin" />
+  <delete dir="target" />
+</target>
+
+<target name="init">
+  <mkdir dir="bin"/>
+  <mkdir dir="target" />
+</target>
+
+<path id="compile.classpath">
+  <!-- Adds provided dependencies -->
+  <fileset dir="lib">
+    <include name="*.jar"/>
+  </fileset>
+  <!-- Adds external dependencies ->
+  <fileset dir="WebContent/WEB-INF/lib">
+    <include name="*.jar"/>
+  </fileset-->
+</path>
+
+<target name="compile" depends="init" >
+  <javac destdir="bin" debug="true" srcdir="src" includeantruntime="true">
+    <classpath refid="compile.classpath"/>
+  </javac>
+  <!-- Adds the xml config files to the build->
+  <copy todir="build/classes">
+    <fileset dir="src" includes="**/*.xml"/>
+  </copy-->
+</target>
+
+<target name="test" depends="compile">
+  <junit printsummary="yes" haltonfailure="yes">
+    <classpath>
+      <pathelement location="bin"/>
+      <pathelement location="lib/junit.jar"/>
+      <!--path refid="compile.classpath"/-->
+    </classpath>
+  	<formatter type="plain" usefile="true" extension=".log" />
+    <test name="shared.locations.HexLocationTest" haltonfailure="no"/>
+    <test name="shared.locations.EdgeLocationTest" haltonfailure="no"/>
+    <test name="shared.locations.VertexLocationTest" haltonfailure="no"/>
+    <test name="shared.model.BoardTest" haltonfailure="no"/>
+    <test name="shared.model.ModelFacadeTest" haltonfailure="no"/>
+    <test name="client.communication.ServerProxyTest" haltonfailure="no"/>
+    <!--test name="server.communication.ServerTest" haltonfailure="no" outfile="test.out" /-->
+  </junit>
+</target>
+
+<target name="build" depends="test">
+</target>
+</project>

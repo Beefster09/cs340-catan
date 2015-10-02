@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import shared.definitions.*;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.*;
 
@@ -26,6 +27,10 @@ public class ModelFacade {
 			model = startingModel;
 		}
 		
+		public CatanModel getCatanModel(){
+			return model;
+		}
+		
 		public static void main(String args[]) throws Exception {
 			JSONParser parser = new JSONParser();
 			Reader r = new BufferedReader(new FileReader("json_test.json"));
@@ -40,7 +45,7 @@ public class ModelFacade {
 			//System.out.println(port);
 		}
 		
-		public synchronized void updateFromJSON(JSONObject json) {
+		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			//int newVersion = (int) (long) json.get("version");
 			//if (getVersion() == newVersion)
 			//	return;
@@ -102,11 +107,17 @@ public class ModelFacade {
 				int winner = (int) (long) json.get("winner");
 				model.setWinner(new PlayerReference(model, winner));
 				
-			} catch (SchemaMismatchException e) {
+				return model;
+				
+			} catch (SchemaMismatchException | GameInitializationException e) {
 				System.out.println("Can't update");
 				e.printStackTrace();
 			}
+			return model;
+			
+			
 		}
+		
 		public synchronized void updateBankFromJSON(JSONObject json) {
 			try {
 				model.setBank(new Bank(json));
@@ -152,7 +163,6 @@ public class ModelFacade {
 			}
 			else
 				return false;
-			
 		}
 		
 		public synchronized void doRob() {

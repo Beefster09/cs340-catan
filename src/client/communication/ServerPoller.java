@@ -33,6 +33,11 @@ public class ServerPoller {
 	ClientCommunicator comm;
 	Session user;
 	ModelFacade modelHandler;
+	
+	public static void main() {
+		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));
+		poller.start();
+	}
 
 	/**
 	 * Creates the Poller
@@ -73,6 +78,7 @@ public class ServerPoller {
 					if (model != null) {
 						modelHandler.updateFromJSON(model);
 					}
+					System.out.println("Updated OK!");
 					
 				} catch (ServerException | InvalidActionException e) {
 					System.out.println("Server error, could not connect");
