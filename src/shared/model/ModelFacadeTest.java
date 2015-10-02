@@ -55,11 +55,17 @@ public class ModelFacadeTest {
 		//test if it's players current turn and he hasn't rolled
 		PlayerReference currentPlayer = model.getTurnTracker().getCurrentPlayer();
 		boolean can = m.canRoll(currentPlayer);
+		assertTrue(can);
+		
+		//test if it is player's turn but he has already rolled
+		m.doRoll(currentPlayer);
+		can = m.canRoll(currentPlayer);
 		assertFalse(can);
 		
 		//test if its not player's current turn
-		
-		//test if it is player's turn but he has already rolled
+		PlayerReference otherPlayer = new PlayerReference(m.getCatanModel(), 3);
+		can = m.canRoll(otherPlayer);
+		assertFalse(can);
 		}
 	
 	@Test
