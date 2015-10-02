@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import server.ai.AIType;
@@ -26,6 +28,7 @@ import shared.locations.HexLocation;
 import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
 import shared.model.CatanModel;
+import shared.model.ModelFacade;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 
@@ -33,6 +36,18 @@ public class ServerTest {
 
 
 	private Server p;
+	private CatanModel testModel;
+	private ModelFacade facade;
+	
+	@BeforeClass
+	public void setup() throws UserException, ServerException, InvalidActionException {
+		String username = "John";
+		String password = "password";
+		
+		Session user = p.register(username, password);
+		int version = 1;
+		testModel = facade.updateFromJSON(p.getModel(version));
+	}
 	
 	@Test
 	public void testLogin() throws UserException, ServerException {
@@ -51,13 +66,13 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testGetGameList() throws UserException, ServerException {
+	public void testGetGameList() throws UserException, ServerException, InvalidActionException {
 		
 		List<GameHeader> gameHeaders= p.getGameList();
 	}
 	
 	@Test
-	public void testCreateGame() throws UserException, ServerException, GameInitializationException {
+	public void testCreateGame() throws UserException, ServerException, GameInitializationException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
@@ -68,7 +83,7 @@ public class ServerTest {
 		boolean randomNumbers = false;
 		boolean randomPorts = false;
 		
-		p.createGame(user, name, randomTiles, randomNumbers, randomPorts);
+		p.createGame(name, randomTiles, randomNumbers, randomPorts);
 	}
 	
 	@Test
@@ -80,12 +95,12 @@ public class ServerTest {
 		Session user = p.register(username, password);
 		
 		int gameID = 0;
-		p.joinGame(user, gameID, CatanColor.BLUE);
+		p.joinGame(gameID, CatanColor.BLUE);
 	}
 	
 	
 	@Test
-	public void testSameGame() throws GamePersistenceException, ServerException {
+	public void testSameGame() throws GamePersistenceException, ServerException, InvalidActionException {
 		
 		int gameID = 1;
 		String filename = "Catan";
@@ -94,7 +109,7 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testLoadGame() throws GamePersistenceException, ServerException {
+	public void testLoadGame() throws GamePersistenceException, ServerException, InvalidActionException {
 		
 		int gameID = 1;
 		String filename = "Catan";
@@ -104,35 +119,35 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testGetModel() throws UserException, ServerException{
+	public void testGetModel() throws UserException, ServerException, InvalidActionException{
 		
 		String username = "John";
 		String password = "password";
 		
 		Session user = p.register(username, password);
 		int version = 1;
-		CatanModel model = p.getModel(user, version);
+		JSONObject model = p.getModel(version);
 	}
 	
 	@Test
-	public void testResetGame() throws UserException, ServerException, GameInitializationException {
+	public void testResetGame() throws UserException, ServerException, GameInitializationException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
 		
 		Session user = p.register(username, password);
 		
-		CatanModel model = p.resetGame(user);
+		JSONObject model = p.resetGame();
 	}
 	
 	@Test
-	public void testGetCommands() throws UserException, ServerException {
+	public void testGetCommands() throws UserException, ServerException, InvalidActionException {
 		String username = "John";
 		String password = "password";
 		
 		Session user = p.register(username, password);
 		
-		List<Command> commands = p.getCommands(user);
+		List<Command> commands = p.getCommands();
 	}
 	
 	@Test
@@ -142,9 +157,9 @@ public class ServerTest {
 		
 		Session user = p.register(username, password);
 		
-		List<Command> commands = p.getCommands(user);
+		List<Command> commands = p.getCommands();
 		
-		CatanModel model = p.executeCommands(user, commands);
+		JSONObject model = p.executeCommands(commands);
 	}
 	
 	public void testAddAIPlayer() throws UserException, ServerException {
@@ -156,7 +171,7 @@ public class ServerTest {
 		//p.addAIPlayer(user, type);
 	}
 	
-	public void testGetAITypes() throws UserException, ServerException {
+	public void testGetAITypes() throws UserException, ServerException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
@@ -165,20 +180,21 @@ public class ServerTest {
 		
 		//p.addAIPlayer(user, type);
 		
-		List<AIType> AITypes = p.getAITypes(user);
+		List<String> AITypes = p.getAITypes();
 	}
 	
 	@Test
-	public void testSendChat() throws UserException, ServerException {
+	public void testSendChat() throws UserException, ServerException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		String message = "yoyo wutup dawg";
 		
-		CatanModel model = p.sendChat(user, message);
+		JSONObject model = p.sendChat(user, message);
 	}
 	
 	@Test
@@ -186,11 +202,12 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		int number = 1;
 		
-		CatanModel model = p.rollDice(user, number);
+		JSONObject model = p.rollDice(user, number);
 	}
 	
 	@Test
@@ -202,10 +219,8 @@ public class ServerTest {
 		
 		HexLocation newRobberLocation = new HexLocation(2, 2);
 		
-		int version = 1;
-		CatanModel model = p.getModel(user, version);
 		
-		PlayerReference victim = new PlayerReference(model, 1);
+		PlayerReference victim = new PlayerReference(testModel, 1);
 		
 		model = p.robPlayer(user, newRobberLocation, victim);
 	}

@@ -115,9 +115,12 @@ public class Board {
 		for (Port port : portData) {
 			// Make sure the port is on the edge of the board
 			EdgeLocation location = port.getLocation();
+			/*
+			 * This function doesn't work for the moment.
 			if (location.getDistanceFromCenter() != radius || location.isSpoke()) {
 				throw new IndexOutOfBoundsException();
 			}
+			*/
 			// Ensure ports are not too close together
 			for (EdgeLocation neighbor : location.getNeighbors()) {
 				if (ports.containsKey(neighbor)) {
