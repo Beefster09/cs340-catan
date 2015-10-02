@@ -68,9 +68,9 @@ public class Player {
 			name = (String) json.get("name");
 			color = CatanColor.getColorFromString((String) json.get("color"));
 			
-			resources = new ResourceList((JSONObject) json.get("resources")); 
-			newDevCards = new DevCardList((JSONObject) json.get("newDevCards")); 
-			oldDevCards = new DevCardList((JSONObject) json.get("oldDevCards")); 
+			resources = ResourceList.fromJSONObject((JSONObject) json.get("resources")); 
+			newDevCards = DevCardList.fromJSONObject((JSONObject) json.get("newDevCards")); 
+			oldDevCards = DevCardList.fromJSONObject((JSONObject) json.get("oldDevCards")); 
 
 			playedDevCard	= (boolean) json.get("playedDevCard");
 			discarded		= (boolean) json.get("discarded");

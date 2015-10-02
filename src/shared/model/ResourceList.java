@@ -42,13 +42,14 @@ public class ResourceList {
 		}
 	}
 	
-	public ResourceList(JSONObject json) throws SchemaMismatchException {
-		resources = new HashMap<>();
+	public static ResourceList fromJSONObject(JSONObject json) throws SchemaMismatchException {
+		ResourceList self = new ResourceList();
+		self.resources = new HashMap<>();
 		try {
 			for (ResourceType type : ResourceType.values()) {
 				String key = type.toString().toLowerCase();
 				if (json.containsKey(key)) {
-					resources.put(type, (int) (long) json.get(key));
+					self.resources.put(type, (int) (long) json.get(key));
 				}
 				else {
 					throw new SchemaMismatchException("A resource count is missing from the " +
@@ -60,6 +61,7 @@ public class ResourceList {
 			throw new SchemaMismatchException("The JSON does not match the expected schema" +
 					"for a ResourceList:\n" + json.toJSONString());
 		}
+		return self;
 	}
 	
 	/** Creates a ResourceList with the given resource amounts. Values will be copied.

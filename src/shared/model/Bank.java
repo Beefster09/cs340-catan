@@ -51,7 +51,7 @@ public class Bank {
 	}
 	
 	public Bank(JSONObject json) throws SchemaMismatchException {
-		resources = new ResourceList(json);
+		resources = ResourceList.fromJSONObject(json);
 	}
 	
 	/**
