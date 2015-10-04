@@ -137,20 +137,20 @@ public class ResourceList {
 		int wheat = 0;
 		int sheep = 0;
 		
-		if(resources.containsKey(ResourceType.BRICK)){
-			brick = resources.get(ResourceType.BRICK);
+		if(resources.containsKey(ResourceType.BRICK.toString().toLowerCase())){
+			brick = resources.get(ResourceType.BRICK.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.ORE)){
-			ore = resources.get(ResourceType.ORE);
+		if(resources.containsKey(ResourceType.ORE.toString().toLowerCase())){
+			ore = resources.get(ResourceType.ORE.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.WOOD)){
-			wood = resources.get(ResourceType.WOOD);
+		if(resources.containsKey(ResourceType.WOOD.toString().toLowerCase())){
+			wood = resources.get(ResourceType.WOOD.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.WHEAT)){
-			wheat = resources.get(ResourceType.WHEAT);
+		if(resources.containsKey(ResourceType.WHEAT.toString().toLowerCase())){
+			wheat = resources.get(ResourceType.WHEAT.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.SHEEP)){
-			sheep = resources.get(ResourceType.SHEEP);
+		if(resources.containsKey(ResourceType.SHEEP.toString().toLowerCase())){
+			sheep = resources.get(ResourceType.SHEEP.toString().toLowerCase());
 		}
 
 		o.put("brick", brick);
