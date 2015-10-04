@@ -39,7 +39,7 @@ public class ServerProxy implements IServer {
 	private ClientCommunicator commuincator = new ClientCommunicator();
 	
 	public static void main(String[] args) throws UserException, ServerException, InvalidActionException, GameInitializationException, IllegalArgumentException, JoinGameException{
-}
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -336,10 +336,10 @@ public class ServerProxy implements IServer {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Year_of_Plenty");
 		o.put("requestType", "POST");
-		o.put("type", "year_of_Plenty");
+		o.put("type", "Year_of_Plenty");
 		o.put("playerIndex", user.getIndex());
-		o.put("resource1", type1.toString());
-		o.put("resource2", type2.toString());
+		o.put("resource1", type1.toString().toLowerCase());
+		o.put("resource2", type2.toString().toLowerCase());
 		
 		return commuincator.send(o);
 	}
@@ -368,7 +368,7 @@ public class ServerProxy implements IServer {
 			PlayerReference victim)
 					throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/Solder");
+		o.put("url","http://localhost:8081/moves/Soldier");
 		o.put("requestType", "POST");
 		o.put("type", "Soldier");
 		o.put("playerIndex", user.getIndex());
@@ -389,7 +389,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://localhost:8081/moves/Monopoly");
 		o.put("requestType", "POST");
 		o.put("type", "Monopoly");
-		o.put("resource", type.toString());
+		o.put("resource", type.toString().toLowerCase());
 		o.put("playerIndex", user.getIndex());
 		
 		return commuincator.send(o);
@@ -485,8 +485,8 @@ public class ServerProxy implements IServer {
 		o.put("type", "maritimeTrade");
 		o.put("playerIndex", user.getIndex());
 		o.put("ratio", ratio);
-		o.put("inputResource", inResource.toString());
-		o.put("outputResource", outResource.toString());
+		o.put("inputResource", inResource.toString().toLowerCase());
+		o.put("outputResource", outResource.toString().toLowerCase());
 		
 		return commuincator.send(o);
 	}
@@ -535,7 +535,7 @@ public class ServerProxy implements IServer {
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Monument");
-		o.put("requestType", "GET");
+		o.put("requestType", "POST");
 		o.put("type", "Monument");
 		o.put("playerIndex", user.getIndex());
 		

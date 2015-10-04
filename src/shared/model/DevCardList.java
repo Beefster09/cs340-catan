@@ -25,13 +25,14 @@ public class DevCardList {
 		cards = new HashMap<DevCardType, Integer>();
 	}
 	
-	public DevCardList(JSONObject json) throws SchemaMismatchException {
-		cards = new HashMap<>();
+	public static DevCardList fromJSONObject(JSONObject json) throws SchemaMismatchException {
+		DevCardList self = new DevCardList();
+		self.cards = new HashMap<>();
 		try {
 			for (DevCardType type : DevCardType.values()) {
 				String key = type.toString();
 				if (json.containsKey(key)) {
-					cards.put(type, (int) (long) json.get(key));
+					self.cards.put(type, (int) (long) json.get(key));
 				}
 				else {
 					throw new SchemaMismatchException("A card count is missing from the " +
@@ -43,7 +44,7 @@ public class DevCardList {
 			throw new SchemaMismatchException("The JSON does not match the expected schema" +
 					"for a DevCardList:\n" + json.toJSONString());
 		}
-		
+		return self;
 	}
 	
 	/** Creates a DevCardList with the specified amounts of cards

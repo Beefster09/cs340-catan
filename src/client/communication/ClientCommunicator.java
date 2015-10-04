@@ -221,6 +221,10 @@ public class ClientCommunicator {
 				if(str.charAt(0) == '['){
 					str = new StringBuilder("{\"list\":" + str + "}");
 				}
+				else if(str.charAt(0) != '{'){
+					JSONOutput = new JSONObject();
+					return JSONOutput;
+				}
 				JSONOutput = (JSONObject) parser.parse(str.toString());
 				return JSONOutput;
 			}
