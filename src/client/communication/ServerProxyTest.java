@@ -2,6 +2,7 @@ package client.communication;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -14,6 +15,7 @@ import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
+import shared.exceptions.NameAlreadyInUseException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
@@ -34,31 +36,73 @@ public class ServerProxyTest {
 		start = System.currentTimeMillis();
 		SP = new ServerProxy();
 		try{
-			SP.register("Steve", "steve");
-			System.out.println("Registered Steve");
-			GameHeader game = SP.createGame("test", false, false, false);
-			System.out.println("Created game");
-			
+			JSONObject gameJSON = new JSONObject();
+			gameJSON.put("title", "Yes");
+			gameJSON.put("id", 0L);
+			JSONObject playerJSON = new JSONObject();
+			playerJSON.put("id", 0L);
+			playerJSON.put("name", "blah");
+			playerJSON.put("color", "red");
+			List<JSONObject> newList = new ArrayList<JSONObject>();
+			newList.add(playerJSON);
+			gameJSON.put("players", newList);
+			GameHeader game = new GameHeader(gameJSON);
+			try{
+				SP.register("Steve", "steve");
+				System.out.println("Registered Steve");
+				game = SP.createGame("test", false, false, false);
+				System.out.println("Created game");
+			}
+			catch(NameAlreadyInUseException e){
+				SP.login("Steve", "steve");
+				System.out.println("Steve logged in");
+				game = SP.createGame("test", false, false, false);
+				System.out.println("Created game");
+			}
 			SP.getGameList();
 			System.out.println("Got the list of games");
 			SP.joinGame(game.getId(), CatanColor.PURPLE);
 			System.out.println("Steve joined the game");
+				
+			try{	
+				SP.register("Justin", "123");
+				System.out.println("Registered Justin");
+				SP.joinGame(game.getId(), CatanColor.BLUE);
+				System.out.println("Justin joined the game");
+			}
+			catch(NameAlreadyInUseException e){
+				SP.login("Justin", "123");
+				System.out.println("Justin logged in");
+				SP.joinGame(game.getId(), CatanColor.BLUE);
+				System.out.println("Justin joined the game");
+			}
+
+			try{
+				SP.register("Jordan", "Jordan");
+				System.out.println("Registered Jordan");
+				SP.joinGame(game.getId(), CatanColor.GREEN);
+				System.out.println("Jordan joined the game");
+			}
+			catch(NameAlreadyInUseException e){
+				SP.login("Jordan", "Jordan");
+				System.out.println("Jordan logged in");
+				SP.joinGame(game.getId(), CatanColor.GREEN);
+				System.out.println("Jordan joined the game");
+			}
 			
-			SP.register("Justin", "123");
-			System.out.println("Registered Justin");
-			SP.joinGame(game.getId(), CatanColor.BLUE);
-			System.out.println("Justin joined the game");
-			
-			SP.register("Jordan", "Jordan");
-			System.out.println("Registered Jordan");
-			SP.joinGame(game.getId(), CatanColor.GREEN);
-			System.out.println("Jordan joined the game");
-			
-			SP.register("Grant", "abc_123");
-			System.out.println("Registered Grant");
-			SP.joinGame(game.getId(), CatanColor.ORANGE);
-			System.out.println("Grant joined the game");
-						
+			try{
+				SP.register("Grant", "abc_123");
+				System.out.println("Registered Grant");
+				SP.joinGame(game.getId(), CatanColor.ORANGE);
+				System.out.println("Grant joined the game");
+			}
+			catch(NameAlreadyInUseException e){
+				SP.login("Grant", "abc_123");
+				System.out.println("Grant logged in");
+				SP.joinGame(game.getId(), CatanColor.ORANGE);
+				System.out.println("Grant joined the game");
+			}
+
 			PlayerReference steve = new PlayerReference(null, 0);
 			PlayerReference justin = new PlayerReference(null, 1);
 			PlayerReference jordan = new PlayerReference(null, 2);
