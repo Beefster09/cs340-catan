@@ -24,6 +24,7 @@ public class Municipality {
 
 	public Municipality(List<Player> players, JSONObject json, MunicipalityType type) throws SchemaMismatchException {
 		try {
+			/*
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();
 				for (Object obj : (List) json.get("settlement")) {
@@ -34,6 +35,11 @@ public class Municipality {
 			}
 			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
 					json.toJSONString());
+			*/
+			int playerOwner = (int) (long) (json.get("owner"));
+			
+			location = new VertexLocation((JSONObject)(json.get("location")));
+			this.type = type;
 		} catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
 			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
