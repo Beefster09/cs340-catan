@@ -1,23 +1,31 @@
 Testsuite: shared.model.ModelFacadeTest
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 sec
+Tests run: 28, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.104 sec
 
-	Caused an ERROR
-junit/framework/JUnit4TestAdapterCache
-java.lang.NoClassDefFoundError: junit/framework/JUnit4TestAdapterCache
-	at java.lang.ClassLoader.defineClass1(Native Method)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:760)
-	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
-	at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)
-	at java.net.URLClassLoader.access$100(URLClassLoader.java:73)
-	at java.net.URLClassLoader$1.run(URLClassLoader.java:368)
-	at java.net.URLClassLoader$1.run(URLClassLoader.java:362)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:361)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:264)
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-
+Testcase: testDoFinishTurn took 0.066 sec
+Testcase: testCanBuyDevelopmentCard took 0.002 sec
+Testcase: testCanMonopoly took 0.001 sec
+Testcase: testCanMonument took 0.001 sec
+Testcase: testDoRob took 0.001 sec
+Testcase: testCanBuildCity took 0.003 sec
+Testcase: testCanBuildRoad took 0.002 sec
+Testcase: testDoBuyDevelopmentCard took 0.001 sec
+Testcase: testDoBuildSettlement took 0.002 sec
+Testcase: testDoSoldier took 0.001 sec
+Testcase: testCanSoldier took 0.001 sec
+Testcase: testCanRoll took 0.001 sec
+Testcase: testDoYearOfPlenty took 0.001 sec
+Testcase: testCanRoadBuildingCard took 0.001 sec
+Testcase: testDoBuildRoad took 0.001 sec
+Testcase: testCanOfferTrade took 0.001 sec
+Testcase: testDoRoadBuildingCard took 0.001 sec
+Testcase: testDoMaritimeTrade took 0.001 sec
+Testcase: testCanBuildSettlement took 0.001 sec
+Testcase: testCanMaritimeTrade took 0.002 sec
+Testcase: testCanAcceptTrade took 0.001 sec
+Testcase: testCanRob took 0.001 sec
+Testcase: testDoOfferTrade took 0.001 sec
+Testcase: testCanFinishTurn took 0.001 sec
+Testcase: testCanYearOfPlenty took 0.001 sec
+Testcase: testDoAcceptTrade took 0.001 sec
+Testcase: testDoMonopoly took 0.001 sec
+Testcase: testDoMonument took 0.001 sec

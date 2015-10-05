@@ -1,23 +1,234 @@
 Testsuite: client.communication.ServerProxyTest
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 sec
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.328 sec
+------------- Standard Output ---------------
+Steve logged in
+Created game
+Got the list of games
+Steve joined the game
+Justin logged in
+Justin joined the game
+Jordan logged in
+Jordan joined the game
+Grant logged in
+Grant joined the game
+Steve logged in
+Steve rejoined the game
+Steve Built a Road
+Steve Built a Settlement
+Steve finished his Turn
+Justin Built a Road
+Justin Built a Settlement
+Justin finished his Turn
+Jordan Built a Road
+Jordan Built a Settlement
+Jordan finished his Turn
+Grant Built a Road
+Grant Built a Settlement
+Grant finished his Turn
+Grant Built 2nd Road
+Grant Built 2nd Settlement
+Grant finished his Turn
+Jordan Built 2nd Road
+Jordan Built 2nd Settlement
+Jordan finished his Turn
+Justin Built 2nd Road
+Justin Built 2nd Settlement
+Justin finished his Turn
+Steve Built 2nd Road
+Steve Built 2nd Settlement
+Steve finished his Turn
+Obtained Model
+Steve rolled a 4
+Steve built 3rd road
+Steve built 4th road
+Steve offered trade to Jordan
+Jordan accepted trade
+Steve offered trade to Justin
+Justin declined trade
+Steve offered trade to Justin
+Justin accepted trade
+Steve built 3rd settlement
+Steve finished his 1st turn
+Justin rolled a 4
+Justin finished his 1st turn
+Jordan rolled a 4
+Jordan finished his 1st turn
+Grant rolled a 4
+Grant offered trade to Justin
+Justin accepted trade
+Grant finished his 1st turn
+Steve rolled a 7
+Steve discarded 4 Brick
+Steve moved the robber and robbed Grant
+Steve built 5th road
+Steve sent a chat
+Steve offered trade to Justin
+Jordan sent a chat
+Justin accepted trade
+Steve built a 4th settlement
+Steve finished his 2nd turn
+Justin rolled an 11
+Justin finished his 2nd turn
+Jordan rolled a 9
+Jordan finished his 2nd turn
+Grant rolled a 9
+Grant finished his 2nd turn
+Steve rolled an 11
+Steve built a city
+Steve finished his 3rd turn
+Justin rolled an 11
+Justin finished his 3rd turn
+Jordan rolled a 9
+Jordan finished his 3rd turn
+Grant rolled an 11
+Grant finished his 3rd turn
+Steve rolled a 9
+Steve built 2nd city
+Steve built 3rd city
+Steve finished his 4th turn
+Justin rolled a 9
+Justin offered trade to Grant
+Grant accepted trade
+Justin just maritime traded 4 sheep for a brick
+Justin just maritime traded 4 sheep for a brick
+Justin just maritime traded 4 sheep for a brick
+Justin just finished his 4th turn
+Jordan rolled a 9
+Jordan offered trade to Grant
+Grant accepted trade
+Jordan used his general port to trade 3 wood for 1 brick
+Jordan finished his 4th turn
+Grant rolled a 9
+Grant finished his 4th turn
+Steve rolled a 9
+Steve used his ore port to trade 2 ore for 1 brick
+Steve used his ore port to trade 2 ore for 1 wood
+Steve built 6th road
+Steve has longest road
+Steve finished his 5th turn
+Justin rolled a 9
+Justin finished his 5th turn
+Jordan rolled a 9
+Jordan finished his 5th turn
+Grant rolled an 11
+Grant finished his 5th turn
+Steve rolled an 11
+Steve finished his 6th turn
+Justin rolled an 11
+Justin finished his 6th turn
+Jordan rolled an 11
+Jordan finished his 6th turn
+Grant rolled an 11
+Grant finished his 6th turn
+Steve rolled an 11
+Steve finished his 7th turn
+Justin rolled an 11
+Justin finished his 7th turn
+Jordan rolled an 11
+Jordan finished his 7th turn
+Grant rolled an 11
+Grant finished his 7th turn
+Steve rolled an 11
+Steve finished his 8th turn
+Justin rolled an 11
+Justin finished his 8th turn
+Jordan rolled an 11
+Jordan finished his 8th turn
+Grant rolled a 10
+Grant finished his 8th turn
+Steve rolled a 10
+Steve offered trade to Justin
+Justin accepted trade
+Steve offered trade to Grant
+Grant accepted trade
+Steve bought a development card
+Steve bought 2nd development card
+Steve bought 3rd development card
+Steve bought 4th development card
+Steve bought 5th development card
+Steve bought 6th development card
+Steve bought 7th development card
+Steve bought 8th development card
+Steve bought 9th development card
+Steve bought 10th development card
+Steve bought 11th development card
+Steve bought 12th development card
+Steve bought 13th development card
+Steve bought 14th development card
+Steve bought 15th development card
+Steve finished his 9th turn
+Justin rolled a 10
+Justin finished his 9th turn
+Jordan rolled a 10
+Jordan finished his 9th turn
+Grant rolled a 10
+Grant finished his 9th turn
+Steve rolled a 10
+Steve bought 16th development card
+Steve bought 17th development card
+Steve bought 18th development card
+Steve bought 19th development card
+Steve bought 20th development card
+Steve finished his 10th turn
+Justin rolled an 11
+Justin finished his 10th turn
+Jordan rolled a 9
+Jordan finished his 10th turn
+Grant rolled a 10
+Grant finished his 10th turn
+Steve rolled a 10
+Steve bought 21st development card
+Steve bought 22nd development card
+Steve bought 23rd development card
+Steve bought 24th development card
+Steve bought 25th development card
+Steve finished his 11th turn
+Justin rolled an 8
+Justin finished his 11th turn
+Jordan rolled an 8
+Jordan finished his 11th turn
+Grant rolled an 8
+Grant finished his 11th turn
+Steve rolled an 8
+Steve used monopoly on brick
+Steve used Year of Plenty to get two wood
+Steve used Road Builder to build two roads
+Steve used a knight to move the robber to a blank space
+Steve finished his 12th turn
+Justin rolled an 8
+Justin finished his 12th turn
+Jordan rolled an 8
+Jordan finished his 12th turn
+Grant rolled an 8
+Grant finished his 12th turn
+Steve rolled an 8
+Steve used 2nd knight to move the robber to a blank space
+Steve finished his 13th turn
+Justin rolled an 8
+Justin finished his 13th turn
+Jordan rolled an 8
+Jordan finished his 13th turn
+Grant rolled an 8
+Grant finished his 13th turn
+Steve rolled an 8
+Steve used 3rd knight to move the robber to a blank space
+Steve has largest army
+Steve won the game
+Steve played a monument cards for 12 points
+Steve played 2nd monument cards for 13 points
+Steve played 3rd monument cards for 14 points
+Steve played 4th monument cards for 15 points
+Steve played 5th monument cards for 16 points
+24944
+Sam logged in
+Game created
+Sam joined the game
+Got AITypes
+Added AI to game
+Added AI to game
+Added AI to game
+Game is full
+------------- ---------------- ---------------
 
-	Caused an ERROR
-junit/framework/JUnit4TestAdapterCache
-java.lang.NoClassDefFoundError: junit/framework/JUnit4TestAdapterCache
-	at java.lang.ClassLoader.defineClass1(Native Method)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:760)
-	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
-	at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)
-	at java.net.URLClassLoader.access$100(URLClassLoader.java:73)
-	at java.net.URLClassLoader$1.run(URLClassLoader.java:368)
-	at java.net.URLClassLoader$1.run(URLClassLoader.java:362)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:361)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:264)
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-
+Testcase: testOne took 24.944 sec
+Testcase: testTwo took 0.383 sec
