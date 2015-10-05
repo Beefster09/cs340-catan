@@ -12,7 +12,6 @@
 </target>
 
 <path id="compile.classpath">
-  <!-- Adds provided dependencies -->
   <fileset dir="lib">
     <include name="*.jar"/>
   </fileset>
@@ -22,18 +21,14 @@
   <javac destdir="bin" debug="true" srcdir="src" target="1.7" source="1.7" includeantruntime="false">
     <classpath refid="compile.classpath"/>
   </javac>
-  <!-- Adds the xml config files to the build->
-  <copy todir="build/classes">
-    <fileset dir="src" includes="**/*.xml"/>
-  </copy-->
 </target>
 
 <target name="test" depends="compile">
   <junit printsummary="yes" haltonfailure="yes">
     <classpath>
       <pathelement location="bin"/>
-      <pathelement location="lib/junit.jar"/>
-      <!--path refid="compile.classpath"/-->
+      <!--pathelement location="lib/junit.jar"/-->
+      <path refid="compile.classpath"/>
     </classpath>
   	<formatter type="plain" usefile="true" extension=".log" />
     <test name="shared.locations.HexLocationTest" haltonfailure="no"/>
