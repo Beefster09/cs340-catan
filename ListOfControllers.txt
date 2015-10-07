@@ -1,0 +1,14 @@
+chat
+dev card
+discard
+domestic trade
+game history
+join game
+login
+map/board
+maritime trade
+player waiting
+points
+resource bar
+roll
+turn tracker
