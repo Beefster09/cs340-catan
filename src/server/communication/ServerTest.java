@@ -46,6 +46,8 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
+		p.login(username, password);
+		
 		int version = 1;
 		testModel = facade.updateFromJSON(p.getModel(version));
 	}
