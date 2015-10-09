@@ -6,6 +6,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import shared.definitions.CatanColor;
+import shared.definitions.ResourceType;
+import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.SchemaMismatchException;
 
 /**
@@ -107,8 +109,16 @@ public class Player {
 
 	/**
 	 * @param resources the resources to set
+	 * @throws InsufficientResourcesException 
 	 */
-	public void setResources(ResourceList resources) {
+	public void setResources(ResourceList resources) throws InsufficientResourcesException {
+		for (ResourceType type : ResourceType.values()) {
+			int numResourceCardsForPlayer = resources.count(type);
+			if (numResourceCardsForPlayer > 19)
+				throw new InsufficientResourcesException();
+			if (game.getBank().getResources().count(type) + numResourceCardsForPlayer > 19)
+				throw new InsufficientResourcesException();
+		}
 		this.resources = resources;
 	}
 

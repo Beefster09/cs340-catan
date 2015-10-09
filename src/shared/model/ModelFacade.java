@@ -23,6 +23,10 @@ public class ModelFacade {
 	
 		private CatanModel model;
 		
+		public ModelFacade() {
+			model = new CatanModel();
+		}
+		
 		public ModelFacade(CatanModel startingModel) {
 			model = startingModel;
 		}
