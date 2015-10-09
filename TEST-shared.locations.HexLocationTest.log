@@ -1,0 +1,9 @@
+Testsuite: shared.locations.HexLocationTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 sec
+
+Testcase: testLocationsWithinRadius took 0.006 sec
+Testcase: testGetDistanceFromCenter took 0 sec
+Testcase: testEqualsObject took 0 sec
+Testcase: testHashCode took 0 sec
+Testcase: testGetNeighbors took 0 sec
+Testcase: testIsAdjacent took 0 sec

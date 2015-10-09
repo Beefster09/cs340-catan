@@ -240,6 +240,21 @@ public class Board {
 		return result;
 	}
 
+	/** Gives the location of the desert tile
+	 * 
+	 * @return location of the desert tile
+	 */
+	public HexLocation getDesertLocation() {
+		
+		
+		for(Hex hex : hexes.values()) {
+			if(hex.getResource() == null)
+				return hex.getLocation();
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * @return a Collection of all the ports on the board (in no particular order)
 	 */
@@ -502,6 +517,14 @@ public class Board {
 	
 	private void intializeHexes(boolean hasRandomHexes) {
 		
+	}
+
+	public void setRoads(Map<EdgeLocation, Road> roads) {
+		this.roads = roads;
+	}
+
+	public void setMunicipalities(Map<VertexLocation, Municipality> municipalities) {
+		this.municipalities = municipalities;
 	}
 
 

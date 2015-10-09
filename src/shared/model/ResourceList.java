@@ -42,13 +42,14 @@ public class ResourceList {
 		}
 	}
 	
-	public ResourceList(JSONObject json) throws SchemaMismatchException {
-		resources = new HashMap<>();
+	public static ResourceList fromJSONObject(JSONObject json) throws SchemaMismatchException {
+		ResourceList self = new ResourceList();
+		self.resources = new HashMap<>();
 		try {
 			for (ResourceType type : ResourceType.values()) {
 				String key = type.toString().toLowerCase();
 				if (json.containsKey(key)) {
-					resources.put(type, (int) (long) json.get(key));
+					self.resources.put(type, (int) (long) json.get(key));
 				}
 				else {
 					throw new SchemaMismatchException("A resource count is missing from the " +
@@ -60,6 +61,7 @@ public class ResourceList {
 			throw new SchemaMismatchException("The JSON does not match the expected schema" +
 					"for a ResourceList:\n" + json.toJSONString());
 		}
+		return self;
 	}
 	
 	/** Creates a ResourceList with the given resource amounts. Values will be copied.
@@ -135,20 +137,20 @@ public class ResourceList {
 		int wheat = 0;
 		int sheep = 0;
 		
-		if(resources.containsKey(ResourceType.BRICK)){
-			brick = resources.get(ResourceType.BRICK);
+		if(resources.containsKey(ResourceType.BRICK.toString().toLowerCase())){
+			brick = resources.get(ResourceType.BRICK.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.ORE)){
-			ore = resources.get(ResourceType.ORE);
+		if(resources.containsKey(ResourceType.ORE.toString().toLowerCase())){
+			ore = resources.get(ResourceType.ORE.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.WOOD)){
-			wood = resources.get(ResourceType.WOOD);
+		if(resources.containsKey(ResourceType.WOOD.toString().toLowerCase())){
+			wood = resources.get(ResourceType.WOOD.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.WHEAT)){
-			wheat = resources.get(ResourceType.WHEAT);
+		if(resources.containsKey(ResourceType.WHEAT.toString().toLowerCase())){
+			wheat = resources.get(ResourceType.WHEAT.toString().toLowerCase());
 		}
-		if(resources.containsKey(ResourceType.SHEEP)){
-			sheep = resources.get(ResourceType.SHEEP);
+		if(resources.containsKey(ResourceType.SHEEP.toString().toLowerCase())){
+			sheep = resources.get(ResourceType.SHEEP.toString().toLowerCase());
 		}
 
 		o.put("brick", brick);

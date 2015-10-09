@@ -145,4 +145,9 @@ public class ResourceTradeList {
 		return tradeList;
 	}
 
+	public void setWanted(Map<ResourceType, Integer> wanted) {
+		this.wanted = wanted;
+		
+	}
+
 }
