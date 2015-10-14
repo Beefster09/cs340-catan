@@ -5,7 +5,7 @@ import java.util.*;
 import shared.definitions.*;
 import shared.exceptions.InvalidActionException;
 import shared.locations.*;
-import shared.model.ModelFacade;
+import shared.model.*;
 import client.base.*;
 import client.data.*;
 
@@ -36,6 +36,7 @@ public class MapController extends Controller implements IMapController {
 	private IRobView getRobView() {
 		return robView;
 	}
+	
 	private void setRobView(IRobView robView) {
 		this.robView = robView;
 	}
@@ -44,13 +45,44 @@ public class MapController extends Controller implements IMapController {
 		
 		IMapView view = getView();
 		
-		Random rand = new Random();
-
+		Board board = model.getCatanModel().getMap();
+		
+		for (Hex hex : board.getHexes()) {
+			HexType type = HexType.fromResourceType(hex.getResource());
+			view.addHex(hex.getLocation(), type);
+			if (type != HexType.DESERT) {
+				view.addNumber(hex.getLocation(), hex.getNumber());
+			}
+		}
+		
+		for (Port port : board.getPorts()) {
+			view.addPort(port.getLocation(), PortType.fromResourceType(port.getResource()));
+		}
+		
+		for (Road road : board.getRoads()) {
+			CatanColor color = road.getOwner().getPlayer().getColor();
+			view.placeRoad(road.getLocation(), color);
+		}
+		
+		for (Municipality town : board.getMunicipalities()) {
+			CatanColor color = town.getOwner().getPlayer().getColor();
+			switch (town.getType()) {
+			case SETTLEMENT:
+				view.placeSettlement(town.getLocation(), color);
+				break;
+			case CITY:
+				view.placeCity(town.getLocation(), color);
+				break;
+			default:
+				break;
+			}
+		}
+		
+		view.placeRobber(board.getRobberLocation());
 		
 	}
 
 	public boolean canPlaceRoad(EdgeLocation edgeLoc) {
-		
 		return true;
 	}
 
@@ -72,7 +104,7 @@ public class MapController extends Controller implements IMapController {
 	public void placeRoad(EdgeLocation edgeLoc) {
 		
 		try {
-			state.placeRoad(edgeLoc);
+			state = state.placeRoad(edgeLoc);
 		}
 		catch (InvalidActionException e) {
 			
@@ -82,7 +114,7 @@ public class MapController extends Controller implements IMapController {
 	public void placeSettlement(VertexLocation vertLoc) {
 		
 		try {
-			state.placeSettlement(vertLoc);
+			state = state.placeSettlement(vertLoc);
 		}
 		catch (InvalidActionException e) {
 			
@@ -91,7 +123,7 @@ public class MapController extends Controller implements IMapController {
 
 	public void placeCity(VertexLocation vertLoc) {
 		try {
-			state.placeCity(vertLoc);
+			state = state.placeCity(vertLoc);
 		}
 		catch (InvalidActionException e) {
 			
@@ -100,7 +132,7 @@ public class MapController extends Controller implements IMapController {
 
 	public void placeRobber(HexLocation hexLoc) {
 		try {
-			state.placeRobber(hexLoc);
+			state = state.placeRobber(hexLoc);
 			getRobView().showModal();
 		}
 		catch (InvalidActionException e) {
@@ -109,19 +141,27 @@ public class MapController extends Controller implements IMapController {
 	}
 	
 	public void startMove(PieceType pieceType, boolean isFree, boolean allowDisconnected) {	
-		
-		getView().startDrop(pieceType, CatanColor.ORANGE, true);
-		
-		// TODO: set state
+		try {
+			state = state.startMove(pieceType, isFree, allowDisconnected);
+			getView().startDrop(pieceType, CatanColor.ORANGE, true);
+		}
+		catch (InvalidActionException e) {
+			
+		}	
 	}
 	
 	public void cancelMove() {
-		
+		try {
+			state = state.cancelMove();
+		}
+		catch (InvalidActionException e) {
+			
+		}
 	}
 	
 	public void playSoldierCard() {	
 		try {
-			state.playSoldierCard();
+			state = state.playSoldierCard();
 		}
 		catch (InvalidActionException e) {
 			
@@ -130,7 +170,7 @@ public class MapController extends Controller implements IMapController {
 	
 	public void playRoadBuildingCard() {	
 		try {
-			state.playRoadBuildingCard();
+			state = state.playRoadBuildingCard();
 		}
 		catch (InvalidActionException e) {
 			
@@ -139,7 +179,7 @@ public class MapController extends Controller implements IMapController {
 	
 	public void robPlayer(RobPlayerInfo victim) {	
 		try {
-			state.robPlayer(victim);
+			state = state.robPlayer(victim);
 		}
 		catch (InvalidActionException e) {
 			

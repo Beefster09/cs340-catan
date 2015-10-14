@@ -1,6 +1,7 @@
 package client.map;
 
 import client.data.RobPlayerInfo;
+import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.*;
 import shared.model.ModelFacade;
@@ -17,32 +18,85 @@ public abstract class MapControllerState {
 		return model;
 	}
 
-	public void placeRoad(EdgeLocation edge) throws InvalidActionException {
+	/**
+	 * @param edge
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState placeRoad(EdgeLocation edge) throws InvalidActionException {
 		throw new InvalidActionException("You cannot build a road at this time.");
 	}
 	
-	public void placeSettlement(VertexLocation vertex) throws InvalidActionException {
+	/**
+	 * @param vertex
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState placeSettlement(VertexLocation vertex) throws InvalidActionException {
 		throw new InvalidActionException("You cannot build a settlement at this time.");
 	}
 	
-	public void placeCity(VertexLocation vertex) throws InvalidActionException {
+	/**
+	 * @param vertex
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState placeCity(VertexLocation vertex) throws InvalidActionException {
 		throw new InvalidActionException("You cannot build a city at this time.");
 	}
 	
-	public void placeRobber(HexLocation hex) throws InvalidActionException {
+	/**
+	 * @param hex
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState placeRobber(HexLocation hex) throws InvalidActionException {
 		throw new InvalidActionException("You cannot move the robber at this time.");
 	}
 	
-	public void playSoldierCard() throws InvalidActionException {	
+	/**
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState playSoldierCard() throws InvalidActionException {	
 		throw new InvalidActionException("You cannot play a soldier card at this time.");
 	}
 	
-	public void playRoadBuildingCard() throws InvalidActionException {	
+	/**
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState playRoadBuildingCard() throws InvalidActionException {	
 		throw new InvalidActionException("You cannot play a road building card at this time.");
 	}
 	
-	public void robPlayer(RobPlayerInfo victim) throws InvalidActionException {	
+	/**
+	 * @param victim
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState robPlayer(RobPlayerInfo victim) throws InvalidActionException {	
 		throw new InvalidActionException("You cannot rob at this time.");
 	}
 	
+	/**
+	 * @param pieceType
+	 * @param isFree
+	 * @param allowDisconnected
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState startMove(PieceType pieceType, boolean isFree, boolean allowDisconnected)
+			throws InvalidActionException {
+		throw new InvalidActionException("You cannot start a move at this time.");
+	}
+
+	/**
+	 * @return the state to transition to after this runs
+	 * @throws InvalidActionException
+	 */
+	public MapControllerState cancelMove()
+			throws InvalidActionException {
+		throw new InvalidActionException("There is nothing to cancel.");
+	}
 }

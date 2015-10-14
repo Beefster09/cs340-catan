@@ -24,6 +24,9 @@ import shared.locations.VertexLocation;
  *
  */
 public class Board {
+	// IMPORTANT: mutator functions should ALWAYS be package private (no modifier).
+	// All modifications to model elements should be done through the Facade
+	
 	private Map<HexLocation, Hex> hexes;
 	// This is an internal representation of the size of the board. It differs from the JSON
 	// in that it does not include the center or water hexes.
@@ -492,7 +495,8 @@ public class Board {
 		return true;
 	}
 	
-	public void moveRobber(HexLocation location) throws InvalidActionException {
+	// NO MODIFIER: package private; this is a mutator
+	void moveRobber(HexLocation location) throws InvalidActionException {
 		if (!canMoveRobberTo(location))  {
 			throw new InvalidActionException("The robber cannot be moved there.");
 		}
@@ -519,11 +523,11 @@ public class Board {
 		
 	}
 
-	public void setRoads(Map<EdgeLocation, Road> roads) {
+	void setRoads(Map<EdgeLocation, Road> roads) {
 		this.roads = roads;
 	}
 
-	public void setMunicipalities(Map<VertexLocation, Municipality> municipalities) {
+	void setMunicipalities(Map<VertexLocation, Municipality> municipalities) {
 		this.municipalities = municipalities;
 	}
 
