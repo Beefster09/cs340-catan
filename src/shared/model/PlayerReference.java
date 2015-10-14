@@ -10,13 +10,13 @@ public class PlayerReference {
 	private CatanModel game;
 	private int playerIndex;
 	
-	// This is intentionally package-private. Really, only Players should ever
-	// create PlayerReferences
+	// This is intentionally package-private (i.e. no modifier). Really, only Players
+	// should ever create PlayerReferences
 	/**
 	 * @param game
 	 * @param playerIndex
 	 */
-	public PlayerReference(CatanModel game, int playerIndex) {
+	PlayerReference(CatanModel game, int playerIndex) {
 		super();
 		this.game = game;
 		this.playerIndex = playerIndex;

@@ -37,18 +37,7 @@ public class Player {
 	private int roads 			= 15;
 	private int soldiers		= 0;
 	private int monuments		= 0;
-	private int victoryPoints 	= 0;
-	
-	public static void main(String[] args) throws Exception {
-/*		JSONParser parser = new JSONParser();
-		Reader r = new BufferedReader(new FileReader("player.json"));
-		Object parseResult = parser.parse(r);
-		Player player = new Player(null, (JSONObject) parseResult);
-
-		System.out.println(parseResult);
-		System.out.println(player);  */
-	}
-	
+	private int victoryPoints 	= 0;	
 
 	public Player(CatanModel game) {
 		this.game = game;
