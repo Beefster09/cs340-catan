@@ -1,14 +1,14 @@
-chat
-dev card
-discard
-domestic trade
-game history
-join game
-login
-map/board
-maritime trade
-player waiting
-points
-resource bar
-roll
-turn tracker
+	chat		client.communication
+6	dev card	client.devcards
+4	discard		client.discard
+2	domestic trade	client.domestic
+	game history	client.communication
+	join game	client.join
+	login		client.login
+1	map/board	client.map
+3	maritime trade	client.maritime
+	player waiting	client.join
+	points		client.points
+5	resource bar	client.resources
+	roll		client.roll
+	turn tracker	client.turntracker
