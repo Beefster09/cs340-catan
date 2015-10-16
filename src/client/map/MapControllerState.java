@@ -4,21 +4,22 @@ import client.data.RobPlayerInfo;
 import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.*;
-import shared.model.ModelFacade;
 
 public abstract class MapControllerState {
 	
-	private ModelFacade model;
+	private MapController controller;
 	
-	public MapControllerState(ModelFacade model) {
-		this.model = model;
+	public MapControllerState(MapController controller) {
+		this.controller = controller;
 	}
 
-	public ModelFacade getModel() {
-		return model;
+	protected MapController getController() {
+		return controller;
 	}
+	
+	// NOTE on any implementations, make sure to do the server work in a SwingWorker thread.
 
-	/**
+	/** Places a road at the given location, if possible.
 	 * @param edge
 	 * @return the state to transition to after this runs
 	 * @throws InvalidActionException
