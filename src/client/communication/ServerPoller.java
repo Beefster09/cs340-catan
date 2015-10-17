@@ -3,6 +3,8 @@ package client.communication;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.SwingUtilities;
+
 import org.json.simple.JSONObject;
 
 import shared.communication.IServer;
@@ -74,11 +76,17 @@ public class ServerPoller {
 			public void run() {
 				try {
 					//JSONObject modelRequest = new JSONObject();
-					JSONObject model = server.getModel(modelHandler.getVersion());
+					final JSONObject model = server.getModel(modelHandler.getVersion());
 					if (model != null) {
-						modelHandler.updateFromJSON(model);
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								modelHandler.updateFromJSON(model);
+							}
+							
+						});
+						System.out.println("Polling gave results. Handling updates on EDT.");
 					}
-					System.out.println("Updated OK!");
 					
 				} catch (ServerException | InvalidActionException e) {
 					System.out.println("Server error, could not connect");

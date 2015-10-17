@@ -41,10 +41,7 @@ public class BuildStartingRoadState extends MapControllerState {
 			protected void done() {
 				try {
 					getModel().updateFromJSON(get());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ExecutionException e) {
+				} catch (InterruptedException | ExecutionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
