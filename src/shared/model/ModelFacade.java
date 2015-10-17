@@ -281,22 +281,7 @@ public class ModelFacade {
 			PlayerReference currentPlayer = model.getTurnTracker().getCurrentPlayer();
 			
 			return map.canBuildCity(currentPlayer, vertexLoc);
-/*			Map<VertexLocation, Municipality> municipalities = map.getMunicipalityMap();
-			ResourceList hand = currentPlayer.getPlayer().getResources();
-			
-			//checks if player has enough resources in his hand to build city
-			if(!(hand.count(ResourceType.WHEAT) >= 2 &&
-					hand.count(ResourceType.ORE) >= 3))
-				return false;
-			
-			//iterates through all municipalities
-			for(Map.Entry<VertexLocation, Municipality> entry : municipalities.entrySet()) {
-				Municipality municipality = entry.getValue();
-				//if settlement exists at given location that is owned by the current player, go ahead and build
-				if(vertexLoc.equals(entry.getKey()) && currentPlayer.equals(municipality.getOwner()) && municipality.getType().equals(MunicipalityType.SETTLEMENT))
-					return true;
-			}
-			return false;*/
+
 		}
 		/**
 		 * 
@@ -526,5 +511,28 @@ public class ModelFacade {
 		
 		public synchronized int getVersion() {
 			return model.getVersion();
+		}
+		
+		abstract class IListener {
+			
+			public void diceRolled(){}
+			
+			public void boardUpdated(){}
+			
+			public void cardsInHandUpdated(){}
+			
+			public void pointsUpdated(int points) {}
+			
+			public void turnUpdated(){}
+			
+			public void tradeUpdated(){}
+			
+			public void maritimeTradeUpdated(){}
+			
+			public void bankUpdated(){}
+			
+			public void discardUpdated(){}
+			
+			
 		}
 }
