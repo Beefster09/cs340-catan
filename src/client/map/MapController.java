@@ -65,6 +65,10 @@ public class MapController extends Controller implements IMapController {
 		this.server = server;
 	}
 	
+	public CatanColor getYourColor() {
+		return you.getPlayer().getColor();
+	}
+	
 	private boolean isYourTurn() {
 		return you.equals(model.getCurrentPlayer());
 	}
@@ -111,31 +115,19 @@ public class MapController extends Controller implements IMapController {
 	}
 
 	public boolean canPlaceRoad(EdgeLocation edgeLoc) {
-		if (isYourTurn()) {
-			return model.canBuildRoad(edgeLoc);
-		}
-		else return false;
+		return state.canPlaceRoad(edgeLoc);
 	}
 
 	public boolean canPlaceSettlement(VertexLocation vertLoc) {
-		if (isYourTurn()) {
-			return model.canBuildSettlement(vertLoc);
-		}
-		else return false;
+		return state.canPlaceSettlement(vertLoc);
 	}
 
 	public boolean canPlaceCity(VertexLocation vertLoc) {
-		if (isYourTurn()) {
-			return model.canBuildCity(vertLoc);
-		}
-		else return false;
+		return state.canPlaceCity(vertLoc);
 	}
 
 	public boolean canPlaceRobber(HexLocation hexLoc) {
-		if (isYourTurn()) {
-			return model.canRob(hexLoc);
-		}
-		else return false;
+		return state.canMoveRobber(hexLoc);
 	}
 
 	public void placeRoad(EdgeLocation edgeLoc) {
@@ -224,6 +216,18 @@ public class MapController extends Controller implements IMapController {
 		catch (InvalidActionException e) {
 			
 		}
+	}
+
+	public ModelFacade getModel() {
+		return model;
+	}
+
+	public PlayerReference getYourself() {
+		return you;
+	}
+
+	public void robDialog() {
+		getRobView().showModal();
 	}
 	
 }

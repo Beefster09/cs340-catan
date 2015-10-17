@@ -1,9 +1,13 @@
 package client.map;
 
 import client.data.RobPlayerInfo;
+import shared.communication.IServer;
+import shared.definitions.CatanColor;
 import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.*;
+import shared.model.ModelFacade;
+import shared.model.PlayerReference;
 
 public abstract class MapControllerState {
 	
@@ -15,6 +19,26 @@ public abstract class MapControllerState {
 
 	protected MapController getController() {
 		return controller;
+	}
+	
+	protected IMapView getView() {
+		return controller.getView();
+	}
+	
+	protected ModelFacade getModel() {
+		return controller.getModel();
+	}
+	
+	protected PlayerReference getYourself() {
+		return controller.getYourself();
+	}
+
+	protected CatanColor getYourColor() {
+		return controller.getYourColor();
+	}
+
+	protected IServer getServer() {
+		return controller.getServer();
 	}
 	
 	// NOTE on any implementations, make sure to do the server work in a SwingWorker thread.
@@ -99,5 +123,21 @@ public abstract class MapControllerState {
 	public MapControllerState cancelMove()
 			throws InvalidActionException {
 		throw new InvalidActionException("There is nothing to cancel.");
+	}
+	
+	public boolean canPlaceRoad(EdgeLocation loc) {
+		return false;
+	}
+	
+	public boolean canPlaceSettlement(VertexLocation loc) {
+		return false;
+	}
+	
+	public boolean canPlaceCity(VertexLocation loc) {
+		return false;
+	}
+	
+	public boolean canMoveRobber(HexLocation loc) {
+		return false;
 	}
 }

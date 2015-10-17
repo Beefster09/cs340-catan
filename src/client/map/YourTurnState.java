@@ -9,33 +9,48 @@ public class YourTurnState extends MapControllerState {
 		super(controller);
 	}
 
-	/* (non-Javadoc)
-	 * @see client.map.MapControllerState#playSoldierCard()
-	 */
 	@Override
 	public MapControllerState playSoldierCard() throws InvalidActionException {
-		// TODO: play the soldier card
 		return new MoveRobberState(getController());
 	}
 
-	/* (non-Javadoc)
-	 * @see client.map.MapControllerState#playRoadBuildingCard()
-	 */
 	@Override
 	public MapControllerState playRoadBuildingCard()
 			throws InvalidActionException {
-		// TODO server interaction
-		return new BuildFreeRoadsState(2, getController());
+		getView().startDrop(PieceType.ROAD, getYourColor(), true);
+		return new RoadBuildingCardState(getController());
 	}
 
-	/* (non-Javadoc)
-	 * @see client.map.MapControllerState#startMove(shared.definitions.PieceType, boolean, boolean)
-	 */
 	@Override
 	public MapControllerState startMove(PieceType pieceType, boolean isFree,
 			boolean allowDisconnected) throws InvalidActionException {
-		// TODO Auto-generated method stub
-		return super.startMove(pieceType, isFree, allowDisconnected);
+		MapControllerState nextState;
+		boolean cancelable = true;
+		switch(pieceType) {
+		case ROAD:
+			nextState = new BuildRoadState(getController());
+			break;
+		case SETTLEMENT:
+			if (isFree && allowDisconnected) {
+				cancelable = false;
+				nextState = new BuildStartingSettlementState(getController());
+			}
+			else {
+				nextState = new BuildSettlementState(getController());
+			}
+			break;
+		case CITY:
+			nextState = new BuildCityState(getController());
+			break;
+		case ROBBER:
+			cancelable = false;
+			nextState = new MoveRobberState(getController(), false);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid piece type.");
+		}
+		getView().startDrop(pieceType, getYourColor(), cancelable);
+		return nextState;
 	}
 	
 	

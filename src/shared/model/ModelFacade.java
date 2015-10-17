@@ -510,9 +510,21 @@ public class ModelFacade {
 			return true;
 		}
 		
-
-		
 		public synchronized int getVersion() {
 			return model.getVersion();
+		}
+
+		public synchronized boolean canBuildStartingSettlement(VertexLocation loc) {
+			return model.getMap().canPlaceStartingSettlement(loc);
+		}
+		
+		public synchronized boolean canBuildStartingPieces(VertexLocation settlement, EdgeLocation road) {
+			return model.getMap().canPlaceStartingPieces(settlement, road);
+		}
+		
+		public synchronized boolean canBuild2Roads(EdgeLocation first, EdgeLocation second) {
+			Board map = model.getMap();
+			PlayerReference currentPlayer = getCurrentPlayer();
+			return map.canBuild2Roads(currentPlayer, first, second);
 		}
 }

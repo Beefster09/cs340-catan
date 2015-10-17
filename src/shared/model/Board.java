@@ -443,7 +443,7 @@ public class Board {
 				&& player.equals(town.getOwner()));
 	}
 	
-	/** Tells if the location is a valid location for a starting settlement/road
+	/** Tells if the location is a valid location for a starting settlement/road pair
 	 * @param settlement
 	 * @param road
 	 * @return
@@ -456,6 +456,25 @@ public class Board {
 		if (settlement.getDistanceFromCenter() > radius) return false;
 		// There must not be a road at the location
 		if (getRoadAt(road) != null) return false;
+		
+		if (getMunicipalityAt(settlement) == null) { // spot is open
+			// Apply Distance Rule
+			for (VertexLocation neighbor : settlement.getNeighbors()) {
+				Municipality town = getMunicipalityAt(neighbor);
+				if (town != null) return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	/** Tells if the location is a valid location for a starting settlement
+	 * @param settlement
+	 * @param road
+	 * @return
+	 */
+	public boolean canPlaceStartingSettlement(VertexLocation settlement) {
+		if (settlement.getDistanceFromCenter() > radius) return false;
 		
 		if (getMunicipalityAt(settlement) == null) { // spot is open
 			// Apply Distance Rule
@@ -529,6 +548,27 @@ public class Board {
 
 	void setMunicipalities(Map<VertexLocation, Municipality> municipalities) {
 		this.municipalities = municipalities;
+	}
+
+	/** Asks if 2 roads can be built, one after the other.
+	 * @param player
+	 * @param firstRoad
+	 * @param secondRoad
+	 * @return true if the 2 roads can be built. Note that order matters.
+	 */
+	public boolean canBuild2Roads(PlayerReference player,
+			EdgeLocation firstRoad, EdgeLocation secondRoad) {
+		if (!canBuildRoadAt(player, firstRoad))	{
+			return false;
+		}
+		// Road 1 is buildable from this point forward...
+		// Case 1: Road 2 is not dependent on the placement of Road 1
+		if (canBuildRoadAt(player, secondRoad)) {
+			return true;
+		}
+		// Case 2: Road 2 is immediately adjacent to Road 1, but not connected to the rest
+		// of the roads
+		return secondRoad.isAdjacent(firstRoad);
 	}
 
 
