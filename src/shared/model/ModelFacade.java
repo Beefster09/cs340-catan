@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import shared.communication.Session;
 import shared.definitions.*;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.SchemaMismatchException;
@@ -18,8 +19,16 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import client.communication.ServerProxy;
+
 
 public class ModelFacade {
+	
+	//Get the Singleton for this class
+		private static ModelFacade instance = new ModelFacade();
+		public static ModelFacade getInstance(){
+		      return instance;
+		   }
 	
 		private CatanModel model;
 		
@@ -133,6 +142,14 @@ public class ModelFacade {
 		
 		public PlayerReference getCurrentPlayer() {
 			return model.getTurnTracker().getCurrentPlayer();
+		}
+		
+		public void setLocalPlayer(Session player) {
+			model.setLocalPlayer(player);
+		}
+		
+		public Session getLocalPlayer() {
+			return model.getLocalPlayer();
 		}
 	
 		/**
