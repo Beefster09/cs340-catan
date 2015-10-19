@@ -6,6 +6,7 @@ import shared.communication.GameHeader;
 import shared.communication.IServer;
 import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
@@ -110,8 +111,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			
 			GameInfo[] games = this.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
-			localPlayer.setId(modelFacade.getInstance().getLocalPlayer().getPlayerID());
-			localPlayer.setName(modelFacade.getInstance().getLocalPlayer().getUsername());
+			localPlayer.setId(modelFacade.getLocalPlayer().getPlayerID());
+			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
 			//localPlayer.setPlayerIndex(0);
 			
 			getJoinGameView().setGames(games, localPlayer);
@@ -131,35 +132,37 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		
 		int i = 0;
 		for (GameHeader currentHead : headers) {
-			
-			int id = currentHead.getId();
-			String title = currentHead.getTitle();
-			
-			GameInfo newGame = new GameInfo();
-			newGame.setId(id);
-			newGame.setTitle(title);
-			games[i] = newGame;
-			
-			List<PlayerHeader> players = currentHead.getPlayers();
-			
-			int index = 0;
-			for (PlayerHeader player : players) {
-				PlayerInfo newPlayer = new PlayerInfo();
-				newPlayer.setColor(player.getColor());
-				newPlayer.setId(player.getId());
-				newPlayer.setName(player.getName());
-				newPlayer.setPlayerIndex(index);
-
-				games[i].addPlayer(newPlayer);
-				
-				index++;
-			}
-			
-			games[i] = newGame;
-			
+			games[i] = convertHeaderToInfo(currentHead);
 			i++;
 		}
 		return games;
+	}
+	private GameInfo convertHeaderToInfo(GameHeader header) {
+		int id = header.getId();
+		String title = header.getTitle();
+		
+		GameInfo newGame = new GameInfo();
+		newGame.setId(id);
+		newGame.setTitle(title);
+		//games[i] = newGame;
+		
+		List<PlayerHeader> players = header.getPlayers();
+		
+		int index = 0;
+		for (PlayerHeader player : players) {
+			if (player == null)
+				continue;
+			PlayerInfo newPlayer = new PlayerInfo();
+			newPlayer.setColor(player.getColor());
+			newPlayer.setId(player.getId());
+			newPlayer.setName(player.getName());
+			newPlayer.setPlayerIndex(index);
+			newGame.addPlayer(newPlayer);
+			//games[i].addPlayer(newPlayer);
+			
+			index++;
+		}
+		return newGame;
 	}
 
 	@Override
@@ -183,8 +186,27 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	 */
 	@Override
 	public void createNewGame() {
-		
-		getNewGameView().closeModal();
+		String title = getNewGameView().getTitle();
+		boolean randomTiles = getNewGameView().getRandomlyPlaceHexes();
+		boolean randomNumbers = getNewGameView().getRandomlyPlaceNumbers();
+		boolean randomPorts = getNewGameView().getUseRandomPorts();
+		try {
+			serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
+			getNewGameView().closeModal();
+			this.start();
+		} catch (GameInitializationException e) {
+			getMessageView().setTitle("Setup Error");
+			getMessageView().setMessage("Could not initialize game.");
+			getMessageView().showModal();
+		} catch (InvalidActionException e) {
+			getMessageView().setTitle("Invalid Action Error");
+			getMessageView().setMessage("Invalid Action was performed.");
+			getMessageView().showModal();
+		} catch (ServerException e) {
+			getMessageView().setTitle("Server Error");
+			getMessageView().setMessage("Unable to connect to the server.");
+			getMessageView().showModal();
+		}
 	}
 
 	
@@ -196,8 +218,24 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	 */
 	@Override
 	public void startJoinGame(GameInfo game) {
-
-		getSelectColorView().showModal();
+		
+		boolean playerInGame= false;
+		CatanColor color = null;
+		
+		for (PlayerInfo player : game.getPlayers()) {
+			if (player.getId() == modelFacade.getLocalPlayer().getPlayerID()) {
+				playerInGame = true;
+				color = player.getColor();
+			}	
+			else
+				getSelectColorView().setColorEnabled(player.getColor(), false);
+		}
+		//If the player isn't in the game, then give them a chance to select a color and join
+		if (!playerInGame)
+			getSelectColorView().showModal();
+		//Otherwise, automatically join them to the game they are assigned to.
+		else
+			joinGame(color);
 	}
 
 	@Override
