@@ -4,11 +4,15 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import client.communication.ServerProxy;
 import server.ai.AIType;
 import shared.communication.Command;
 import shared.communication.GameHeader;
+import shared.communication.IServer;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
@@ -17,6 +21,7 @@ import shared.exceptions.GamePersistenceException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.NotYourTurnException;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.TradeException;
 import shared.exceptions.UserException;
@@ -26,13 +31,34 @@ import shared.locations.HexLocation;
 import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
 import shared.model.CatanModel;
+import shared.model.ModelFacade;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
+import shared.model.ResourceTradeList;
 
 public class ServerTest {
 
+	/*
 
-	private Server p;
+	private static IServer p;
+	private static CatanModel testModel;
+	private static ModelFacade facade;
+	
+	@BeforeClass
+	public static void setup() throws UserException, ServerException, InvalidActionException, JoinGameException {
+		String username = "Sam";
+		String password = "sam";
+		p = new ServerProxy();
+		
+		p.login(username, password);
+		p.joinGame(0, CatanColor.BLUE);
+		
+		facade = new ModelFacade();
+		int version = 1;
+		
+		JSONObject obj = p.getModel(version);
+		testModel = facade.updateFromJSON(obj);
+	}
 	
 	@Test
 	public void testLogin() throws UserException, ServerException {
@@ -51,13 +77,13 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testGetGameList() throws UserException, ServerException {
+	public void testGetGameList() throws UserException, ServerException, InvalidActionException {
 		
 		List<GameHeader> gameHeaders= p.getGameList();
 	}
 	
 	@Test
-	public void testCreateGame() throws UserException, ServerException, GameInitializationException {
+	public void testCreateGame() throws UserException, ServerException, GameInitializationException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
@@ -68,7 +94,7 @@ public class ServerTest {
 		boolean randomNumbers = false;
 		boolean randomPorts = false;
 		
-		p.createGame(user, name, randomTiles, randomNumbers, randomPorts);
+		p.createGame(name, randomTiles, randomNumbers, randomPorts);
 	}
 	
 	@Test
@@ -80,12 +106,12 @@ public class ServerTest {
 		Session user = p.register(username, password);
 		
 		int gameID = 0;
-		p.joinGame(user, gameID, CatanColor.BLUE);
+		p.joinGame(gameID, CatanColor.BLUE);
 	}
 	
 	
 	@Test
-	public void testSameGame() throws GamePersistenceException, ServerException {
+	public void testSameGame() throws GamePersistenceException, ServerException, InvalidActionException {
 		
 		int gameID = 1;
 		String filename = "Catan";
@@ -94,7 +120,7 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testLoadGame() throws GamePersistenceException, ServerException {
+	public void testLoadGame() throws GamePersistenceException, ServerException, InvalidActionException {
 		
 		int gameID = 1;
 		String filename = "Catan";
@@ -104,35 +130,35 @@ public class ServerTest {
 	}
 	
 	@Test
-	public void testGetModel() throws UserException, ServerException{
+	public void testGetModel() throws UserException, ServerException, InvalidActionException{
 		
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		int version = 1;
-		CatanModel model = p.getModel(user, version);
+		JSONObject model = p.getModel(version);
 	}
 	
 	@Test
-	public void testResetGame() throws UserException, ServerException, GameInitializationException {
+	public void testResetGame() throws UserException, ServerException, GameInitializationException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		
-		CatanModel model = p.resetGame(user);
+		JSONObject model = p.resetGame();
 	}
 	
 	@Test
-	public void testGetCommands() throws UserException, ServerException {
+	public void testGetCommands() throws UserException, ServerException, InvalidActionException {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		
-		List<Command> commands = p.getCommands(user);
+		List<Command> commands = p.getCommands();
 	}
 	
 	@Test
@@ -140,45 +166,46 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		
-		List<Command> commands = p.getCommands(user);
+		List<Command> commands = p.getCommands();
 		
-		CatanModel model = p.executeCommands(user, commands);
+		JSONObject model = p.executeCommands(commands);
 	}
 	
 	public void testAddAIPlayer() throws UserException, ServerException {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		
 		//p.addAIPlayer(user, type);
 	}
 	
-	public void testGetAITypes() throws UserException, ServerException {
+	public void testGetAITypes() throws UserException, ServerException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		
 		//p.addAIPlayer(user, type);
 		
-		List<AIType> AITypes = p.getAITypes(user);
+		List<String> AITypes = p.getAITypes();
 	}
 	
 	@Test
-	public void testSendChat() throws UserException, ServerException {
+	public void testSendChat() throws UserException, ServerException, InvalidActionException {
 		
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		String message = "yoyo wutup dawg";
 		
-		CatanModel model = p.sendChat(user, message);
+		JSONObject model = p.sendChat(user, message);
 	}
 	
 	@Test
@@ -186,11 +213,12 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		int number = 1;
 		
-		CatanModel model = p.rollDice(user, number);
+		JSONObject model = p.rollDice(user, number);
 	}
 	
 	@Test
@@ -198,16 +226,15 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		//Session user = p.register(username, password);
 		
 		HexLocation newRobberLocation = new HexLocation(2, 2);
 		
-		int version = 1;
-		CatanModel model = p.getModel(user, version);
 		
-		PlayerReference victim = new PlayerReference(model, 1);
+		PlayerReference victim = new PlayerReference(testModel, 1);
 		
-		model = p.robPlayer(user, newRobberLocation, victim);
+		PlayerReference userReference = new PlayerReference(testModel, 2); 
+		JSONObject model = p.robPlayer(userReference, newRobberLocation, victim);
 	}
 	
 	@Test
@@ -216,9 +243,8 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
-		
-		CatanModel model = p.buyDevCard(user);
+		PlayerReference user = new PlayerReference(testModel, 1);
+		JSONObject model = p.buyDevCard(user);
 	}
 	
 	@Test
@@ -226,9 +252,9 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		CatanModel model = p.yearOfPlenty(user, ResourceType.BRICK, ResourceType.ORE);
+		JSONObject model = p.yearOfPlenty(user, ResourceType.BRICK, ResourceType.ORE);
 	}
 	
 	@Test
@@ -236,7 +262,7 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		HexLocation one = new HexLocation(1, 1);
 		HexLocation two = new HexLocation(2, 2);
@@ -244,7 +270,7 @@ public class ServerTest {
 		EdgeLocation road1 = new EdgeLocation(one, EdgeDirection.North);
 		EdgeLocation road2 = new EdgeLocation(two, EdgeDirection.North);
 		
-		CatanModel model = p.roadBuilding(user, road1, road2);
+		JSONObject model = p.roadBuilding(user, road1, road2);
 	}
 	
 	@Test
@@ -252,16 +278,16 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		HexLocation newRobberLocation = new HexLocation(2, 2);
 		
 		int version = 1;
-		CatanModel model = p.getModel(user, version);
+		JSONObject model = p.getModel(version);
 		
-		PlayerReference victim = new PlayerReference(model, 1);
+		PlayerReference victim = new PlayerReference(testModel, 1);
 		
-		model = p.soldier(user, newRobberLocation, victim);
+		JSONObject newModel = p.soldier(user, newRobberLocation, victim);
 	}
 	
 	@Test
@@ -269,9 +295,9 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		CatanModel model = p.monopoly(user, ResourceType.BRICK);
+		JSONObject model = p.monopoly(user, ResourceType.BRICK);
 	}
 	
 	@Test
@@ -279,12 +305,12 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
 		HexLocation one = new HexLocation(1, 1);
 		EdgeLocation location = new EdgeLocation(one, EdgeDirection.North);
 		
-		CatanModel model = p.buildRoad(user, location, true);
+		JSONObject model = p.buildRoad(user, location, true);
 	}
 	
 	@Test
@@ -292,11 +318,11 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		HexLocation one = new HexLocation(1, 1);
 		VertexLocation location = new VertexLocation(one, VertexDirection.East);
 		
-		CatanModel model = p.buildSettlement(user, location, true);
+		JSONObject model = p.buildSettlement(user, location, true);
 	}
 	
 	@Test
@@ -305,33 +331,40 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		HexLocation one = new HexLocation(1, 1);
 		VertexLocation location = new VertexLocation(one, VertexDirection.East);
 		
-		CatanModel model = p.buildCity(user, location);
+		JSONObject model = p.buildCity(user, location);
 	}
 	
 	@Test
-	public void testOfferTrade() throws UserException, ServerException, NotYourTurnException {	
+	public void testOfferTrade() throws UserException, ServerException, SchemaMismatchException, InvalidActionException {	
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
+		PlayerReference secondUser = new PlayerReference(testModel, 2);
 		
-		ResourceList offer = new ResourceList();
+		JSONObject tradeJSON = new JSONObject();
+		tradeJSON.put(ResourceType.BRICK.toString().toLowerCase(), 0L);
+		tradeJSON.put(ResourceType.ORE.toString().toLowerCase(), 0L);
+		tradeJSON.put(ResourceType.SHEEP.toString().toLowerCase(), 0L);
+		tradeJSON.put(ResourceType.WHEAT.toString().toLowerCase(), -1L);
+		tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 1L);
+		ResourceTradeList offer = new ResourceTradeList(tradeJSON);
 		
-		CatanModel model = p.offerTrade(user, offer);
+		JSONObject model = p.offerTrade(user, offer, secondUser);
 	}
 	
 	@Test
-	public void testRespondToTrade() throws UserException, ServerException, TradeException {
+	public void testRespondToTrade() throws UserException, ServerException, InvalidActionException {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		CatanModel model = p.respondToTrade(user, true);	
+		JSONObject model = p.respondToTrade(user, true);	
 	}
 	
 	@Test
@@ -339,10 +372,10 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		int ratio = 3;
 		
-		CatanModel model = p.maritimeTrade(user, ResourceType.BRICK, ResourceType.WOOD, ratio);
+		JSONObject model = p.maritimeTrade(user, ResourceType.BRICK, ResourceType.WOOD, ratio);
 	}
 	
 	@Test
@@ -350,20 +383,21 @@ public class ServerTest {
 		String username = "John";
 		String password = "password";
 		
-		Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		ResourceList cards = new ResourceList();
 		
-		CatanModel model = p.discardCards(user, cards);
+		JSONObject model = p.discardCards(user, cards);
 	}
 	
 	@Test
-	public void testFinishTurn() {
+	public void testFinishTurn() throws ServerException, InvalidActionException {
 		String username = "John";
 		String password = "password";
 		
-		//Session user = p.register(username, password);
+		PlayerReference user = new PlayerReference(testModel, 1);
 		
-		//CatanModel model = p.finishTurn(user);
+		JSONObject model = p.finishTurn(user);
 		
 	}
+	*/
 }

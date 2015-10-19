@@ -6,6 +6,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import shared.definitions.CatanColor;
+import shared.definitions.ResourceType;
+import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.SchemaMismatchException;
 
 /**
@@ -28,24 +30,14 @@ public class Player {
 	
 	private boolean playedDevCard 	= false;
 	private boolean discarded 		= false;
+	private boolean hasRolled 		= false;
 	
 	private int cities 			= 4;
 	private int settlements 	= 5;
 	private int roads 			= 15;
 	private int soldiers		= 0;
 	private int monuments		= 0;
-	private int victoryPoints 	= 0;
-	
-	public static void main(String[] args) throws Exception {
-		JSONParser parser = new JSONParser();
-		Reader r = new BufferedReader(new FileReader("player.json"));
-		Object parseResult = parser.parse(r);
-		Player player = new Player(null, (JSONObject) parseResult);
-
-		System.out.println(parseResult);
-		System.out.println(player);
-	}
-	
+	private int victoryPoints 	= 0;	
 
 	public Player(CatanModel game) {
 		this.game = game;
@@ -67,9 +59,9 @@ public class Player {
 			name = (String) json.get("name");
 			color = CatanColor.getColorFromString((String) json.get("color"));
 			
-			resources = new ResourceList((JSONObject) json.get("resources")); 
-			newDevCards = new DevCardList((JSONObject) json.get("newDevCards")); 
-			oldDevCards = new DevCardList((JSONObject) json.get("oldDevCards")); 
+			resources = ResourceList.fromJSONObject((JSONObject) json.get("resources")); 
+			newDevCards = DevCardList.fromJSONObject((JSONObject) json.get("newDevCards")); 
+			oldDevCards = DevCardList.fromJSONObject((JSONObject) json.get("oldDevCards")); 
 
 			playedDevCard	= (boolean) json.get("playedDevCard");
 			discarded		= (boolean) json.get("discarded");
@@ -106,8 +98,16 @@ public class Player {
 
 	/**
 	 * @param resources the resources to set
+	 * @throws InsufficientResourcesException 
 	 */
-	public void setResources(ResourceList resources) {
+	public void setResources(ResourceList resources) throws InsufficientResourcesException {
+		for (ResourceType type : ResourceType.values()) {
+			int numResourceCardsForPlayer = resources.count(type);
+			if (numResourceCardsForPlayer > 19)
+				throw new InsufficientResourcesException();
+			if (game.getBank().getResources().count(type) + numResourceCardsForPlayer > 19)
+				throw new InsufficientResourcesException();
+		}
 		this.resources = resources;
 	}
 
@@ -237,6 +237,13 @@ public class Player {
 		return playerID;
 	}
 
+	public boolean hasRolled() {
+		return hasRolled;
+	}
+
+	public void setHasRolled(boolean hasRolled) {
+		this.hasRolled = hasRolled;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -251,6 +258,11 @@ public class Player {
 				+ cities + ", settlements=" + settlements + ", roads=" + roads
 				+ ", soldiers=" + soldiers + ", monuments=" + monuments
 				+ ", victoryPoints=" + victoryPoints + "]";
+	}
+
+
+	public void setOldDevCards(DevCardList devCards) {
+		this.oldDevCards = devCards;
 	}
 	
 	

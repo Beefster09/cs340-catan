@@ -42,6 +42,15 @@ public class HexLocation
 					"for a HexLocation:\n" + json.toJSONString());
 		}
 	}
+	
+	public JSONObject toJSONObject() {
+		JSONObject json = new JSONObject();
+
+		json.put("x", x);
+		json.put("y", y);
+		
+		return json;
+	}
 
 	public int getX()
 	{
@@ -206,7 +215,13 @@ public class HexLocation
 						HexLocation next = location;
 						
 						if (curRadius == 0) {
-							location = new HexLocation(0, -1);
+							if (maxRadius > 0) {
+								location = new HexLocation(0, -1);
+							}
+							else {
+								location = null;
+								return next;
+							}
 							curRadius = 1;
 							spiralIndex = 0;
 							return next;

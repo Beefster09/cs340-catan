@@ -13,6 +13,7 @@ import shared.locations.HexLocation;
  *
  */
 public class Hex {
+	public static final int EMPTY_NUMBER = -1;
 	private HexLocation location;
 	private ResourceType resource;
 	private int number;
@@ -24,20 +25,80 @@ public class Hex {
 	public Hex(HexLocation location, ResourceType resource, int number) {
 		this.location = location;
 		this.resource = resource;
-		this.number = number;
+		setNumber(number);
+	}
+
+	public Hex(int x, int y, ResourceType resource, int number) {
+		location = new HexLocation(x, y);
+		this.resource = resource;
+		setNumber(number);
 	}
 
 	public Hex(JSONObject json) throws SchemaMismatchException {
 		try {
 			location = new HexLocation((JSONObject) json.get("location"));
-			resource = ResourceType.getTypeFromString((String) json.get("resource"));
-			number = (int) (long) json.get("number");
+			if (json.containsKey("resource")) {
+				resource = ResourceType.getTypeFromString((String) json.get("resource"));
+				setNumber((int) (long) json.get("number"));
+			}
+			else {
+				resource = null;
+				number = EMPTY_NUMBER;
+			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
 			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
 					"for a Hex:\n" + json.toJSONString());
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Hex [location=" + location + ", resource=" + resource
+				+ ", number=" + number + "]";
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((location == null) ? 0 : location.hashCode());
+		result = prime * result + number;
+		result = prime * result
+				+ ((resource == null) ? 0 : resource.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Hex other = (Hex) obj;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
+		if (number != other.number)
+			return false;
+		if (resource != other.resource)
+			return false;
+		return true;
 	}
 
 	/**
@@ -59,6 +120,13 @@ public class Hex {
 	 */
 	public int getNumber() {
 		return number;
+	}
+	
+	private void setNumber(int number) {
+		if (number != EMPTY_NUMBER && (number < 2 || number > 12 || number == 7)) {
+			throw new IllegalArgumentException("Invalid number for a Hex.");
+		}
+		this.number = number;
 	}
 
 }

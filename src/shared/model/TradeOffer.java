@@ -95,5 +95,6 @@ public class TradeOffer {
 				+ ", offer=" + offer + "]";
 	}
 
+
 	
 }

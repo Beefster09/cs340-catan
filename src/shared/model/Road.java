@@ -23,6 +23,7 @@ public class Road {
 	
 	public Road(JSONObject json) throws SchemaMismatchException {
 		try {
+			/*Bad input for a single road
 			if (json.containsKey("roads")) {
 				List<Hex> hexData = new ArrayList<>();
 				for (Object obj : (List) json.get("roads")) {
@@ -33,11 +34,20 @@ public class Road {
 			}
 			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
 					json.toJSONString());
+			*/
+			int playerOwner = (int) (long) (json.get("owner"));
+			//owner = new PlayerReference()
+			location = new EdgeLocation( (JSONObject)(json.get("location")));
 		} catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
 			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
 					"for an EdgeObject:\n" + json.toJSONString());
 		}
+	}
+
+	public Road(EdgeLocation location, PlayerReference owner) {
+		this.location = location;
+		this.owner = owner;
 	}
 
 	/** Gets the owner of the edge (road)

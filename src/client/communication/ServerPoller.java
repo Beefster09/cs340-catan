@@ -3,7 +3,16 @@ package client.communication;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.SwingUtilities;
+
+import org.json.simple.JSONObject;
+
 import shared.communication.IServer;
+import shared.communication.Session;
+import shared.exceptions.InvalidActionException;
+import shared.exceptions.ServerException;
+import shared.model.CatanModel;
+import shared.model.ModelFacade;
 
 
 
@@ -23,6 +32,14 @@ public class ServerPoller {
 	
 	private IServer server;
 	private Timer poller = null;
+	ClientCommunicator comm;
+	Session user;
+	ModelFacade modelHandler;
+	
+	public static void main() {
+		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));
+		poller.start();
+	}
 
 	/**
 	 * Creates the Poller
@@ -30,8 +47,9 @@ public class ServerPoller {
 	 * @pre the server passed in is valid
 	 * @post a ServerPoller object will be created.
 	 */
-	public ServerPoller(IServer server) {
+	public ServerPoller(IServer server, Session user) {
 		this.server = server;	
+		this.user = user;
 	}
 	
 	/** Tells you whether this poller is running or not
@@ -56,8 +74,24 @@ public class ServerPoller {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				
+				try {
+					//JSONObject modelRequest = new JSONObject();
+					final JSONObject model = server.getModel(modelHandler.getVersion());
+					if (model != null) {
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								modelHandler.updateFromJSON(model);
+							}
+							
+						});
+						System.out.println("Polling gave results. Handling updates on EDT.");
+					}
+					
+				} catch (ServerException | InvalidActionException e) {
+					System.out.println("Server error, could not connect");
+					e.printStackTrace();
+				}
 			}
 			
 		}, 0, interval);

@@ -30,6 +30,19 @@ public class VertexLocation
 		this.dir = dir;
 	}
 	
+	public VertexLocation(int x, int y, VertexDirection dir) {
+		this.hexLoc = new HexLocation(x, y);
+		this.dir = dir;
+	}
+	
+	public JSONObject toJSONObject() {
+		JSONObject json = hexLoc.toJSONObject();
+		
+		json.put("direction", dir.getSymbolString());
+		
+		return json;
+	}
+
 	public HexLocation getHexLoc()
 	{
 		return hexLoc;
@@ -89,14 +102,14 @@ public class VertexLocation
 		HexLocation nearHex;
 		switch (normal.dir) {
 		case NorthWest:
-			neighbors.add(new VertexLocation(hexLoc, VertexDirection.NorthEast));
-			nearHex = hexLoc.getNeighborLoc(EdgeDirection.NorthWest);
+			neighbors.add(new VertexLocation(normal.hexLoc, VertexDirection.NorthEast));
+			nearHex = normal.hexLoc.getNeighborLoc(EdgeDirection.NorthWest);
 			neighbors.add(new VertexLocation(nearHex, VertexDirection.NorthEast));
 			neighbors.add(new VertexLocation(nearHex, VertexDirection.SouthEast));
 			break;
 		case NorthEast:
-			neighbors.add(new VertexLocation(hexLoc, VertexDirection.NorthWest));
-			nearHex = hexLoc.getNeighborLoc(EdgeDirection.NorthEast);
+			neighbors.add(new VertexLocation(normal.hexLoc, VertexDirection.NorthWest));
+			nearHex = normal.hexLoc.getNeighborLoc(EdgeDirection.NorthEast);
 			neighbors.add(new VertexLocation(nearHex, VertexDirection.NorthWest));
 			neighbors.add(new VertexLocation(nearHex, VertexDirection.SouthWest));
 			break;

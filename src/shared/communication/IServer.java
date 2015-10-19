@@ -42,23 +42,23 @@ public interface IServer {
 	 * @author-Grant
 	 */
 	public List<GameHeader> getGameList()
-			throws ServerException;
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre user is valid.
 	 * game is given a name that is not an empty string
 	 * @post a game is created
 	 * @author-Grant
 	 */
-	public GameHeader createGame(Session user, String name,
-			boolean randomTiles, boolean randomNumbers, boolean randomPorts)
-					throws GameInitializationException, ServerException;
+	public GameHeader createGame(String name, boolean randomTiles,
+			boolean randomNumbers, boolean randomPorts)
+					throws GameInitializationException, InvalidActionException, ServerException;
 	/**
 	 * @pre must be a game to join with already existing gameID
 	 * color cannot be taken by another player
 	 * @post player joins the game
 	 * @author-Grant
 	 */
-	public Session joinGame(Session user, int gameID, CatanColor color)
+	public boolean joinGame(int gameID, CatanColor color)
 			throws JoinGameException, ServerException;
 	/**
 	 * @pre game filename must not be empty string
@@ -66,69 +66,69 @@ public interface IServer {
 	 * @author-Grant
 	 */
 	public void saveGame(int gameID, String filename)
-			throws GamePersistenceException, ServerException;
+			throws GamePersistenceException, InvalidActionException, ServerException;
 	/**
 	 * @pre a game must exist with a corresponding filename to the filename parameter
 	 * @post game is loaded
 	 * @author-Grant
 	 */
 	public void loadGame(String filename)
-			throws GamePersistenceException, ServerException;
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre version must be valid
 	 * @post corresponding model is returned
 	 * @author-Grant
 	 */
-	public JSONObject getModel(Session user, int version)
-			throws ServerException;
+	public JSONObject getModel(int version)
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post game is reset
 	 * @author-Grant
 	 */
-	public CatanModel resetGame(Session user)
-			throws ServerException, GameInitializationException;
+	public JSONObject resetGame()
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post a list of commands is returned
 	 * @author-Grant
 	 */
-	public List<Command> getCommands(Session user)
-			throws ServerException;
+	public List<Command> getCommands()
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre list of commands must not be empty
 	 * @post commands will be executed
 	 * @author-Grant
 	 */
-	public CatanModel executeCommands(Session user, List<Command> commands)
+	public JSONObject executeCommands(List<Command> commands)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre AI type must be specified and valid
 	 * @post an AIPlayer must be added
 	 * @author-Grant
 	 */
-	public void addAIPlayer(Session user, AIType type)
-			throws ServerException;
+	public void addAIPlayer(AIType type)
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post the list of AITypes are returned
 	 * @author-Grant
 	 */
-	public List<AIType> getAITypes(Session user)
-			throws ServerException;
+	public List<String> getAITypes()
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre message string must not be empty
 	 * @post message is sent
 	 * @author-Grant
 	 */
-	public CatanModel sendChat(Session user, String message)
-			throws ServerException;
+	public JSONObject sendChat(PlayerReference user, String message)
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post dice is rolled
 	 * @author-Grant
 	 */
-	public CatanModel rollDice(Session user, int number)
+	public JSONObject rollDice(PlayerReference user, int number)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -136,7 +136,7 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public CatanModel robPlayer(Session user,
+	public JSONObject robPlayer(PlayerReference user,
 			HexLocation newRobberLocation, PlayerReference victim)
 					throws ServerException, InvalidActionException;
 	/**
@@ -144,7 +144,7 @@ public interface IServer {
 	 * @post Development card is bought
 	 * @author-Grant
 	 */
-	public CatanModel buyDevCard(Session user)
+	public JSONObject buyDevCard(PlayerReference user)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre two types of valid resources are specified
@@ -152,7 +152,7 @@ public interface IServer {
 	 * @post player receives two specified resources
 	 * @author-Grant
 	 */
-	public CatanModel yearOfPlenty(Session user, ResourceType type1, ResourceType type2)
+	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1, ResourceType type2)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre edge locations must be connected to exisiting road that is owned by player
@@ -160,7 +160,7 @@ public interface IServer {
 	 * @post two roads are built at specified edge locations
 	 * @author-Grant
 	 */
-	public CatanModel roadBuilding(Session user, EdgeLocation road1, EdgeLocation road2)
+	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -169,7 +169,7 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public CatanModel soldier(Session user, 
+	public JSONObject soldier(PlayerReference user, 
 			HexLocation newRobberLocation, PlayerReference victim)
 					throws ServerException, InvalidActionException;
 	/**
@@ -178,13 +178,13 @@ public interface IServer {
 	 * @post player receives all cards of specified resource type from all other players
 	 * @author-Grant
 	 */
-	public CatanModel monopoly(Session user, ResourceType type)
+	public JSONObject monopoly(PlayerReference user, ResourceType type)
 			throws ServerException, InvalidActionException;
 	
 	/**
 	 * 
 	 */
-	public CatanModel monument(Session user)
+	public JSONObject monument(PlayerReference user)
 			throws ServerException, InvalidActionException;
 	
 	/**
@@ -192,7 +192,7 @@ public interface IServer {
 	 * @post road is built at specified location
 	 * @author-Grant
 	 */
-	public CatanModel buildRoad(Session user, EdgeLocation location, boolean free)
+	public JSONObject buildRoad(PlayerReference user, EdgeLocation location, boolean free)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre vertex location is specified and must be connected to road owned by player.  Must be at least two
@@ -200,29 +200,30 @@ public interface IServer {
 	 * @post settlement is built at existing location
 	 * @author-Grant
 	 */
-	public CatanModel buildSettlement(Session user, VertexLocation location, boolean free)
+	public JSONObject buildSettlement(PlayerReference user, VertexLocation location, boolean free)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre vertex location is specified and settlement that is owned by the player already exists at vertex location
 	 * @post city replaces settlement
 	 * @author-Grant
 	 */
-	public CatanModel buildCity(Session user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, VertexLocation location)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre offer is specified and player must have at least as many resources in his hand as his offer does
 	 * @post offer is made to another player
 	 * @author-Grant
 	 */
-	public CatanModel offerTrade(Session user, ResourceList offer)
-			throws ServerException, NotYourTurnException;
+	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
+			PlayerReference receiver)
+					throws ServerException, InvalidActionException;
 	/**
 	 * @pre user chooses to accept or decline trade
 	 * @post trade is declined or accepted according to user's decision
 	 * @author-Grant
 	 */
-	public CatanModel respondToTrade(Session user, boolean accept)
-			throws ServerException, TradeException;
+	public JSONObject respondToTrade(PlayerReference user, boolean accept)
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre user must have correct ratio for trade that he wants to do
 	 * ratios are obtained when you have settlements or cities on sea ports at the edge
@@ -230,7 +231,7 @@ public interface IServer {
 	 * @post user trades in specified resources for specified resource
 	 * @author-Grant
 	 */
-	public CatanModel maritimeTrade(Session user,
+	public JSONObject maritimeTrade(PlayerReference user,
 			ResourceType inResource, ResourceType outResource, int ratio)
 					throws ServerException, InvalidActionException;
 	/**
@@ -238,21 +239,20 @@ public interface IServer {
 	 * @post player loses half of his cards, rounding down
 	 * @author-Grant
 	 */
-	public CatanModel discardCards(Session user, ResourceList cards)
+	public JSONObject discardCards(PlayerReference user, ResourceList cards)
 			throws ServerException, InvalidActionException;
 	/**
 	 * @pre player must have rolled
 	 * @post player ends turn
 	 * @author-Grant
 	 */
-	public CatanModel finishTurn(Session user)
-			throws ServerException,
-			InvalidActionException;
+	public JSONObject finishTurn(PlayerReference user)
+			throws ServerException, InvalidActionException;
 	/**
 	 * @pre
 	 * @post
 	 * 
 	 */
 	public void changeLogLevel(LogLevel level)
-			throws ServerException;
+			throws ServerException, InvalidActionException;
 }

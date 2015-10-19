@@ -2,7 +2,9 @@ package shared.locations;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -31,6 +33,11 @@ public class EdgeLocation
 		setDir(dir);
 	}
 	
+	public EdgeLocation(int x, int y, EdgeDirection dir) {
+		hexLoc = new HexLocation(x, y);
+		this.dir = dir;
+	}
+
 	public HexLocation getHexLoc()
 	{
 		return hexLoc;
@@ -101,6 +108,14 @@ public class EdgeLocation
 			assert false;
 			return false;
 		}
+	}
+	
+	public JSONObject toJSONObject() {
+		JSONObject json = hexLoc.toJSONObject();
+		
+		json.put("direction", dir.getSymbolString());
+		
+		return json;
 	}
 	
 	/** Gives the distance from the center of the bordering hex that is closest to the center.
@@ -226,7 +241,56 @@ public class EdgeLocation
 	}
 
 	public Collection<EdgeLocation> getNeighbors() {
-		// TODO Auto-generated method stub
+		List<EdgeLocation> neighbors = new ArrayList<>();
+		EdgeLocation normal = getNormalizedLocation();
+		HexLocation a, b;
+		switch (normal.dir) {
+		case NorthWest:
+			a = normal.hexLoc.getNeighborLoc(EdgeDirection.SouthWest);
+			b = normal.hexLoc.getNeighborLoc(EdgeDirection.North);
+			neighbors.add(new EdgeLocation(a, EdgeDirection.North));
+			neighbors.add(new EdgeLocation(a, EdgeDirection.NorthEast));
+			neighbors.add(new EdgeLocation(b, EdgeDirection.South));
+			neighbors.add(new EdgeLocation(b, EdgeDirection.SouthWest));
+			break;
+		case North:
+			a = normal.hexLoc.getNeighborLoc(EdgeDirection.NorthWest);
+			b = normal.hexLoc.getNeighborLoc(EdgeDirection.NorthEast);
+			neighbors.add(new EdgeLocation(a, EdgeDirection.SouthEast));
+			neighbors.add(new EdgeLocation(a, EdgeDirection.NorthEast));
+			neighbors.add(new EdgeLocation(b, EdgeDirection.NorthWest));
+			neighbors.add(new EdgeLocation(b, EdgeDirection.SouthWest));
+			break;
+		case NorthEast:
+			a = normal.hexLoc.getNeighborLoc(EdgeDirection.SouthEast);
+			b = normal.hexLoc.getNeighborLoc(EdgeDirection.North);
+			neighbors.add(new EdgeLocation(a, EdgeDirection.North));
+			neighbors.add(new EdgeLocation(a, EdgeDirection.NorthWest));
+			neighbors.add(new EdgeLocation(b, EdgeDirection.South));
+			neighbors.add(new EdgeLocation(b, EdgeDirection.SouthEast));
+			break;
+		default:
+			assert false;
+			return null;
+		}
+		
+		return neighbors;
+	}
+	
+	public VertexLocation getVertexBetween(EdgeLocation other) {
+		if (!this.isAdjacent(other)) {
+			throw new IllegalArgumentException();
+		}
+		Set<VertexLocation> a, b;
+		a = new HashSet<>(getVertices());
+		b = new HashSet<>(other.getVertices());
+		
+		a.retainAll(b);
+		
+		for (VertexLocation loc: a) {
+			return loc;
+		}
+		assert false;
 		return null;
 	}
 }

@@ -126,5 +126,28 @@ public class ResourceTradeList {
 		return "ResourceTradeList [offered=" + offered + ", wanted=" + wanted
 				+ "]";
 	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject toJSONObject() {
+		JSONObject tradeList = new JSONObject();
+		for (ResourceType type : ResourceType.values()) {
+			String resource = type.toString().toLowerCase();
+			if(wanted.containsKey(type)){
+				tradeList.put(resource, -wanted.get(type));
+			}
+			else if(offered.containsKey(type)){
+				tradeList.put(resource, offered.get(type));
+			}
+			else{
+				tradeList.put(resource, 0);
+			}
+		}
+		return tradeList;
+	}
+
+	public void setWanted(Map<ResourceType, Integer> wanted) {
+		this.wanted = wanted;
+		
+	}
 
 }
