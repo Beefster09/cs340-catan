@@ -2,6 +2,8 @@ package shared.model;
 
 import java.util.List;
 
+import shared.communication.GameHeader;
+
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
  * for the current game.  All information relevant to a particular game can be accessed through
@@ -10,6 +12,8 @@ import java.util.List;
  *
  */
 public class CatanModel {
+	private GameHeader header;
+	
 	private MessageList chat;
 	private MessageList log;
 	private Board map;
@@ -187,6 +191,14 @@ public class CatanModel {
 	 */
 	public int getVersion() {
 		return version;
+	}
+
+	public GameHeader getHeader() {
+		return header;
+	}
+
+	public void setHeader(GameHeader header) {
+		this.header = header;
 	}
 	
 	

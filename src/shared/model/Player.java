@@ -1,10 +1,14 @@
 package shared.model;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import shared.communication.GameHeader;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
@@ -15,8 +19,13 @@ import shared.exceptions.SchemaMismatchException;
  * @author Jordan
  *
  */
-public class Player {	
+public class Player {
+	// Table for retrieving players by UUID
+	private static Map<UUID, Player> playerTable = new HashMap<>();
+	
 	// Meta-information
+	private UUID uuid; // For PlayerReferences
+	
 	private CatanModel game; // This is so you can get PlayerReferences.
 	private int playerIndex;
 	
@@ -38,15 +47,39 @@ public class Player {
 	private int soldiers		= 0;
 	private int monuments		= 0;
 	private int victoryPoints 	= 0;	
+	
+	static UUID generateUUID(int gameid, int index) {
+		byte[] data = new byte[8];
 
-	public Player(CatanModel game) {
-		this.game = game;
-		// Do some stuff?
+		data[0] = (byte)(gameid & 0xFF);
+		data[1] = (byte)((gameid >> 8) & 0xFF);
+		data[2] = (byte)((gameid >> 16) & 0xFF);
+		data[3] = (byte)((gameid >> 24) & 0xFF);
+		data[4] = (byte)(index & 0xFF);
+		data[5] = (byte)((index >> 8) & 0xFF);
+		data[6] = (byte)((index >> 16) & 0xFF);
+		data[7] = (byte)((index >> 24) & 0xFF);
+		
+		return UUID.nameUUIDFromBytes(data);
+	}
+
+	static UUID generateUUID(CatanModel game, int index) {
+		return generateUUID(game.getHeader().getId(), index);
+	}
+
+	static UUID generateUUID(GameHeader header, int index) {
+		return generateUUID(header.getId(), index);
+	}
+	
+	private void assignUUID(CatanModel game, int index) {
+		uuid = generateUUID(game, index);
+		playerTable.put(uuid, this);
 	}
 	
 	public Player(CatanModel game, int index) {
 		this.game = game;
 		playerIndex = index;
+		assignUUID(game, index);
 	}
 
 	public Player(CatanModel game, JSONObject json) throws SchemaMismatchException {
@@ -54,6 +87,7 @@ public class Player {
 		
 		try {
 			playerIndex	= (int) (long) json.get("playerIndex");
+			assignUUID(game, playerIndex);
 			playerID	= (int) (long) json.get("playerID");
 			
 			name = (String) json.get("name");
@@ -86,7 +120,16 @@ public class Player {
 	 * @return a corresponding PlayerReference
 	 */
 	public PlayerReference getReference() {
-		return new PlayerReference(game, playerIndex);
+		return new PlayerReference(uuid);
+	}
+	
+	public static Player getPlayerByUUID(UUID uuid) {
+		if (playerTable.containsKey(uuid)) {
+			return playerTable.get(uuid);
+		}
+		else {
+			throw new IllegalArgumentException("Unrecognized UUID: " + uuid.toString());
+		}
 	}
 
 	/**
