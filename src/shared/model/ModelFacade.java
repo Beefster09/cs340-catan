@@ -25,9 +25,11 @@ import client.communication.ServerProxy;
 public class ModelFacade {
 	
 	//Get the Singleton for this class
-		private static ModelFacade instance = new ModelFacade();
+		private static ModelFacade instance;
 		public static ModelFacade getInstance(){
-		      return instance;
+			if (instance == null)
+				return new ModelFacade();
+		    return instance;
 		   }
 	
 		private CatanModel model;
@@ -144,6 +146,8 @@ public class ModelFacade {
 			return model.getTurnTracker().getCurrentPlayer();
 		}
 		
+		//Possibly want to move this up, just make the facade have a reference to the
+		//current player.
 		public void setLocalPlayer(Session player) {
 			model.setLocalPlayer(player);
 		}

@@ -72,9 +72,9 @@ public class BoardTest {
 		roadList = new ArrayList<Road>();
 		townList = new ArrayList<Municipality>();
 		
-		red = new PlayerReference(null, 0);
-		green = new PlayerReference(null, 1);
-		blue = new PlayerReference(null, 2);
+		red = PlayerReference.getDummyPlayerReference(0);
+		green = PlayerReference.getDummyPlayerReference(1);
+		blue = PlayerReference.getDummyPlayerReference(2);
 		
 		int hexIndex=0;
 		for (HexLocation location: HexLocation.locationsWithinRadius(2)) {

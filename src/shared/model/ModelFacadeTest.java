@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 
+import shared.communication.*;
 import shared.definitions.DevCardType;
 import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
@@ -43,6 +45,7 @@ public class ModelFacadeTest {
 		JSONObject json = ((JSONObject) parseResult);
 		
 		model = new CatanModel();
+		model.setHeader(new GameHeader("Dummy Game", 1337, new ArrayList<PlayerHeader>()));
 		m = new ModelFacade(model);
 		m.updateFromJSON(json);
 	}

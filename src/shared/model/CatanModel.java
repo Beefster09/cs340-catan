@@ -2,7 +2,7 @@ package shared.model;
 
 import java.util.List;
 
-import shared.communication.Session;
+import shared.communication.GameHeader;
 
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
@@ -12,6 +12,8 @@ import shared.communication.Session;
  *
  */
 public class CatanModel {
+	private GameHeader header;
+	
 	private MessageList chat;
 	private MessageList log;
 	private Board map;
@@ -22,7 +24,6 @@ public class CatanModel {
 	private PlayerReference longestRoad;
 	private PlayerReference largestArmy;
 	private PlayerReference winner;
-	private Session localPlayer;
 	
 	private int version;
 
@@ -192,12 +193,12 @@ public class CatanModel {
 		return version;
 	}
 
-	public Session getLocalPlayer() {
-		return localPlayer;
+	public GameHeader getHeader() {
+		return header;
 	}
 
-	public void setLocalPlayer(Session localPlayer) {
-		this.localPlayer = localPlayer;
+	public void setHeader(GameHeader header) {
+		this.header = header;
 	}
 	
 	
