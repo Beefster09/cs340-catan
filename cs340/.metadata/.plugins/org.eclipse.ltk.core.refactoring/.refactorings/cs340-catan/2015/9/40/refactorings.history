@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;shared.model.MessageLine&apos; to &apos;MessageList&apos;&#x0A;- Original project: &apos;cs340-catan&apos;&#x0A;- Original element: &apos;shared.model.MessageLine&apos;&#x0A;- Renamed element: &apos;shared.model.MessageList&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;MessageLine&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;shared.model{MessageLine.java[MessageLine" matchStrategy="1" name="MessageList" qualified="false" references="true" similarDeclarations="false" stamp="1443636628678" textual="false" version="1.0"/>
+</session>

@@ -1,0 +1,104 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+
+
+public class Solution {
+
+	
+	/**
+	 * Take a rectangular grid of numbers and find the length
+	 * of the longest non-decreasing sub-sequence.
+	 * @return the length as an integer.
+	 */
+	public static int longestSequence(int[][] grid) {
+        int maxLength = 0;
+		
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[i].length; j++) {
+				boolean[][] visited = new boolean[numRow][numCol];
+				maxLength = Math.max(maxLength, longestSubRecursive(grid,visited,i,j,0));
+			}
+		}
+		
+		return maxLength;
+	}
+	
+	public static int longestSubRecursive(int[][] grid, boolean[][] visited, int i, int j, int length) {
+		if (visited[i][j])
+			return length;
+		visited[i][j] = true;
+		length++;
+		if (j > 0) {
+			if (i > 0) {
+				//NW
+				if (grid[i-1][j-1] >= grid[i][j])
+					return longestSubRecursive(grid,visited,i-1,j-1,length);
+			}
+			if (i < grid.length) {
+				//SW
+				if (grid[i+1][j-1] >= grid[i][j])
+					return longestSubRecursive(grid,visited,i+1,j-1,length);
+			}
+			//W
+			if (grid[i][j-1] >= grid[i][j])
+				return longestSubRecursive(grid,visited,i,j-1,length);
+		}
+		if (j < grid[i].length) {
+			if (i > 0) {
+				//NE
+				if (grid[i-1][j+1] >= grid[i][j])
+					return longestSubRecursive(grid,visited,i-1,j-1,length);
+			}
+			if (i < grid.length) {
+				//SE
+				if (grid[i+1][j+1] >= grid[i][j])
+					return longestSubRecursive(grid,visited,i+1,j-1,length);
+			}
+			//E
+			if (grid[i][j+1] >= grid[i][j])
+				return longestSubRecursive(grid,visited,i,j-1,length);
+		}
+		if (i > 0)
+			//N
+			if (grid[i-1][j] >= grid[i][j])
+				return longestSubRecursive(grid,visited,i-1,j,length);
+		if (i < grid.length)
+			//S
+			if (grid[i+1][j] >= grid[i][j])
+				return longestSubRecursive(grid,visited,i+1,j,length);
+			
+		
+		return length;
+	}
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+		int numRows = 0;
+		int numCols = 0;
+		String[] firstLine = reader.readLine().split("\\s+");
+		numRows = Integer.parseInt(firstLine[0]);
+		numCols = Integer.parseInt(firstLine[1]);
+
+		numRow = numRows;
+		numCol = numCols;
+		
+		int[][] grid = new int[numRows][numCols];
+
+		for (int row = 0; row < numRows; row++) {
+		    String[] inputRow = reader.readLine().split("\\s+");
+
+		    for (int col = 0; col < numCols; col++) {
+		        grid[row][col] = Integer.parseInt(inputRow[col]);
+		    }
+		}
+		int length = longestSequence(grid);
+		System.out.println(length);
+	}
+	
+	public static int numRow;
+	public static int numCol;
+
+}

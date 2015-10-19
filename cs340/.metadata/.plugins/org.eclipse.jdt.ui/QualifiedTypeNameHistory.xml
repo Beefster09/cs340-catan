@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="shared.model.CatanModel"/>
+<fullyQualifiedTypeName name="shared.communication.Session"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="shared.communication.PlayerHeader"/>
+<fullyQualifiedTypeName name="java.io.FileNotFoundException"/>
+<fullyQualifiedTypeName name="org.json.simple.JSONObject"/>
+<fullyQualifiedTypeName name="shared.model.ModelFacade"/>
+<fullyQualifiedTypeName name="shared.definitions.ResourceType"/>
+</qualifiedTypeNameHistroy>
