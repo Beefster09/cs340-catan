@@ -25,10 +25,8 @@ import client.communication.ServerProxy;
 public class ModelFacade {
 	
 	//Get the Singleton for this class
-		private static ModelFacade instance;
+		private static ModelFacade instance = new ModelFacade();
 		public static ModelFacade getInstance(){
-			if (instance == null)
-				return new ModelFacade();
 		    return instance;
 		   }
 	

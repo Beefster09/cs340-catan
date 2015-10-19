@@ -1,6 +1,7 @@
 package client.join;
 
 import client.base.*;
+import client.data.PlayerInfo;
 
 
 /**
@@ -19,12 +20,37 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return (IPlayerWaitingView)super.getView();
 	}
 
+	
+	/**
+	 * make a list of players from the current game
+	 * getView().setPlayers(that list)
+	 * getView().setAIChoices(if you happen to hve AI)
+	 * showModal
+	 */
 	@Override
 	public void start() {
-
+		
+		PlayerInfo[] playerList = new PlayerInfo[4];
+		String[] AIChoices = new String[3];
+		AIChoices[0] = "Easy";
+		AIChoices[1] = "Medium";
+		AIChoices[2] = "Hard";
+		
+		PlayerInfo joe = new PlayerInfo();
+		
+		playerList[0] = joe;
+		
+		//getView().setPlayers(playerList);
+		
+		getView().setAIChoices(AIChoices);
+		
 		getView().showModal();
 	}
 
+	
+	/**
+	 * Do whatever you need to do to generate an AI and and it to the player list;
+	 */
 	@Override
 	public void addAI() {
 
