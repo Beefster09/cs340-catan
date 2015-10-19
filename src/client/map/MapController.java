@@ -42,6 +42,16 @@ public class MapController extends Controller implements IMapController {
 		state = new NullState(this);
 	}
 	
+	public MapController(IMapView view, IRobView robView) {
+		
+		super(view);
+		
+		setRobView(robView);
+		
+		initFromModel();
+	}
+
+	
 	// TODO: listener that affects the state of this object (player order)
 	
 	public IMapView getView() {

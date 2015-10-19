@@ -33,6 +33,7 @@ public class ModelFacade {
 		   }
 	
 		private CatanModel model;
+		private Session localPlayer;
 		
 		public ModelFacade() {
 			model = new CatanModel();
@@ -149,11 +150,11 @@ public class ModelFacade {
 		//Possibly want to move this up, just make the facade have a reference to the
 		//current player.
 		public void setLocalPlayer(Session player) {
-			model.setLocalPlayer(player);
+			localPlayer = player;
 		}
 		
 		public Session getLocalPlayer() {
-			return model.getLocalPlayer();
+			return localPlayer;
 		}
 	
 		/**

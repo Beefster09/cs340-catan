@@ -25,7 +25,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	private IMessageView messageView;
 	private IAction joinAction;
 	private IServer serverProxy = ServerProxy.getInstance();
-	private ModelFacade modelFacade;
+	private ModelFacade modelFacade = ModelFacade.getInstance();
 	
 	/**
 	 * JoinGameController constructor
@@ -112,7 +112,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			PlayerInfo localPlayer = new PlayerInfo();
 			localPlayer.setId(modelFacade.getInstance().getLocalPlayer().getPlayerID());
 			localPlayer.setName(modelFacade.getInstance().getLocalPlayer().getUsername());
-			localPlayer.setPlayerIndex(0);
+			//localPlayer.setPlayerIndex(0);
 			
 			getJoinGameView().setGames(games, localPlayer);
 			getJoinGameView().showModal();
