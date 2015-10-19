@@ -15,12 +15,24 @@ import javax.swing.*;
 
 import client.base.*;
 
+
+
+
 /**
  * Implementation for the roll view, which allows the user to roll the dice
  */
 @SuppressWarnings("serial")
 public class RollView extends OverlayView implements IRollView {
-
+	public static void main(String args[]) {
+		JFrame window = new JFrame();
+		window.setBounds(100, 100, 500, 500);
+		window.setVisible(true);
+		RollView.setWindow(window);
+		RollView rv = new RollView();
+		RollResultView rrv = new RollResultView();
+		rv.setController(new RollController(rv, rrv));
+		rv.showModal();
+	}
 	private final int LABEL_TEXT_SIZE = 20;
 	private final int BUTTON_TEXT_SIZE = 28;
 	private final int BORDER_WIDTH = 10;
