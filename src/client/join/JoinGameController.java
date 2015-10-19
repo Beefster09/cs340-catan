@@ -222,6 +222,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		boolean playerInGame= false;
 		CatanColor color = null;
 		
+		//Updates the facade with all the relevant game header information.
+		modelFacade.setGameInfo(game);
+		
 		for (PlayerInfo player : game.getPlayers()) {
 			if (player.getId() == modelFacade.getLocalPlayer().getPlayerID()) {
 				playerInGame = true;

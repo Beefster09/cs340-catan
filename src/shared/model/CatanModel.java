@@ -2,6 +2,7 @@ package shared.model;
 
 import java.util.List;
 
+import client.data.GameInfo;
 import shared.communication.GameHeader;
 
 /**
@@ -12,7 +13,7 @@ import shared.communication.GameHeader;
  *
  */
 public class CatanModel {
-	private GameHeader header;
+	private GameInfo header;
 	
 	private MessageList chat;
 	private MessageList log;
@@ -193,11 +194,11 @@ public class CatanModel {
 		return version;
 	}
 
-	public GameHeader getHeader() {
+	public GameInfo getHeader() {
 		return header;
 	}
 
-	public void setHeader(GameHeader header) {
+	public void setHeader(GameInfo header) {
 		this.header = header;
 	}
 	

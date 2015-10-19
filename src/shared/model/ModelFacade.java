@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.*;
 import shared.exceptions.GameInitializationException;
@@ -20,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import client.communication.ServerProxy;
+import client.data.GameInfo;
 
 
 public class ModelFacade {
@@ -153,6 +155,14 @@ public class ModelFacade {
 		
 		public Session getLocalPlayer() {
 			return localPlayer;
+		}
+		
+		public void setGameInfo(GameInfo header) {
+			model.setHeader(header);
+		}
+		
+		public GameInfo getGameHeader() {
+			return model.getHeader();
 		}
 	
 		/**
