@@ -2,7 +2,6 @@ package client.roll;
 
 import client.base.*;
 
-
 /**
  * Implementation for the roll controller
  */
@@ -36,7 +35,7 @@ public class RollController extends Controller implements IRollController {
 	
 	@Override
 	public void rollDice() {
-
+		getResultView().setRollValue(5);
 		getResultView().showModal();
 	}
 
