@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Encapsulate field &apos;shared.model.CatanModel.localPlayer&apos; in &apos;shared.model.CatanModel&apos;&#x0A;- Original project: &apos;cs340-catan&apos;&#x0A;- Original element: &apos;shared.model.CatanModel.localPlayer&apos;&#x0A;- Getter method name: &apos;getLocalPlayer&apos;&#x0A;- Setter method name: &apos;setLocalPlayer&apos;&#x0A;- Field visibility: &apos;public&apos;&#x0A;- Use getter and setter methods in declaring type" comments="false" declaring="true" description="Encapsulate field &apos;localPlayer&apos;" flags="589830" getter="getLocalPlayer" id="org.eclipse.jdt.ui.self.encapsulate" input="/src&lt;shared.model{CatanModel.java[CatanModel^localPlayer" insertion="23" setter="setLocalPlayer" stamp="1445279493684" version="1.0" visibility="1"/>
-</session>
