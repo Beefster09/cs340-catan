@@ -308,6 +308,5 @@ public class Player {
 		this.oldDevCards = devCards;
 	}
 	
-	
 
 }

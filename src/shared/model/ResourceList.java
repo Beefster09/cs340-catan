@@ -161,4 +161,8 @@ public class ResourceList {
 		return o;
 	}
 
+	public Map<ResourceType, Integer> getResources() {
+		return resources;
+	}
+
 }
