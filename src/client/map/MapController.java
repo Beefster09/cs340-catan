@@ -2,6 +2,7 @@ package client.map;
 
 import java.util.*;
 
+import shared.communication.IServer;
 import shared.definitions.*;
 import shared.exceptions.InvalidActionException;
 import shared.locations.*;
@@ -16,17 +17,32 @@ import client.data.*;
 public class MapController extends Controller implements IMapController {
 	
 	private IRobView robView;
-	private MapControllerState state;
+	private IServer server;
 	private ModelFacade model;
+	private PlayerReference you;
 	
-	public MapController(IMapView view, IRobView robView) {
+	private MapControllerState state;
+	
+	public MapController(IMapView view, IRobView robView, IServer server,
+			ModelFacade model, PlayerReference you) {
 		
 		super(view);
 		
 		setRobView(robView);
+		setServer(server);
+		
+		this.model = model;
+		this.you = you;
 		
 		initFromModel();
+		
+		// Default state until you can control things on the map.
+		// Active before the game starts and when it isn't your turn.
+		// It does NOTHING but throw exceptions. Always.
+		state = new NullState(this);
 	}
+	
+	// TODO: listener that affects the state of this object (player order)
 	
 	public IMapView getView() {
 		
@@ -39,6 +55,22 @@ public class MapController extends Controller implements IMapController {
 	
 	private void setRobView(IRobView robView) {
 		this.robView = robView;
+	}
+
+	public IServer getServer() {
+		return server;
+	}
+
+	private void setServer(IServer server) {
+		this.server = server;
+	}
+	
+	public CatanColor getYourColor() {
+		return you.getPlayer().getColor();
+	}
+	
+	private boolean isYourTurn() {
+		return you.equals(model.getCurrentPlayer());
 	}
 	
 	protected void initFromModel() {
@@ -83,28 +115,26 @@ public class MapController extends Controller implements IMapController {
 	}
 
 	public boolean canPlaceRoad(EdgeLocation edgeLoc) {
-		return true;
+		return state.canPlaceRoad(edgeLoc);
 	}
 
 	public boolean canPlaceSettlement(VertexLocation vertLoc) {
-		
-		return true;
+		return state.canPlaceSettlement(vertLoc);
 	}
 
 	public boolean canPlaceCity(VertexLocation vertLoc) {
-		
-		return true;
+		return state.canPlaceCity(vertLoc);
 	}
 
 	public boolean canPlaceRobber(HexLocation hexLoc) {
-		
-		return true;
+		return state.canMoveRobber(hexLoc);
 	}
 
 	public void placeRoad(EdgeLocation edgeLoc) {
 		
 		try {
 			state = state.placeRoad(edgeLoc);
+			getView().placeRoad(edgeLoc, you.getPlayer().getColor());
 		}
 		catch (InvalidActionException e) {
 			
@@ -115,6 +145,7 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeSettlement(vertLoc);
+			getView().placeSettlement(vertLoc, you.getPlayer().getColor());
 		}
 		catch (InvalidActionException e) {
 			
@@ -124,6 +155,7 @@ public class MapController extends Controller implements IMapController {
 	public void placeCity(VertexLocation vertLoc) {
 		try {
 			state = state.placeCity(vertLoc);
+			getView().placeCity(vertLoc, you.getPlayer().getColor());
 		}
 		catch (InvalidActionException e) {
 			
@@ -184,6 +216,18 @@ public class MapController extends Controller implements IMapController {
 		catch (InvalidActionException e) {
 			
 		}
+	}
+
+	public ModelFacade getModel() {
+		return model;
+	}
+
+	public PlayerReference getYourself() {
+		return you;
+	}
+
+	public void robDialog() {
+		getRobView().showModal();
 	}
 	
 }

@@ -2,6 +2,8 @@ package shared.model;
 
 import java.util.List;
 
+import shared.communication.Session;
+
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
  * for the current game.  All information relevant to a particular game can be accessed through
@@ -20,6 +22,7 @@ public class CatanModel {
 	private PlayerReference longestRoad;
 	private PlayerReference largestArmy;
 	private PlayerReference winner;
+	private Session localPlayer;
 	
 	private int version;
 
@@ -187,6 +190,14 @@ public class CatanModel {
 	 */
 	public int getVersion() {
 		return version;
+	}
+
+	public Session getLocalPlayer() {
+		return localPlayer;
+	}
+
+	public void setLocalPlayer(Session localPlayer) {
+		this.localPlayer = localPlayer;
 	}
 	
 	

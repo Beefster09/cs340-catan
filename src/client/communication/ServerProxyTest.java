@@ -103,10 +103,10 @@ public class ServerProxyTest {
 				System.out.println("Grant joined the game");
 			}
 
-			PlayerReference steve = new PlayerReference(null, 0);
-			PlayerReference justin = new PlayerReference(null, 1);
-			PlayerReference jordan = new PlayerReference(null, 2);
-			PlayerReference grant = new PlayerReference(null, 3);
+			PlayerReference steve = PlayerReference.getDummyPlayerReference(0);
+			PlayerReference justin = PlayerReference.getDummyPlayerReference(1);
+			PlayerReference jordan = PlayerReference.getDummyPlayerReference(2);
+			PlayerReference grant = PlayerReference.getDummyPlayerReference(3);
 			
 			SP.login("Steve", "steve");
 			System.out.println("Steve logged in");
@@ -874,7 +874,7 @@ public class ServerProxyTest {
 			System.out.println("Steve used Road Builder to build two roads");
 			
 			hexLocation = new HexLocation(-1,-1);
-			PlayerReference nullPlayer = new PlayerReference(null, -1);
+			PlayerReference nullPlayer = PlayerReference.getDummyPlayerReference(-1);
 			
 			SP.soldier(steve, hexLocation, nullPlayer);
 			System.out.println("Steve used a knight to move the robber to a blank space");

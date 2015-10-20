@@ -22,6 +22,11 @@ public class PlayerReference {
 		this.playerIndex = playerIndex;
 	}
 	
+	// This is for debugging with the old server.
+	public static PlayerReference getDummyPlayerReference(int playerIndex) {
+		return new PlayerReference(null, playerIndex);
+	}
+	
 	/** Gets the player that this object references.
 	 * @return the player 'pointed' to by this PlayerReference
 	 */

@@ -92,6 +92,10 @@ public class TurnTracker {
 		return currentPlayer;
 	}
 	
+	public void setCurrentPlayer(PlayerReference player) {
+		currentPlayer = player;
+	}
+	
 	public PlayerReference getLongestRoad() {
 		return longestRoad;
 	}
