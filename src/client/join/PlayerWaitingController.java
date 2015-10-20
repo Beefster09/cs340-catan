@@ -1,6 +1,14 @@
 package client.join;
 
+import java.util.List;
+
+import shared.communication.IServer;
+import shared.exceptions.InvalidActionException;
+import shared.exceptions.ServerException;
+import shared.model.ModelFacade;
 import client.base.*;
+import client.communication.ServerProxy;
+import client.data.GameInfo;
 import client.data.PlayerInfo;
 
 
@@ -9,6 +17,9 @@ import client.data.PlayerInfo;
  */
 public class PlayerWaitingController extends Controller implements IPlayerWaitingController {
 
+	private ModelFacade modelFacade = ModelFacade.getInstance();
+	
+	
 	public PlayerWaitingController(IPlayerWaitingView view) {
 
 		super(view);
@@ -30,21 +41,33 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	@Override
 	public void start() {
 		
-		PlayerInfo[] playerList = new PlayerInfo[4];
-		String[] AIChoices = new String[3];
-		AIChoices[0] = "Easy";
-		AIChoices[1] = "Medium";
-		AIChoices[2] = "Hard";
-		
-		PlayerInfo joe = new PlayerInfo();
-		
-		playerList[0] = joe;
-		
-		//getView().setPlayers(playerList);
-		
-		getView().setAIChoices(AIChoices);
-		
-		getView().showModal();
+		List<PlayerInfo> players = modelFacade.getCatanModel().getHeader().getPlayers();
+		List<String> AIChoiceList;
+		try {
+			AIChoiceList = ServerProxy.getInstance().getAITypes();
+			
+			PlayerInfo[] playerList = new PlayerInfo[players.size()];
+			for(int i = 0; i < players.size(); i++)
+				playerList[i] = players.get(i);
+			
+			String[] AIChoices = new String[AIChoiceList.size()];
+			for(int i = 0; i < AIChoiceList.size(); i++)
+				AIChoices[i] = AIChoiceList.get(i);
+			
+			PlayerInfo joe = new PlayerInfo();
+			
+			playerList[0] = joe;
+			
+			getView().setPlayers(playerList);
+			
+			getView().setAIChoices(AIChoices);
+			
+			getView().showModal();
+		} catch (ServerException | InvalidActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
 	}
 
 	
@@ -55,7 +78,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	public void addAI() {
 
 		// TEMPORARY
-		//getView().closeModal();
+		getView().closeModal();
 	}
 
 }
