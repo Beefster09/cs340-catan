@@ -42,10 +42,8 @@ public class MapController extends Controller implements IMapController {
 		@Override
 		public void mapChanged(Board newMap) {
 			
-			// Nuke everything and start fresh
-			getView().removeAllPieces();
-			
-			placePieces(newMap);
+			// Assume (for now) that only pieces will change
+			refreshPieces();
 		}
 
 		@Override
@@ -247,6 +245,12 @@ public class MapController extends Controller implements IMapController {
 
 	public void robDialog() {
 		getRobView().showModal();
+	}
+
+	public void refreshPieces() {
+		getView().removeAllPieces();
+		
+		placePieces(getModel().getCatanModel().getMap());
 	}
 	
 }

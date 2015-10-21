@@ -25,7 +25,20 @@ public class ClientManager {
 	
 	public static void initializeServer(int type) {
 		if (server != null) {
-			throw new RuntimeException();
+			throw new RuntimeException("Cannot initialize server twice.");
+		}
+		switch (type) {
+		default:
+		case SERVER_TYPE_PROXY:
+			server = new ServerProxy();
+			break;
+		case SERVER_TYPE_SERVER:
+			//server = new Server();
+			break;
+		case SERVER_TYPE_MOCK:
+			server = new MockServer();
+			break;
+		
 		}
 	}
 	
