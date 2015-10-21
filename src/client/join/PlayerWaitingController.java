@@ -54,9 +54,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			for(int i = 0; i < AIChoiceList.size(); i++)
 				AIChoices[i] = AIChoiceList.get(i);
 			
-			PlayerInfo joe = new PlayerInfo();
-			
-			playerList[0] = joe;
+//			PlayerInfo joe = new PlayerInfo();
+//			
+//			playerList[0] = joe;
 			
 			getView().setPlayers(playerList);
 			
