@@ -20,17 +20,19 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import client.communication.ClientManager;
 import client.communication.ServerProxy;
 import client.data.GameInfo;
 
 
 public class ModelFacade {
 	
-	//Get the Singleton for this class
-		private static ModelFacade instance = new ModelFacade();
+		//Get the Singleton for this class
+		//private static ModelFacade instance = new ModelFacade();
+		@Deprecated
 		public static ModelFacade getInstance(){
-		    return instance;
-		   }
+		    return ClientManager.getModel();
+		}
 	
 		private CatanModel model;
 		private Session localPlayer;
@@ -162,7 +164,7 @@ public class ModelFacade {
 		}
 		
 		public GameInfo getGameHeader() {
-			return model.getHeader();
+			return model.getGameInfo();
 		}
 	
 		/**

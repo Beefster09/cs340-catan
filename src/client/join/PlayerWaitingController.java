@@ -41,7 +41,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	@Override
 	public void start() {
 		
-		List<PlayerInfo> players = modelFacade.getCatanModel().getHeader().getPlayers();
+		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 		List<String> AIChoiceList;
 		try {
 			AIChoiceList = ServerProxy.getInstance().getAITypes();

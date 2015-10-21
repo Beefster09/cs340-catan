@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import client.data.GameInfo;
+import client.data.PlayerInfo;
+
 import shared.exceptions.SchemaMismatchException;
 
 public class GameHeader {
@@ -32,6 +35,15 @@ public class GameHeader {
 		this.title = title;
 		this.id = id;
 		this.players = players;
+	}
+
+	public GameHeader(GameInfo info) {
+		title = info.getTitle();
+		id = info.getId();
+		players = new ArrayList<>();
+		for (PlayerInfo player : info.getPlayers()) {
+			players.add(new PlayerHeader(player));
+		}
 	}
 
 	/**

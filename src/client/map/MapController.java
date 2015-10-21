@@ -118,8 +118,6 @@ public class MapController extends Controller implements IMapController {
 		//</temp>
 	}
 
-	
-	
 	// TODO: listener that affects the state of this object (player order)
 	
 	public IMapView getView() {
