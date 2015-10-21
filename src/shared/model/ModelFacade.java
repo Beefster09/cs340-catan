@@ -140,7 +140,6 @@ public class ModelFacade {
 			} catch (SchemaMismatchException e) {
 				e.printStackTrace();
 			}
-
 		}
 		
 		public PlayerReference getCurrentPlayer() {
