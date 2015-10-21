@@ -33,7 +33,7 @@ public class PlayerInfo
 	
 	public PlayerInfo(PlayerHeader player) {
 		setId(player.getId());
-		setPlayerIndex(-1);
+		setPlayerIndex(player.getId());
 		setName(player.getName());
 		setColor(player.getColor());
 	}
