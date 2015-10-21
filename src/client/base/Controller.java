@@ -1,9 +1,12 @@
 package client.base;
 
+import shared.model.AbstractModelListener;
+import shared.model.IModelListener;
+
 /**
  * Base class for controllers
  */
-public abstract class Controller implements IController
+public abstract class Controller extends AbstractModelListener implements IController, IModelListener
 {
 	
 	private IView view;

@@ -34,29 +34,25 @@ public class MapController extends Controller implements IMapController {
 		// It does NOTHING but throw exceptions. Always.
 		state = new NullState(this);
 		
-		getModel().registerListener(listener);
+		getModel().registerListener(this);
 	}
 
-	IModelListener listener = new AbstractModelListener() {
-
-		@Override
-		public void mapChanged(Board newMap) {
-			
-			// Assume (for now) that only pieces will change
-			refreshPieces();
-		}
-
-		@Override
-		public void turnChanged(TurnTracker turnTracker) {
-			if (isYourTurn()) {
-				state = new YourTurnState(MapController.this);
-			}
-			else {
-				state = new NullState(MapController.this);
-			}
-		}
+	@Override
+	public void mapChanged(Board newMap) {
 		
-	};
+		// Assume (for now) that only pieces will change
+		refreshPieces();
+	}
+
+	@Override
+	public void turnChanged(TurnTracker turnTracker) {
+		if (isYourTurn()) {
+			state = new YourTurnState(MapController.this);
+		}
+		else {
+			state = new NullState(MapController.this);
+		}
+	}
 	
 	public IMapView getView() {
 		
