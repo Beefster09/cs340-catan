@@ -8,6 +8,7 @@ import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
+import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
 import client.base.*;
@@ -226,16 +227,19 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getId() == modelFacade.getLocalPlayer().getPlayerID()) {
-				playerInGame = true;
-				color = player.getColor();
-			}	
-			else
+			if (player.getId() != modelFacade.getLocalPlayer().getPlayerID()) {
+//				playerInGame = true;
+//				color = player.getColor();
+//			}	
+//			else{
 				getSelectColorView().setColorEnabled(player.getColor(), false);
+			}
 		}
 		//If the player isn't in the game, then give them a chance to select a color and join
-		if (!playerInGame)
+		if (!playerInGame){
+			getJoinGameView().closeModal();
 			getSelectColorView().showModal();
+		}
 		//Otherwise, automatically join them to the game they are assigned to.
 		else
 			joinGame(color);
@@ -253,11 +257,23 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	 */
 	@Override
 	public void joinGame(CatanColor color) {
-		
-		// If join succeeded
-		getSelectColorView().closeModal();
-		getJoinGameView().closeModal();
-		joinAction.execute();
+		try{
+			serverProxy.joinGame(modelFacade.getGameHeader().getId(), color);
+			// If join succeeded
+			getSelectColorView().closeModal();
+			getJoinGameView().closeModal();
+			joinAction.execute();
+		}
+		catch(ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();			
+		}
+		catch (JoinGameException e) {
+			messageView.setTitle("Join Game Error");
+			messageView.setMessage("Unable to join game at this point");
+			messageView.showModal();
+		}
 	}
 
 }

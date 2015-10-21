@@ -10,7 +10,7 @@ import shared.communication.GameHeader;
  *
  */
 public class PlayerReference {
-	private static final int INVALID = -1337;
+	private static final int INVALID_INDEX = -1337;
 	//private CatanModel game;
 	private int playerIndex; // Old compatibility
 	private UUID playerUUID;
@@ -40,7 +40,7 @@ public class PlayerReference {
 	
 	public PlayerReference(UUID uuid) {
 		playerUUID = uuid;
-		playerIndex = INVALID;
+		playerIndex = INVALID_INDEX;
 	}
 	
 	public PlayerReference(GameHeader header, int playerIndex) {

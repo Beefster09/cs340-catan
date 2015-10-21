@@ -2,6 +2,9 @@ package client.data;
 
 import java.util.*;
 
+import shared.communication.GameHeader;
+import shared.communication.PlayerHeader;
+
 /**
  * Used to pass game information into views<br>
  * <br>
@@ -26,6 +29,15 @@ public class GameInfo
 		players = new ArrayList<PlayerInfo>();
 	}
 	
+	public GameInfo(GameHeader gameHeader) {
+		setId(gameHeader.getId());
+		setTitle(gameHeader.getTitle());
+		players = new ArrayList<>();
+		for (PlayerHeader player : gameHeader.getPlayers()) {
+			players.add(new PlayerInfo(player));
+		}
+	}
+
 	public int getId()
 	{
 		return id;

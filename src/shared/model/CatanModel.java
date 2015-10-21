@@ -13,7 +13,7 @@ import shared.communication.GameHeader;
  *
  */
 public class CatanModel {
-	private GameInfo header;
+	private GameHeader header;
 	
 	private MessageList chat;
 	private MessageList log;
@@ -194,12 +194,20 @@ public class CatanModel {
 		return version;
 	}
 
-	public GameInfo getHeader() {
+	public GameInfo getGameInfo() {
+		return new GameInfo(header);
+	}
+
+	public GameHeader getHeader() {
 		return header;
 	}
 
-	public void setHeader(GameInfo header) {
-		this.header = header;
+	public void setHeader(GameInfo info) {
+		this.header = new GameHeader(info);
+	}
+
+	public void setHeader(GameHeader gameHeader) {
+		this.header = gameHeader;
 	}
 	
 	

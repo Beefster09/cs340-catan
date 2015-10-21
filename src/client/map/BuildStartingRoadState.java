@@ -54,6 +54,7 @@ public class BuildStartingRoadState extends MapControllerState {
 
 	@Override
 	public MapControllerState cancelMove() throws InvalidActionException {
+		getController().refreshPieces();
 		return new BuildStartingSettlementState(getController());
 	}
 

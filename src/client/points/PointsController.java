@@ -38,10 +38,14 @@ public class PointsController extends Controller implements IPointsController {
 	}
 
 	private void initFromModel() {
-		//<temp>		
+		//<temp>
 		getPointsView().setPoints(5);
 		//</temp>
 	}
 	
+	
+	public void pointsChanged(int points) {
+		getPointsView().setPoints(points);
+	}
 }
 

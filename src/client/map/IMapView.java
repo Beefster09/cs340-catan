@@ -92,5 +92,7 @@ public interface IMapView extends IView
 	 */
 	void startDrop(PieceType pieceType, CatanColor pieceColor,
 				   boolean isCancelAllowed);
+
+	void removeAllPieces();
 }
 

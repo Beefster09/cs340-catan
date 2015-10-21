@@ -1,12 +1,10 @@
 package shared.model;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import shared.communication.GameHeader;
 import shared.definitions.CatanColor;
@@ -307,7 +305,6 @@ public class Player {
 	public void setOldDevCards(DevCardList devCards) {
 		this.oldDevCards = devCards;
 	}
-	
 	
 
 }

@@ -1,5 +1,6 @@
 package client.data;
 
+import shared.communication.PlayerHeader;
 import shared.definitions.*;
 
 /**
@@ -30,6 +31,13 @@ public class PlayerInfo
 		setColor(CatanColor.WHITE);
 	}
 	
+	public PlayerInfo(PlayerHeader player) {
+		setId(player.getId());
+		setPlayerIndex(player.getId());
+		setName(player.getName());
+		setColor(player.getColor());
+	}
+
 	public int getId()
 	{
 		return id;

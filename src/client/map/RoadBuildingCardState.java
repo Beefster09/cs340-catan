@@ -1,5 +1,11 @@
 package client.map;
 
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.SwingWorker;
+
+import org.json.simple.JSONObject;
+
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeLocation;
 
@@ -12,7 +18,7 @@ public class RoadBuildingCardState extends MapControllerState {
 	}
 
 	@Override
-	public MapControllerState placeRoad(EdgeLocation edge)
+	public MapControllerState placeRoad(final EdgeLocation edge)
 			throws InvalidActionException {
 		if (firstRoad == null) {
 			firstRoad = edge;
@@ -21,7 +27,28 @@ public class RoadBuildingCardState extends MapControllerState {
 		}
 		else {
 			getView().placeRoad(edge, getYourColor());
-			// TODO: build the roads via road building action
+			
+			SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object> () {
+
+				@Override
+				protected JSONObject doInBackground() throws Exception {
+					return getServer().roadBuilding(getYourself(), firstRoad, edge);
+				}
+
+				@Override
+				protected void done() {
+					try {
+						getModel().updateFromJSON(get());
+					} catch (InterruptedException | ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			};
+			
+			worker.execute();
+			
 			return new YourTurnState(getController());
 		}
 	}
@@ -33,6 +60,8 @@ public class RoadBuildingCardState extends MapControllerState {
 		}
 		else {
 			firstRoad = null;
+			// Refresh to previous state to "delete" piece
+			getController().refreshPieces();
 			return this;
 		}
 	}

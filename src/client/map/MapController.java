@@ -8,6 +8,7 @@ import shared.exceptions.InvalidActionException;
 import shared.locations.*;
 import shared.model.*;
 import client.base.*;
+import client.communication.ClientManager;
 import client.data.*;
 
 
@@ -17,30 +18,8 @@ import client.data.*;
 public class MapController extends Controller implements IMapController {
 	
 	private IRobView robView;
-	private IServer server;
-	private ModelFacade model;
-	private PlayerReference you;
 	
 	private MapControllerState state;
-	
-	public MapController(IMapView view, IRobView robView, IServer server,
-			ModelFacade model, PlayerReference you) {
-		
-		super(view);
-		
-		setRobView(robView);
-		setServer(server);
-		
-		this.model = model;
-		this.you = you;
-		
-		initFromModel();
-		
-		// Default state until you can control things on the map.
-		// Active before the game starts and when it isn't your turn.
-		// It does NOTHING but throw exceptions. Always.
-		state = new NullState(this);
-	}
 	
 	public MapController(IMapView view, IRobView robView) {
 		
@@ -48,79 +27,32 @@ public class MapController extends Controller implements IMapController {
 		
 		setRobView(robView);
 		
-		initHardCoded();
+		initFromModel();
+		
+		// Default state until you can control things on the map.
+		// Active before the game starts and when it isn't your turn.
+		// It does NOTHING but throw exceptions. Always.
+		state = new NullState(this);
+		
+		getModel().registerListener(this);
 	}
 
-	protected void initHardCoded() {
+	@Override
+	public void mapChanged(Board newMap) {
 		
-		//<temp>
-		
-		Random rand = new Random();
+		// Assume (for now) that only pieces will change
+		refreshPieces();
+	}
 
-		for (int x = 0; x <= 3; ++x) {
-			
-			int maxY = 3 - x;			
-			for (int y = -3; y <= maxY; ++y) {				
-				int r = rand.nextInt(HexType.values().length);
-				HexType hexType = HexType.values()[r];
-				HexLocation hexLoc = new HexLocation(x, y);
-				getView().addHex(hexLoc, hexType);
-				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.NorthWest),
-						CatanColor.RED);
-				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.SouthWest),
-						CatanColor.BLUE);
-				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.South),
-						CatanColor.ORANGE);
-				getView().placeSettlement(new VertexLocation(hexLoc,  VertexDirection.NorthWest), CatanColor.GREEN);
-				getView().placeCity(new VertexLocation(hexLoc,  VertexDirection.NorthEast), CatanColor.PURPLE);
-			}
-			
-			if (x != 0) {
-				int minY = x - 3;
-				for (int y = minY; y <= 3; ++y) {
-					int r = rand.nextInt(HexType.values().length);
-					HexType hexType = HexType.values()[r];
-					HexLocation hexLoc = new HexLocation(-x, y);
-					getView().addHex(hexLoc, hexType);
-					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.NorthWest),
-							CatanColor.RED);
-					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.SouthWest),
-							CatanColor.BLUE);
-					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.South),
-							CatanColor.ORANGE);
-					getView().placeSettlement(new VertexLocation(hexLoc,  VertexDirection.NorthWest), CatanColor.GREEN);
-					getView().placeCity(new VertexLocation(hexLoc,  VertexDirection.NorthEast), CatanColor.PURPLE);
-				}
-			}
+	@Override
+	public void turnChanged(TurnTracker turnTracker) {
+		if (isYourTurn()) {
+			state = new YourTurnState(MapController.this);
 		}
-		
-		PortType portType = PortType.BRICK;
-		getView().addPort(new EdgeLocation(new HexLocation(0, 3), EdgeDirection.North), portType);
-		getView().addPort(new EdgeLocation(new HexLocation(0, -3), EdgeDirection.South), portType);
-		getView().addPort(new EdgeLocation(new HexLocation(-3, 3), EdgeDirection.NorthEast), portType);
-		getView().addPort(new EdgeLocation(new HexLocation(-3, 0), EdgeDirection.SouthEast), portType);
-		getView().addPort(new EdgeLocation(new HexLocation(3, -3), EdgeDirection.SouthWest), portType);
-		getView().addPort(new EdgeLocation(new HexLocation(3, 0), EdgeDirection.NorthWest), portType);
-		
-		getView().placeRobber(new HexLocation(0, 0));
-		
-		getView().addNumber(new HexLocation(-2, 0), 2);
-		getView().addNumber(new HexLocation(-2, 1), 3);
-		getView().addNumber(new HexLocation(-2, 2), 4);
-		getView().addNumber(new HexLocation(-1, 0), 5);
-		getView().addNumber(new HexLocation(-1, 1), 6);
-		getView().addNumber(new HexLocation(1, -1), 8);
-		getView().addNumber(new HexLocation(1, 0), 9);
-		getView().addNumber(new HexLocation(2, -2), 10);
-		getView().addNumber(new HexLocation(2, -1), 11);
-		getView().addNumber(new HexLocation(2, 0), 12);
-		
-		//</temp>
+		else {
+			state = new NullState(MapController.this);
+		}
 	}
-
-	
-	
-	// TODO: listener that affects the state of this object (player order)
 	
 	public IMapView getView() {
 		
@@ -136,26 +68,33 @@ public class MapController extends Controller implements IMapController {
 	}
 
 	public IServer getServer() {
-		return server;
-	}
-
-	private void setServer(IServer server) {
-		this.server = server;
+		return ClientManager.getServer();
 	}
 	
 	public CatanColor getYourColor() {
-		return you.getPlayer().getColor();
+		return ClientManager.getLocalPlayer().getPlayer().getColor();
 	}
 	
 	private boolean isYourTurn() {
-		return you.equals(model.getCurrentPlayer());
+		return ClientManager.getLocalPlayer().equals(getModel().getCurrentPlayer());
 	}
 	
 	protected void initFromModel() {
+
+		Board board = getModel().getCatanModel().getMap();
+		if (board != null) {
+			buildBoard(board);
+			placePieces(board);
+		}
+		else {
+			System.out.println("*** WARNING! Catan Map is null. Initializing hard-coded map instead. ***");
+			initHardCoded();
+		}
 		
+	}
+
+	private void buildBoard(Board board) {
 		IMapView view = getView();
-		
-		Board board = model.getCatanModel().getMap();
 		
 		for (Hex hex : board.getHexes()) {
 			HexType type = HexType.fromResourceType(hex.getResource());
@@ -168,6 +107,10 @@ public class MapController extends Controller implements IMapController {
 		for (Port port : board.getPorts()) {
 			view.addPort(port.getLocation(), PortType.fromResourceType(port.getResource()));
 		}
+	}
+		
+	private void placePieces(Board board) {
+		IMapView view = getView();
 		
 		for (Road road : board.getRoads()) {
 			CatanColor color = road.getOwner().getPlayer().getColor();
@@ -189,8 +132,71 @@ public class MapController extends Controller implements IMapController {
 		}
 		
 		view.placeRobber(board.getRobberLocation());
-		
 	}
+	
+	protected void initHardCoded() {
+ 		
+ 		Random rand = new Random();
+ 
+ 		for (int x = 0; x <= 3; ++x) {
+ 			
+ 			int maxY = 3 - x;			
+ 			for (int y = -3; y <= maxY; ++y) {				
+ 				int r = rand.nextInt(HexType.values().length);
+ 				HexType hexType = HexType.values()[r];
+ 				HexLocation hexLoc = new HexLocation(x, y);
+ 				getView().addHex(hexLoc, hexType);
+ 				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.NorthWest),
+ 						CatanColor.RED);
+ 				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.SouthWest),
+ 						CatanColor.BLUE);
+ 				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.South),
+ 						CatanColor.ORANGE);
+ 				getView().placeSettlement(new VertexLocation(hexLoc,  VertexDirection.NorthWest), CatanColor.GREEN);
+ 				getView().placeCity(new VertexLocation(hexLoc,  VertexDirection.NorthEast), CatanColor.PURPLE);
+ 			}
+ 			
+ 			if (x != 0) {
+ 				int minY = x - 3;
+ 				for (int y = minY; y <= 3; ++y) {
+ 					int r = rand.nextInt(HexType.values().length);
+ 					HexType hexType = HexType.values()[r];
+ 					HexLocation hexLoc = new HexLocation(-x, y);
+ 					getView().addHex(hexLoc, hexType);
+ 					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.NorthWest),
+ 							CatanColor.RED);
+ 					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.SouthWest),
+ 							CatanColor.BLUE);
+ 					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.South),
+ 							CatanColor.ORANGE);
+ 					getView().placeSettlement(new VertexLocation(hexLoc,  VertexDirection.NorthWest), CatanColor.GREEN);
+ 					getView().placeCity(new VertexLocation(hexLoc,  VertexDirection.NorthEast), CatanColor.PURPLE);
+ 				}
+ 			}
+ 		}
+ 		
+ 		PortType portType = PortType.BRICK;
+ 		getView().addPort(new EdgeLocation(new HexLocation(0, 3), EdgeDirection.North), portType);
+ 		getView().addPort(new EdgeLocation(new HexLocation(0, -3), EdgeDirection.South), portType);
+ 		getView().addPort(new EdgeLocation(new HexLocation(-3, 3), EdgeDirection.NorthEast), portType);
+ 		getView().addPort(new EdgeLocation(new HexLocation(-3, 0), EdgeDirection.SouthEast), portType);
+ 		getView().addPort(new EdgeLocation(new HexLocation(3, -3), EdgeDirection.SouthWest), portType);
+ 		getView().addPort(new EdgeLocation(new HexLocation(3, 0), EdgeDirection.NorthWest), portType);
+ 		
+ 		getView().placeRobber(new HexLocation(0, 0));
+ 		
+ 		getView().addNumber(new HexLocation(-2, 0), 2);
+ 		getView().addNumber(new HexLocation(-2, 1), 3);
+ 		getView().addNumber(new HexLocation(-2, 2), 4);
+ 		getView().addNumber(new HexLocation(-1, 0), 5);
+ 		getView().addNumber(new HexLocation(-1, 1), 6);
+ 		getView().addNumber(new HexLocation(1, -1), 8);
+ 		getView().addNumber(new HexLocation(1, 0), 9);
+ 		getView().addNumber(new HexLocation(2, -2), 10);
+ 		getView().addNumber(new HexLocation(2, -1), 11);
+ 		getView().addNumber(new HexLocation(2, 0), 12);
+ 		
+ 	}
 
 	public boolean canPlaceRoad(EdgeLocation edgeLoc) {
 		return state.canPlaceRoad(edgeLoc);
@@ -212,7 +218,7 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeRoad(edgeLoc);
-			getView().placeRoad(edgeLoc, you.getPlayer().getColor());
+			getView().placeRoad(edgeLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
 			
@@ -223,7 +229,7 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeSettlement(vertLoc);
-			getView().placeSettlement(vertLoc, you.getPlayer().getColor());
+			getView().placeSettlement(vertLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
 			
@@ -233,7 +239,7 @@ public class MapController extends Controller implements IMapController {
 	public void placeCity(VertexLocation vertLoc) {
 		try {
 			state = state.placeCity(vertLoc);
-			getView().placeCity(vertLoc, you.getPlayer().getColor());
+			getView().placeCity(vertLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
 			
@@ -297,15 +303,21 @@ public class MapController extends Controller implements IMapController {
 	}
 
 	public ModelFacade getModel() {
-		return model;
+		return ClientManager.getModel();
 	}
 
 	public PlayerReference getYourself() {
-		return you;
+		return ClientManager.getLocalPlayer();
 	}
 
 	public void robDialog() {
 		getRobView().showModal();
+	}
+
+	public void refreshPieces() {
+		getView().removeAllPieces();
+		
+		placePieces(getModel().getCatanModel().getMap());
 	}
 	
 }

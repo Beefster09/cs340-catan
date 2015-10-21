@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import client.data.PlayerInfo;
+
 import shared.definitions.CatanColor;
 import shared.exceptions.SchemaMismatchException;
 
@@ -32,6 +34,12 @@ public class PlayerHeader {
 		this.id = id;
 	}
 	
+	public PlayerHeader(PlayerInfo player) {
+		color = player.getColor();
+		name = player.getName();
+		id = player.getId();
+	}
+
 	/**
 	 * @return the color
 	 */
