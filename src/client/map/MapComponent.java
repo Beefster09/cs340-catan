@@ -1142,6 +1142,12 @@ public class MapComponent extends JComponent
 		return new Point2D.Double((int)(pt1.getX() + pt2.getX()),
 								  (int)(pt1.getY() + pt2.getY()));
 	}
+
+	public void removeGamePieces() {
+		roads.clear();
+		settlements.clear();
+		cities.clear();
+	}
 	
 }
 

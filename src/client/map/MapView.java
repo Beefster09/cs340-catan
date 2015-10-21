@@ -307,6 +307,11 @@ public class MapView extends PanelView implements IMapView
 			}
 		}
 	}
+
+	@Override
+	public void removeAllPieces() {
+		map.removeGamePieces();
+	}
 	
 }
 

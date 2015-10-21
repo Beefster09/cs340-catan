@@ -41,9 +41,11 @@ public class MapController extends Controller implements IMapController {
 
 		@Override
 		public void mapChanged(Board newMap) {
-			// clear the view?
 			
-			renderMap(getView(), newMap);
+			// Nuke everything and start fresh
+			getView().removeAllPieces();
+			
+			placePieces(newMap);
 		}
 
 		@Override
@@ -84,15 +86,15 @@ public class MapController extends Controller implements IMapController {
 	}
 	
 	protected void initFromModel() {
-		
-		// How do I remove EVERYTHING?
-		//getView().clear();
-		
-		renderMap(getView(), getModel().getCatanModel().getMap());
+
+		buildBoard(getModel().getCatanModel().getMap());
+		placePieces(getModel().getCatanModel().getMap());
 		
 	}
 
-	private void renderMap(IMapView view, Board board) {
+	private void buildBoard(Board board) {
+		IMapView view = getView();
+		
 		for (Hex hex : board.getHexes()) {
 			HexType type = HexType.fromResourceType(hex.getResource());
 			view.addHex(hex.getLocation(), type);
@@ -104,6 +106,10 @@ public class MapController extends Controller implements IMapController {
 		for (Port port : board.getPorts()) {
 			view.addPort(port.getLocation(), PortType.fromResourceType(port.getResource()));
 		}
+	}
+		
+	private void placePieces(Board board) {
+		IMapView view = getView();
 		
 		for (Road road : board.getRoads()) {
 			CatanColor color = road.getOwner().getPlayer().getColor();
