@@ -1,27 +1,26 @@
 package shared.model;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import shared.communication.GameHeader;
-import shared.communication.Session;
-import shared.definitions.*;
-import shared.exceptions.GameInitializationException;
-import shared.exceptions.SchemaMismatchException;
-import shared.locations.*;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import shared.communication.Session;
+import shared.definitions.DevCardType;
+import shared.definitions.ResourceType;
+import shared.exceptions.GameInitializationException;
+import shared.exceptions.SchemaMismatchException;
+import shared.locations.EdgeLocation;
+import shared.locations.HexLocation;
+import shared.locations.VertexLocation;
 import client.communication.ClientManager;
-import client.communication.ServerProxy;
 import client.data.GameInfo;
 
 
@@ -37,33 +36,34 @@ public class ModelFacade {
 		private CatanModel model;
 		private Session localPlayer;
 		
+		private List<IModelListener> listeners;
+		
 		public ModelFacade() {
-			model = new CatanModel();
+			this(new CatanModel());
 		}
 		
 		public ModelFacade(CatanModel startingModel) {
 			model = startingModel;
+			
+			listeners = new ArrayList<>();
 		}
 		
 		public CatanModel getCatanModel(){
 			return model;
 		}
 		
-		public static void main(String args[]) throws Exception {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			Object parseResult = parser.parse(r);
-			JSONObject model = ((JSONObject) parseResult);
-			
-			CatanModel temp = new CatanModel();
-			ModelFacade test = new ModelFacade(temp);
-			test.updateFromJSON(model);
-			
-			//System.out.println(parseResult);
-			//System.out.println(port);
+		public synchronized void registerListener(IModelListener listener) {
+			if (!listeners.contains(listener)) {
+				listeners.add(listener);
+			}
+		}
+		
+		public synchronized void unregisterListener(IModelListener listener) {
+			listeners.remove(listener);
 		}
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
+			// TODO call appropriate functions in listeners
 			//int newVersion = (int) (long) json.get("version");
 			//if (getVersion() == newVersion)
 			//	return;
