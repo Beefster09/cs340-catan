@@ -226,14 +226,15 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		//Updates the facade with all the relevant game header information.
 		modelFacade.setGameInfo(game);
 		
-/*		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getId() == modelFacade.getLocalPlayer().getPlayerID()) {
-				playerInGame = true;
-				color = player.getColor();
-			}	
-			else
+		for (PlayerInfo player : game.getPlayers()) {
+			if (player.getId() != modelFacade.getLocalPlayer().getPlayerID()) {
+//				playerInGame = true;
+//				color = player.getColor();
+//			}	
+//			else{
 				getSelectColorView().setColorEnabled(player.getColor(), false);
-		}*/
+			}
+		}
 		//If the player isn't in the game, then give them a chance to select a color and join
 		if (!playerInGame){
 			getJoinGameView().closeModal();
