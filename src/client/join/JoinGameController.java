@@ -221,29 +221,20 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void startJoinGame(GameInfo game) {
 		
-		boolean playerInGame= false;
-		CatanColor color = null;
+//		boolean playerInGame= false;
+//		CatanColor color = null;
 		
 		//Updates the facade with all the relevant game header information.
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
 			if (player.getId() != modelFacade.getLocalPlayer().getPlayerID()) {
-//				playerInGame = true;
-//				color = player.getColor();
-//			}	
-//			else{
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 		}
-		//If the player isn't in the game, then give them a chance to select a color and join
-		if (!playerInGame){
-			getJoinGameView().closeModal();
-			getSelectColorView().showModal();
-		}
-		//Otherwise, automatically join them to the game they are assigned to.
-		else
-			joinGame(color);
+		//Give the player a chance to select a color and join
+		getJoinGameView().closeModal();
+		getSelectColorView().showModal();
 	}
 
 	@Override
@@ -266,7 +257,13 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			}
 			// If join succeeded
 			getSelectColorView().closeModal();
-			getJoinGameView().closeModal();
+			Thread t = new Thread() {
+				public void run(){
+					ServerPoller.startPoller();
+				}
+			};
+			t.start();
+//			getJoinGameView().closeModal();
 			joinAction.execute();
 		}
 		catch(ServerException e){

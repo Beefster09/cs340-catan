@@ -210,7 +210,7 @@ public class ServerProxy implements IServer {
 	public JSONObject getModel(int version)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/model");
+		o.put("url","http://localhost:8081/game/model?version=" + version);
 		o.put("requestType", "GET");
 		o.put("version", version);
 
