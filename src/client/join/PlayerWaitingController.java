@@ -1,11 +1,15 @@
 package client.join;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
+import shared.definitions.CatanColor;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
+import shared.model.Player;
 import client.base.*;
 import client.communication.ServerProxy;
 import client.data.GameInfo;
@@ -54,15 +58,14 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			for(int i = 0; i < AIChoiceList.size(); i++)
 				AIChoices[i] = AIChoiceList.get(i);
 			
-//			PlayerInfo joe = new PlayerInfo();
-//			
-//			playerList[0] = joe;
-			
 			getView().setPlayers(playerList);
 			
 			getView().setAIChoices(AIChoices);
 			
 			getView().showModal();
+			
+			if(playerList.length > 3)
+				getView().closeModal();
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -76,10 +79,92 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	 */
 	@Override
 	public void addAI() {
+		
+		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 
-		// TEMPORARY
-		getView().closeModal();
+		CatanColor unusedColor = getUnusedColor();
+		
+		String AIName = getUnusedName();
+		
+		PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
+		
+		PlayerInfo AIInfo = new PlayerInfo(AIHeader);
+		
+		players.add(AIInfo);
+		
+		PlayerInfo[] playerArray = listToPlayerArray(players);
+	
+		getView().setPlayers(playerArray);
+		
+		if(players.size() > 3)
+			getView().closeModal();
+		
+	}
+	
+	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
+		
+		PlayerInfo[] playerArray = new PlayerInfo[players.size()];
+		
+		for(int i = 0; i < players.size(); i++)
+			playerArray[i] = players.get(i);
+		
+		return playerArray;
 	}
 
+	private String getUnusedName() {
+		
+		List<String> possibleAINames = new ArrayList<>();
+		possibleAINames.add("Jordan");
+		possibleAINames.add("Grant");
+		possibleAINames.add("Justin");
+		possibleAINames.add("Steve");
+		
+		List<String> usedNames = getUsedNames();
+		
+		for(String possibleAIName : possibleAINames) {
+			
+			if(!usedNames.contains(possibleAIName))
+				return possibleAIName;
+		}
+		
+		return null;
+	}
+
+	private List<String> getUsedNames() {
+		
+		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+		
+		List<String> usedNames = new ArrayList<>();
+		
+		for(PlayerInfo p : players)
+			usedNames.add(p.getName());
+		
+		return usedNames;
+	}
+
+	private CatanColor getUnusedColor() {
+		
+		List<CatanColor> usedColors = getUsedColors();
+			
+		for(CatanColor c : CatanColor.values())
+			if(!usedColors.contains(c))
+				return c;
+			
+		return null;
+	}
+
+
+
+	private List<CatanColor> getUsedColors() {
+		
+		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+		
+		List<CatanColor> usedColors = new ArrayList<>();
+		
+		for(PlayerInfo p : players)
+			usedColors.add(p.getColor());
+		
+		return usedColors;
+	}
 }
 
