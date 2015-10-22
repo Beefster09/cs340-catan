@@ -193,8 +193,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		boolean randomNumbers = getNewGameView().getRandomlyPlaceNumbers();
 		boolean randomPorts = getNewGameView().getUseRandomPorts();
 		try {
-			serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
+			GameHeader thisGame = serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
 			getNewGameView().closeModal();
+			serverProxy.joinGame(thisGame.getId(), CatanColor.RED);
 			this.start();
 		} catch (GameInitializationException e) {
 			getMessageView().setTitle("Setup Error");
@@ -207,6 +208,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		} catch (ServerException e) {
 			getMessageView().setTitle("Server Error");
 			getMessageView().setMessage("Unable to connect to the server.");
+			getMessageView().showModal();
+		} catch (JoinGameException e) {
+			getMessageView().setTitle("Join Game Error");
+			getMessageView().setMessage("Unable to Join the game you created.");
 			getMessageView().showModal();
 		}
 	}
@@ -235,6 +240,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		//Give the player a chance to select a color and join
 		getJoinGameView().closeModal();
 		getSelectColorView().showModal();
+		//joinAction.execute();
 	}
 
 	@Override
