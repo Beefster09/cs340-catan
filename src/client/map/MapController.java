@@ -48,6 +48,11 @@ public class MapController extends Controller implements IMapController {
 		//MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
 		refreshPieces();
 	}
+	
+	@Override
+	public void mapInitialized() {
+		this.initFromModel();
+	}
 
 	@Override
 	public void turnChanged(TurnTracker turnTracker) {

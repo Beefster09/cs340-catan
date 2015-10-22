@@ -12,6 +12,7 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -128,7 +129,14 @@ public class ModelFacade {
 			JSONObject object = (JSONObject) json.get("map");
 			try {
 				Board otherBoard = new Board(object);
-				if (model.getMap() == null || !model.getMap().equals(otherBoard)) {
+				if (model.getMap() == null) 
+				{ 
+					model.setMap(otherBoard);
+					for (IModelListener listener : listeners) {
+						listener.mapInitialized();
+					}
+				}
+				else if (!model.getMap().equals(otherBoard)) {
 					model.setMap(otherBoard);
 					for (IModelListener listener : listeners) {
 						listener.mapChanged(otherBoard);

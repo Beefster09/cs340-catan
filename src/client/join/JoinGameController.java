@@ -12,6 +12,7 @@ import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
 import client.base.*;
+import client.communication.DataConverter;
 import client.communication.ServerPoller;
 import client.communication.ServerProxy;
 import client.data.*;
@@ -111,7 +112,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		try {
 			List<GameHeader> headers = serverProxy.getGameList();
 			
-			GameInfo[] games = this.convertGameHeaderToGameInfo(headers);
+			GameInfo[] games = DataConverter.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
 			localPlayer.setId(modelFacade.getLocalPlayer().getPlayerID());
 			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
@@ -129,43 +130,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		}
 	}
 	
-	private GameInfo[] convertGameHeaderToGameInfo(List<GameHeader> headers) {
-		GameInfo[] games = new GameInfo[headers.size()];
-		
-		int i = 0;
-		for (GameHeader currentHead : headers) {
-			games[i] = convertHeaderToInfo(currentHead);
-			i++;
-		}
-		return games;
-	}
-	private GameInfo convertHeaderToInfo(GameHeader header) {
-		int id = header.getId();
-		String title = header.getTitle();
-		
-		GameInfo newGame = new GameInfo();
-		newGame.setId(id);
-		newGame.setTitle(title);
-		//games[i] = newGame;
-		
-		List<PlayerHeader> players = header.getPlayers();
-		
-		int index = 0;
-		for (PlayerHeader player : players) {
-			if (player == null)
-				continue;
-			PlayerInfo newPlayer = new PlayerInfo();
-			newPlayer.setColor(player.getColor());
-			newPlayer.setId(player.getId());
-			newPlayer.setName(player.getName());
-			newPlayer.setPlayerIndex(index);
-			newGame.addPlayer(newPlayer);
-			//games[i].addPlayer(newPlayer);
-			
-			index++;
-		}
-		return newGame;
-	}
+	
 
 	@Override
 	public void startCreateNewGame() {
