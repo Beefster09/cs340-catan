@@ -197,11 +197,5 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return usedColors;
 	}
 	
-	public void playersChanged(List<Player> players) {
-		System.out.println("New Players:");
-		for (Player player : players)
-			System.out.println(player);
-	}
-	
 }
 
