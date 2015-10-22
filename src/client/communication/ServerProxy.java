@@ -37,11 +37,12 @@ import shared.model.ResourceTradeList;
 public class ServerProxy implements IServer {
 	
 	//Get the Singleton for this class
-	private static ServerProxy instance = new ServerProxy();
-	public static ServerProxy getInstance(){
-	      return instance;
-	   }
-
+	//private static IServer instance = new ServerProxy();
+	@Deprecated
+	public static IServer getInstance(){
+		return ClientManager.getServer();
+	}
+	
 
 	private ClientCommunicator commuincator = new ClientCommunicator();
 	
