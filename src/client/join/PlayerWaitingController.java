@@ -3,6 +3,7 @@ package client.join;
 import java.util.ArrayList;
 import java.util.List;
 
+import server.ai.AIType;
 import shared.communication.IServer;
 import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
@@ -22,7 +23,7 @@ import client.data.PlayerInfo;
 public class PlayerWaitingController extends Controller implements IPlayerWaitingController {
 
 	private ModelFacade modelFacade = ModelFacade.getInstance();
-	
+	private IServer serverProxy = ServerProxy.getInstance();
 	
 	public PlayerWaitingController(IPlayerWaitingView view) {
 
@@ -80,30 +81,45 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	@Override
 	public void addAI() {
 		
-		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+		try {
+			
+			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 
-		CatanColor unusedColor = getUnusedColor();
-		
-		String AIName = getUnusedName();
-		
-		PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
-		
-		PlayerInfo AIInfo = new PlayerInfo(AIHeader);
-		
-		players.add(AIInfo);
-		
-		PlayerInfo[] playerArray = listToPlayerArray(players);
-	
-		getView().setPlayers(playerArray);
-		
-		if(players.size() > 3)
-			getView().closeModal();
+			CatanColor unusedColor = getUnusedColor();
+			
+			String AIName = getUnusedName();
+			
+			PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
+			
+			PlayerInfo AIInfo = new PlayerInfo(AIHeader);
+			
+			//players.add(AIInfo);
+			
+			String AITypeName = getView().getSelectedAI();
+			
+			AIType aitype = AIType.getTypeFromString(AITypeName);
+			
+			
+			serverProxy.addAIPlayer(aitype);
+			
+			PlayerInfo[] playerArray = listToPlayerArray(players);
+			
+			
+			getView().setPlayers(playerArray);
+			
+			if(players.size() > 3)
+				getView().closeModal();
+				
+		} catch (ServerException | InvalidActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
 	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
 		
-		PlayerInfo[] playerArray = new PlayerInfo[players.size()];
+		PlayerInfo[] playerArray = new PlayerInfo[4];
 		
 		for(int i = 0; i < players.size(); i++)
 			playerArray[i] = players.get(i);
