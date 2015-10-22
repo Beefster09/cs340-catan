@@ -26,6 +26,7 @@ import client.data.GameInfo;
 
 public class ModelFacade {
 	
+	
 		//Get the Singleton for this class
 		//private static ModelFacade instance = new ModelFacade();
 		@Deprecated
@@ -69,51 +70,23 @@ public class ModelFacade {
 			//	return;
 			try {
 				//BANK
-				JSONObject object = (JSONObject) json.get("bank");
-				model.setBank(new Bank(object));
+				updateBankFromJSON(json);
 				
 				//BOARD
-				object = (JSONObject) json.get("map");
+				JSONObject object = (JSONObject) json.get("map");
 				model.setMap(new Board(object));
 				
 				//PLAYERS
-				List<Player> players = new ArrayList<Player>();
-				for (Object obj : (List) json.get("players")) {
-					JSONObject player = (JSONObject) obj;
-					if (player != null)
-						players.add(new Player(model, player));
-				}
-				model.setPlayers(players);
+				List<Player> players = updatePlayersFromJSON(json);
 				
 				//TURNTRACKER
-				if (json.containsKey("turnTracker")) {
-					object = (JSONObject) json.get("turnTracker");
-					model.setTurnTracker(new TurnTracker(players,object));
-					
-					//LARGEST ARMY
-					if (object.containsKey("largestArmy")) {
-						int longestRoadPlayer = (int) (long) object.get("largestArmy");
-						model.setLongestRoad(new PlayerReference(model, longestRoadPlayer));
-					}
-					
-					//LONGEST ROAD
-					if (object.containsKey("longestRoad")) {
-						int longestRoadPlayer = (int) (long) object.get("longestRoad");
-						model.setLongestRoad(new PlayerReference(model, longestRoadPlayer));
-					}
-				}
+				updateTurnTrackerFromJSON(json,players);
 				
 				//TRADEOFFER
-				if (json.containsKey("tradeOffer")) {
-					JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
-					model.setTradeOffer(new TradeOffer(players,tradeOffer));
-				}
+				updateTradeOfferFromJSON(json,players);
 				
 				//CHAT NOT DONE
-				if (json.containsKey("chat")) {
-					object = (JSONObject) json.get("chat");
-					model.setChat(new MessageList(object));
-				}
+				updateChatFromJSON(json);
 				
 				//LOG NOT DONE
 				if (json.containsKey("log")) {
@@ -122,8 +95,7 @@ public class ModelFacade {
 				}
 				
 				//WINNER
-				int winner = (int) (long) json.get("winner");
-				model.setWinner(new PlayerReference(model, winner));
+				updateWinnerFromJSON(json);
 				
 				return model;
 				
@@ -137,12 +109,140 @@ public class ModelFacade {
 		}
 		
 		public synchronized void updateBankFromJSON(JSONObject json) {
+			JSONObject object = (JSONObject) json.get("bank");
 			try {
-				model.setBank(new Bank(json));
+				Bank otherBank = new Bank(object);
+				if (model.getBank() == null || !model.getBank().equals(otherBank)) {
+					model.setBank(otherBank);
+					for (IModelListener listener : listeners) {
+						listener.bankChanged(otherBank);
+					}
+				}
 			} catch (SchemaMismatchException e) {
 				e.printStackTrace();
 			}
-
+		}
+		
+		public synchronized List<Player> updatePlayersFromJSON(JSONObject json) {
+			List<Player> players = new ArrayList<Player>();
+			for (Object obj : (List) json.get("players")) {
+				JSONObject player = (JSONObject) obj;
+				if (player != null)
+					try {
+						players.add(new Player(model, player));
+					} catch (SchemaMismatchException e) {
+						e.printStackTrace();
+					}
+			}
+			if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
+				model.setPlayers(players);
+				for (IModelListener listener : listeners) {
+					listener.playersChanged(players);
+				}
+				return players;
+			}
+			else
+				return model.getPlayers();
+		}
+		
+		public void updateTurnTrackerFromJSON(JSONObject json, List<Player> players) {
+			if (json.containsKey("turnTracker")) {
+				JSONObject object = (JSONObject) json.get("turnTracker");
+				try {
+					TurnTracker otherTurnTracker = new TurnTracker(players,object);
+					if (model.getTurnTracker() == null || 
+						!model.getTurnTracker().equals(otherTurnTracker)) {
+						model.setTurnTracker(otherTurnTracker);
+						for (IModelListener listener : listeners) {
+							listener.turnTrackerChanged(otherTurnTracker);
+						}
+					}
+					
+					//LARGEST ARMY
+					updateLargestArmyFromJSON(object);
+					
+					//LONGEST ROAD
+					updateLongestRoadFromJSON(object);
+					
+				} catch (SchemaMismatchException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		public void updateLargestArmyFromJSON(JSONObject json) {
+			if (json.containsKey("largestArmy")) {
+				int largestArmyPlayer = (int) (long) json.get("largestArmy");
+				PlayerReference otherPlayer = new PlayerReference(model, largestArmyPlayer);
+				if (model.getLargestArmy() == null || 
+					!model.getLargestArmy().equals(otherPlayer)) {
+					model.setLongestRoad(otherPlayer);
+					for (IModelListener listener : listeners) {
+						listener.largestArmyChanged(otherPlayer);
+					}
+				}
+			}
+		}
+		
+		public void updateLongestRoadFromJSON(JSONObject json) {
+			if (json.containsKey("longestRoad")) {
+				int longestRoadPlayer = (int) (long) json.get("longestRoad");
+				PlayerReference otherPlayer = new PlayerReference(model, longestRoadPlayer);
+				if (model.getLongestRoad() == null ||
+					!model.getLongestRoad().equals(otherPlayer)) {
+					model.setLongestRoad(otherPlayer);
+					for (IModelListener listener : listeners) {
+						listener.longestRoadChanged(otherPlayer);
+					}
+				}
+			}
+		}
+			
+		public void updateTradeOfferFromJSON(JSONObject json, List<Player> players) {
+			if (json.containsKey("tradeOffer")) {
+				JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
+				TradeOffer otherOffer;
+				try {
+					otherOffer = new TradeOffer(players,tradeOffer);
+					if (model.getTradeOffer() == null || !model.getTradeOffer().equals(otherOffer)) {
+						model.setTradeOffer(otherOffer);
+						for (IModelListener listener : listeners) {
+							listener.tradeOfferChanged(otherOffer);
+						}
+					}
+				} catch (SchemaMismatchException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		public synchronized void updateChatFromJSON(JSONObject json) {
+			if (json.containsKey("chat")) {
+				JSONObject object = (JSONObject) json.get("chat");
+				MessageList otherChat;
+				try {
+					otherChat = new MessageList(object);
+					if (model.getChat() == null || !model.getChat().equals(otherChat)) {
+						model.setChat(otherChat);
+						for (IModelListener listener : listeners) {
+							listener.chatChanged(otherChat);
+						}
+					}
+				} catch (SchemaMismatchException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		public synchronized void updateWinnerFromJSON(JSONObject json) {
+			int winner = (int) (long) json.get("winner");
+			PlayerReference otherPlayer = new PlayerReference(model, winner);
+			if (model.getWinner() == null || !model.getWinner().equals(otherPlayer)) {
+				model.setWinner(otherPlayer);
+				for (IModelListener listener : listeners) {
+					listener.winnerChanged(otherPlayer);
+				}
+			}
 		}
 		
 		public PlayerReference getCurrentPlayer() {

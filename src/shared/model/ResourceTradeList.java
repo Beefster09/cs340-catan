@@ -150,4 +150,35 @@ public class ResourceTradeList {
 		
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((offered == null) ? 0 : offered.hashCode());
+		result = prime * result + ((wanted == null) ? 0 : wanted.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ResourceTradeList other = (ResourceTradeList) obj;
+		if (offered == null) {
+			if (other.offered != null)
+				return false;
+		} else if (!offered.equals(other.offered))
+			return false;
+		if (wanted == null) {
+			if (other.wanted != null)
+				return false;
+		} else if (!wanted.equals(other.wanted))
+			return false;
+		return true;
+	}
+	
 }
