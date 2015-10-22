@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IModelListener {
 
-	
+	void mapInitialized();
 	void mapChanged(Board newMap);
 	void turnChanged(TurnTracker turnTracker);
 	void playersChanged(List<Player> players);

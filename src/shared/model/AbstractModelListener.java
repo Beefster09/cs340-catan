@@ -4,13 +4,11 @@ import java.util.List;
 
 public abstract class AbstractModelListener implements IModelListener {
 
+	public void mapInitialized() {}
 	@Override
-	public void mapChanged(Board newMap) {
-	}
-
+	public void mapChanged(Board newMap) {}
 	@Override
-	public void turnChanged(TurnTracker turnTracker) {
-	}
+	public void turnChanged(TurnTracker turnTracker) {}
 	@Override
 	public void playersChanged(List<Player> players) {}
 	public void bankChanged(Bank otherBank) {}

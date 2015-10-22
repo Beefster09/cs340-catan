@@ -12,6 +12,7 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -21,7 +22,7 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import client.data.GameInfo;
-import client.misc.ClientManager;
+import client.communication.ClientManager;
 
 
 public class ModelFacade {
@@ -75,8 +76,7 @@ public class ModelFacade {
 				updateBankFromJSON(json);
 				
 				//BOARD
-				JSONObject object = (JSONObject) json.get("map");
-				model.setMap(new Board(object));
+				updateMapFromJSON(json);
 				
 				//PLAYERS
 				List<Player> players = updatePlayersFromJSON(json);
@@ -92,7 +92,7 @@ public class ModelFacade {
 				
 				//LOG NOT DONE
 				if (json.containsKey("log")) {
-					object = (JSONObject) json.get("log");
+					JSONObject object = (JSONObject) json.get("log");
 					model.setLog(new MessageList(object));
 				}
 				
@@ -101,7 +101,7 @@ public class ModelFacade {
 				
 				return model;
 				
-			} catch (SchemaMismatchException | GameInitializationException e) {
+			} catch (SchemaMismatchException e) {
 				System.out.println("Can't update");
 				e.printStackTrace();
 			}
@@ -121,6 +121,30 @@ public class ModelFacade {
 					}
 				}
 			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public synchronized void updateMapFromJSON(JSONObject json) {
+			JSONObject object = (JSONObject) json.get("map");
+			try {
+				Board otherBoard = new Board(object);
+				if (model.getMap() == null) 
+				{ 
+					model.setMap(otherBoard);
+					for (IModelListener listener : listeners) {
+						listener.mapInitialized();
+					}
+				}
+				else if (!model.getMap().equals(otherBoard)) {
+					model.setMap(otherBoard);
+					for (IModelListener listener : listeners) {
+						listener.mapChanged(otherBoard);
+					}
+				}
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			} catch (GameInitializationException e) {
 				e.printStackTrace();
 			}
 		}

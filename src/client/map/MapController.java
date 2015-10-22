@@ -9,7 +9,7 @@ import shared.locations.*;
 import shared.model.*;
 import client.base.*;
 import client.data.*;
-import client.misc.ClientManager;
+import client.communication.ClientManager;
 
 
 /**
@@ -20,6 +20,8 @@ public class MapController extends Controller implements IMapController {
 	private IRobView robView;
 	
 	private MapControllerState state;
+
+	private boolean boardBuilt = false;
 	
 	public MapController(IMapView view, IRobView robView) {
 		// The superclass now registers this as a listener to the client's instance of the model.
@@ -38,17 +40,27 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void mapChanged(Board newMap) {
 		
+		System.out.println("MapController: updating map");
+		
+		if (!boardBuilt) buildBoard(newMap);
+		
 		// Assume (for now) that only pieces will change
+		//MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
 		refreshPieces();
+	}
+	
+	@Override
+	public void mapInitialized() {
+		this.initFromModel();
 	}
 
 	@Override
 	public void turnChanged(TurnTracker turnTracker) {
 		if (isYourTurn()) {
-			state = new YourTurnState(MapController.this);
+			state = new YourTurnState(this);
 		}
 		else {
-			state = new NullState(MapController.this);
+			state = new NullState(this);
 		}
 	}
 	
@@ -77,16 +89,18 @@ public class MapController extends Controller implements IMapController {
 		return ClientManager.getLocalPlayer().equals(getModel().getCurrentPlayer());
 	}
 	
+	/*/TODO: I am changing this from protected to public.
+	*When the player joins the game for the first time, someone has to call
+	*initFromModel() so the hexes and ports can appear on the screen.
+	*Currently, your listener function only allows for the roads/settlements/cities
+	*to change, so the initialization isn't happening.
+	*/
 	protected void initFromModel() {
 
 		Board board = getModel().getCatanModel().getMap();
 		if (board != null) {
 			buildBoard(board);
 			placePieces(board);
-		}
-		else {
-			//System.out.println("*** WARNING! Catan Map is null. Initializing hard-coded map instead. ***");
-			//initHardCoded();
 		}
 		
 	}
@@ -102,9 +116,17 @@ public class MapController extends Controller implements IMapController {
 			}
 		}
 		
+		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
+			if (hexLoc.getDistanceFromCenter() > 2) {
+				view.addHex(hexLoc, HexType.WATER);
+			}
+		}
+		
 		for (Port port : board.getPorts()) {
 			view.addPort(port.getLocation(), PortType.fromResourceType(port.getResource()));
 		}
+		
+		boardBuilt  = true;
 	}
 		
 	private void placePieces(Board board) {

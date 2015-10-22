@@ -7,6 +7,8 @@ import javax.swing.SwingUtilities;
 
 import org.json.simple.JSONObject;
 
+import client.misc.ClientManager;
+
 import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.InvalidActionException;
@@ -34,7 +36,7 @@ public class ServerPoller {
 	private Timer poller = null;
 	ClientCommunicator comm;
 	Session user;
-	ModelFacade modelHandler = ModelFacade.getInstance();
+	ModelFacade modelHandler = ClientManager.getModel();
 	
 	public static void main() {
 		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));

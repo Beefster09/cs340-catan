@@ -94,21 +94,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			//PlayerInfo AIInfo = new PlayerInfo(AIHeader);
 			
 			//players.add(AIInfo);
-			
-			
-			
+	
 			String AITypeName = getView().getSelectedAI();
 			
 			AIType aitype = AIType.getTypeFromString(AITypeName);			
 			
 			serverProxy.addAIPlayer(aitype);
-			
-			
-			PlayerInfo[] playerList = new PlayerInfo[players.size()];
-			for(int i = 0; i < players.size(); i++)
-				playerList[i] = players.get(i);
-			
-			getView().setPlayers(playerList);
 				
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
@@ -119,15 +110,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 	@Override
 	public void playersChanged(List<Player> players) {
-
-		System.out.println("New Players:");
-		for (Player player : players)
-			System.out.println(player);
 		
 		PlayerInfo[] playerList = new PlayerInfo[players.size()];
 		for(int i = 0; i < players.size(); i++)
 			playerList[i] = new PlayerInfo(players.get(i));
 		
+		getView().closeModal();
 		getView().setPlayers(playerList);
 		getView().showModal();
 		
@@ -200,6 +188,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return usedColors;
 	}
 	
+<<<<<<< HEAD
 
+=======
+>>>>>>> fe63309ee64fc2ccbc075c603a3fc9fbc7857762
 }
 
