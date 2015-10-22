@@ -110,7 +110,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	public void start() {
 		try {
 			List<GameHeader> headers = serverProxy.getGameList();
-			
 			GameInfo[] games = this.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
 			localPlayer.setId(modelFacade.getLocalPlayer().getPlayerID());
