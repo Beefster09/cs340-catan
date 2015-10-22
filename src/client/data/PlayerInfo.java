@@ -2,6 +2,7 @@ package client.data;
 
 import shared.communication.PlayerHeader;
 import shared.definitions.*;
+import shared.model.Player;
 
 /**
  * Used to pass player information into views<br>
@@ -34,6 +35,14 @@ public class PlayerInfo
 	public PlayerInfo(PlayerHeader player) {
 		setId(player.getId());
 		setPlayerIndex(player.getId());
+		setName(player.getName());
+		setColor(player.getColor());
+	}
+	
+	public PlayerInfo(Player player) {
+		
+		setId(player.getPlayerID());
+		setPlayerIndex(player.getPlayerID());
 		setName(player.getName());
 		setColor(player.getColor());
 	}

@@ -85,36 +85,52 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			
 			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 
-			CatanColor unusedColor = getUnusedColor();
+			//CatanColor unusedColor = getUnusedColor();
 			
-			String AIName = getUnusedName();
+			//String AIName = getUnusedName();
 			
-			PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
+			//PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
 			
-			PlayerInfo AIInfo = new PlayerInfo(AIHeader);
+			//PlayerInfo AIInfo = new PlayerInfo(AIHeader);
 			
 			//players.add(AIInfo);
 			
+			
+			
 			String AITypeName = getView().getSelectedAI();
 			
-			AIType aitype = AIType.getTypeFromString(AITypeName);
-			
+			AIType aitype = AIType.getTypeFromString(AITypeName);			
 			
 			serverProxy.addAIPlayer(aitype);
 			
-			PlayerInfo[] playerArray = listToPlayerArray(players);
 			
+			PlayerInfo[] playerList = new PlayerInfo[players.size()];
+			for(int i = 0; i < players.size(); i++)
+				playerList[i] = players.get(i);
 			
-			getView().setPlayers(playerArray);
+			getView().setPlayers(playerList);
 			
-			if(players.size() > 3)
-				getView().closeModal();
+			//if(players.size() > 3)
+			//	getView().closeModal();
 				
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+	}
+
+	@Override
+	public void playersChanged(List<Player> players) {
+		
+		PlayerInfo[] playerList = new PlayerInfo[players.size()];
+		for(int i = 0; i < players.size(); i++)
+			playerList[i] = new PlayerInfo(players.get(i));
+		
+		getView().setPlayers(playerList);
+		
+		if(players.size() > 3)
+			getView().closeModal();
 	}
 	
 	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
