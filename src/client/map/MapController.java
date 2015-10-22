@@ -39,6 +39,7 @@ public class MapController extends Controller implements IMapController {
 	public void mapChanged(Board newMap) {
 		
 		// Assume (for now) that only pieces will change
+		//MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
 		refreshPieces();
 	}
 
@@ -77,6 +78,12 @@ public class MapController extends Controller implements IMapController {
 		return ClientManager.getLocalPlayer().equals(getModel().getCurrentPlayer());
 	}
 	
+	/*/TODO: I am changing this from protected to public.
+	*When the player joins the game for the first time, someone has to call
+	*initFromModel() so the hexes and ports can appear on the screen.
+	*Currently, your listener function only allows for the roads/settlements/cities
+	*to change, so the initialization isn't happening.
+	*/
 	protected void initFromModel() {
 
 		Board board = getModel().getCatanModel().getMap();

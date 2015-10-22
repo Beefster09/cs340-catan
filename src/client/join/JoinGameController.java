@@ -235,6 +235,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		//Give the player a chance to select a color and join
 		getJoinGameView().closeModal();
 		getSelectColorView().showModal();
+		//joinAction.execute();
 	}
 
 	@Override

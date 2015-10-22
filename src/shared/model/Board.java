@@ -571,6 +571,57 @@ public class Board {
 		return secondRoad.isAdjacent(firstRoad);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((hexes == null) ? 0 : hexes.hashCode());
+		result = prime * result
+				+ ((municipalities == null) ? 0 : municipalities.hashCode());
+		result = prime * result + ((ports == null) ? 0 : ports.hashCode());
+		result = prime * result + radius;
+		result = prime * result + ((roads == null) ? 0 : roads.hashCode());
+		result = prime * result + ((robber == null) ? 0 : robber.hashCode());
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Board other = (Board) obj;
+		if (hexes == null) {
+			if (other.hexes != null)
+				return false;
+		} else if (!hexes.equals(other.hexes))
+			return false;
+		if (municipalities == null) {
+			if (other.municipalities != null)
+				return false;
+		} else if (!municipalities.equals(other.municipalities))
+			return false;
+		if (ports == null) {
+			if (other.ports != null)
+				return false;
+		} else if (!ports.equals(other.ports))
+			return false;
+		if (radius != other.radius)
+			return false;
+		if (roads == null) {
+			if (other.roads != null)
+				return false;
+		} else if (!roads.equals(other.roads))
+			return false;
+		if (robber == null) {
+			if (other.robber != null)
+				return false;
+		} else if (!robber.equals(other.robber))
+			return false;
+		return true;
+	}
 
 }
