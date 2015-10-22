@@ -34,7 +34,7 @@ public class ServerPoller {
 	private Timer poller = null;
 	ClientCommunicator comm;
 	Session user;
-	ModelFacade modelHandler;
+	ModelFacade modelHandler = ModelFacade.getInstance();
 	
 	public static void main() {
 		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));
@@ -76,7 +76,8 @@ public class ServerPoller {
 			public void run() {
 				try {
 					//JSONObject modelRequest = new JSONObject();
-					final JSONObject model = server.getModel(modelHandler.getVersion());
+					int version = modelHandler.getVersion();
+					final JSONObject model = server.getModel(version);
 					if (model != null) {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
