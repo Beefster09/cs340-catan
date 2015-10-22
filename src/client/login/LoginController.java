@@ -6,12 +6,6 @@ import java.util.logging.*;
 
 import client.communication.ServerProxy;
 import client.misc.*;
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-
 import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.ServerException;
@@ -26,7 +20,9 @@ public class LoginController extends Controller implements ILoginController {
 
 	private IMessageView messageView;
 	private IAction loginAction;
+	@SuppressWarnings("deprecation")
 	private IServer serverProxy = ServerProxy.getInstance();
+	@SuppressWarnings("deprecation")
 	private ModelFacade modelFacade = ModelFacade.getInstance();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
@@ -82,7 +78,6 @@ public class LoginController extends Controller implements ILoginController {
 	@Override
 	public void signIn() {
 		
-		// TODO: log in user
 		String username = getLoginView().getLoginUsername();
 		String password = getLoginView().getLoginPassword();
 
