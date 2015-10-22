@@ -29,7 +29,7 @@ public class CatanModel {
 	private int version;
 
 	public CatanModel() {
-		
+		version = 0;
 	}
 
 	/**

@@ -169,8 +169,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return null;
 	}
 
-
-
 	private List<CatanColor> getUsedColors() {
 		
 		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
@@ -182,5 +180,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		
 		return usedColors;
 	}
+	
+	public void playersChanged(List<Player> players) {
+		System.out.println("New Players:");
+		for (Player player : players)
+			System.out.println(player);
+	}
+	
 }
 

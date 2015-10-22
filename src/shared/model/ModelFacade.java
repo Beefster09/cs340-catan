@@ -65,9 +65,11 @@ public class ModelFacade {
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			// TODO call appropriate functions in listeners
-			//int newVersion = (int) (long) json.get("version");
-			//if (getVersion() == newVersion)
-			//	return;
+			int newVersion = (int) (long) json.get("version");
+			if (getVersion() == newVersion) {
+				System.out.println("No need to update!");
+				return null;
+			}
 			try {
 				//BANK
 				updateBankFromJSON(json);

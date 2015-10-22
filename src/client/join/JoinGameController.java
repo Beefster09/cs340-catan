@@ -12,6 +12,7 @@ import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
 import client.base.*;
+import client.communication.ServerPoller;
 import client.communication.ServerProxy;
 import client.data.*;
 import client.misc.*;
@@ -259,6 +260,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	public void joinGame(CatanColor color) {
 		try{
 			serverProxy.joinGame(modelFacade.getGameHeader().getId(), color);
+			if (modelFacade.getLocalPlayer() != null) {
+				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
+				poller.start();
+			}
 			// If join succeeded
 			getSelectColorView().closeModal();
 			getJoinGameView().closeModal();
