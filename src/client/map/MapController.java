@@ -20,6 +20,8 @@ public class MapController extends Controller implements IMapController {
 	private IRobView robView;
 	
 	private MapControllerState state;
+
+	private boolean boardBuilt = false;
 	
 	public MapController(IMapView view, IRobView robView) {
 		// The superclass now registers this as a listener to the client's instance of the model.
@@ -38,6 +40,10 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void mapChanged(Board newMap) {
 		
+		System.out.println("MapController: updating map");
+		
+		if (!boardBuilt) buildBoard(newMap);
+		
 		// Assume (for now) that only pieces will change
 		refreshPieces();
 	}
@@ -45,10 +51,10 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void turnChanged(TurnTracker turnTracker) {
 		if (isYourTurn()) {
-			state = new YourTurnState(MapController.this);
+			state = new YourTurnState(this);
 		}
 		else {
-			state = new NullState(MapController.this);
+			state = new NullState(this);
 		}
 	}
 	
@@ -84,10 +90,6 @@ public class MapController extends Controller implements IMapController {
 			buildBoard(board);
 			placePieces(board);
 		}
-		else {
-			//System.out.println("*** WARNING! Catan Map is null. Initializing hard-coded map instead. ***");
-			//initHardCoded();
-		}
 		
 	}
 
@@ -102,9 +104,17 @@ public class MapController extends Controller implements IMapController {
 			}
 		}
 		
+		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
+			if (hexLoc.getDistanceFromCenter() > 2) {
+				view.addHex(hexLoc, HexType.WATER);
+			}
+		}
+		
 		for (Port port : board.getPorts()) {
 			view.addPort(port.getLocation(), PortType.fromResourceType(port.getResource()));
 		}
+		
+		boardBuilt  = true;
 	}
 		
 	private void placePieces(Board board) {
