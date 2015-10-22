@@ -197,7 +197,7 @@ public class ClientCommunicator {
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestProperty("Cookie", cookies);
 			con.setRequestMethod((String) o.get("requestType"));
-			if((o.get("requestType")).equals("POST") || (o.get("requestType")).equals("http://localhost:8081/game/model")){
+			if((o.get("requestType")).equals("POST")){// || (o.get("url")).equals("http://localhost:8081/game/model")){
 				con.setDoOutput(true);
 				OutputStreamWriter output = new OutputStreamWriter(con.getOutputStream());
 				output.write(o.toString());
@@ -222,8 +222,7 @@ public class ClientCommunicator {
 					str = new StringBuilder("{\"list\":" + str + "}");
 				}
 				else if(str.charAt(0) != '{'){
-					JSONOutput = new JSONObject();
-					return JSONOutput;
+					return null;
 				}
 				JSONOutput = (JSONObject) parser.parse(str.toString());
 				return JSONOutput;

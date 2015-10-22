@@ -119,6 +119,10 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 	@Override
 	public void playersChanged(List<Player> players) {
+
+		System.out.println("New Players:");
+		for (Player player : players)
+			System.out.println(player);
 		
 		PlayerInfo[] playerList = new PlayerInfo[players.size()];
 		for(int i = 0; i < players.size(); i++)
@@ -196,6 +200,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return usedColors;
 	}
 	
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 270b430cd48f7330318ae7af68fe09aae9e973dc
 }
 

@@ -37,11 +37,12 @@ import shared.model.ResourceTradeList;
 public class ServerProxy implements IServer {
 	
 	//Get the Singleton for this class
-	private static ServerProxy instance = new ServerProxy();
-	public static ServerProxy getInstance(){
-	      return instance;
-	   }
-
+	//private static IServer instance = new ServerProxy();
+	@Deprecated
+	public static IServer getInstance(){
+		return ClientManager.getServer();
+	}
+	
 
 	private ClientCommunicator commuincator = new ClientCommunicator();
 	
@@ -210,7 +211,7 @@ public class ServerProxy implements IServer {
 	public JSONObject getModel(int version)
 			throws ServerException, InvalidActionException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/model");
+		o.put("url","http://localhost:8081/game/model?version=" + version);
 		o.put("requestType", "GET");
 		o.put("version", version);
 
