@@ -1,8 +1,8 @@
 package client.base;
 
+import client.misc.ClientManager;
 import shared.model.AbstractModelListener;
 import shared.model.IModelListener;
-import shared.model.ModelFacade;
 
 /**
  * Base class for controllers
@@ -11,11 +11,10 @@ public abstract class Controller extends AbstractModelListener implements IContr
 {
 	
 	private IView view;
-	private ModelFacade modelFacade = ModelFacade.getInstance();
 	
 	protected Controller(IView view)
 	{
-		modelFacade.registerListener(this);
+		ClientManager.getModel().registerListener(this);
 		setView(view);
 	}
 	

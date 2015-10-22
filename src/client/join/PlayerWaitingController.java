@@ -109,9 +109,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 				playerList[i] = players.get(i);
 			
 			getView().setPlayers(playerList);
-			
-			//if(players.size() > 3)
-			//	getView().closeModal();
 				
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
@@ -122,12 +119,18 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 	@Override
 	public void playersChanged(List<Player> players) {
+
+		System.out.println("New Players:");
+		for (Player player : players)
+			System.out.println(player);
 		
 		PlayerInfo[] playerList = new PlayerInfo[players.size()];
 		for(int i = 0; i < players.size(); i++)
 			playerList[i] = new PlayerInfo(players.get(i));
 		
 		getView().setPlayers(playerList);
+		getView().showModal();
+		
 		
 		if(players.size() > 3)
 			getView().closeModal();
