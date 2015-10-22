@@ -200,9 +200,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return usedColors;
 	}
 	
-<<<<<<< HEAD
-	
-=======
->>>>>>> 270b430cd48f7330318ae7af68fe09aae9e973dc
+
 }
 
