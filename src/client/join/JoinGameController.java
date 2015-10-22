@@ -257,12 +257,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			}
 			// If join succeeded
 			getSelectColorView().closeModal();
-			Thread t = new Thread() {
-				public void run(){
-					ServerPoller.startPoller();
-				}
-			};
-			t.start();
 //			getJoinGameView().closeModal();
 			joinAction.execute();
 		}

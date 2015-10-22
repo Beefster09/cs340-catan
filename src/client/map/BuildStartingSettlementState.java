@@ -1,6 +1,5 @@
 package client.map;
 
-import shared.definitions.CatanColor;
 import shared.exceptions.InvalidActionException;
 import shared.locations.VertexLocation;
 

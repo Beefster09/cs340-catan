@@ -8,8 +8,8 @@ import shared.exceptions.InvalidActionException;
 import shared.locations.*;
 import shared.model.*;
 import client.base.*;
-import client.communication.ClientManager;
 import client.data.*;
+import client.misc.ClientManager;
 
 
 /**
@@ -22,7 +22,7 @@ public class MapController extends Controller implements IMapController {
 	private MapControllerState state;
 	
 	public MapController(IMapView view, IRobView robView) {
-		
+		// The superclass now registers this as a listener to the client's instance of the model.
 		super(view);
 		
 		setRobView(robView);
@@ -31,10 +31,8 @@ public class MapController extends Controller implements IMapController {
 		
 		// Default state until you can control things on the map.
 		// Active before the game starts and when it isn't your turn.
-		// It does NOTHING but throw exceptions. Always.
+		// It does NOTHING but throw exceptions and return false. Always.
 		state = new NullState(this);
-		
-		getModel().registerListener(this);
 	}
 
 	@Override
@@ -87,8 +85,8 @@ public class MapController extends Controller implements IMapController {
 			placePieces(board);
 		}
 		else {
-			System.out.println("*** WARNING! Catan Map is null. Initializing hard-coded map instead. ***");
-			initHardCoded();
+			//System.out.println("*** WARNING! Catan Map is null. Initializing hard-coded map instead. ***");
+			//initHardCoded();
 		}
 		
 	}
