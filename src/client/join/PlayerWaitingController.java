@@ -109,9 +109,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 				playerList[i] = players.get(i);
 			
 			getView().setPlayers(playerList);
-			
-			//if(players.size() > 3)
-			//	getView().closeModal();
 				
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
@@ -132,6 +129,8 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			playerList[i] = new PlayerInfo(players.get(i));
 		
 		getView().setPlayers(playerList);
+		getView().showModal();
+		
 		
 		if(players.size() > 3)
 			getView().closeModal();
@@ -201,5 +200,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		return usedColors;
 	}
 	
+<<<<<<< HEAD
+	
+=======
+>>>>>>> 270b430cd48f7330318ae7af68fe09aae9e973dc
 }
 
