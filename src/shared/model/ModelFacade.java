@@ -1,18 +1,12 @@
 package shared.model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -65,7 +59,6 @@ public class ModelFacade {
 		}
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
-			// TODO call appropriate functions in listeners
 			int newVersion = (int) (long) json.get("version");
 			if (getVersion() == newVersion) {
 				System.out.println("No need to update!");
@@ -149,6 +142,7 @@ public class ModelFacade {
 			}
 		}
 		
+		@SuppressWarnings("rawtypes")
 		public synchronized List<Player> updatePlayersFromJSON(JSONObject json) {
 			List<Player> players = new ArrayList<Player>();
 			for (Object obj : (List) json.get("players")) {
@@ -325,7 +319,7 @@ public class ModelFacade {
 		public synchronized boolean canRob(HexLocation hexLoc) {
 			
 			Board map = model.getMap();
-			Hex tile = map.getHexAt(hexLoc);
+			//Hex tile = map.getHexAt(hexLoc);
 			
 			if(map.canMoveRobberTo(hexLoc))
 				return true;

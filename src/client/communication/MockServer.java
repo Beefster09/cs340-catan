@@ -1,7 +1,6 @@
 package client.communication;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -25,14 +24,11 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
 import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.CatanModel;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;

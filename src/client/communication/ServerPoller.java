@@ -13,7 +13,6 @@ import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
-import shared.model.CatanModel;
 import shared.model.ModelFacade;
 
 
@@ -84,6 +83,7 @@ public class ServerPoller {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
+								modelHandler = ClientManager.getModel();
 								modelHandler.updateFromJSON(model);
 							}
 							
