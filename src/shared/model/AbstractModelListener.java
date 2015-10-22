@@ -11,9 +11,16 @@ public abstract class AbstractModelListener implements IModelListener {
 	@Override
 	public void turnChanged(TurnTracker turnTracker) {
 	}
-
 	@Override
-	public void playersChanged(List<Player> players) {
-	}
+	public void playersChanged(List<Player> players) {}
+	public void bankChanged(Bank otherBank) {}
+	public void turnTrackerChanged(TurnTracker otherTurnTracker) {}
+	public void largestArmyChanged(PlayerReference otherPlayer) {}
+	public void longestRoadChanged(PlayerReference otherPlayer) {}
+	public void tradeOfferChanged(TradeOffer otherOffer) {}
+	public void chatChanged(MessageList otherChat) {}
+	public void winnerChanged(PlayerReference otherPlayer) {}
+	
+	
 	
 }
