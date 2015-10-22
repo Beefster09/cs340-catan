@@ -4,7 +4,6 @@ import java.util.List;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
-import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
@@ -12,8 +11,8 @@ import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
 import client.base.*;
+import client.communication.DataConverter;
 import client.communication.ServerPoller;
-import client.communication.ServerProxy;
 import client.data.*;
 import client.misc.*;
 
@@ -27,8 +26,11 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	private ISelectColorView selectColorView;
 	private IMessageView messageView;
 	private IAction joinAction;
-	private IServer serverProxy = ServerProxy.getInstance();
-	private ModelFacade modelFacade = ModelFacade.getInstance();
+	//private IServer serverProxy = ServerProxy.getInstance();
+	private IServer serverProxy = ClientManager.getServer();
+	//private ModelFacade modelFacade = ModelFacade.getInstance();
+	private ModelFacade modelFacade = ClientManager.getModel();
+	
 	
 	/**
 	 * JoinGameController constructor
@@ -110,7 +112,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	public void start() {
 		try {
 			List<GameHeader> headers = serverProxy.getGameList();
-			GameInfo[] games = this.convertGameHeaderToGameInfo(headers);
+			
+			GameInfo[] games = DataConverter.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
 			localPlayer.setId(modelFacade.getLocalPlayer().getPlayerID());
 			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
@@ -128,43 +131,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		}
 	}
 	
-	private GameInfo[] convertGameHeaderToGameInfo(List<GameHeader> headers) {
-		GameInfo[] games = new GameInfo[headers.size()];
-		
-		int i = 0;
-		for (GameHeader currentHead : headers) {
-			games[i] = convertHeaderToInfo(currentHead);
-			i++;
-		}
-		return games;
-	}
-	private GameInfo convertHeaderToInfo(GameHeader header) {
-		int id = header.getId();
-		String title = header.getTitle();
-		
-		GameInfo newGame = new GameInfo();
-		newGame.setId(id);
-		newGame.setTitle(title);
-		//games[i] = newGame;
-		
-		List<PlayerHeader> players = header.getPlayers();
-		
-		int index = 0;
-		for (PlayerHeader player : players) {
-			if (player == null)
-				continue;
-			PlayerInfo newPlayer = new PlayerInfo();
-			newPlayer.setColor(player.getColor());
-			newPlayer.setId(player.getId());
-			newPlayer.setName(player.getName());
-			newPlayer.setPlayerIndex(index);
-			newGame.addPlayer(newPlayer);
-			//games[i].addPlayer(newPlayer);
-			
-			index++;
-		}
-		return newGame;
-	}
+	
 
 	@Override
 	public void startCreateNewGame() {
@@ -192,8 +159,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		boolean randomNumbers = getNewGameView().getRandomlyPlaceNumbers();
 		boolean randomPorts = getNewGameView().getUseRandomPorts();
 		try {
-			serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
+			GameHeader thisGame = serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
 			getNewGameView().closeModal();
+			serverProxy.joinGame(thisGame.getId(), CatanColor.RED);
 			this.start();
 		} catch (GameInitializationException e) {
 			getMessageView().setTitle("Setup Error");
@@ -206,6 +174,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		} catch (ServerException e) {
 			getMessageView().setTitle("Server Error");
 			getMessageView().setMessage("Unable to connect to the server.");
+			getMessageView().showModal();
+		} catch (JoinGameException e) {
+			getMessageView().setTitle("Join Game Error");
+			getMessageView().setMessage("Unable to Join the game you created.");
 			getMessageView().showModal();
 		}
 	}
@@ -234,6 +206,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		//Give the player a chance to select a color and join
 		getJoinGameView().closeModal();
 		getSelectColorView().showModal();
+		//joinAction.execute();
 	}
 
 	@Override
@@ -249,7 +222,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			serverProxy.joinGame(modelFacade.getGameHeader().getId(), color);
+			if (serverProxy.joinGame(modelFacade.getGameHeader().getId(), color)) {
+				//Get the model so that all other controllers will immediately have access to the new object.
+				modelFacade.updateFromJSON(serverProxy.getModel(-1));
+			}
 			if (modelFacade.getLocalPlayer() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
 				poller.start();
@@ -268,6 +244,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			messageView.setTitle("Join Game Error");
 			messageView.setMessage("Unable to join game at this point");
 			messageView.showModal();
+		} catch (InvalidActionException e) {
+			e.printStackTrace();
 		}
 	}
 

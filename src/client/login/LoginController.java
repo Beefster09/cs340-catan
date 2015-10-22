@@ -4,14 +4,7 @@ import client.base.*;
 
 import java.util.logging.*;
 
-import client.communication.ServerProxy;
 import client.misc.*;
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-
 import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.ServerException;
@@ -26,8 +19,10 @@ public class LoginController extends Controller implements ILoginController {
 
 	private IMessageView messageView;
 	private IAction loginAction;
-	private IServer serverProxy = ServerProxy.getInstance();
-	private ModelFacade modelFacade = ModelFacade.getInstance();
+	//private IServer serverProxy = ServerProxy.getInstance();
+	private IServer serverProxy = ClientManager.getServer();
+	//private ModelFacade modelFacade = ModelFacade.getInstance();
+	private ModelFacade modelFacade = ClientManager.getModel();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	/**
@@ -82,7 +77,6 @@ public class LoginController extends Controller implements ILoginController {
 	@Override
 	public void signIn() {
 		
-		// TODO: log in user
 		String username = getLoginView().getLoginUsername();
 		String password = getLoginView().getLoginPassword();
 
@@ -112,17 +106,41 @@ public class LoginController extends Controller implements ILoginController {
 		String password = getLoginView().getRegisterPassword();
 		String repeatPassword = getLoginView().getRegisterPasswordRepeat();
 		
+		//verifies that username is correct length
+		if(username.length() < 3 || username.length() > 7){
+			warningMessage();
+			return;
+		}
+		
+		//verifies that password is correct length
+		if(password.length() < 5){
+			warningMessage();
+			return;
+		}
+		
 		//Check if the passwords are the same
 		if (!password.equals(repeatPassword)) {
-			messageView.setTitle("Passwords differ");
-			messageView.setMessage("The password are different. Please try again.");
-			messageView.showModal();
+			warningMessage();
+			return;
+		}
+		
+		//Check if the username contains valid characters
+		if(invalid(username)){
+			warningMessage();
+			return;
+		}
+		
+		//Check if the password contains valid characters
+		if(invalid(password)){
+			warningMessage();
 			return;
 		}
 		
 		try {
-			serverProxy.register(username, password);
+			Session player = serverProxy.register(username, password);
+			modelFacade.setLocalPlayer(player);
 			System.out.println("Register was successful");
+			logger.log(Level.INFO, "Register was successful");
 			// If register succeeded
 			getLoginView().closeModal();
 			loginAction.execute();
@@ -135,6 +153,31 @@ public class LoginController extends Controller implements ILoginController {
 			messageView.setMessage("Unable to reach server at this point");
 			messageView.showModal();
 		}
+	}
+	
+	public void warningMessage(){
+		messageView.setTitle("Warning");
+		messageView.setMessage("Invalid username or password");
+		messageView.showModal();
+	}
+	
+	public boolean invalid(String word){
+		for(int i = 0; i < word.length(); ++i){
+			if(Character.isAlphabetic(word.charAt(i))){
+				continue;
+			}
+			if(Character.isDigit(word.charAt(i))){
+				continue;
+			}
+			if(word.charAt(i) == '-'){
+				continue;
+			}
+			if(word.charAt(i) == '_'){
+				continue;
+			}
+			return true;
+		}
+		return false;
 	}
 
 }

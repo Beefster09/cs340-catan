@@ -7,11 +7,12 @@ import javax.swing.SwingUtilities;
 
 import org.json.simple.JSONObject;
 
+import client.misc.ClientManager;
+
 import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
-import shared.model.CatanModel;
 import shared.model.ModelFacade;
 
 
@@ -34,7 +35,7 @@ public class ServerPoller {
 	private Timer poller = null;
 	ClientCommunicator comm;
 	Session user;
-	ModelFacade modelHandler = ModelFacade.getInstance();
+	ModelFacade modelHandler = ClientManager.getModel();
 	
 	public static void main() {
 		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));
@@ -82,6 +83,7 @@ public class ServerPoller {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
+								modelHandler = ClientManager.getModel();
 								modelHandler.updateFromJSON(model);
 							}
 							

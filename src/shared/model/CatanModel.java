@@ -29,7 +29,7 @@ public class CatanModel {
 	private int version;
 
 	public CatanModel() {
-		version = 0;
+		version = -1;
 	}
 
 	/**
@@ -195,7 +195,9 @@ public class CatanModel {
 	}
 
 	public GameInfo getGameInfo() {
-		return new GameInfo(header);
+		if (header != null)
+			return new GameInfo(header);
+		return null;
 	}
 
 	public GameHeader getHeader() {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import client.misc.ClientManager;
+import client.communication.ClientManager;
 
 import server.ai.AIType;
 import server.logging.LogLevel;

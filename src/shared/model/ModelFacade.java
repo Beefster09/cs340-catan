@@ -1,16 +1,11 @@
 package shared.model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import shared.communication.Session;
 import shared.definitions.DevCardType;
@@ -21,7 +16,7 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import client.data.GameInfo;
-import client.misc.ClientManager;
+import client.communication.ClientManager;
 
 
 public class ModelFacade {
@@ -64,7 +59,6 @@ public class ModelFacade {
 		}
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
-			// TODO call appropriate functions in listeners
 			int newVersion = (int) (long) json.get("version");
 			if (getVersion() == newVersion) {
 				System.out.println("No need to update!");
@@ -75,8 +69,7 @@ public class ModelFacade {
 				updateBankFromJSON(json);
 				
 				//BOARD
-				JSONObject object = (JSONObject) json.get("map");
-				model.setMap(new Board(object));
+				updateMapFromJSON(json);
 				
 				//PLAYERS
 				List<Player> players = updatePlayersFromJSON(json);
@@ -92,7 +85,7 @@ public class ModelFacade {
 				
 				//LOG NOT DONE
 				if (json.containsKey("log")) {
-					object = (JSONObject) json.get("log");
+					JSONObject object = (JSONObject) json.get("log");
 					model.setLog(new MessageList(object));
 				}
 				
@@ -101,7 +94,7 @@ public class ModelFacade {
 				
 				return model;
 				
-			} catch (SchemaMismatchException | GameInitializationException e) {
+			} catch (SchemaMismatchException e) {
 				System.out.println("Can't update");
 				e.printStackTrace();
 			}
@@ -125,6 +118,31 @@ public class ModelFacade {
 			}
 		}
 		
+		public synchronized void updateMapFromJSON(JSONObject json) {
+			JSONObject object = (JSONObject) json.get("map");
+			try {
+				Board otherBoard = new Board(object);
+				if (model.getMap() == null) 
+				{ 
+					model.setMap(otherBoard);
+					for (IModelListener listener : listeners) {
+						listener.mapInitialized();
+					}
+				}
+				else if (!model.getMap().equals(otherBoard)) {
+					model.setMap(otherBoard);
+					for (IModelListener listener : listeners) {
+						listener.mapChanged(otherBoard);
+					}
+				}
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			} catch (GameInitializationException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		@SuppressWarnings("rawtypes")
 		public synchronized List<Player> updatePlayersFromJSON(JSONObject json) {
 			List<Player> players = new ArrayList<Player>();
 			for (Object obj : (List) json.get("players")) {
@@ -301,7 +319,7 @@ public class ModelFacade {
 		public synchronized boolean canRob(HexLocation hexLoc) {
 			
 			Board map = model.getMap();
-			Hex tile = map.getHexAt(hexLoc);
+			//Hex tile = map.getHexAt(hexLoc);
 			
 			if(map.canMoveRobberTo(hexLoc))
 				return true;

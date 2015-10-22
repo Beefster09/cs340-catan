@@ -30,7 +30,7 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 	private JLabel join;
 
 	private JButton createButton;
-	private JButton tempJoinButton;
+	private JButton refreshButton;
 
 	private JPanel labelPanel;
 	private JPanel gamePanel;
@@ -136,20 +136,27 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 		//Add all the above
 		this.add(gamePanel, BorderLayout.CENTER);
 
-		tempJoinButton = new JButton("Temporary Join Button");
-		tempJoinButton.addActionListener(actionListener);
-		Font buttonFont = tempJoinButton.getFont();
+
+		refreshButton = new JButton("Refresh Games");
+		refreshButton.addActionListener(actionListener);
+		Font buttonFont = refreshButton.getFont();
 		buttonFont = buttonFont.deriveFont(buttonFont.getStyle(), BUTTON_TEXT_SIZE);
-		tempJoinButton.setFont(buttonFont);
+		refreshButton.setFont(buttonFont);
 
 		createButton = new JButton("Create Game");
 		createButton.addActionListener(actionListener);
+		//createButton.setFont(buttonFont);
+
+		createButton = new JButton("Create Game");
+		createButton.addActionListener(actionListener);
+		buttonFont = createButton.getFont();
+		buttonFont = buttonFont.deriveFont(buttonFont.getStyle(), BUTTON_TEXT_SIZE);
 		createButton.setFont(buttonFont);
 
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(createButton);
-		buttonPanel.add(tempJoinButton);		
+		buttonPanel.add(refreshButton);		
 		this.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
@@ -177,9 +184,9 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 			{
 				getController().startCreateNewGame();
 			}
-			else if (e.getSource() == tempJoinButton)
+			else if (e.getSource() == refreshButton)
 			{
-				getController().startJoinGame(null);
+				getController().start();
 			}
 			else
 			{

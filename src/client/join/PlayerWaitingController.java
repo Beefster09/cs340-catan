@@ -5,15 +5,14 @@ import java.util.List;
 
 import server.ai.AIType;
 import shared.communication.IServer;
-import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
 import shared.model.Player;
 import client.base.*;
+import client.communication.ClientManager;
 import client.communication.ServerProxy;
-import client.data.GameInfo;
 import client.data.PlayerInfo;
 
 
@@ -22,8 +21,10 @@ import client.data.PlayerInfo;
  */
 public class PlayerWaitingController extends Controller implements IPlayerWaitingController {
 
-	private ModelFacade modelFacade = ModelFacade.getInstance();
-	private IServer serverProxy = ServerProxy.getInstance();
+	//private ModelFacade modelFacade = ModelFacade.getInstance();
+	private ModelFacade modelFacade = ClientManager.getModel();
+	//private IServer serverProxy = ServerProxy.getInstance();
+	private IServer serverProxy = ClientManager.getServer();
 	
 	public PlayerWaitingController(IPlayerWaitingView view) {
 
@@ -40,16 +41,26 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	/**
 	 * make a list of players from the current game
 	 * getView().setPlayers(that list)
-	 * getView().setAIChoices(if you happen to hve AI)
+	 * getView().setAIChoices(if you happen to have AI)
 	 * showModal
 	 */
 	@Override
 	public void start() {
+		/*
+		 * HUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+		 * PROBLEM.  This model Facade below DOES NOT MATCH the model facade being passed around
+		 * elsewhere.  The one received here shows up with blank data!  No idea what's going on!
+		 */
 		
-		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+		modelFacade = ClientManager.getModel();
+		List<PlayerInfo> players = null;
+		if (modelFacade.getCatanModel().getGameInfo() != null)
+			players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+		else
+			players = new ArrayList<PlayerInfo>();
 		List<String> AIChoiceList;
 		try {
-			AIChoiceList = ServerProxy.getInstance().getAITypes();
+			AIChoiceList = ClientManager.getServer().getAITypes();
 			
 			PlayerInfo[] playerList = new PlayerInfo[players.size()];
 			for(int i = 0; i < players.size(); i++)
@@ -94,21 +105,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			//PlayerInfo AIInfo = new PlayerInfo(AIHeader);
 			
 			//players.add(AIInfo);
-			
-			
-			
+	
 			String AITypeName = getView().getSelectedAI();
 			
 			AIType aitype = AIType.getTypeFromString(AITypeName);			
 			
 			serverProxy.addAIPlayer(aitype);
-			
-			
-			PlayerInfo[] playerList = new PlayerInfo[players.size()];
-			for(int i = 0; i < players.size(); i++)
-				playerList[i] = players.get(i);
-			
-			getView().setPlayers(playerList);
 				
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
@@ -119,15 +121,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 	@Override
 	public void playersChanged(List<Player> players) {
-
-		System.out.println("New Players:");
-		for (Player player : players)
-			System.out.println(player);
 		
 		PlayerInfo[] playerList = new PlayerInfo[players.size()];
 		for(int i = 0; i < players.size(); i++)
 			playerList[i] = new PlayerInfo(players.get(i));
 		
+		getView().closeModal();
 		getView().setPlayers(playerList);
 		getView().showModal();
 		
