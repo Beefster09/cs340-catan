@@ -121,8 +121,10 @@ public class LoginController extends Controller implements ILoginController {
 		}
 		
 		try {
-			serverProxy.register(username, password);
+			Session player = serverProxy.register(username, password);
+			modelFacade.setLocalPlayer(player);
 			System.out.println("Register was successful");
+			logger.log(Level.INFO, "Register was successful");
 			// If register succeeded
 			getLoginView().closeModal();
 			loginAction.execute();
