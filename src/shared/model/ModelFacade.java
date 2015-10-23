@@ -64,7 +64,8 @@ public class ModelFacade {
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
-			if (newVersion == 0) {
+			if (newVersion == 0 &&
+				((List<Player>) json.get("players")).size() < 4) {
 				updatePlayersFromJSON(json);
 				return model;
 			}
@@ -162,14 +163,21 @@ public class ModelFacade {
 		@SuppressWarnings("rawtypes")
 		private List<Player> updatePlayersFromJSON(JSONObject json) {
 			List<Player> players = new ArrayList<Player>();
+			int i = 0;
 			for (Object obj : (List) json.get("players")) {
 				JSONObject player = (JSONObject) obj;
-				if (player != null)
+				if (player != null) {
 					try {
-						players.add(new Player(model, player));
+						Player newPlayer = new Player(model, player);
+						if (newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
+							ClientManager.setLocalPlayer(new PlayerReference(model, i));
+						}
+						players.add(newPlayer);
 					} catch (SchemaMismatchException e) {
 						e.printStackTrace();
 					}
+				}
+				i++;
 			}
 			if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
 				model.setPlayers(players);

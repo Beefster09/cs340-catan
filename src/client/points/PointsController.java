@@ -1,6 +1,10 @@
 package client.points;
 
+import java.util.List;
+
 import client.base.*;
+import client.misc.ClientManager;
+import shared.model.Player;
 
 
 /**
@@ -46,6 +50,16 @@ public class PointsController extends Controller implements IPointsController {
 	
 	public void pointsChanged(int points) {
 		getPointsView().setPoints(points);
+	}
+	
+	@Override
+	public void playersChanged(List<Player> players) {
+		for (Player player : players) {
+			if (player.getPlayerID() == (ClientManager.getLocalPlayer().getPlayer().getPlayerID())) {
+				pointsChanged(player.getVictoryPoints());
+				break;
+			}
+		}
 	}
 }
 
