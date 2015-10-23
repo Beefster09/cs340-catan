@@ -15,6 +15,7 @@ public abstract class MapControllerState {
 	
 	public MapControllerState(MapController controller) {
 		this.controller = controller;
+		System.out.println("New State: " + this.getClass().getSimpleName());
 	}
 
 	protected MapController getController() {
