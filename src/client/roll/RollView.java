@@ -23,7 +23,7 @@ import client.base.*;
  */
 @SuppressWarnings("serial")
 public class RollView extends OverlayView implements IRollView {
-	public static void main(String args[]) {
+	public static void main(String args[]) throws InterruptedException {
 		JFrame window = new JFrame();
 		window.setBounds(100, 100, 500, 500);
 		window.setVisible(true);
@@ -32,6 +32,10 @@ public class RollView extends OverlayView implements IRollView {
 		RollResultView rrv = new RollResultView();
 		rv.setController(new RollController(rv, rrv));
 		rv.showModal();
+		while (true) {
+			Thread.sleep(3000);
+			rv.showModal();
+		}
 	}
 	private final int LABEL_TEXT_SIZE = 20;
 	private final int BUTTON_TEXT_SIZE = 28;

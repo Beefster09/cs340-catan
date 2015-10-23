@@ -62,6 +62,7 @@ public class MapController extends Controller implements IMapController {
 		System.out.println("MapController: TurnTracker has changed");
 		System.out.println("Local Player: " + ClientManager.getLocalPlayer());
 		System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
+		System.out.println("Phase: " + turnTracker.getStatus());
 		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer())) {
 			System.out.println("It's your turn!");
 			state = new YourTurnState(this);
@@ -152,17 +153,7 @@ public class MapController extends Controller implements IMapController {
 		IMapView view = getView();
 		
 		for (Road road : board.getRoads()) {
-			PlayerReference ownerRef = road.getOwner();
-			if (ownerRef == null) {
-				System.out.println("PlayerReference is null");
-				continue;
-			}
-			Player owner = ownerRef.getPlayer();
-			if (owner == null) {
-				System.out.println("PlayerReference is an invalid reference: " + ownerRef);
-				continue;
-			}
-			CatanColor color = owner.getColor();
+			CatanColor color = road.getOwner().getPlayer().getColor();
 			view.placeRoad(road.getLocation(), color);
 		}
 		
