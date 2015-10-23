@@ -30,6 +30,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	private IServer serverProxy = ClientManager.getServer();
 	//private ModelFacade modelFacade = ModelFacade.getInstance();
 	private ModelFacade modelFacade = ClientManager.getModel();
+	private PlayerWaitingController waitingController;
 	
 	
 	/**
@@ -48,6 +49,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		setNewGameView(newGameView);
 		setSelectColorView(selectColorView);
 		setMessageView(messageView);
+	}
+	public void setPWC(PlayerWaitingController PWC) {
+		waitingController = PWC;
 	}
 	
 	public IJoinGameView getJoinGameView() {
@@ -194,7 +198,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		
 //		boolean playerInGame= false;
 //		CatanColor color = null;
-		
+		modelFacade = ClientManager.getModel();
 		//Updates the facade with all the relevant game header information.
 		modelFacade.setGameInfo(game);
 		
@@ -206,6 +210,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		//Give the player a chance to select a color and join
 		getJoinGameView().closeModal();
 		getSelectColorView().showModal();
+		//This function for some reason makes it so the static
+		//Model Facade cannot be reached.  Can't make it work!
 		//joinAction.execute();
 	}
 
@@ -222,10 +228,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			if (serverProxy.joinGame(modelFacade.getGameHeader().getId(), color)) {
+			serverProxy.joinGame(modelFacade.getGameHeader().getId(), color);
 				//Get the model so that all other controllers will immediately have access to the new object.
-				modelFacade.updateFromJSON(serverProxy.getModel(-1));
-			}
+				//modelFacade.updateFromJSON(serverProxy.getModel(-1));
+			
 			if (modelFacade.getLocalPlayer() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
 				poller.start();
@@ -233,7 +239,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			// If join succeeded
 			getSelectColorView().closeModal();
 //			getJoinGameView().closeModal();
-			joinAction.execute();
+			waitingController.setFacade(modelFacade);
+			waitingController.start();
+			//joinAction.execute();
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");
@@ -244,8 +252,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			messageView.setTitle("Join Game Error");
 			messageView.setMessage("Unable to join game at this point");
 			messageView.showModal();
-		} catch (InvalidActionException e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -36,6 +36,10 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 		return (IPlayerWaitingView)super.getView();
 	}
+	
+	public void setFacade(ModelFacade facade) {
+		this.modelFacade = facade;
+	}
 
 	
 	/**
