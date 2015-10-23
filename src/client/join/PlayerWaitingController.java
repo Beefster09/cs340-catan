@@ -1,5 +1,6 @@
 package client.join;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import server.ai.AIType;
@@ -93,12 +94,24 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		
 		try {
 			
+			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+
+			//CatanColor unusedColor = getUnusedColor();
 			
+			//String AIName = getUnusedName();
 			
+			//PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
 			
+			//PlayerInfo AIInfo = new PlayerInfo(AIHeader);
 			
+			//players.add(AIInfo);
+	
+			String AITypeName = getView().getSelectedAI();
 			
+			AIType aitype = AIType.getTypeFromString(AITypeName);			
 			
+			serverProxy.addAIPlayer(aitype);
+				
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,6 +135,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			getView().closeModal();
 	}
 	
+	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
 		
 		PlayerInfo[] playerArray = new PlayerInfo[4];
 		
@@ -183,6 +197,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			usedColors.add(p.getColor());
 		
 		return usedColors;
+	}
 	
 }
-
