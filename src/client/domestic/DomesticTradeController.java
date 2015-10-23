@@ -1,6 +1,9 @@
 package client.domestic;
 
+import java.util.Map;
+
 import shared.definitions.*;
+import shared.model.ModelFacade;
 import client.base.*;
 import client.misc.*;
 
@@ -13,7 +16,8 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	private IDomesticTradeOverlay tradeOverlay;
 	private IWaitView waitOverlay;
 	private IAcceptTradeOverlay acceptOverlay;
-
+	private ModelFacade modelFacade = ClientManager.getModel();
+	
 	/**
 	 * DomesticTradeController constructor
 	 * 
@@ -30,6 +34,8 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		setTradeOverlay(tradeOverlay);
 		setWaitOverlay(waitOverlay);
 		setAcceptOverlay(acceptOverlay);
+		
+		
 	}
 	
 	public IDomesticTradeView getTradeView() {
@@ -65,16 +71,36 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	public void startTrade() {
 
 		getTradeOverlay().showModal();
+		
 	}
 
 	@Override
 	public void decreaseResourceAmount(ResourceType resource) {
 
+		Map<ResourceType, Integer> offered = modelFacade.getCatanModel().getTradeOffer().getOffer().getOffered();
+		
+		int amount = offered.get(resource);
+		
+		amount--;
+		
+		offered.put(resource, amount);
+		
+		getTradeOverlay().setResourceAmount(resource, Integer.toString(amount));
+		
 	}
 
 	@Override
 	public void increaseResourceAmount(ResourceType resource) {
 
+		Map<ResourceType, Integer> offered = modelFacade.getCatanModel().getTradeOffer().getOffer().getOffered();
+		
+		int amount = offered.get(resource);
+		
+		amount++;
+		
+		offered.put(resource, amount);
+		
+		getTradeOverlay().setResourceAmount(resource, Integer.toString(amount));
 	}
 
 	@Override

@@ -95,13 +95,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	@Override
 	public void addAI() {
 		
-<<<<<<< HEAD
-		try {
-			
-			//List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
-=======
 		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
->>>>>>> 7ef4b81077a24e447c2c8446bf6e7b32d4676eb2
 
 		String AITypeName = getView().getSelectedAI();
 		
@@ -127,9 +121,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		for(int i = 0; i < players.size(); i++)
 			playerList[i] = new PlayerInfo(players.get(i));
 		
-		//getView().closeModal();
-		//getView().setPlayers(playerList);
-		//getView().showModal();
+		getView().closeModal();
+		getView().setPlayers(playerList);
+		getView().showModal();
 		
 		
 		if(players.size() > 3)

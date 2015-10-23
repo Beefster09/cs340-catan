@@ -107,7 +107,7 @@ public class DiscardController extends Controller implements IDiscardController 
 		return cardsToBeDiscarded;
 	}
 	
-	public int getHowManyLeftToDiscard() {
+	private int getHowManyLeftToDiscard() {
 		
 		int playerID = modelFacade.getLocalPlayer().getPlayerID();
 		List<Player> players = modelFacade.getCatanModel().getPlayers();
@@ -117,7 +117,7 @@ public class DiscardController extends Controller implements IDiscardController 
 		return discardRequirement - discardCount();
 	}
 	
-	public int discardCount() {
+	private int discardCount() {
 		int total = 0;
 		for (int count : cardsToBeDiscarded.values()) {
 			total += count;
