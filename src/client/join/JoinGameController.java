@@ -161,8 +161,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		try {
 			GameHeader thisGame = serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
 			getNewGameView().closeModal();
-			//TODO: possibly keep this line
-			//serverProxy.joinGame(thisGame.getId(), CatanColor.RED);
+			serverProxy.joinGame(thisGame.getId(), CatanColor.RED);
 			this.start();
 		} catch (GameInitializationException e) {
 			getMessageView().setTitle("Setup Error");
@@ -177,11 +176,11 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			getMessageView().setMessage("Unable to connect to the server.");
 			getMessageView().showModal();
 		} 
-//		catch (JoinGameException e) {
-//			getMessageView().setTitle("Join Game Error");
-//			getMessageView().setMessage("Unable to Join the game you created.");
-//			getMessageView().showModal();
-//		}
+		catch (JoinGameException e) {
+			getMessageView().setTitle("Join Game Error");
+			getMessageView().setMessage("Unable to Join the game you created.");
+			getMessageView().showModal();
+		}
 	}
 
 	
