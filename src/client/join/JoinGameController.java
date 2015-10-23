@@ -12,6 +12,7 @@ import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.ModelFacade;
 import client.base.*;
+import client.communication.ClientManager;
 import client.communication.DataConverter;
 import client.communication.ServerPoller;
 import client.data.*;
@@ -45,6 +46,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 								ISelectColorView selectColorView, IMessageView messageView) {
 
 		super(view);
+
+		assert modelFacade == ClientManager.getModel();
 
 		setNewGameView(newGameView);
 		setSelectColorView(selectColorView);

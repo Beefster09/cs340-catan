@@ -50,8 +50,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		 * PROBLEM.  This model Facade below DOES NOT MATCH the model facade being passed around
 		 * elsewhere.  The one received here shows up with blank data!  No idea what's going on!
 		 */
+
+		assert modelFacade ==  ClientManager.getModel();
 		
-		modelFacade = ClientManager.getModel();
 		List<PlayerInfo> players = null;
 		if (modelFacade.getCatanModel().getGameInfo() != null)
 			players = modelFacade.getCatanModel().getGameInfo().getPlayers();

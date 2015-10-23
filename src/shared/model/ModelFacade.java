@@ -39,6 +39,7 @@ public class ModelFacade {
 		}
 		
 		public ModelFacade(CatanModel startingModel) {
+			
 			model = startingModel;
 			
 			listeners = new ArrayList<>();

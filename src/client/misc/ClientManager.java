@@ -8,7 +8,7 @@ import shared.model.PlayerReference;
 
 public class ClientManager {
 	
-	private static ModelFacade model;
+	private static volatile ModelFacade model = null;
 	private static IServer server;
 	private static PlayerReference localPlayer;
 
@@ -19,10 +19,14 @@ public class ClientManager {
 	public static final int DEFAULT_SERVER_TYPE = SERVER_TYPE_PROXY;
 	
 	public static ModelFacade getModel() {
-		System.out.println(Thread.currentThread().getId());
 		if (model == null) {
-			model = new ModelFacade();
+			synchronized (ClientManager.class) {
+				if (model == null) {
+					model = new ModelFacade();
+				}
+			}
 		}
+		System.out.println("ClientManager.getModel(): " + model.toString());
 		return model;
 	}
 	
