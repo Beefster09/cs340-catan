@@ -3,12 +3,17 @@ package client.join;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
+import org.json.simple.JSONObject;
+
 import server.ai.AIType;
 import shared.communication.IServer;
-import shared.definitions.CatanColor;
+import shared.definitions.*;
 import shared.exceptions.*;
 import shared.model.ModelFacade;
 import shared.model.Player;
+import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
 import client.communication.ServerProxy;
@@ -45,13 +50,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	 */
 	@Override
 	public void start() {
-		/*
-		 * HUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-		 * PROBLEM.  This model Facade below DOES NOT MATCH the model facade being passed around
-		 * elsewhere.  The one received here shows up with blank data!  No idea what's going on!
-		 */
-
-		assert modelFacade ==  ClientManager.getModel();
 		
 		List<PlayerInfo> players = null;
 		if (modelFacade.getCatanModel().getGameInfo() != null)
@@ -92,35 +90,27 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	@Override
 	public void addAI() {
 		
-		try {
-			
-			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 
-			//CatanColor unusedColor = getUnusedColor();
-			
-			//String AIName = getUnusedName();
-			
-			//PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
-			
-			//PlayerInfo AIInfo = new PlayerInfo(AIHeader);
-			
-			//players.add(AIInfo);
-	
-			String AITypeName = getView().getSelectedAI();
-			
-			AIType aitype = AIType.getTypeFromString(AITypeName);			
-			
-			serverProxy.addAIPlayer(aitype);
-				
-		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String AITypeName = getView().getSelectedAI();
 		
+		final AIType aitype = AIType.getTypeFromString(AITypeName);
+		
+		new SwingWorker<Object, Object> () {
+
+			@Override
+			protected Object doInBackground() throws Exception {
+				serverProxy.addAIPlayer(aitype);
+				return null;
+			}
+			
+		}.execute();
+	
 	}
 
 	@Override
 	public void playersChanged(List<Player> players) {
+		System.out.println("The list of players changed. Updating PlayerWaitingController.");
 		
 		PlayerInfo[] playerList = new PlayerInfo[players.size()];
 		for(int i = 0; i < players.size(); i++)
@@ -134,7 +124,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		if(players.size() > 3)
 			getView().closeModal();
 	}
-	
+
 	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
 		
 		PlayerInfo[] playerArray = new PlayerInfo[4];

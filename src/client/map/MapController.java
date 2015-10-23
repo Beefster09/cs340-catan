@@ -95,6 +95,7 @@ public class MapController extends Controller implements IMapController {
 			System.out.println("It's not your turn!");
 			state = new NullState(this);
 		}
+		System.out.println("Done...");
 	}
 	
 	public IMapView getView() {
@@ -172,6 +173,7 @@ public class MapController extends Controller implements IMapController {
 			default:
 				break;
 			}
+			System.out.println(town.getLocation());
 		}
 		
 		view.placeRobber(board.getRobberLocation());

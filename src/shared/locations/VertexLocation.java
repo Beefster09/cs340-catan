@@ -35,6 +35,7 @@ public class VertexLocation
 		this.dir = dir;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JSONObject toJSONObject() {
 		JSONObject json = hexLoc.toJSONObject();
 		

@@ -44,7 +44,7 @@ public class RollController extends Controller implements IRollController {
 		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer())
 				&& turnTracker.getStatus() == TurnStatus.Rolling) {
 			System.out.println("Showing Roll View...");
-			if (getRollView().isModalShowing()) getRollView().closeModal();
+			getRollView().closeModal();
 			
 			getRollView().showModal();
 		}
