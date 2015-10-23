@@ -10,7 +10,6 @@ import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.ResourceList;
 import client.base.*;
-import client.communication.ServerProxy;
 import client.misc.*;
 
 
@@ -21,8 +20,8 @@ public class DiscardController extends Controller implements IDiscardController 
 
 	private IWaitView waitView;
 	Map<ResourceType, Integer> cardsToBeDiscarded = initializecardsToBeDiscarded();
-	private IServer serverProxy = ServerProxy.getInstance();
-	private ModelFacade modelFacade = ModelFacade.getInstance();
+	private IServer serverProxy = ClientManager.getServer();
+	private ModelFacade modelFacade = ClientManager.getModel();
 	
 	
 

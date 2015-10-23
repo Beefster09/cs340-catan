@@ -41,6 +41,8 @@ public class ModelFacade {
 		private List<IModelListener> listeners;
 		
 		public ModelFacade() {
+			
+			//when does any of this get initialized?
 			this(new CatanModel());
 		}
 		

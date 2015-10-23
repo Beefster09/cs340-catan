@@ -1,19 +1,15 @@
 package client.join;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import server.ai.AIType;
 import shared.communication.IServer;
-import shared.communication.PlayerHeader;
-import shared.definitions.CatanColor;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
 import shared.model.ModelFacade;
 import shared.model.Player;
 import client.base.*;
-import client.communication.ServerProxy;
-import client.data.GameInfo;
+import client.communication.ClientManager;
 import client.data.PlayerInfo;
 
 
@@ -22,8 +18,8 @@ import client.data.PlayerInfo;
  */
 public class PlayerWaitingController extends Controller implements IPlayerWaitingController {
 
-	private ModelFacade modelFacade = ModelFacade.getInstance();
-	private IServer serverProxy = ServerProxy.getInstance();
+	private ModelFacade modelFacade = ClientManager.getModel();
+	private IServer serverProxy = ClientManager.getServer();
 	
 	public PlayerWaitingController(IPlayerWaitingView view) {
 
@@ -49,7 +45,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 		List<String> AIChoiceList;
 		try {
-			AIChoiceList = ServerProxy.getInstance().getAITypes();
+			AIChoiceList = serverProxy.getAITypes();
 			
 			PlayerInfo[] playerList = new PlayerInfo[players.size()];
 			for(int i = 0; i < players.size(); i++)
@@ -82,25 +78,24 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	public void addAI() {
 		
 		try {
-			
-			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
-
-			//CatanColor unusedColor = getUnusedColor();
-			
-			//String AIName = getUnusedName();
-			
-			//PlayerHeader AIHeader = new PlayerHeader(unusedColor, AIName, players.size()+1);
-			
-			//PlayerInfo AIInfo = new PlayerInfo(AIHeader);
-			
-			//players.add(AIInfo);
 	
 			String AITypeName = getView().getSelectedAI();
 			
 			AIType aitype = AIType.getTypeFromString(AITypeName);			
 			
 			serverProxy.addAIPlayer(aitype);
+			
+			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 				
+			PlayerInfo[] playerList = new PlayerInfo[players.size()];
+			for(int i = 0; i < players.size(); i++)
+				playerList[i] = players.get(i);
+			
+			getView().setPlayers(playerList);
+			
+			
+			getView().showModal();
+			
 		} catch (ServerException | InvalidActionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -124,7 +119,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			getView().closeModal();
 	}
 	
-	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
+/*	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
 		
 		PlayerInfo[] playerArray = new PlayerInfo[4];
 		
@@ -186,11 +181,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			usedColors.add(p.getColor());
 		
 		return usedColors;
-	}
+	} */
 	
-<<<<<<< HEAD
-
-=======
->>>>>>> fe63309ee64fc2ccbc075c603a3fc9fbc7857762
 }
 
