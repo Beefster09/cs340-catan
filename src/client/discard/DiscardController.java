@@ -10,7 +10,6 @@ import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.ResourceList;
 import client.base.*;
-import client.communication.ServerProxy;
 import client.misc.*;
 
 
@@ -21,8 +20,8 @@ public class DiscardController extends Controller implements IDiscardController 
 
 	private IWaitView waitView;
 	Map<ResourceType, Integer> cardsToBeDiscarded = initializecardsToBeDiscarded();
-	private IServer serverProxy = ServerProxy.getInstance();
-	private ModelFacade modelFacade = ModelFacade.getInstance();
+	private IServer serverProxy = ClientManager.getServer();
+	private ModelFacade modelFacade = ClientManager.getModel();
 	
 	
 
@@ -108,7 +107,7 @@ public class DiscardController extends Controller implements IDiscardController 
 		return cardsToBeDiscarded;
 	}
 	
-	public int getHowManyLeftToDiscard() {
+	private int getHowManyLeftToDiscard() {
 		
 		int playerID = modelFacade.getLocalPlayer().getPlayerID();
 		List<Player> players = modelFacade.getCatanModel().getPlayers();
@@ -118,7 +117,7 @@ public class DiscardController extends Controller implements IDiscardController 
 		return discardRequirement - discardCount();
 	}
 	
-	public int discardCount() {
+	private int discardCount() {
 		int total = 0;
 		for (int count : cardsToBeDiscarded.values()) {
 			total += count;

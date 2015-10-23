@@ -41,6 +41,9 @@ public class PointsController extends Controller implements IPointsController {
 		this.finishedView = finishedView;
 	}
 
+	/**
+	 * getPointsView().setPoints( the amount of points for this player in the model);
+	 */
 	private void initFromModel() {
 		//<temp>
 		getPointsView().setPoints(5);
@@ -62,4 +65,3 @@ public class PointsController extends Controller implements IPointsController {
 		}
 	}
 }
-
