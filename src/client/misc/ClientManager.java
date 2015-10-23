@@ -19,6 +19,7 @@ public class ClientManager {
 	public static final int DEFAULT_SERVER_TYPE = SERVER_TYPE_PROXY;
 	
 	public static ModelFacade getModel() {
+		System.out.println(Thread.currentThread().getId());
 		if (model == null) {
 			model = new ModelFacade();
 		}
@@ -46,7 +47,11 @@ public class ClientManager {
 	
 	public static IServer getServer() {
 		if (server == null) {
-			initializeServer(DEFAULT_SERVER_TYPE);
+			try {
+				initializeServer(DEFAULT_SERVER_TYPE);
+			} catch (Exception e) {
+				System.out.println("Averted a double server crisis!");
+			}
 		}
 		return server;
 	}
