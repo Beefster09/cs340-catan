@@ -11,8 +11,7 @@ import client.misc.ClientManager;
 
 import shared.communication.IServer;
 import shared.communication.Session;
-import shared.exceptions.InvalidActionException;
-import shared.exceptions.ServerException;
+import shared.exceptions.*;
 import shared.model.ModelFacade;
 
 
@@ -91,7 +90,7 @@ public class ServerPoller {
 						System.out.println("Polling gave results. Handling updates on EDT.");
 					}
 					
-				} catch (ServerException | InvalidActionException e) {
+				} catch (ServerException | UserException e) {
 					System.out.println("Server error, could not connect");
 					e.printStackTrace();
 				}

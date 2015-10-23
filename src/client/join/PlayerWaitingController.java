@@ -6,8 +6,7 @@ import java.util.List;
 import server.ai.AIType;
 import shared.communication.IServer;
 import shared.definitions.CatanColor;
-import shared.exceptions.InvalidActionException;
-import shared.exceptions.ServerException;
+import shared.exceptions.*;
 import shared.model.ModelFacade;
 import shared.model.Player;
 import client.base.*;
@@ -78,7 +77,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			
 			if(playerList.length > 3)
 				getView().closeModal();
-		} catch (ServerException | InvalidActionException e) {
+		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -112,7 +111,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			
 			serverProxy.addAIPlayer(aitype);
 				
-		} catch (ServerException | InvalidActionException e) {
+		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

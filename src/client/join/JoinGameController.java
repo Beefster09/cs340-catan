@@ -9,6 +9,7 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 import shared.model.ModelFacade;
 import client.base.*;
 import client.communication.DataConverter;
@@ -121,13 +122,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			
 			getJoinGameView().setGames(games, localPlayer);
 			getJoinGameView().showModal();
-		} catch (ServerException e) {
+		} catch (ServerException | UserException e) {
 			messageView.setTitle("Server Error");
 			messageView.setMessage("Unable to reach server at this point");
 			messageView.showModal();
-		} catch (InvalidActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
@@ -167,7 +165,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			getMessageView().setTitle("Setup Error");
 			getMessageView().setMessage("Could not initialize game.");
 			getMessageView().showModal();
-		} catch (InvalidActionException e) {
+		} catch (UserException e) {
 			getMessageView().setTitle("Invalid Action Error");
 			getMessageView().setMessage("Invalid Action was performed.");
 			getMessageView().showModal();
@@ -244,7 +242,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			messageView.setTitle("Join Game Error");
 			messageView.setMessage("Unable to join game at this point");
 			messageView.showModal();
-		} catch (InvalidActionException e) {
+		} catch (UserException e) {
 			e.printStackTrace();
 		}
 	}
