@@ -73,11 +73,11 @@ public class ModelFacade {
 				//BANK
 				updateBankFromJSON(json);
 				
-				//BOARD
-				updateMapFromJSON(json);
-				
 				//PLAYERS
 				List<Player> players = updatePlayersFromJSON(json);
+				
+				//BOARD
+				updateMapFromJSON(json, players);
 				
 				//TURNTRACKER
 				updateTurnTrackerFromJSON(json,players);
@@ -123,10 +123,10 @@ public class ModelFacade {
 			}
 		}
 		
-		private void updateMapFromJSON(JSONObject json) {
+		private void updateMapFromJSON(JSONObject json, List<Player> players) {
 			JSONObject object = (JSONObject) json.get("map");
 			try {
-				Board otherBoard = new Board(object);
+				Board otherBoard = new Board(players, object);
 				if (model.getMap() == null) 
 				{ 
 					model.setMap(otherBoard);

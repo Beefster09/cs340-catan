@@ -152,7 +152,17 @@ public class MapController extends Controller implements IMapController {
 		IMapView view = getView();
 		
 		for (Road road : board.getRoads()) {
-			CatanColor color = road.getOwner().getPlayer().getColor();
+			PlayerReference ownerRef = road.getOwner();
+			if (ownerRef == null) {
+				System.out.println("PlayerReference is null");
+				continue;
+			}
+			Player owner = ownerRef.getPlayer();
+			if (owner == null) {
+				System.out.println("PlayerReference is an invalid reference: " + ownerRef);
+				continue;
+			}
+			CatanColor color = owner.getColor();
 			view.placeRoad(road.getLocation(), color);
 		}
 		
