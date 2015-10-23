@@ -59,8 +59,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		List<PlayerInfo> players = null;
 		if (modelFacade.getCatanModel().getGameInfo() != null)
 			players = modelFacade.getCatanModel().getGameInfo().getPlayers();
-		else
+		else {
 			players = new ArrayList<PlayerInfo>();
+		}
+		if (players.size() >= 4) {
+			return;
+		}
 		List<String> AIChoiceList;
 		try {
 			AIChoiceList = ClientManager.getServer().getAITypes();
@@ -115,8 +119,12 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 	@Override
 	public void playersChanged(List<Player> players) {
-		System.out.println("The list of players changed. Updating PlayerWaitingController.");
-		
+		if (players.size() >= 4) {
+			if(getView().isModalShowing()) {
+				getView().closeModal();
+			}
+			return;
+		}
 		PlayerInfo[] playerList = new PlayerInfo[players.size()];
 		for(int i = 0; i < players.size(); i++)
 			playerList[i] = new PlayerInfo(players.get(i));
