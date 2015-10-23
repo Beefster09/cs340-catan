@@ -230,6 +230,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	public void joinGame(CatanColor color) {
 		try{
 			if (serverProxy.joinGame(modelFacade.getGameInfo().getId(), color)) {
+				if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
+				if (getSelectColorView().isModalShowing()) {
+					getSelectColorView().closeModal();
+				}
 				// TODO: this needs to use the actual value of the localPlayer... However you're supposed to get it.
 				//ClientManager.setLocalPlayer(new PlayerReference(modelFacade.getGameHeader(), modelFacade.getCurrentPlayer().getIndex()));
 				//Get the model so that all other controllers will immediately have access to the new object.
@@ -240,8 +244,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				poller.start();
 			}
 			// If join succeeded
-			if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
-			if (getSelectColorView().isModalShowing()) getSelectColorView().closeModal();
 //			getJoinGameView().closeModal();
 			joinAction.execute();
 		}

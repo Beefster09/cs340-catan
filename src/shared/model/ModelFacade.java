@@ -64,6 +64,7 @@ public class ModelFacade {
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
+			//We are still waiting for players.
 			if (newVersion == 0 &&
 				((List<Player>) json.get("players")).size() < 4) {
 				updatePlayersFromJSON(json);
