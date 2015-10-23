@@ -161,7 +161,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		try {
 			GameHeader thisGame = serverProxy.createGame(title, randomTiles, randomNumbers, randomPorts);
 			getNewGameView().closeModal();
-			serverProxy.joinGame(thisGame.getId(), CatanColor.RED);
+			//TODO: possibly keep this line
+			//serverProxy.joinGame(thisGame.getId(), CatanColor.RED);
 			this.start();
 		} catch (GameInitializationException e) {
 			getMessageView().setTitle("Setup Error");
@@ -175,11 +176,12 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			getMessageView().setTitle("Server Error");
 			getMessageView().setMessage("Unable to connect to the server.");
 			getMessageView().showModal();
-		} catch (JoinGameException e) {
-			getMessageView().setTitle("Join Game Error");
-			getMessageView().setMessage("Unable to Join the game you created.");
-			getMessageView().showModal();
-		}
+		} 
+//		catch (JoinGameException e) {
+//			getMessageView().setTitle("Join Game Error");
+//			getMessageView().setMessage("Unable to Join the game you created.");
+//			getMessageView().showModal();
+//		}
 	}
 
 	
@@ -226,7 +228,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				// TODO: this needs to use the actual value of the localPlayer... However you're supposed to get it.
 				ClientManager.setLocalPlayer(new PlayerReference(modelFacade.getGameHeader(), 0));
 				//Get the model so that all other controllers will immediately have access to the new object.
-				modelFacade.updateFromJSON(serverProxy.getModel(-1));
+				//modelFacade.updateFromJSON(serverProxy.getModel(-1));
 			}
 			if (modelFacade.getLocalPlayer() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
@@ -246,8 +248,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			messageView.setTitle("Join Game Error");
 			messageView.setMessage("Unable to join game at this point");
 			messageView.showModal();
-		} catch (UserException e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -2,7 +2,12 @@ package client.roll;
 
 import java.util.Random;
 
+import shared.definitions.TurnStatus;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
+import shared.model.TurnTracker;
 import client.base.*;
+import client.misc.ClientManager;
 
 /**
  * Implementation for the roll controller
@@ -38,10 +43,25 @@ public class RollController extends Controller implements IRollController {
 	@Override
 	public void rollDice() {
 		Random rand = new Random();
-		int roll1 = rand.nextInt(6) + 1;
-		int roll2 = rand.nextInt(6) + 1;
-		getResultView().setRollValue(roll1 + roll2);
-		getResultView().showModal();
+		int result = rand.nextInt(6) + rand.nextInt(6) + 2;
+		getResultView().setRollValue(result);
+		try {
+			ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), result);
+			getRollView().closeModal();
+			getResultView().showModal();
+		} catch (ServerException e) {
+			e.printStackTrace();
+		} catch (UserException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if (turnTracker.getStatus().equals(TurnStatus.Rolling) && 
+			turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer())) {
+			getRollView().showModal();
+		}
 	}
 
 }

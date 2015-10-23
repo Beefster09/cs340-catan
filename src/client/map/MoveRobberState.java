@@ -1,5 +1,6 @@
 package client.map;
 
+import client.misc.ClientManager;
 import shared.exceptions.InvalidActionException;
 import shared.locations.HexLocation;
 
@@ -31,6 +32,11 @@ public class MoveRobberState extends MapControllerState {
 		else {
 			return super.cancelMove();
 		}
+	}
+	
+	@Override
+	public boolean canMoveRobber(HexLocation loc) {
+		return ClientManager.getModel().canRob(loc);
 	}
 	
 }
