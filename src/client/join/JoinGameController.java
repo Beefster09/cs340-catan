@@ -231,7 +231,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		try{
 			if (serverProxy.joinGame(modelFacade.getGameInfo().getId(), color)) {
 				// TODO: this needs to use the actual value of the localPlayer... However you're supposed to get it.
-				ClientManager.setLocalPlayer(new PlayerReference(modelFacade.getGameHeader(), modelFacade.getLocalPlayer().getPlayerID()));
+				ClientManager.setLocalPlayer(new PlayerReference(modelFacade.getGameHeader(), modelFacade.getCurrentPlayer().getIndex()));
 				//Get the model so that all other controllers will immediately have access to the new object.
 				modelFacade.updateFromJSON(ClientManager.getServer().getModel(-1));
 			}
