@@ -66,6 +66,10 @@ public class ModelFacade {
 		
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
+			if (newVersion == 0) {
+				updatePlayersFromJSON(json);
+				return model;
+			}
 			if (getVersion() == newVersion) {
 				return null;
 			}
