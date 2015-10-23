@@ -11,6 +11,7 @@ import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.ModelFacade;
+import shared.model.PlayerReference;
 import client.base.*;
 import client.communication.DataConverter;
 import client.communication.ServerPoller;
@@ -31,7 +32,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	private IServer serverProxy = ClientManager.getServer();
 	//private ModelFacade modelFacade = ModelFacade.getInstance();
 	private ModelFacade modelFacade = ClientManager.getModel();
-	
 	
 	/**
 	 * JoinGameController constructor
@@ -222,7 +222,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			if (serverProxy.joinGame(modelFacade.getGameHeader().getId(), color)) {
+			if (serverProxy.joinGame(modelFacade.getGameInfo().getId(), color)) {
+				// TODO: this needs to use the actual value of the localPlayer... However you're supposed to get it.
+				ClientManager.setLocalPlayer(new PlayerReference(modelFacade.getGameHeader(), 0));
 				//Get the model so that all other controllers will immediately have access to the new object.
 				modelFacade.updateFromJSON(serverProxy.getModel(-1));
 			}

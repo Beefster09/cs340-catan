@@ -58,11 +58,31 @@ public class MapController extends Controller implements IMapController {
 	}
 
 	@Override
-	public void turnChanged(TurnTracker turnTracker) {
-		if (isYourTurn()) {
+	public void turnTrackerChanged(TurnTracker turnTracker) {
+		System.out.println("MapController: TurnTracker has changed");
+		System.out.println("Local Player: " + ClientManager.getLocalPlayer());
+		System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
+		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer())) {
+			System.out.println("It's your turn!");
 			state = new YourTurnState(this);
+			
+			switch (turnTracker.getStatus()) {
+			case FirstRound:
+			case SecondRound:
+				System.out.println("Setup Round!");
+				startMove(PieceType.SETTLEMENT, true, true);
+				break;
+			case Robbing:
+				System.out.println("This should occur only if you roll a 7...");
+				startMove(PieceType.ROBBER, false, false);
+				break;
+			default:
+				break;
+			
+			}
 		}
 		else {
+			System.out.println("It's not your turn!");
 			state = new NullState(this);
 		}
 	}
@@ -86,10 +106,6 @@ public class MapController extends Controller implements IMapController {
 	
 	public CatanColor getYourColor() {
 		return ClientManager.getLocalPlayer().getPlayer().getColor();
-	}
-	
-	private boolean isYourTurn() {
-		return ClientManager.getLocalPlayer().equals(getModel().getCurrentPlayer());
 	}
 	
 	/*/TODO: I am changing this from protected to public.

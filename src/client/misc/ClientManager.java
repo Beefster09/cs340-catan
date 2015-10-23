@@ -26,7 +26,6 @@ public class ClientManager {
 				}
 			}
 		}
-		System.out.println("ClientManager.getModel(): " + model.toString());
 		return model;
 	}
 	
