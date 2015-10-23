@@ -40,6 +40,10 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 		return (IPlayerWaitingView)super.getView();
 	}
+	
+	public void setFacade(ModelFacade facade) {
+		this.modelFacade = facade;
+	}
 
 	
 	/**
@@ -50,6 +54,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	 */
 	@Override
 	public void start() {
+		assert modelFacade ==  ClientManager.getModel();
 		
 		List<PlayerInfo> players = null;
 		if (modelFacade.getCatanModel().getGameInfo() != null)
