@@ -94,7 +94,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		
 		try {
 			
-			List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
+			//List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
 
 			//CatanColor unusedColor = getUnusedColor();
 			
@@ -126,9 +126,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		for(int i = 0; i < players.size(); i++)
 			playerList[i] = new PlayerInfo(players.get(i));
 		
-		getView().closeModal();
-		getView().setPlayers(playerList);
-		getView().showModal();
+		//getView().closeModal();
+		//getView().setPlayers(playerList);
+		//getView().showModal();
 		
 		
 		if(players.size() > 3)
