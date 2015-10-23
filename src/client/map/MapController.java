@@ -63,7 +63,16 @@ public class MapController extends Controller implements IMapController {
 		System.out.println("Local Player: " + ClientManager.getLocalPlayer());
 		System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
 		System.out.println("Phase: " + turnTracker.getStatus());
-		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer())) {
+		/*
+		 * TODO: Fix this problem
+		 * I am adding a player count checker, as this part of the code is being executed
+		 * as soon as one player joins the game.  Technically, the turn tracker does say
+		 * its the first round, and that it is the players turn.  However, as only one person
+		 * has joined the game, errors are thrown as soon as that player finishes their turn
+		 * 
+		 */
+		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer()) &&
+				getModel().getCatanModel().getPlayers().size() >= 4) {
 			System.out.println("It's your turn!");
 			state = new YourTurnState(this);
 			
@@ -109,12 +118,6 @@ public class MapController extends Controller implements IMapController {
 		return ClientManager.getLocalPlayer().getPlayer().getColor();
 	}
 	
-	/*/TODO: I am changing this from protected to public.
-	*When the player joins the game for the first time, someone has to call
-	*initFromModel() so the hexes and ports can appear on the screen.
-	*Currently, your listener function only allows for the roads/settlements/cities
-	*to change, so the initialization isn't happening.
-	*/
 	protected void initFromModel() {
 
 		Board board = getModel().getCatanModel().getMap();

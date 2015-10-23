@@ -11,6 +11,10 @@ import org.json.simple.JSONObject;
 import shared.definitions.TurnStatus;
 import shared.model.TurnTracker;
 
+import shared.definitions.TurnStatus;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
+import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
 
@@ -63,17 +67,15 @@ public class RollController extends Controller implements IRollController {
 	@Override
 	public void rollDice() {
 		Random rand = new Random();
-		int roll1 = rand.nextInt(6) + 1;
-		int roll2 = rand.nextInt(6) + 1;
-		final int rollTotal = roll1 + roll2;
-		getResultView().setRollValue(rollTotal);
+		final int result = rand.nextInt(6) + rand.nextInt(6) + 2;
+		getResultView().setRollValue(result);
 		getResultView().showModal();
 		
 		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object> () {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), rollTotal);
+				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), result);
 			}
 			
 			@Override
@@ -83,6 +85,8 @@ public class RollController extends Controller implements IRollController {
 					@Override
 					public void run() {
 						try {
+							getRollView().closeModal();
+							getResultView().showModal();
 							ClientManager.getModel().updateFromJSON(get());
 						} catch (InterruptedException | ExecutionException e) {
 							e.printStackTrace();

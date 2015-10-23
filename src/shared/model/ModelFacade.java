@@ -1,6 +1,7 @@
 package shared.model;
 
 import java.util.ArrayList;
+import java.util.logging.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class ModelFacade {
 	
 		private CatanModel model;
 		private Session localPlayer;
+		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 		
 		private List<IModelListener> listeners;
 		
@@ -63,11 +65,9 @@ public class ModelFacade {
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
 			if (getVersion() == newVersion) {
-				System.out.println("No need to update!");
 				return null;
 			}
 			model.setVersion(newVersion);
-			System.out.println("Updating the model.");
 			
 			try {
 				//BANK
@@ -170,6 +170,7 @@ public class ModelFacade {
 			if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
 				model.setPlayers(players);
 				for (IModelListener listener : listeners) {
+					log.fine("Players Changed");
 					try {
 						listener.playersChanged(players);
 					} catch (Exception e) {

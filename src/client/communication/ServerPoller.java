@@ -1,6 +1,7 @@
 package client.communication;
 
 import java.util.Timer;
+import java.util.logging.*;
 import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
@@ -30,6 +31,7 @@ public class ServerPoller {
 	 */
 	public final static long DEFAULT_POLL_INTERVAL = 1000;
 	
+	private static final Logger log = Logger.getLogger( ServerPoller.class.getName() );
 	private IServer server;
 	private Timer poller = null;
 	ClientCommunicator comm;
@@ -82,6 +84,7 @@ public class ServerPoller {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
+								log.fine("Sending new information to modelHander");
 								modelHandler = ClientManager.getModel();
 								modelHandler.updateFromJSON(model);
 							}
