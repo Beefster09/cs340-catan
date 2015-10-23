@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import shared.communication.GameHeader;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
 
@@ -21,22 +22,10 @@ public class Road {
 		
 	}
 	
-	public Road(JSONObject json) throws SchemaMismatchException {
+	public Road(List<Player> players, JSONObject json) throws SchemaMismatchException {
 		try {
-			/*Bad input for a single road
-			if (json.containsKey("roads")) {
-				List<Hex> hexData = new ArrayList<>();
-				for (Object obj : (List) json.get("roads")) {
-					//hexData.add(new Hex((JSONObject) obj));
-					int playerOwner = (int) (long) ((JSONObject)obj).get("owner");
-					location = new EdgeLocation((JSONObject)obj);
-				}
-			}
-			else throw new SchemaMismatchException("Board data is missing from the JSON:" +
-					json.toJSONString());
-			*/
 			int playerOwner = (int) (long) (json.get("owner"));
-			//owner = new PlayerReference()
+			owner = players.get(playerOwner).getReference();
 			location = new EdgeLocation( (JSONObject)(json.get("location")));
 		} catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();

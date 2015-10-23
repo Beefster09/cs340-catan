@@ -60,7 +60,7 @@ public class Board {
 		robber = robberLocation;
 	}
 	
-	public Board(JSONObject json)
+	public Board(List<Player> players, JSONObject json)
 			throws SchemaMismatchException, GameInitializationException {
 		try {
 			radius = (int) (long) json.get("radius") - 1; // Remove center from radius
@@ -84,16 +84,16 @@ public class Board {
 			
 			List<Road> roadData = new ArrayList<>();
 			for (Object obj : (List) json.get("roads")) {
-				roadData.add(new Road((JSONObject) obj));
+				roadData.add(new Road(players, (JSONObject) obj));
 			}
 			initializeRoadsFromList(roadData);
 			
 			List<Municipality> towns = new ArrayList<>();
 			for (Object obj : (List) json.get("settlements")) {
-				towns.add(new Municipality(null, (JSONObject) obj, MunicipalityType.SETTLEMENT));
+				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.SETTLEMENT));
 			}
 			for (Object obj : (List) json.get("cities")) {
-				towns.add(new Municipality(null, (JSONObject) obj, MunicipalityType.CITY));
+				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.CITY));
 			}
 			initializeMunicipalitiesFromList(towns);
 		}

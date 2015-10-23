@@ -1,6 +1,6 @@
 package client.base;
 
-import client.communication.ClientManager;
+import client.misc.ClientManager;
 import shared.model.AbstractModelListener;
 import shared.model.IModelListener;
 

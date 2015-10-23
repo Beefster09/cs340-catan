@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -16,7 +17,7 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import client.data.GameInfo;
-import client.communication.ClientManager;
+import client.misc.ClientManager;
 
 
 public class ModelFacade {
@@ -39,6 +40,7 @@ public class ModelFacade {
 		}
 		
 		public ModelFacade(CatanModel startingModel) {
+			
 			model = startingModel;
 			
 			listeners = new ArrayList<>();
@@ -64,15 +66,18 @@ public class ModelFacade {
 				System.out.println("No need to update!");
 				return null;
 			}
+			model.setVersion(newVersion);
+			System.out.println("Updating the model.");
+			
 			try {
 				//BANK
 				updateBankFromJSON(json);
 				
-				//BOARD
-				updateMapFromJSON(json);
-				
 				//PLAYERS
 				List<Player> players = updatePlayersFromJSON(json);
+				
+				//BOARD
+				updateMapFromJSON(json, players);
 				
 				//TURNTRACKER
 				updateTurnTrackerFromJSON(json,players);
@@ -103,7 +108,7 @@ public class ModelFacade {
 			
 		}
 		
-		public synchronized void updateBankFromJSON(JSONObject json) {
+		private void updateBankFromJSON(JSONObject json) {
 			JSONObject object = (JSONObject) json.get("bank");
 			try {
 				Bank otherBank = new Bank(object);
@@ -118,21 +123,29 @@ public class ModelFacade {
 			}
 		}
 		
-		public synchronized void updateMapFromJSON(JSONObject json) {
+		private void updateMapFromJSON(JSONObject json, List<Player> players) {
 			JSONObject object = (JSONObject) json.get("map");
 			try {
-				Board otherBoard = new Board(object);
+				Board otherBoard = new Board(players, object);
 				if (model.getMap() == null) 
 				{ 
 					model.setMap(otherBoard);
 					for (IModelListener listener : listeners) {
-						listener.mapInitialized();
+						try {
+							listener.mapInitialized();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 				else if (!model.getMap().equals(otherBoard)) {
 					model.setMap(otherBoard);
 					for (IModelListener listener : listeners) {
-						listener.mapChanged(otherBoard);
+						try {
+							listener.mapChanged(otherBoard);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			} catch (SchemaMismatchException e) {
@@ -143,7 +156,7 @@ public class ModelFacade {
 		}
 		
 		@SuppressWarnings("rawtypes")
-		public synchronized List<Player> updatePlayersFromJSON(JSONObject json) {
+		private List<Player> updatePlayersFromJSON(JSONObject json) {
 			List<Player> players = new ArrayList<Player>();
 			for (Object obj : (List) json.get("players")) {
 				JSONObject player = (JSONObject) obj;
@@ -157,7 +170,11 @@ public class ModelFacade {
 			if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
 				model.setPlayers(players);
 				for (IModelListener listener : listeners) {
-					listener.playersChanged(players);
+					try {
+						listener.playersChanged(players);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				return players;
 			}
@@ -165,7 +182,7 @@ public class ModelFacade {
 				return model.getPlayers();
 		}
 		
-		public void updateTurnTrackerFromJSON(JSONObject json, List<Player> players) {
+		private void updateTurnTrackerFromJSON(JSONObject json, List<Player> players) {
 			if (json.containsKey("turnTracker")) {
 				JSONObject object = (JSONObject) json.get("turnTracker");
 				try {
@@ -174,7 +191,12 @@ public class ModelFacade {
 						!model.getTurnTracker().equals(otherTurnTracker)) {
 						model.setTurnTracker(otherTurnTracker);
 						for (IModelListener listener : listeners) {
-							listener.turnTrackerChanged(otherTurnTracker);
+							try {
+								listener.turnTrackerChanged(otherTurnTracker);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 					
@@ -190,7 +212,7 @@ public class ModelFacade {
 			}
 		}
 		
-		public void updateLargestArmyFromJSON(JSONObject json) {
+		private void updateLargestArmyFromJSON(JSONObject json) {
 			if (json.containsKey("largestArmy")) {
 				int largestArmyPlayer = (int) (long) json.get("largestArmy");
 				PlayerReference otherPlayer = new PlayerReference(model, largestArmyPlayer);
@@ -198,13 +220,18 @@ public class ModelFacade {
 					!model.getLargestArmy().equals(otherPlayer)) {
 					model.setLongestRoad(otherPlayer);
 					for (IModelListener listener : listeners) {
-						listener.largestArmyChanged(otherPlayer);
+						try {
+							listener.largestArmyChanged(otherPlayer);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
 		}
 		
-		public void updateLongestRoadFromJSON(JSONObject json) {
+		private void updateLongestRoadFromJSON(JSONObject json) {
 			if (json.containsKey("longestRoad")) {
 				int longestRoadPlayer = (int) (long) json.get("longestRoad");
 				PlayerReference otherPlayer = new PlayerReference(model, longestRoadPlayer);
@@ -212,13 +239,18 @@ public class ModelFacade {
 					!model.getLongestRoad().equals(otherPlayer)) {
 					model.setLongestRoad(otherPlayer);
 					for (IModelListener listener : listeners) {
-						listener.longestRoadChanged(otherPlayer);
+						try {
+							listener.longestRoadChanged(otherPlayer);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
 		}
 			
-		public void updateTradeOfferFromJSON(JSONObject json, List<Player> players) {
+		private void updateTradeOfferFromJSON(JSONObject json, List<Player> players) {
 			if (json.containsKey("tradeOffer")) {
 				JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
 				TradeOffer otherOffer;
@@ -227,7 +259,12 @@ public class ModelFacade {
 					if (model.getTradeOffer() == null || !model.getTradeOffer().equals(otherOffer)) {
 						model.setTradeOffer(otherOffer);
 						for (IModelListener listener : listeners) {
-							listener.tradeOfferChanged(otherOffer);
+							try {
+								listener.tradeOfferChanged(otherOffer);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 				} catch (SchemaMismatchException e) {
@@ -236,7 +273,7 @@ public class ModelFacade {
 			}
 		}
 		
-		public synchronized void updateChatFromJSON(JSONObject json) {
+		private void updateChatFromJSON(JSONObject json) {
 			if (json.containsKey("chat")) {
 				JSONObject object = (JSONObject) json.get("chat");
 				MessageList otherChat;
@@ -245,7 +282,12 @@ public class ModelFacade {
 					if (model.getChat() == null || !model.getChat().equals(otherChat)) {
 						model.setChat(otherChat);
 						for (IModelListener listener : listeners) {
-							listener.chatChanged(otherChat);
+							try {
+								listener.chatChanged(otherChat);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 				} catch (SchemaMismatchException e) {
@@ -254,13 +296,18 @@ public class ModelFacade {
 			}
 		}
 		
-		public synchronized void updateWinnerFromJSON(JSONObject json) {
+		private void updateWinnerFromJSON(JSONObject json) {
 			int winner = (int) (long) json.get("winner");
 			PlayerReference otherPlayer = new PlayerReference(model, winner);
 			if (model.getWinner() == null || !model.getWinner().equals(otherPlayer)) {
 				model.setWinner(otherPlayer);
 				for (IModelListener listener : listeners) {
-					listener.winnerChanged(otherPlayer);
+					try {
+						listener.winnerChanged(otherPlayer);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -283,8 +330,12 @@ public class ModelFacade {
 			model.setHeader(header);
 		}
 		
-		public GameInfo getGameHeader() {
+		public GameInfo getGameInfo() {
 			return model.getGameInfo();
+		}
+		
+		public GameHeader getGameHeader() {
+			return model.getHeader();
 		}
 	
 		/**

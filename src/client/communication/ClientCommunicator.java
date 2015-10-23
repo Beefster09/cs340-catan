@@ -83,9 +83,9 @@ public class ClientCommunicator {
 	}
 
 	public JSONObject preJoin(JSONObject o)
-			throws ServerException, InvalidActionException, GameInitializationException{		
+			throws ServerException, UserException, GameInitializationException{		
 		if(userCookie == null){
-			throw new InvalidActionException();
+			throw new UserException();
 		}
 		try{
 			URL url = new URL((String) o.get("url"));
@@ -125,7 +125,7 @@ public class ClientCommunicator {
 			if(o.get("url").equals("http://localhost:8081/games/create")){
 				throw new GameInitializationException();
 			}
-			throw new InvalidActionException();
+			throw new UserException();
 		}
 		catch(IOException | ParseException e){
 			throw new ServerException();
@@ -188,9 +188,9 @@ public class ClientCommunicator {
 	 * @throws UserException 
 	 */
 	public JSONObject send(JSONObject o)
-			throws ServerException, InvalidActionException{
+			throws ServerException, UserException {
 		if(userCookie == null || gameCookie == null){
-			throw new InvalidActionException();
+			throw new UserException();
 		}
 		try{
 			URL url = new URL((String) o.get("url"));
@@ -240,7 +240,7 @@ public class ClientCommunicator {
 				str = new StringBuilder("{\"list\":" + str + "}");
 			}
 			System.out.println(str.toString());
-			throw new InvalidActionException();
+			throw new UserException();
 		}
 		catch(IOException | ParseException e){
 			throw new ServerException();

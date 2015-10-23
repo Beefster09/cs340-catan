@@ -9,7 +9,9 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 import shared.model.ModelFacade;
+import shared.model.PlayerReference;
 import client.base.*;
 import client.communication.DataConverter;
 import client.communication.ServerPoller;
@@ -32,7 +34,6 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	private ModelFacade modelFacade = ClientManager.getModel();
 	private PlayerWaitingController waitingController;
 	
-	
 	/**
 	 * JoinGameController constructor
 	 * 
@@ -45,6 +46,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 								ISelectColorView selectColorView, IMessageView messageView) {
 
 		super(view);
+
+		assert modelFacade == ClientManager.getModel();
 
 		setNewGameView(newGameView);
 		setSelectColorView(selectColorView);
@@ -125,13 +128,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			
 			getJoinGameView().setGames(games, localPlayer);
 			getJoinGameView().showModal();
-		} catch (ServerException e) {
+		} catch (ServerException | UserException e) {
 			messageView.setTitle("Server Error");
 			messageView.setMessage("Unable to reach server at this point");
 			messageView.showModal();
-		} catch (InvalidActionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
@@ -171,7 +171,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			getMessageView().setTitle("Setup Error");
 			getMessageView().setMessage("Could not initialize game.");
 			getMessageView().showModal();
-		} catch (InvalidActionException e) {
+		} catch (UserException e) {
 			getMessageView().setTitle("Invalid Action Error");
 			getMessageView().setMessage("Invalid Action was performed.");
 			getMessageView().showModal();
@@ -228,7 +228,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			serverProxy.joinGame(modelFacade.getGameHeader().getId(), color);
+			if (serverProxy.joinGame(modelFacade.getGameInfo().getId(), color)) {
+				// TODO: this needs to use the actual value of the localPlayer... However you're supposed to get it.
+				ClientManager.setLocalPlayer(new PlayerReference(modelFacade.getGameHeader(), 0));
 				//Get the model so that all other controllers will immediately have access to the new object.
 				//modelFacade.updateFromJSON(serverProxy.getModel(-1));
 			
@@ -252,6 +254,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			messageView.setTitle("Join Game Error");
 			messageView.setMessage("Unable to join game at this point");
 			messageView.showModal();
+		} catch (UserException e) {
+			e.printStackTrace();
 		}
 	}
 

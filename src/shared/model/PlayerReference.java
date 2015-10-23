@@ -23,9 +23,10 @@ public class PlayerReference {
 	 */
 	PlayerReference(CatanModel game, int playerIndex) {
 		super();
-		//this.game = game;
+				
 		this.playerIndex = playerIndex;
 		if (game == null) {
+			assert false; // Nothing in production should execute this branch
 			playerUUID = UUID.randomUUID();
 		}
 		else {
@@ -43,7 +44,13 @@ public class PlayerReference {
 		playerIndex = INVALID_INDEX;
 	}
 	
+	public PlayerReference(UUID uuid, int index) {
+		playerUUID = uuid;
+		playerIndex = index;
+	}
+	
 	public PlayerReference(GameHeader header, int playerIndex) {
+		this.playerIndex = playerIndex;
 		playerUUID = Player.generateUUID(header, playerIndex);
 	}
 	
@@ -65,10 +72,7 @@ public class PlayerReference {
 	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + playerIndex;
-		return result;
+		return playerUUID.hashCode();
 	}
 
 	/* (non-Javadoc)
@@ -83,7 +87,7 @@ public class PlayerReference {
 		if (getClass() != obj.getClass())
 			return false;
 		PlayerReference other = (PlayerReference) obj;
-		if (playerIndex != other.playerIndex)
+		if (!playerUUID.equals(other.playerUUID))
 			return false;
 		return true;
 	}
@@ -93,6 +97,8 @@ public class PlayerReference {
 	 */
 	@Override
 	public String toString() {
-		return "PlayerReference [playerIndex=" + playerIndex + "]";
+		return "PlayerReference [playerIndex=" + playerIndex + ", playerUUID="
+				+ playerUUID + "]";
 	}
+	
 }

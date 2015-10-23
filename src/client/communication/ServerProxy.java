@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import client.communication.ClientManager;
-
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.communication.Command;
@@ -19,12 +17,14 @@ import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
 import shared.exceptions.InvalidActionException;
+import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
+import client.misc.ClientManager;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
@@ -48,7 +48,7 @@ public class ServerProxy implements IServer {
 
 	private ClientCommunicator commuincator = new ClientCommunicator();
 	
-	public static void main(String[] args) throws UserException, ServerException, InvalidActionException, GameInitializationException, IllegalArgumentException, JoinGameException{
+	public static void main(String[] args) throws UserException, ServerException, UserException, GameInitializationException, IllegalArgumentException, JoinGameException{
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -85,7 +85,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<GameHeader> getGameList() throws ServerException, InvalidActionException {
+	public List<GameHeader> getGameList() throws ServerException, UserException {
 		try{
 			JSONObject o = new JSONObject();
 			o.put("url","http://localhost:8081/games/list");
@@ -123,7 +123,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public GameHeader createGame(String name,
 			boolean randomTiles, boolean randomNumbers, boolean randomPorts)
-			throws GameInitializationException, ServerException, InvalidActionException {
+			throws GameInitializationException, ServerException, UserException {
 		try{
 			JSONObject o = new JSONObject();
 			o.put("url","http://localhost:8081/games/create");
@@ -151,7 +151,7 @@ public class ServerProxy implements IServer {
 			}
 			return new GameHeader(title, id, playerHeader);
 		}
-		catch(InvalidActionException e){
+		catch(UserException e){
 			System.out.println("There was a typo somewhere in order for me to get here!!!");
 		}
 		return null;
@@ -178,7 +178,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void saveGame(int gameID, String filename)
-			throws GamePersistenceException, ServerException, InvalidActionException{
+			throws GamePersistenceException, ServerException, UserException{
 		try{
 			JSONObject o = new JSONObject();
 			o.put("url","http://localhost:8081/games/save");
@@ -195,7 +195,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void loadGame(String filename)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		try{
 			JSONObject o = new JSONObject();
 			o.put("url","http://localhost:8081/games/load");
@@ -211,7 +211,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getModel(int version)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/model?version=" + version);
 		o.put("requestType", "GET");
@@ -223,7 +223,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject resetGame()
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/reset");
 		o.put("requestType", "POST");
@@ -234,7 +234,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Command> getCommands()
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/commands");
 		o.put("requestType", "GET");
@@ -246,7 +246,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject executeCommands(List<Command> commands)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/commands");
 		o.put("requestType", "POST");
@@ -258,7 +258,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void addAIPlayer(AIType type)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/addAI");
 		o.put("requestType", "POST");
@@ -269,7 +269,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getAITypes()
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/game/listAI");
 		o.put("requestType", "GET");
@@ -281,7 +281,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject sendChat(PlayerReference user, String message)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/sendChat");
 		o.put("requestType", "POST");
@@ -295,7 +295,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject rollDice(PlayerReference user, int number)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/rollNumber");
 		o.put("requestType", "POST");
@@ -310,7 +310,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject robPlayer(PlayerReference user, HexLocation newRobberLocation,
 			PlayerReference victim)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/robPlayer");
 		o.put("requestType", "POST");
@@ -328,7 +328,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject buyDevCard(PlayerReference user)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buyDevCard");
 		o.put("requestType", "POST");
@@ -342,7 +342,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1,
 			ResourceType type2)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Year_of_Plenty");
 		o.put("requestType", "POST");
@@ -358,7 +358,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1,
 			EdgeLocation road2)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Road_Building");
 		o.put("requestType", "POST");
@@ -376,7 +376,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject soldier(PlayerReference user, HexLocation newRobberLocation,
 			PlayerReference victim)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Soldier");
 		o.put("requestType", "POST");
@@ -394,7 +394,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject monopoly(PlayerReference user, ResourceType type)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Monopoly");
 		o.put("requestType", "POST");
@@ -409,7 +409,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject buildRoad(PlayerReference user, EdgeLocation location,
 			boolean free)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buildRoad");
 		o.put("requestType", "POST");
@@ -426,7 +426,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject buildSettlement(PlayerReference user, VertexLocation location,
 			boolean free)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buildSettlement");
 		o.put("requestType", "POST");
@@ -442,7 +442,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject buildCity(PlayerReference user, VertexLocation location)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/buildCity");
 		o.put("requestType", "POST");
@@ -458,7 +458,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
 			PlayerReference receiver)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/offerTrade");
 		o.put("requestType", "POST");
@@ -473,7 +473,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject respondToTrade(PlayerReference user, boolean accept)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/acceptTrade");
 		o.put("requestType", "POST");
@@ -488,7 +488,7 @@ public class ServerProxy implements IServer {
 	@Override
 	public JSONObject maritimeTrade(PlayerReference user, ResourceType inResource,
 			ResourceType outResource, int ratio)
-					throws ServerException, InvalidActionException {
+					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/maritimeTrade");
 		o.put("requestType", "POST");
@@ -504,7 +504,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject discardCards(PlayerReference user, ResourceList cards)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/discardCards");
 		o.put("requestType", "POST");
@@ -518,7 +518,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject finishTurn(PlayerReference user)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/finishTurn");
 		o.put("requestType", "POST");
@@ -530,7 +530,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void changeLogLevel(LogLevel level)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/");
 		o.put("requestType", "POST");
@@ -542,7 +542,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject monument(PlayerReference user)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://localhost:8081/moves/Monument");
 		o.put("requestType", "POST");
