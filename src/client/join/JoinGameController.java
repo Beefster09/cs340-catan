@@ -209,7 +209,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			}
 		}
 		//Give the player a chance to select a color and join
-		getJoinGameView().closeModal();
+		if (getJoinGameView().isModalShowing())  getJoinGameView().closeModal();
 		getSelectColorView().showModal();
 		//This function for some reason makes it so the static
 		//Model Facade cannot be reached.  Can't make it work!
@@ -240,7 +240,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				poller.start();
 			}
 			// If join succeeded
-			getSelectColorView().closeModal();
+			if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
+			if (getSelectColorView().isModalShowing()) getSelectColorView().closeModal();
 //			getJoinGameView().closeModal();
 			joinAction.execute();
 		}

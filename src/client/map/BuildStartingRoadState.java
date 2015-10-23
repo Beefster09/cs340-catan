@@ -50,7 +50,7 @@ public class BuildStartingRoadState extends MapControllerState {
 		};
 		worker.execute();
 		
-		return super.placeRoad(edge);
+		return new NullState(getController());
 	}
 
 	@Override
