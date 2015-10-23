@@ -10,7 +10,7 @@ import shared.exceptions.*;
 import shared.model.ModelFacade;
 import shared.model.Player;
 import client.base.*;
-import client.communication.ClientManager;
+import client.misc.ClientManager;
 import client.communication.ServerProxy;
 import client.data.PlayerInfo;
 

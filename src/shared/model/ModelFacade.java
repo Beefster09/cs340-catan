@@ -16,7 +16,7 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import client.data.GameInfo;
-import client.communication.ClientManager;
+import client.misc.ClientManager;
 
 
 public class ModelFacade {

@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import client.communication.ClientManager;
-
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.communication.Command;
@@ -26,6 +24,7 @@ import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
+import client.misc.ClientManager;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;

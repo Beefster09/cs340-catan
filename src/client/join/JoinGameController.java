@@ -12,7 +12,6 @@ import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.ModelFacade;
 import client.base.*;
-import client.communication.ClientManager;
 import client.communication.DataConverter;
 import client.communication.ServerPoller;
 import client.data.*;

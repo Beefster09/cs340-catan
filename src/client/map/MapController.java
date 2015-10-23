@@ -9,7 +9,7 @@ import shared.locations.*;
 import shared.model.*;
 import client.base.*;
 import client.data.*;
-import client.communication.ClientManager;
+import client.misc.ClientManager;
 
 
 /**
