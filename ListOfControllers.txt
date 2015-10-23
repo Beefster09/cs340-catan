@@ -1,14 +1,14 @@
-	chat		client.communication
-6	dev card	client.devcards
-4	discard		client.discard
-2	domestic trade	client.domestic
-	game history	client.communication
-	join game	client.join
-	login		client.login
-1	map/board	client.map
-3	maritime trade	client.maritime
-	player waiting	client.join
-	points		client.points
-5	resource bar	client.resources
-	roll		client.roll
-	turn tracker	client.turntracker
+	chat		client.communication	Grant
+6	dev card	client.devcards		Steve
+4	discard		client.discard		Grant
+2	domestic trade	client.domestic		Jordan
+	game history	client.communication	Grant
+	join game	client.join		Steve
+	login		client.login		Steve
+1	map/board	client.map		Justin
+3	maritime trade	client.maritime		Steve
+	player waiting	client.join		Steve
+	points		client.points		Jordan
+5	resource bar	client.resources	Justin
+	roll		client.roll		Done
+	turn tracker	client.turntracker	Jordan
