@@ -49,11 +49,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	 */
 	@Override
 	public void start() {
-		/*
-		 * HUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
-		 * PROBLEM.  This model Facade below DOES NOT MATCH the model facade being passed around
-		 * elsewhere.  The one received here shows up with blank data!  No idea what's going on!
-		 */
 
 		assert modelFacade ==  ClientManager.getModel();
 		
