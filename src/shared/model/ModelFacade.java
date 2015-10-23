@@ -442,9 +442,13 @@ public class ModelFacade {
 		//What do I do if there is an enemy city in the way?
 		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {			
 					
-			Board map = model.getMap();
-			PlayerReference currentPlayer = getCurrentPlayer();
-			return map.canBuildRoadAt(currentPlayer, edgeLoc);
+			try {
+				Board map = model.getMap();
+				PlayerReference currentPlayer = getCurrentPlayer();
+				return map.canBuildRoadAt(currentPlayer, edgeLoc);
+			} catch (IndexOutOfBoundsException e) {
+				return false;
+			}
 			
 		}
 		

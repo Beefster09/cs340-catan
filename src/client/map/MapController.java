@@ -173,7 +173,6 @@ public class MapController extends Controller implements IMapController {
 			default:
 				break;
 			}
-			System.out.println(town.getLocation());
 		}
 		
 		view.placeRobber(board.getRobberLocation());
