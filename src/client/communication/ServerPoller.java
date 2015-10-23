@@ -1,6 +1,7 @@
 package client.communication;
 
 import java.util.Timer;
+import java.util.logging.*;
 import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
@@ -11,9 +12,7 @@ import client.misc.ClientManager;
 
 import shared.communication.IServer;
 import shared.communication.Session;
-import shared.exceptions.InvalidActionException;
-import shared.exceptions.ServerException;
-import shared.model.CatanModel;
+import shared.exceptions.*;
 import shared.model.ModelFacade;
 
 
@@ -32,6 +31,7 @@ public class ServerPoller {
 	 */
 	public final static long DEFAULT_POLL_INTERVAL = 1000;
 	
+	private static final Logger log = Logger.getLogger( ServerPoller.class.getName() );
 	private IServer server;
 	private Timer poller = null;
 	ClientCommunicator comm;
@@ -84,6 +84,8 @@ public class ServerPoller {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
+								log.fine("Sending new information to modelHander");
+								modelHandler = ClientManager.getModel();
 								modelHandler.updateFromJSON(model);
 							}
 							
@@ -91,7 +93,7 @@ public class ServerPoller {
 						System.out.println("Polling gave results. Handling updates on EDT.");
 					}
 					
-				} catch (ServerException | InvalidActionException e) {
+				} catch (ServerException | UserException e) {
 					System.out.println("Server error, could not connect");
 					e.printStackTrace();
 				}

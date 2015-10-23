@@ -1,8 +1,5 @@
 package shared.communication;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.simple.JSONObject;
 
 import client.data.PlayerInfo;

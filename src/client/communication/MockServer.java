@@ -1,7 +1,6 @@
 package client.communication;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -23,16 +22,13 @@ import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
-import shared.exceptions.InvalidActionException;
+import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
 import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.CatanModel;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
@@ -61,7 +57,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public List<GameHeader> getGameList() throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		List<GameHeader> returnList = new ArrayList<GameHeader>();
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
@@ -74,7 +70,7 @@ public class MockServer implements IServer {
 	@Override
 	public GameHeader createGame(String name, boolean randomTiles,
 			boolean randomNumbers, boolean randomPorts)
-			throws GameInitializationException, InvalidActionException,
+			throws GameInitializationException, UserException,
 			ServerException {
 		
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
@@ -93,7 +89,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public void saveGame(int gameID, String filename)
-			throws GamePersistenceException, InvalidActionException,
+			throws GamePersistenceException, UserException,
 			ServerException {
 		// TODO Auto-generated method stub
 		
@@ -101,14 +97,14 @@ public class MockServer implements IServer {
 
 	@Override
 	public void loadGame(String filename) throws ServerException,
-			InvalidActionException {
+			UserException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public JSONObject getModel(int version) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -122,7 +118,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject resetGame() throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -136,21 +132,21 @@ public class MockServer implements IServer {
 
 	@Override
 	public List<Command> getCommands() throws ServerException,
-			InvalidActionException {
+			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public JSONObject executeCommands(List<Command> commands)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void addAIPlayer(AIType type) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		//return "Success";
 		
@@ -158,7 +154,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public List<String> getAITypes() throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		List<String> aiTypes = new ArrayList<String>();
 		aiTypes.add("LARGEST_ARMY");
@@ -167,7 +163,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject sendChat(PlayerReference user, String message)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		
 		try {
@@ -183,7 +179,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject rollDice(PlayerReference user, int number)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -198,7 +194,7 @@ public class MockServer implements IServer {
 	@Override
 	public JSONObject robPlayer(PlayerReference user,
 			HexLocation newRobberLocation, PlayerReference victim)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -213,7 +209,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject buyDevCard(PlayerReference user) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -227,7 +223,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1,
-			ResourceType type2) throws ServerException, InvalidActionException {
+			ResourceType type2) throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -241,7 +237,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1,
-			EdgeLocation road2) throws ServerException, InvalidActionException {
+			EdgeLocation road2) throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -256,7 +252,7 @@ public class MockServer implements IServer {
 	@Override
 	public JSONObject soldier(PlayerReference user,
 			HexLocation newRobberLocation, PlayerReference victim)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -270,7 +266,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject monopoly(PlayerReference user, ResourceType type)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -284,7 +280,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject monument(PlayerReference user) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -298,7 +294,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject buildRoad(PlayerReference user, EdgeLocation location,
-			boolean free) throws ServerException, InvalidActionException {
+			boolean free) throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -313,7 +309,7 @@ public class MockServer implements IServer {
 	@Override
 	public JSONObject buildSettlement(PlayerReference user,
 			VertexLocation location, boolean free) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -327,7 +323,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject buildCity(PlayerReference user, VertexLocation location)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -342,7 +338,7 @@ public class MockServer implements IServer {
 	@Override
 	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
 			PlayerReference receiver) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -356,7 +352,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject respondToTrade(PlayerReference user, boolean accept)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -371,7 +367,7 @@ public class MockServer implements IServer {
 	@Override
 	public JSONObject maritimeTrade(PlayerReference user,
 			ResourceType inResource, ResourceType outResource, int ratio)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -385,7 +381,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject discardCards(PlayerReference user, ResourceList cards)
-			throws ServerException, InvalidActionException {
+			throws ServerException, UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -399,7 +395,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public JSONObject finishTurn(PlayerReference user) throws ServerException,
-			InvalidActionException {
+			UserException {
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -413,7 +409,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public void changeLogLevel(LogLevel level) throws ServerException,
-			InvalidActionException {
+			UserException {
 		// TODO Auto-generated method stub
 		
 	}

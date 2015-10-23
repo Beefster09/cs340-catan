@@ -4,7 +4,6 @@ import client.base.*;
 
 import java.util.logging.*;
 
-import client.communication.ServerProxy;
 import client.misc.*;
 import shared.communication.IServer;
 import shared.communication.Session;
@@ -20,10 +19,10 @@ public class LoginController extends Controller implements ILoginController {
 
 	private IMessageView messageView;
 	private IAction loginAction;
-	@SuppressWarnings("deprecation")
-	private IServer serverProxy = ServerProxy.getInstance();
-	@SuppressWarnings("deprecation")
-	private ModelFacade modelFacade = ModelFacade.getInstance();
+	//private IServer serverProxy = ServerProxy.getInstance();
+	private IServer serverProxy = ClientManager.getServer();
+	//private ModelFacade modelFacade = ModelFacade.getInstance();
+	private ModelFacade modelFacade = ClientManager.getModel();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	/**

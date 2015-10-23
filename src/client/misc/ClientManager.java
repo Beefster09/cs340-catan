@@ -8,7 +8,7 @@ import shared.model.PlayerReference;
 
 public class ClientManager {
 	
-	private static ModelFacade model;
+	private static volatile ModelFacade model = null;
 	private static IServer server;
 	private static PlayerReference localPlayer;
 
@@ -20,7 +20,11 @@ public class ClientManager {
 	
 	public static ModelFacade getModel() {
 		if (model == null) {
-			model = new ModelFacade();
+			synchronized (ClientManager.class) {
+				if (model == null) {
+					model = new ModelFacade();
+				}
+			}
 		}
 		return model;
 	}
@@ -46,7 +50,11 @@ public class ClientManager {
 	
 	public static IServer getServer() {
 		if (server == null) {
-			initializeServer(DEFAULT_SERVER_TYPE);
+			try {
+				initializeServer(DEFAULT_SERVER_TYPE);
+			} catch (Exception e) {
+				System.out.println("Averted a double server crisis!");
+			}
 		}
 		return server;
 	}

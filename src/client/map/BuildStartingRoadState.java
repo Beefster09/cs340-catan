@@ -34,7 +34,8 @@ public class BuildStartingRoadState extends MapControllerState {
 			@Override
 			protected JSONObject doInBackground() throws Exception {
 				getServer().buildSettlement(getYourself(), settlement, true);
-				return getServer().buildRoad(getYourself(), edge, true);
+				getServer().buildRoad(getYourself(), edge, true);
+				return getServer().finishTurn(getYourself());
 			}
 
 			@Override
@@ -60,7 +61,11 @@ public class BuildStartingRoadState extends MapControllerState {
 
 	@Override
 	public boolean canPlaceRoad(EdgeLocation loc) {
-		return getModel().canBuildStartingPieces(settlement, loc);
+		try {
+			return getModel().canBuildStartingPieces(settlement, loc);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }
