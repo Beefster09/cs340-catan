@@ -64,6 +64,9 @@ public class ModelFacade {
 				System.out.println("No need to update!");
 				return null;
 			}
+			model.setVersion(newVersion);
+			System.out.println("Updating the model.");
+			
 			try {
 				//BANK
 				updateBankFromJSON(json);
@@ -126,13 +129,21 @@ public class ModelFacade {
 				{ 
 					model.setMap(otherBoard);
 					for (IModelListener listener : listeners) {
-						listener.mapInitialized();
+						try {
+							listener.mapInitialized();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 				else if (!model.getMap().equals(otherBoard)) {
 					model.setMap(otherBoard);
 					for (IModelListener listener : listeners) {
-						listener.mapChanged(otherBoard);
+						try {
+							listener.mapChanged(otherBoard);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			} catch (SchemaMismatchException e) {
@@ -157,7 +168,11 @@ public class ModelFacade {
 			if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
 				model.setPlayers(players);
 				for (IModelListener listener : listeners) {
-					listener.playersChanged(players);
+					try {
+						listener.playersChanged(players);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				return players;
 			}
@@ -174,7 +189,12 @@ public class ModelFacade {
 						!model.getTurnTracker().equals(otherTurnTracker)) {
 						model.setTurnTracker(otherTurnTracker);
 						for (IModelListener listener : listeners) {
-							listener.turnTrackerChanged(otherTurnTracker);
+							try {
+								listener.turnTrackerChanged(otherTurnTracker);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 					
@@ -198,7 +218,12 @@ public class ModelFacade {
 					!model.getLargestArmy().equals(otherPlayer)) {
 					model.setLongestRoad(otherPlayer);
 					for (IModelListener listener : listeners) {
-						listener.largestArmyChanged(otherPlayer);
+						try {
+							listener.largestArmyChanged(otherPlayer);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -212,7 +237,12 @@ public class ModelFacade {
 					!model.getLongestRoad().equals(otherPlayer)) {
 					model.setLongestRoad(otherPlayer);
 					for (IModelListener listener : listeners) {
-						listener.longestRoadChanged(otherPlayer);
+						try {
+							listener.longestRoadChanged(otherPlayer);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -227,7 +257,12 @@ public class ModelFacade {
 					if (model.getTradeOffer() == null || !model.getTradeOffer().equals(otherOffer)) {
 						model.setTradeOffer(otherOffer);
 						for (IModelListener listener : listeners) {
-							listener.tradeOfferChanged(otherOffer);
+							try {
+								listener.tradeOfferChanged(otherOffer);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 				} catch (SchemaMismatchException e) {
@@ -245,7 +280,12 @@ public class ModelFacade {
 					if (model.getChat() == null || !model.getChat().equals(otherChat)) {
 						model.setChat(otherChat);
 						for (IModelListener listener : listeners) {
-							listener.chatChanged(otherChat);
+							try {
+								listener.chatChanged(otherChat);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 				} catch (SchemaMismatchException e) {
@@ -260,7 +300,12 @@ public class ModelFacade {
 			if (model.getWinner() == null || !model.getWinner().equals(otherPlayer)) {
 				model.setWinner(otherPlayer);
 				for (IModelListener listener : listeners) {
-					listener.winnerChanged(otherPlayer);
+					try {
+						listener.winnerChanged(otherPlayer);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}

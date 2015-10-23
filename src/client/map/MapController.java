@@ -51,6 +51,9 @@ public class MapController extends Controller implements IMapController {
 	
 	@Override
 	public void mapInitialized() {
+		
+		System.out.println("MapController: initializing map from server data");
+		
 		this.initFromModel();
 	}
 
