@@ -39,26 +39,59 @@ public class ResourceBarController extends Controller implements
 
 		// Set the counts
 		ResourceList resources = localPlayer.getResources();
+		
+		IResourceBarView view = getView();
 
-		getView().setElementAmount(ResourceBarElement.BRICK,
+		view.setElementAmount(ResourceBarElement.BRICK,
 				resources.count(ResourceType.BRICK));
-		getView().setElementAmount(ResourceBarElement.WOOD,
+		view.setElementAmount(ResourceBarElement.WOOD,
 				resources.count(ResourceType.WOOD));
-		getView().setElementAmount(ResourceBarElement.WHEAT,
+		view.setElementAmount(ResourceBarElement.WHEAT,
 				resources.count(ResourceType.WHEAT));
-		getView().setElementAmount(ResourceBarElement.ORE,
+		view.setElementAmount(ResourceBarElement.ORE,
 				resources.count(ResourceType.ORE));
-		getView().setElementAmount(ResourceBarElement.SHEEP,
+		view.setElementAmount(ResourceBarElement.SHEEP,
 				resources.count(ResourceType.SHEEP));
 
-		getView().setElementAmount(ResourceBarElement.ROAD,
-				localPlayer.getRoads());
-		getView().setElementAmount(ResourceBarElement.SETTLEMENT,
-				localPlayer.getSettlements());
-		getView().setElementAmount(ResourceBarElement.CITY,
-				localPlayer.getCities());
+		int numRoads = localPlayer.getRoads();
+		int numSettlements = localPlayer.getSettlements();
+		int numCities = localPlayer.getCities();
+		
+		view.setElementAmount(ResourceBarElement.ROAD, numRoads);
+		view.setElementAmount(ResourceBarElement.SETTLEMENT, numSettlements);
+		view.setElementAmount(ResourceBarElement.CITY, numCities);
 
-		// TODO: set the dev card stuff?
+		if (numRoads >= 1
+				&& resources.count(ResourceType.BRICK) >= 1
+				&& resources.count(ResourceType.WOOD) >= 1) {
+			view.setElementEnabled(ResourceBarElement.ROAD, true);
+		}
+		else {
+			view.setElementEnabled(ResourceBarElement.ROAD, false);
+		}
+		if (numSettlements >= 1
+				&& resources.count(ResourceType.BRICK) >= 1
+				&& resources.count(ResourceType.WOOD) >= 1
+				&& resources.count(ResourceType.SHEEP) >= 1
+				&& resources.count(ResourceType.WHEAT) >= 1) {
+			view.setElementEnabled(ResourceBarElement.SETTLEMENT, true);
+		}
+		else {
+			view.setElementEnabled(ResourceBarElement.SETTLEMENT, false);
+		}
+		if (numCities >= 1
+				&& resources.count(ResourceType.ORE) >= 3
+				&& resources.count(ResourceType.WHEAT) >= 2) {
+			view.setElementEnabled(ResourceBarElement.CITY, true);
+		}
+		else {
+			view.setElementEnabled(ResourceBarElement.CITY, false);
+		}
+
+		getView().setElementAmount(ResourceBarElement.SOLDIERS,
+				localPlayer.getSoldiers());
+		
+		
 	}
 
 	/**

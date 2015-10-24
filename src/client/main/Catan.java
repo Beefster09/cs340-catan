@@ -53,7 +53,7 @@ public class Catan extends JFrame
 			
 			if (System.getProperty("os.name").equals("Linux")) {
 				FontUtils.setFontScaling(0.8);
-				System.out.println("Font Scaling set to 0.7.");
+				System.out.println("Font Scaling set to 0.8.");
 			}
 		}
 		catch(Exception e)

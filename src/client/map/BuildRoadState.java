@@ -16,25 +16,21 @@ public class BuildRoadState extends MapControllerState {
 	}
 
 	@Override
-	public MapControllerState placeRoad(EdgeLocation edge)
+	public MapControllerState placeRoad(final EdgeLocation edge)
 			throws InvalidActionException {
 		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object>() {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
 				MapController controller = getController();
-				return controller.getServer().soldier(controller.getYourself(), null, null);
+				return controller.getServer().buildRoad(controller.getYourself(), edge, false);
 			}
 
 			@Override
 			protected void done() {
 				try {
 					getController().getModel().updateFromJSON(get());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
+				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
 			}

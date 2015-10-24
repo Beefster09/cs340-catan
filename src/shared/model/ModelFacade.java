@@ -179,7 +179,7 @@ public class ModelFacade {
 				if (player != null) {
 					try {
 						Player newPlayer = new Player(model, player);
-						if (newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
+						if (this.getLocalPlayer() != null && newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
 							ClientManager.setLocalPlayer(new PlayerReference(model, i));
 						}
 						players.add(newPlayer);
