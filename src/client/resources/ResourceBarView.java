@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.*;
@@ -216,7 +217,7 @@ public class ResourceBarView extends PanelView implements IResourceBarView
 		
 		
 		resourcePanel = new JPanel();
-		resourcePanel.setLayout(new BoxLayout(resourcePanel, BoxLayout.Y_AXIS));
+		resourcePanel.setLayout(new GridLayout(11, 1));
 		resourcePanel.setBackground(Color.WHITE);
 		for(ResourceBarElement type : resourceElementList)
 		{

@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import client.communication.*;
 import client.turntracker.*;
+import client.utils.FontUtils;
 
 
 @SuppressWarnings("serial")
@@ -23,9 +24,8 @@ public class LeftPanel extends JPanel {
 		this.setLayout(new BorderLayout());
 		
 		tabPane = new JTabbedPane();
-		Font font = tabPane.getFont();
-		Font newFont = font.deriveFont(font.getStyle(), 20);
-		tabPane.setFont(newFont);
+
+		FontUtils.setFont(tabPane, 20);
 		
 		historyView = new GameHistoryView();
 		historyController = new GameHistoryController(historyView);

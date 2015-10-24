@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import client.base.*;
 import client.data.*;
+import client.utils.FontUtils;
 import shared.definitions.*;
 import shared.locations.*;
 
@@ -240,10 +241,7 @@ public class MapView extends PanelView implements IMapView
 			label = new JLabel(getLabelText(pieceType), JLabel.CENTER);
 			label.setOpaque(true);
 			label.setBackground(Color.white);
-			Font labelFont = label.getFont();
-			labelFont = labelFont.deriveFont(labelFont.getStyle(),
-											 LABEL_TEXT_SIZE);
-			label.setFont(labelFont);
+			FontUtils.setFont(label, LABEL_TEXT_SIZE);
 			
 			map = mainMap.copy();
 			map.setController(getController());

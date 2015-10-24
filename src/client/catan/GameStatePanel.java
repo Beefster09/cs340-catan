@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import client.base.IAction;
+import client.utils.FontUtils;
 
 
 @SuppressWarnings("serial")
@@ -22,9 +23,7 @@ public class GameStatePanel extends JPanel
 		
 		button = new JButton();
 		
-		Font font = button.getFont();
-		Font newFont = font.deriveFont(font.getStyle(), 20);
-		button.setFont(newFont);
+		FontUtils.setFont(button, 20);
 		
 		button.setPreferredSize(new Dimension(400, 50));
 		

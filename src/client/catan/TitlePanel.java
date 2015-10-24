@@ -4,6 +4,8 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import client.utils.FontUtils;
+
 import shared.definitions.*;
 
 @SuppressWarnings("serial")
@@ -19,9 +21,7 @@ public class TitlePanel extends JPanel
 		titleLabel = new JLabel("CS 340: Settlers");
 		titleLabel.setOpaque(true);
 		
-		Font font = titleLabel.getFont();
-		Font newFont = font.deriveFont(font.getStyle(), 48);
-		titleLabel.setFont(newFont);
+		FontUtils.setFont(titleLabel, 20);
 		
 		this.add(titleLabel, BorderLayout.CENTER);
 	}

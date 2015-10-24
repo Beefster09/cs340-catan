@@ -32,8 +32,7 @@ public class LogComponent extends JComponent
 		this.setBackground(Color.white);
 		this.setOpaque(true);
 		
-		Font tmpFont = new JLabel("").getFont();
-		font = tmpFont.deriveFont(tmpFont.getStyle(), 24);
+		font = FontUtils.getFont(20);
 		
 		setEntries(null);
 	}

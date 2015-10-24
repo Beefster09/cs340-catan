@@ -18,7 +18,6 @@ public class BuildRoadState extends MapControllerState {
 	@Override
 	public MapControllerState placeRoad(EdgeLocation edge)
 			throws InvalidActionException {
-		// TODO Auto-generated method stub
 		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object>() {
 
 			@Override
@@ -41,7 +40,8 @@ public class BuildRoadState extends MapControllerState {
 			}
 		};
 		worker.execute();
-		return super.placeRoad(edge);
+		
+		return new YourTurnState(getController());
 	}
 	
 	@Override

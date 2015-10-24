@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import client.base.*;
+import client.utils.FontUtils;
+
 import java.awt.GridLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -41,19 +43,6 @@ public class LoginView extends OverlayView implements ILoginView
 
     private SignInPanel signInPanel = null;
     private RegisterPanel registerPanel = null;
-
-    public static void main(String[] args)
-    {
-        JFrame jf = new JFrame();
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JPanel mainPanel = new JPanel();
-        mainPanel.add(new LoginView());
-
-        jf.getContentPane().add(mainPanel);
-        jf.setSize(640, 480);
-        jf.setVisible(true);
-    }
 
     public LoginView()
     {
@@ -104,9 +93,7 @@ public class LoginView extends OverlayView implements ILoginView
 
         //Create the title label, with the large font.
         JLabel lblTitle = new JLabel("<html><body>Settlers<br>of Catan</body></html>");
-        Font labelFont = lblTitle.getFont();
-        labelFont = labelFont.deriveFont(labelFont.getStyle(), BIG_LABEL_TEXT_SIZE);
-        lblTitle.setFont(labelFont);
+        FontUtils.setFont(lblTitle, (int) BIG_LABEL_TEXT_SIZE);
 
         leftPanel.add(lblTitle);
 
@@ -206,9 +193,7 @@ public class LoginView extends OverlayView implements ILoginView
         private void initComponents()
         {
             lblLogin = new JLabel("Login");
-            Font labelFont = lblLogin.getFont();
-            labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-            lblLogin.setFont(labelFont);
+            FontUtils.setFont(lblLogin, LABEL_TEXT_SIZE);
 
             final int NUM_TXT_COLS = 16;
 
@@ -230,8 +215,7 @@ public class LoginView extends OverlayView implements ILoginView
 
             JPanel internalInputBox = new JPanel(new GridLayout(4, 1));
             //Change the font on the user entry labels.
-            Font smallTextFont = lblUsername.getFont();
-            smallTextFont = smallTextFont.deriveFont(smallTextFont.getStyle(), SMALL_LABEL_TEXT_SIZE);
+            Font smallTextFont = FontUtils.getFont((int) SMALL_LABEL_TEXT_SIZE);
             lblUsername.setFont(smallTextFont);
             txtUsername.setFont(smallTextFont);
             lblPassword.setFont(smallTextFont);
@@ -290,9 +274,7 @@ public class LoginView extends OverlayView implements ILoginView
         private void initComponents()
         {
             lblRegister = new JLabel("Register");
-            Font labelFont = lblRegister.getFont();
-            labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-            lblRegister.setFont(labelFont);
+            FontUtils.setFont(lblRegister, LABEL_TEXT_SIZE);
 
             final int NUM_TXT_COLS = 16;
 
@@ -326,8 +308,7 @@ public class LoginView extends OverlayView implements ILoginView
 
             JPanel internalInputBox = new JPanel(new GridLayout(6, 1));
             //Change the font on the user entry labels.
-            Font smallTextFont = lblUsername.getFont();
-            smallTextFont = smallTextFont.deriveFont(smallTextFont.getStyle(), SMALL_LABEL_TEXT_SIZE);
+            Font smallTextFont = FontUtils.getFont((int) SMALL_LABEL_TEXT_SIZE);
             lblUsername.setFont(smallTextFont);
             txtUsername.setFont(smallTextFont);
             lblPassword.setFont(smallTextFont);

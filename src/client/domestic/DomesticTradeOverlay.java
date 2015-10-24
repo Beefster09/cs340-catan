@@ -57,9 +57,7 @@ public class DomesticTradeOverlay extends OverlayView implements IDomesticTradeO
 		this.setBorder(BorderFactory.createLineBorder(Color.black, BORDER_WIDTH));
 		
 		label = new JLabel("Domestic Trade Overlay");
-		Font labelFont = label.getFont();
-		labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-		label.setFont(labelFont);
+		FontUtils.setFont(label, LABEL_TEXT_SIZE);
 
 		this.add(label, BorderLayout.NORTH);
 		this.add(this.setupResourceTradePanel(), BorderLayout.CENTER);
