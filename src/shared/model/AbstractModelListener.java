@@ -16,7 +16,7 @@ public abstract class AbstractModelListener implements IModelListener {
 	public void tradeOfferChanged(TradeOffer otherOffer) {}
 	public void chatChanged(MessageList otherChat) {}
 	public void winnerChanged(PlayerReference otherPlayer) {}
-	
+	public void logChanged(MessageList otherLog) {}
 	
 	
 }

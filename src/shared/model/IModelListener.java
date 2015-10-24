@@ -14,5 +14,6 @@ public interface IModelListener {
 	void tradeOfferChanged(TradeOffer otherOffer);
 	void chatChanged(MessageList otherChat);
 	void winnerChanged(PlayerReference otherPlayer);
+	void logChanged(MessageList otherLog);
 
 }
