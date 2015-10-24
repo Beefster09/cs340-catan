@@ -62,6 +62,16 @@ public class GameHistoryController extends Controller implements IGameHistoryCon
 	}
 	
 	
+	public void logChanged(MessageList otherLog) {
+		
+		MessageList messageList = modelFacade.getCatanModel().getLog();
+		
+		List<LogEntry> entries = messageListToEntries(messageList);
+		
+		getView().setEntries(entries);
+		
+	}
+	
 	private List<LogEntry> messageListToEntries(MessageList messageList) {
 		
 		List<LogEntry> entries = new ArrayList<>();
