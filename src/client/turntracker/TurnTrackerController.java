@@ -90,7 +90,11 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 	
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
+		
 		Player player = turnTracker.getCurrentPlayer().getPlayer();
+
+		updatePlayerScoreView(turnTracker.getCurrentPlayer().getIndex());
+		
 		if (!player.equals(ClientManager.getLocalPlayer().getPlayer())) {
 			getView().updateGameState("It is currently " + player.getColor() + "'s turn", false);
 			return;
@@ -114,14 +118,11 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 		default:
 			break;
 		}
-		
-		updatePlayerScoreView();
 	}
 	
-	private void updatePlayerScoreView() {
-		if (ClientManager.getModel().getVersion() <= 0)
-			return;
-		int index = ClientManager.getLocalPlayer().getIndex();
+	private void updatePlayerScoreView(int currentIndex) {
+//		if (ClientManager.getModel().getVersion() <= 0)
+//			return;
 
 		int armyIndex;
 		try {
@@ -142,11 +143,11 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			boolean largestArmy = false;
 			boolean longestRoad = false;
 			boolean isTurn = false;
-			if (armyIndex == index)
+			if (armyIndex == currentIndex)
 				largestArmy = true;
-			if (roadIndex == index)
+			if (roadIndex == currentIndex)
 				longestRoad = true;
-			if (index == i)
+			if (currentIndex == i)
 				isTurn = true;
 
 			getView().updatePlayer(i, player.getVictoryPoints(), isTurn, largestArmy, longestRoad);
