@@ -103,6 +103,57 @@ public class TurnTracker {
 		return "TurnTracker [currentPlayer=" + currentPlayer + ", status="
 				+ status + "]";
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((currentPlayer == null) ? 0 : currentPlayer.hashCode());
+		result = prime * result
+				+ ((largestArmy == null) ? 0 : largestArmy.hashCode());
+		result = prime * result
+				+ ((longestRoad == null) ? 0 : longestRoad.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TurnTracker other = (TurnTracker) obj;
+		if (currentPlayer == null) {
+			if (other.currentPlayer != null)
+				return false;
+		} else if (!currentPlayer.equals(other.currentPlayer))
+			return false;
+		if (largestArmy == null) {
+			if (other.largestArmy != null)
+				return false;
+		} else if (!largestArmy.equals(other.largestArmy))
+			return false;
+		if (longestRoad == null) {
+			if (other.longestRoad != null)
+				return false;
+		} else if (!longestRoad.equals(other.longestRoad))
+			return false;
+		if (status != other.status)
+			return false;
+		return true;
+	}
+	
+	
 	
 }
 

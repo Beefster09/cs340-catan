@@ -60,8 +60,10 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
 		System.out.println("MapController: TurnTracker has changed");
-		//System.out.println("Local Player: " + ClientManager.getLocalPlayer());
-		//System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
+		System.out.println("Local Player: " + ClientManager.getLocalPlayer().getPlayer().getName()
+				+ " (" + ClientManager.getLocalPlayer() + ")");
+		System.out.println("Current Player: " + turnTracker.getCurrentPlayer().getPlayer().getName()
+				+ " (" + turnTracker.getCurrentPlayer() + ")");
 		System.out.println("Phase: " + turnTracker.getStatus());
 		/*
 		 * TODO: Fix this problem
