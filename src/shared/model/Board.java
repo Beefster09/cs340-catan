@@ -368,7 +368,7 @@ public class Board {
 			for (EdgeLocation neighbor : location.getNeighbors()) {
 				if (neighbor.getDistanceFromCenter() > radius) continue;
 				Road road = getRoadAt(neighbor);
-				if (road != null && road.getOwner() == player) {
+				if (road != null && player.equals(road.getOwner())) {
 					// check if blocked by opponent's municipality
 					VertexLocation townLoc = neighbor.getVertexBetween(location);
 					Municipality town = getMunicipalityAt(townLoc);
@@ -425,7 +425,7 @@ public class Board {
 			// There must be one of your roads next to the vertex
 			for (EdgeLocation edge : location.getEdges()) {
 				Road road = getRoadAt(edge);
-				if (road != null && road.getOwner() == player) return true;
+				if (road != null && player.equals(road.getOwner())) return true;
 			}
 		}
 		return false;

@@ -230,7 +230,6 @@ public class MapController extends Controller implements IMapController {
 		}
 		catch (InvalidActionException e) {
 			System.out.println(e);
-			
 		}		
 	}
 	

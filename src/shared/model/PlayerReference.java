@@ -26,8 +26,7 @@ public class PlayerReference {
 				
 		this.playerIndex = playerIndex;
 		if (game == null) {
-			assert false; // Nothing in production should execute this branch
-			playerUUID = UUID.randomUUID();
+			playerUUID = Player.generateUUID(-1, playerIndex);
 		}
 		else {
 			playerUUID = Player.generateUUID(game, playerIndex);
