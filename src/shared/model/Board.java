@@ -366,6 +366,7 @@ public class Board {
 		if (getRoadAt(location) == null) {
 			// Adjacent road
 			for (EdgeLocation neighbor : location.getNeighbors()) {
+				if (neighbor.getDistanceFromCenter() > radius) continue;
 				Road road = getRoadAt(neighbor);
 				if (road != null && road.getOwner() == player) {
 					// check if blocked by opponent's municipality
@@ -416,6 +417,8 @@ public class Board {
 		if (getMunicipalityAt(location) == null) { // spot is open
 			// Apply Distance Rule
 			for (VertexLocation neighbor : location.getNeighbors()) {
+				if (neighbor.getDistanceFromCenter() > radius) continue;
+				
 				Municipality town = getMunicipalityAt(neighbor);
 				if (town != null) return false;
 			}

@@ -222,7 +222,7 @@ public class MapView extends PanelView implements IMapView
 			
 			this.mainMap = mainMap;
 		}
-		
+
 		@Override
 		public IMapController getController()
 		{
@@ -232,6 +232,7 @@ public class MapView extends PanelView implements IMapView
 		public void startDrop(PieceType pieceType, CatanColor pieceColor,
 							  boolean isCancelAllowed)
 		{
+			System.out.println("MapView.startDrop()");
 			
 			this.setOpaque(false);
 			this.setLayout(new BorderLayout());

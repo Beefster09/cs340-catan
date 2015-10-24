@@ -60,8 +60,8 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
 		System.out.println("MapController: TurnTracker has changed");
-		System.out.println("Local Player: " + ClientManager.getLocalPlayer());
-		System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
+		//System.out.println("Local Player: " + ClientManager.getLocalPlayer());
+		//System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
 		System.out.println("Phase: " + turnTracker.getStatus());
 		/*
 		 * TODO: Fix this problem
@@ -88,7 +88,6 @@ public class MapController extends Controller implements IMapController {
 				break;
 			default:
 				break;
-			
 			}
 		}
 		else {
@@ -132,17 +131,17 @@ public class MapController extends Controller implements IMapController {
 	private void buildBoard(Board board) {
 		IMapView view = getView();
 		
-		for (Hex hex : board.getHexes()) {
-			HexType type = HexType.fromResourceType(hex.getResource());
-			view.addHex(hex.getLocation(), type);
-			if (type != HexType.DESERT) {
-				view.addNumber(hex.getLocation(), hex.getNumber());
-			}
-		}
-		
 		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
 			if (hexLoc.getDistanceFromCenter() > 2) {
 				view.addHex(hexLoc, HexType.WATER);
+			}
+			else {
+				Hex hex = board.getHexAt(hexLoc);
+				HexType type = HexType.fromResourceType(hex.getResource());
+				view.addHex(hex.getLocation(), type);
+				if (type != HexType.DESERT) {
+					view.addNumber(hex.getLocation(), hex.getNumber());
+				}
 			}
 		}
 		
@@ -198,7 +197,6 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeRoad(edgeLoc);
-			getView().placeRoad(edgeLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
 			System.out.println(e);
@@ -209,7 +207,6 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeSettlement(vertLoc);
-			getView().placeSettlement(vertLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
 			System.out.println(e);
@@ -220,7 +217,6 @@ public class MapController extends Controller implements IMapController {
 	public void placeCity(VertexLocation vertLoc) {
 		try {
 			state = state.placeCity(vertLoc);
-			getView().placeCity(vertLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
 			System.out.println(e);
@@ -231,7 +227,6 @@ public class MapController extends Controller implements IMapController {
 	public void placeRobber(HexLocation hexLoc) {
 		try {
 			state = state.placeRobber(hexLoc);
-			getRobView().showModal();
 		}
 		catch (InvalidActionException e) {
 			System.out.println(e);
@@ -242,11 +237,9 @@ public class MapController extends Controller implements IMapController {
 	public void startMove(PieceType pieceType, boolean isFree, boolean allowDisconnected) {	
 		try {
 			state = state.startMove(pieceType, isFree, allowDisconnected);
-			getView().startDrop(pieceType, CatanColor.ORANGE, true);
 		}
 		catch (InvalidActionException e) {
 			System.out.println(e);
-			
 		}	
 	}
 	
