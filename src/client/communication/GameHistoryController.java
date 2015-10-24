@@ -1,10 +1,14 @@
 package client.communication;
 
 import java.util.*;
-import java.util.List;
 
 import client.base.*;
+import client.misc.ClientManager;
+import shared.communication.IServer;
 import shared.definitions.*;
+import shared.model.MessageList;
+import shared.model.ModelFacade;
+import shared.model.Player;
 
 
 /**
@@ -12,6 +16,9 @@ import shared.definitions.*;
  */
 public class GameHistoryController extends Controller implements IGameHistoryController {
 
+	private IServer serverProxy = ClientManager.getServer();
+	private ModelFacade modelFacade = ClientManager.getModel();
+	
 	public GameHistoryController(IGameHistoryView view) {
 		
 		super(view);
@@ -29,20 +36,65 @@ public class GameHistoryController extends Controller implements IGameHistoryCon
 		
 		//<temp>
 		
-		List<LogEntry> entries = new ArrayList<LogEntry>();
-		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
-		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
-		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
-		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
-		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
-		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
-		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
-		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
+		MessageList messageList = modelFacade.getCatanModel().getLog();
+		
+		List<LogEntry> entries;
+		
+		if(messageList != null)
+			entries = messageListToEntries(messageList);
+		else {
+			entries = new ArrayList<>();
+			entries.add(new LogEntry(CatanColor.WHITE, "Starting Game!"));
+		}
+			
+//		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
+//		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
+//		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
+//		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
+//		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
+//		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
+//		entries.add(new LogEntry(CatanColor.BROWN, "This is a brown message"));
+//		entries.add(new LogEntry(CatanColor.ORANGE, "This is an orange message ss x y z w.  This is an orange message.  This is an orange message.  This is an orange message."));
 		
 		getView().setEntries(entries);
 	
 		//</temp>
 	}
 	
+	
+	private List<LogEntry> messageListToEntries(MessageList messageList) {
+		
+		List<LogEntry> entries = new ArrayList<>();
+		
+		List<String> names = messageList.getSource();
+		List<String> messages = messageList.getMessage();
+		
+		for(int i = 0; i < names.size(); i++) {
+			
+			String name = names.get(i);
+			String message = messages.get(i);
+				
+			CatanColor color = nameToCatanColor(name);
+			
+			LogEntry entry = new LogEntry(color, message);
+			
+			entries.add(entry);
+		}
+		
+		return entries;
+	}
+
+	private CatanColor nameToCatanColor(String name) {
+		
+		List<Player> players = modelFacade.getCatanModel().getPlayers();
+		
+		for(Player p : players) {
+			
+			if(p.getName().equals(name))
+				return p.getColor();
+		}
+		
+		return players.get(0).getColor();
+	}
 }
 
