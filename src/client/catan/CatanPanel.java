@@ -3,13 +3,18 @@ package client.catan;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import shared.definitions.ResourceType;
+import shared.model.ModelFacade;
+import shared.model.Player;
+import shared.model.ResourceList;
 import client.discard.DiscardController;
 import client.discard.DiscardView;
+import client.misc.ClientManager;
 import client.misc.WaitView;
 import client.roll.RollController;
 import client.roll.RollResultView;
@@ -86,21 +91,24 @@ public class CatanPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				
+				setMaxAmountsInDiscardView();
+				
 //				rollView.showModal();
 				
-				discardView.setResourceMaxAmount(ResourceType.WOOD, 1);
-				discardView.setResourceMaxAmount(ResourceType.BRICK, 0);
-				discardView.setResourceMaxAmount(ResourceType.SHEEP, 11);
-				discardView.setResourceMaxAmount(ResourceType.WHEAT, 1);
-				discardView.setResourceMaxAmount(ResourceType.ORE, 0);
-				
-				discardView.setResourceAmountChangeEnabled(ResourceType.WOOD, true, false);
-				discardView.setResourceAmountChangeEnabled(ResourceType.SHEEP, true, false);
-				discardView.setResourceAmountChangeEnabled(ResourceType.WHEAT, true, false);
-				
-				discardView.setStateMessage("0/6");
-				
-				discardView.setDiscardButtonEnabled(true);
+//				discardView.setResourceMaxAmount(ResourceType.WOOD, 1);
+//				discardView.setResourceMaxAmount(ResourceType.BRICK, 0);
+//				discardView.setResourceMaxAmount(ResourceType.SHEEP, 11);
+//				discardView.setResourceMaxAmount(ResourceType.WHEAT, 1);
+//				discardView.setResourceMaxAmount(ResourceType.ORE, 0);
+//				
+//				discardView.setResourceAmountChangeEnabled(ResourceType.WOOD, true, false);
+//				discardView.setResourceAmountChangeEnabled(ResourceType.SHEEP, true, false);
+//				discardView.setResourceAmountChangeEnabled(ResourceType.WHEAT, true, false);
+//				
+//				discardView.setStateMessage("0/6");
+//				
+//				discardView.setDiscardButtonEnabled(true);
 				
 				if(state == 0)
 				{
@@ -115,6 +123,36 @@ public class CatanPanel extends JPanel
 			}
 		});
 		this.add(testButton, BorderLayout.SOUTH);
+	}
+	
+	private void setMaxAmountsInDiscardView() {
+		
+		ModelFacade modelFacade = ClientManager.getModel();
+		int playerID = modelFacade.getLocalPlayer().getPlayerID();
+		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
+		ResourceList hand = player.getResources();
+		
+		Map<ResourceType, Integer> resourceMap = hand.getResources();
+		
+		for(Map.Entry<ResourceType, Integer> entry : resourceMap.entrySet()) {
+			
+			discardView.setResourceMaxAmount(entry.getKey(), entry.getValue());
+			
+			if(entry.getValue() > 0)
+				discardView.setResourceAmountChangeEnabled(entry.getKey(), true, false);
+			
+		}
+		
+		discardView.setStateMessage("0/" + discardCount(resourceMap)/2);
+		discardView.setDiscardButtonEnabled(false);
+	}
+	
+	private int discardCount(Map<ResourceType, Integer> cardsToBeDiscarded) {
+		int total = 0;
+		for (int count : cardsToBeDiscarded.values()) {
+			total += count;
+		}
+		return total;
 	}
 	
 }
