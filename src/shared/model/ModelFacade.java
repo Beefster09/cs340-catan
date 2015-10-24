@@ -767,4 +767,8 @@ public class ModelFacade {
 			PlayerReference currentPlayer = getCurrentPlayer();
 			return map.canBuild2Roads(currentPlayer, first, second);
 		}
+
+		public synchronized Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
+			return model.getMap().getMunicipalitiesAround(hex);
+		}
 }

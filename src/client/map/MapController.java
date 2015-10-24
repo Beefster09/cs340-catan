@@ -292,8 +292,32 @@ public class MapController extends Controller implements IMapController {
 		return ClientManager.getLocalPlayer();
 	}
 
-	public void robDialog() {
-		getRobView().showModal();
+	public void robDialog(HexLocation hex) {
+		IRobView view = getRobView();
+		
+		Collection<Municipality> adjacentTowns = ClientManager.getModel().getMunicipalitiesAround(hex);
+		List<RobPlayerInfo> victims = new ArrayList<>();
+		boolean[] playerIndicesUsed = {false, false, false, false};
+		for (Municipality town : adjacentTowns) {
+			PlayerReference ownerRef = town.getOwner();
+			if (!playerIndicesUsed[ownerRef.getIndex()]) {
+				Player owner = ownerRef.getPlayer();
+				
+				RobPlayerInfo victim = new RobPlayerInfo();
+				victim.setName(owner.getName());
+				victim.setId(owner.getPlayerID());
+				victim.setColor(owner.getColor());
+				victim.setPlayerIndex(ownerRef.getIndex());
+				victim.setNumCards(owner.getResources().count());
+				victims.add(victim);
+				
+				playerIndicesUsed[ownerRef.getIndex()] = true;
+			}
+		}
+		RobPlayerInfo[] candidateVictims = victims.toArray(new RobPlayerInfo[victims.size()]);
+		
+		view.setPlayers(candidateVictims);
+		view.showModal();
 	}
 
 	public void refreshPieces() {

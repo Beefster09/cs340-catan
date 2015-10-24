@@ -627,4 +627,15 @@ public class Board {
 		return true;
 	}
 
+	Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
+		Collection<Municipality> result = new ArrayList<>();
+		for (VertexLocation loc : hex.getVertices()) {
+			Municipality town = getMunicipalityAt(loc);
+			if (town != null) {
+				result.add(town);
+			}
+		}
+		return result;
+	}
+
 }

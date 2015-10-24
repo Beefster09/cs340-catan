@@ -20,8 +20,8 @@ public class MoveRobberState extends MapControllerState {
 	@Override
 	public MapControllerState placeRobber(HexLocation hex)
 			throws InvalidActionException {
-		getController().robDialog();
-		return this; //new RobPlayerState(getController(), hex);
+		getController().robDialog(hex);
+		return new RobPlayerState(this, hex);
 	}
 
 	@Override

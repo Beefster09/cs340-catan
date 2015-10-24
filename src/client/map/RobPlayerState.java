@@ -12,17 +12,20 @@ import shared.model.PlayerReference;
 import client.data.RobPlayerInfo;
 
 public class RobPlayerState extends MapControllerState {
-	
+
 	private HexLocation newRobberLoc;
+	private MoveRobberState previous;
 
 	public RobPlayerState(MapController controller) {
 		super(controller);
+		assert false;
 	}
 	
-	public RobPlayerState(MapController controller, HexLocation hex) {
-		super(controller);
+	public RobPlayerState(MoveRobberState previous, HexLocation hex) {
+		super(previous.getController());
 		
 		newRobberLoc = hex;
+		this.previous = previous;
 	}
 
 	/* (non-Javadoc)
@@ -56,6 +59,11 @@ public class RobPlayerState extends MapControllerState {
 		worker.execute();
 		
 		return super.robPlayer(victim);
+	}
+
+	@Override
+	public MapControllerState cancelMove() throws InvalidActionException {
+		return previous;
 	}
 	
 	
