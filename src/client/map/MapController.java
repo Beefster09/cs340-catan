@@ -65,18 +65,13 @@ public class MapController extends Controller implements IMapController {
 		System.out.println("Current Player: " + turnTracker.getCurrentPlayer().getPlayer().getName()
 				+ " (" + turnTracker.getCurrentPlayer() + ")");
 		System.out.println("Phase: " + turnTracker.getStatus());
-		/*
-		 * TODO: Fix this problem
-		 * I am adding a player count checker, as this part of the code is being executed
-		 * as soon as one player joins the game.  Technically, the turn tracker does say
-		 * its the first round, and that it is the players turn.  However, as only one person
-		 * has joined the game, errors are thrown as soon as that player finishes their turn
-		 * 
-		 */
+		
 		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer()) &&
 				getModel().getCatanModel().getPlayers().size() >= 4) {
 			System.out.println("It's your turn!");
 			state = new YourTurnState(this);
+			
+			// TODO: logic to check if an overlay is already open.
 			
 			switch (turnTracker.getStatus()) {
 			case FirstRound:
@@ -295,6 +290,7 @@ public class MapController extends Controller implements IMapController {
 	public void robDialog(HexLocation hex) {
 		IRobView view = getRobView();
 		
+		// Get the victim list
 		Collection<Municipality> adjacentTowns = ClientManager.getModel().getMunicipalitiesAround(hex);
 		List<RobPlayerInfo> victims = new ArrayList<>();
 		boolean[] playerIndicesUsed = {false, false, false, false};
@@ -314,6 +310,7 @@ public class MapController extends Controller implements IMapController {
 				playerIndicesUsed[ownerRef.getIndex()] = true;
 			}
 		}
+		// I still don't understand why Java doesn't have a better way to convert lists to arrays.
 		RobPlayerInfo[] candidateVictims = victims.toArray(new RobPlayerInfo[victims.size()]);
 		
 		view.setPlayers(candidateVictims);
