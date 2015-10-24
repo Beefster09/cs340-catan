@@ -52,7 +52,7 @@ public class Catan extends JFrame
 			//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 			
 			if (System.getProperty("os.name").equals("Linux")) {
-				FontUtils.setFontScaling(0.7);
+				FontUtils.setFontScaling(0.8);
 				System.out.println("Font Scaling set to 0.7.");
 			}
 		}
