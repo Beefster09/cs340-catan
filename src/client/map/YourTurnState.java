@@ -24,6 +24,7 @@ public class YourTurnState extends MapControllerState {
 	@Override
 	public MapControllerState startMove(PieceType pieceType, boolean isFree,
 			boolean allowDisconnected) throws InvalidActionException {
+		System.out.println("YourTurnState.startMove()");
 		MapControllerState nextState;
 		boolean cancelable = true;
 		switch(pieceType) {

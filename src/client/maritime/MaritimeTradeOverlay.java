@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import shared.definitions.*;
 import client.base.*;
+import client.utils.FontUtils;
 import client.utils.ImageUtils;
 
 //TODO Craig: I think one thing that could help layout is to simply add .preferedSize() to the createGet/GivePane
@@ -478,8 +479,8 @@ public class MaritimeTradeOverlay extends OverlayView implements IMaritimeTradeO
 	private JPanel createButtonPane() {
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(actionListener);
-		Font buttonFont = cancelButton.getFont();
-		buttonFont = buttonFont.deriveFont(buttonFont.getStyle(), BUTTON_TEXT_SIZE);
+
+		Font buttonFont = FontUtils.getFont(BUTTON_TEXT_SIZE);
 		cancelButton.setFont(buttonFont);
 
 		tradeButton = new JButton("Trade!");

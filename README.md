@@ -1,2 +1,2 @@
-# school-projects
-All school coding projects
+# cs340-catan
+An (academic) implementation of Settlers of Catan

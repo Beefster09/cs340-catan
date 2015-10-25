@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import javax.swing.*;
 
 import client.base.*;
+import client.utils.FontUtils;
 import client.utils.ImageUtils;
 
 
@@ -37,17 +38,14 @@ public class RollResultView extends OverlayView implements IRollResultView {
 		
 		//add the title label to the panel
 		titleLabel = new JLabel("Roll Results");
-		Font titleLabelFont = titleLabel.getFont();
-		titleLabelFont = titleLabelFont.deriveFont(titleLabelFont.getStyle(), TITLE_TEXT_SIZE);
-		titleLabel.setFont(titleLabelFont);
+
+		FontUtils.setFont(titleLabel, LABEL_TEXT_SIZE);
 		this.add(titleLabel, BorderLayout.NORTH);
 		
 		//add the button to the panel
 		okayButton = new JButton("Okay");
 		okayButton.addActionListener(actionListener);
-		Font okayButtonFont = okayButton.getFont();
-		okayButtonFont = okayButtonFont.deriveFont(okayButtonFont.getStyle(), BUTTON_TEXT_SIZE);
-		okayButton.setFont(okayButtonFont);
+		FontUtils.setFont(okayButton, BUTTON_TEXT_SIZE);
 		this.add(okayButton, BorderLayout.SOUTH);
 		
 		//create the rollLabel

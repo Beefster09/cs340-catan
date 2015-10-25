@@ -84,42 +84,31 @@ public class ModelFacade {
 			}
 			model.setVersion(newVersion);
 			
-			try {
-				//BANK
-				updateBankFromJSON(json);
-				
-				//PLAYERS
-				List<Player> players = updatePlayersFromJSON(json);
-				
-				//BOARD
-				updateMapFromJSON(json, players);
-				
-				//TURNTRACKER
-				updateTurnTrackerFromJSON(json,players);
-				
-				//TRADEOFFER
-				updateTradeOfferFromJSON(json,players);
-				
-				//CHAT NOT DONE
-				updateChatFromJSON(json);
-				
-				//LOG NOT DONE
-				if (json.containsKey("log")) {
-					JSONObject object = (JSONObject) json.get("log");
-					model.setLog(new MessageList(object));
-				}
-				
-				//WINNER
-				updateWinnerFromJSON(json);
-				
-				return model;
-				
-			} catch (SchemaMismatchException e) {
-				System.out.println("Can't update");
-				e.printStackTrace();
-			}
-			return model;
+			//BANK
+			updateBankFromJSON(json);
 			
+			//PLAYERS
+			List<Player> players = updatePlayersFromJSON(json);
+			
+			//BOARD
+			updateMapFromJSON(json, players);
+			
+			//TURNTRACKER
+			updateTurnTrackerFromJSON(json,players);
+			
+			//TRADEOFFER
+			updateTradeOfferFromJSON(json,players);
+			
+			//CHAT NOT DONE
+			updateChatFromJSON(json);
+			
+			//LOG NOT DONE
+			updateLogFromJSON(json);
+			
+			//WINNER
+			updateWinnerFromJSON(json);
+			
+			return model;
 			
 		}
 		
@@ -179,7 +168,7 @@ public class ModelFacade {
 				if (player != null) {
 					try {
 						Player newPlayer = new Player(model, player);
-						if (newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
+						if (this.getLocalPlayer() != null && newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
 							ClientManager.setLocalPlayer(new PlayerReference(model, i));
 						}
 						players.add(newPlayer);
@@ -309,6 +298,27 @@ public class ModelFacade {
 								listener.chatChanged(otherChat);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				} catch (SchemaMismatchException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		private void updateLogFromJSON(JSONObject json) {
+			if (json.containsKey("log")) {
+				JSONObject object = (JSONObject) json.get("log");
+				try {
+					MessageList otherLog = new MessageList(object);
+					if (!otherLog.equals(model.getLog())) {
+						model.setLog(otherLog);
+						for (IModelListener listener : listeners) {
+							try {
+								listener.logChanged(otherLog);
+							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
@@ -756,5 +766,9 @@ public class ModelFacade {
 			Board map = model.getMap();
 			PlayerReference currentPlayer = getCurrentPlayer();
 			return map.canBuild2Roads(currentPlayer, first, second);
+		}
+
+		public synchronized Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
+			return model.getMap().getMunicipalitiesAround(hex);
 		}
 }

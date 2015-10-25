@@ -60,21 +60,18 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
 		System.out.println("MapController: TurnTracker has changed");
-		System.out.println("Local Player: " + ClientManager.getLocalPlayer());
-		System.out.println("Current Player: " + turnTracker.getCurrentPlayer());
+		System.out.println("Local Player: " + ClientManager.getLocalPlayer().getPlayer().getName()
+				+ " (" + ClientManager.getLocalPlayer() + ")");
+		System.out.println("Current Player: " + turnTracker.getCurrentPlayer().getPlayer().getName()
+				+ " (" + turnTracker.getCurrentPlayer() + ")");
 		System.out.println("Phase: " + turnTracker.getStatus());
-		/*
-		 * TODO: Fix this problem
-		 * I am adding a player count checker, as this part of the code is being executed
-		 * as soon as one player joins the game.  Technically, the turn tracker does say
-		 * its the first round, and that it is the players turn.  However, as only one person
-		 * has joined the game, errors are thrown as soon as that player finishes their turn
-		 * 
-		 */
+		
 		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer()) &&
 				getModel().getCatanModel().getPlayers().size() >= 4) {
 			System.out.println("It's your turn!");
 			state = new YourTurnState(this);
+			
+			// TODO: logic to check if an overlay is already open.
 			
 			switch (turnTracker.getStatus()) {
 			case FirstRound:
@@ -88,7 +85,6 @@ public class MapController extends Controller implements IMapController {
 				break;
 			default:
 				break;
-			
 			}
 		}
 		else {
@@ -132,17 +128,17 @@ public class MapController extends Controller implements IMapController {
 	private void buildBoard(Board board) {
 		IMapView view = getView();
 		
-		for (Hex hex : board.getHexes()) {
-			HexType type = HexType.fromResourceType(hex.getResource());
-			view.addHex(hex.getLocation(), type);
-			if (type != HexType.DESERT) {
-				view.addNumber(hex.getLocation(), hex.getNumber());
-			}
-		}
-		
 		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
 			if (hexLoc.getDistanceFromCenter() > 2) {
 				view.addHex(hexLoc, HexType.WATER);
+			}
+			else {
+				Hex hex = board.getHexAt(hexLoc);
+				HexType type = HexType.fromResourceType(hex.getResource());
+				view.addHex(hex.getLocation(), type);
+				if (type != HexType.DESERT) {
+					view.addNumber(hex.getLocation(), hex.getNumber());
+				}
 			}
 		}
 		
@@ -177,70 +173,6 @@ public class MapController extends Controller implements IMapController {
 		
 		view.placeRobber(board.getRobberLocation());
 	}
-	
-	protected void initHardCoded() {
- 		
- 		Random rand = new Random();
- 
- 		for (int x = 0; x <= 3; ++x) {
- 			
- 			int maxY = 3 - x;			
- 			for (int y = -3; y <= maxY; ++y) {				
- 				int r = rand.nextInt(HexType.values().length);
- 				HexType hexType = HexType.values()[r];
- 				HexLocation hexLoc = new HexLocation(x, y);
- 				getView().addHex(hexLoc, hexType);
- 				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.NorthWest),
- 						CatanColor.RED);
- 				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.SouthWest),
- 						CatanColor.BLUE);
- 				getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.South),
- 						CatanColor.ORANGE);
- 				getView().placeSettlement(new VertexLocation(hexLoc,  VertexDirection.NorthWest), CatanColor.GREEN);
- 				getView().placeCity(new VertexLocation(hexLoc,  VertexDirection.NorthEast), CatanColor.PURPLE);
- 			}
- 			
- 			if (x != 0) {
- 				int minY = x - 3;
- 				for (int y = minY; y <= 3; ++y) {
- 					int r = rand.nextInt(HexType.values().length);
- 					HexType hexType = HexType.values()[r];
- 					HexLocation hexLoc = new HexLocation(-x, y);
- 					getView().addHex(hexLoc, hexType);
- 					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.NorthWest),
- 							CatanColor.RED);
- 					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.SouthWest),
- 							CatanColor.BLUE);
- 					getView().placeRoad(new EdgeLocation(hexLoc, EdgeDirection.South),
- 							CatanColor.ORANGE);
- 					getView().placeSettlement(new VertexLocation(hexLoc,  VertexDirection.NorthWest), CatanColor.GREEN);
- 					getView().placeCity(new VertexLocation(hexLoc,  VertexDirection.NorthEast), CatanColor.PURPLE);
- 				}
- 			}
- 		}
- 		
- 		PortType portType = PortType.BRICK;
- 		getView().addPort(new EdgeLocation(new HexLocation(0, 3), EdgeDirection.North), portType);
- 		getView().addPort(new EdgeLocation(new HexLocation(0, -3), EdgeDirection.South), portType);
- 		getView().addPort(new EdgeLocation(new HexLocation(-3, 3), EdgeDirection.NorthEast), portType);
- 		getView().addPort(new EdgeLocation(new HexLocation(-3, 0), EdgeDirection.SouthEast), portType);
- 		getView().addPort(new EdgeLocation(new HexLocation(3, -3), EdgeDirection.SouthWest), portType);
- 		getView().addPort(new EdgeLocation(new HexLocation(3, 0), EdgeDirection.NorthWest), portType);
- 		
- 		getView().placeRobber(new HexLocation(0, 0));
- 		
- 		getView().addNumber(new HexLocation(-2, 0), 2);
- 		getView().addNumber(new HexLocation(-2, 1), 3);
- 		getView().addNumber(new HexLocation(-2, 2), 4);
- 		getView().addNumber(new HexLocation(-1, 0), 5);
- 		getView().addNumber(new HexLocation(-1, 1), 6);
- 		getView().addNumber(new HexLocation(1, -1), 8);
- 		getView().addNumber(new HexLocation(1, 0), 9);
- 		getView().addNumber(new HexLocation(2, -2), 10);
- 		getView().addNumber(new HexLocation(2, -1), 11);
- 		getView().addNumber(new HexLocation(2, 0), 12);
- 		
- 	}
 
 	public boolean canPlaceRoad(EdgeLocation edgeLoc) {
 		return state.canPlaceRoad(edgeLoc);
@@ -262,10 +194,9 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeRoad(edgeLoc);
-			getView().placeRoad(edgeLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
-			
+			System.out.println(e);
 		}
 	}
 
@@ -273,9 +204,9 @@ public class MapController extends Controller implements IMapController {
 		
 		try {
 			state = state.placeSettlement(vertLoc);
-			getView().placeSettlement(vertLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
+			System.out.println(e);
 			
 		}
 	}
@@ -283,9 +214,9 @@ public class MapController extends Controller implements IMapController {
 	public void placeCity(VertexLocation vertLoc) {
 		try {
 			state = state.placeCity(vertLoc);
-			getView().placeCity(vertLoc, getYourColor());
 		}
 		catch (InvalidActionException e) {
+			System.out.println(e);
 			
 		}
 	}
@@ -293,20 +224,18 @@ public class MapController extends Controller implements IMapController {
 	public void placeRobber(HexLocation hexLoc) {
 		try {
 			state = state.placeRobber(hexLoc);
-			getRobView().showModal();
 		}
 		catch (InvalidActionException e) {
-			
+			System.out.println(e);
 		}		
 	}
 	
 	public void startMove(PieceType pieceType, boolean isFree, boolean allowDisconnected) {	
 		try {
 			state = state.startMove(pieceType, isFree, allowDisconnected);
-			getView().startDrop(pieceType, CatanColor.ORANGE, true);
 		}
 		catch (InvalidActionException e) {
-			
+			System.out.println(e);
 		}	
 	}
 	
@@ -315,6 +244,7 @@ public class MapController extends Controller implements IMapController {
 			state = state.cancelMove();
 		}
 		catch (InvalidActionException e) {
+			System.out.println(e);
 			
 		}
 	}
@@ -324,6 +254,7 @@ public class MapController extends Controller implements IMapController {
 			state = state.playSoldierCard();
 		}
 		catch (InvalidActionException e) {
+			System.out.println(e);
 			
 		}
 	}
@@ -333,6 +264,7 @@ public class MapController extends Controller implements IMapController {
 			state = state.playRoadBuildingCard();
 		}
 		catch (InvalidActionException e) {
+			System.out.println(e);
 			
 		}
 	}
@@ -342,6 +274,7 @@ public class MapController extends Controller implements IMapController {
 			state = state.robPlayer(victim);
 		}
 		catch (InvalidActionException e) {
+			System.out.println(e);
 			
 		}
 	}
@@ -354,8 +287,34 @@ public class MapController extends Controller implements IMapController {
 		return ClientManager.getLocalPlayer();
 	}
 
-	public void robDialog() {
-		getRobView().showModal();
+	public void robDialog(HexLocation hex) {
+		IRobView view = getRobView();
+		
+		// Get the victim list
+		Collection<Municipality> adjacentTowns = ClientManager.getModel().getMunicipalitiesAround(hex);
+		List<RobPlayerInfo> victims = new ArrayList<>();
+		boolean[] playerIndicesUsed = {false, false, false, false};
+		for (Municipality town : adjacentTowns) {
+			PlayerReference ownerRef = town.getOwner();
+			if (!playerIndicesUsed[ownerRef.getIndex()]) {
+				Player owner = ownerRef.getPlayer();
+				
+				RobPlayerInfo victim = new RobPlayerInfo();
+				victim.setName(owner.getName());
+				victim.setId(owner.getPlayerID());
+				victim.setColor(owner.getColor());
+				victim.setPlayerIndex(ownerRef.getIndex());
+				victim.setNumCards(owner.getResources().count());
+				victims.add(victim);
+				
+				playerIndicesUsed[ownerRef.getIndex()] = true;
+			}
+		}
+		// I still don't understand why Java doesn't have a better way to convert lists to arrays.
+		RobPlayerInfo[] candidateVictims = victims.toArray(new RobPlayerInfo[victims.size()]);
+		
+		view.setPlayers(candidateVictims);
+		view.showModal();
 	}
 
 	public void refreshPieces() {
@@ -365,4 +324,3 @@ public class MapController extends Controller implements IMapController {
 	}
 	
 }
-

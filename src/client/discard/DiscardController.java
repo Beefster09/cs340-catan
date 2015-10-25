@@ -6,8 +6,11 @@ import java.util.Map;
 
 import shared.communication.IServer;
 import shared.definitions.*;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 import shared.model.ModelFacade;
 import shared.model.Player;
+import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import client.base.*;
 import client.misc.*;
@@ -22,8 +25,7 @@ public class DiscardController extends Controller implements IDiscardController 
 	Map<ResourceType, Integer> cardsToBeDiscarded = initializecardsToBeDiscarded();
 	private IServer serverProxy = ClientManager.getServer();
 	private ModelFacade modelFacade = ClientManager.getModel();
-	
-	
+	boolean maxedOut = false;
 
 	/**
 	 * DiscardController constructor
@@ -38,6 +40,7 @@ public class DiscardController extends Controller implements IDiscardController 
 		super(view);
 		
 		this.waitView = waitView;
+		
 	}
 
 	public IDiscardView getDiscardView() {
@@ -58,15 +61,46 @@ public class DiscardController extends Controller implements IDiscardController 
 	@Override
 	public void increaseAmount(ResourceType resource) {
 		
+		Map<ResourceType, Integer> hand = getLocalHand();
+		
 		int temp = cardsToBeDiscarded.get(resource);
 		temp++;
 		cardsToBeDiscarded.put(resource, temp);
 		
-		int discardNum = getHowManyLeftToDiscard();
+		int discardNum = getTotalCardsToDiscard();
 		
-		getDiscardView().setStateMessage("More than 7 cards. Discard " + discardNum + " more");
+		getDiscardView().setResourceDiscardAmount(resource, temp);
+		
+		getDiscardView().setStateMessage( discardCount() + "/" + discardNum);
+		
+		setEnables(resource, hand, temp);
+		
+		checkIfMaxedOut(resource, hand, discardNum);
+	}
+
+
+
+
+
+	private void checkIfMaxedOut(ResourceType resource, Map<ResourceType, Integer> hand, int maxCards) {
+		
+		if(discardCount() >= maxCards) {
+			
+			for(Map.Entry<ResourceType, Integer> entry : hand.entrySet()) {
+				
+				if(cardsToBeDiscarded.get(entry.getKey()) == 0)
+					getDiscardView().setResourceAmountChangeEnabled(entry.getKey(), false, false);
+				else
+					getDiscardView().setResourceAmountChangeEnabled(entry.getKey(), false, true);
+				
+			}
+			getDiscardView().setDiscardButtonEnabled(true);
+			maxedOut = true;
+		}
 		
 	}
+
+
 
 	/**
 	 * undoes things you did in increase function
@@ -74,24 +108,59 @@ public class DiscardController extends Controller implements IDiscardController 
 	@Override
 	public void decreaseAmount(ResourceType resource) {
 		
+		Map<ResourceType, Integer> hand = getLocalHand();
+		
 		int temp = cardsToBeDiscarded.get(resource);
 		temp--;
 		cardsToBeDiscarded.put(resource, temp);
 		
-		int discardNum = getHowManyLeftToDiscard();
+		int discardNum = getTotalCardsToDiscard();
 		
-		getDiscardView().setStateMessage("More than 7 cards. Discard " + discardNum + " more");
+		getDiscardView().setResourceDiscardAmount(resource, temp);
 		
-		getDiscardView().setStateMessage("HI");
+		getDiscardView().setStateMessage( discardCount() + "/" + discardNum);
+		
+		setEnables(resource, hand, temp);
+		
+		checkIfWasMaxedOut(hand);
 	}
+
+	private void checkIfWasMaxedOut(Map<ResourceType, Integer> hand) {
+		
+		if(maxedOut) {
+			
+			for(Map.Entry<ResourceType, Integer> entry : cardsToBeDiscarded.entrySet()) {
+				
+				setEnables(entry.getKey(), hand, entry.getValue());
+			}
+			getDiscardView().setDiscardButtonEnabled(false);
+			maxedOut = false;
+		}
+		
+	}
+
+
 
 	/**
 	 * send request to server with a map of resource types and how many of each are discarded
 	 */
 	@Override
 	public void discard() {
+		try {
+			
+			int playerID = modelFacade.getLocalPlayer().getPlayerID();
+			PlayerReference localPlayer = modelFacade.getCatanModel().getPlayers().get(playerID).getReference();
+			ResourceList cards = new ResourceList(cardsToBeDiscarded);
+			
+			serverProxy.discardCards(localPlayer, cards);
+			
+			getDiscardView().closeModal();
+			
+		} catch (ServerException | UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		getDiscardView().closeModal();
 	}
 
 	private Map<ResourceType, Integer> initializecardsToBeDiscarded() {
@@ -107,14 +176,14 @@ public class DiscardController extends Controller implements IDiscardController 
 		return cardsToBeDiscarded;
 	}
 	
-	private int getHowManyLeftToDiscard() {
+	private int getTotalCardsToDiscard() {
 		
 		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		List<Player> players = modelFacade.getCatanModel().getPlayers();
 		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
 		ResourceList hand = player.getResources();
+		
 		int discardRequirement = hand.count()/2;
-		return discardRequirement - discardCount();
+		return discardRequirement;
 	}
 	
 	private int discardCount() {
@@ -124,5 +193,30 @@ public class DiscardController extends Controller implements IDiscardController 
 		}
 		return total;
 	}
+	
+	private Map<ResourceType, Integer> getLocalHand() {
+		
+		int playerID = modelFacade.getLocalPlayer().getPlayerID();
+		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
+		return player.getResources().getResources();
+		
+	}
+	
+	private void setEnables(ResourceType resource, Map<ResourceType, Integer> hand, int temp) {
+		if(temp >= hand.get(resource))
+			getDiscardView().setResourceAmountChangeEnabled(resource, false, true);
+		
+		if(temp <= 0)
+			getDiscardView().setResourceAmountChangeEnabled(resource, true, false);
+		
+		if(temp > 0 && temp < hand.get(resource))
+			getDiscardView().setResourceAmountChangeEnabled(resource, true, true);
+		
+		if(hand.get(resource) == 0)
+			getDiscardView().setResourceAmountChangeEnabled(resource, false, false);
+		
+	}
+
+	
 }
 

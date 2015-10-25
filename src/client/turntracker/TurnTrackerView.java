@@ -7,6 +7,7 @@ import javax.swing.*;
 import shared.definitions.*;
 import client.base.*;
 import client.catan.*;
+import client.utils.FontUtils;
 import client.utils.ImageUtils;
 
 
@@ -83,9 +84,7 @@ public class TurnTrackerView extends PanelView implements ITurnTrackerView {
 		
 		JLabel name = new JLabel(playerName);
 		name.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
-		Font labelFont = name.getFont();
-		labelFont = labelFont.deriveFont(Font.BOLD, FONT_SIZE);
-		name.setFont(labelFont);
+		FontUtils.setFont(name, FONT_SIZE);
 		playerPanel[playerIndex].add(name, BorderLayout.WEST);
 		
 		JPanel indicatorPanel = new JPanel();
@@ -104,7 +103,7 @@ public class TurnTrackerView extends PanelView implements ITurnTrackerView {
 		
 		playerPoints[playerIndex] = new JLabel("0");
 		playerPoints[playerIndex].setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
-		playerPoints[playerIndex].setFont(labelFont);
+		playerPoints[playerIndex].setFont(name.getFont());
 		playerPanel[playerIndex].add(playerPoints[playerIndex], BorderLayout.EAST);
 		
 		playerPanel[playerIndex].setBackground(playerColor.getJavaColor());

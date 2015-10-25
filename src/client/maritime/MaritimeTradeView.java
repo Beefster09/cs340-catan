@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import client.base.*;
+import client.utils.FontUtils;
 
 
 /**
@@ -19,8 +20,7 @@ public class MaritimeTradeView extends PanelView implements IMaritimeTradeView {
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
-		Font font = new JButton().getFont();
-		Font newFont = font.deriveFont(font.getStyle(), 20);
+		Font newFont = FontUtils.getFont(20);
 
 		button = new JButton("Maritime Trade");
 		button.setFont(newFont);

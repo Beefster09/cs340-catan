@@ -171,9 +171,7 @@ public class DiscardView extends OverlayView implements IDiscardView
 		this.setBorder(BorderFactory.createLineBorder(Color.black, BORDER_WIDTH));
 		
 		label = new JLabel("More than Seven Cards: Discard");
-		Font labelFont = label.getFont();
-		labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-		label.setFont(labelFont);
+		FontUtils.setFont(label, LABEL_TEXT_SIZE);
 		this.add(label, BorderLayout.NORTH);
 		
 		resourcePanel = new JPanel();

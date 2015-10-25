@@ -1,11 +1,14 @@
 package client.main;
 
+import java.awt.Font;
+
 import javax.swing.*;
 
 import client.catan.*;
 import client.login.*;
 import client.join.*;
 import client.misc.*;
+import client.utils.FontUtils;
 import client.base.*;
 
 /**
@@ -46,6 +49,12 @@ public class Catan extends JFrame
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+			
+			if (System.getProperty("os.name").equals("Linux")) {
+				FontUtils.setFontScaling(0.8);
+				System.out.println("Font Scaling set to 0.8.");
+			}
 		}
 		catch(Exception e)
 		{

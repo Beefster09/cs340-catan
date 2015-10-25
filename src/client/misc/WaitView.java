@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 
 import client.base.*;
+import client.utils.FontUtils;
 import client.utils.ImageUtils;
 
 
@@ -40,9 +41,7 @@ public class WaitView extends OverlayView implements IWaitView {
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createLineBorder(Color.black, BORDER_WIDTH));
 		label = new JLabel("");
-		Font labelFont = label.getFont();
-		labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-		label.setFont(labelFont);
+		FontUtils.setFont(label, LABEL_TEXT_SIZE);
 		label.setBorder(new EmptyBorder(0,20,20,20));
 		this.add(label, BorderLayout.NORTH);
 		img = ImageUtils.loadImage(imageLocation);

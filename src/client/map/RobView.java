@@ -11,6 +11,7 @@ import java.util.*;
 import shared.definitions.PieceType;
 import client.base.*;
 import client.data.*;
+import client.utils.FontUtils;
 
 
 /**
@@ -39,9 +40,7 @@ public class RobView extends OverlayView implements IRobView {
 		this.setPreferredSize(new Dimension(400, 250));
 		
 		label = new JLabel("Choose who to Rob");
-		Font labelFont = label.getFont();
-		labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-		label.setFont(labelFont);
+		FontUtils.setFont(label, LABEL_TEXT_SIZE);
 		this.add(label, BorderLayout.NORTH);
 		
 		buttonPanel = new JPanel();

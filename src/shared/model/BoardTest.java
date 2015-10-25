@@ -27,7 +27,7 @@ import shared.locations.VertexLocation;
 public class BoardTest {
 	
 	private Board board;
-	private PlayerReference red, green, blue;
+	private PlayerReference red, green, blue, red2;
 
 	private List<Hex> hexList;
 	private List<Port> portList;
@@ -73,6 +73,7 @@ public class BoardTest {
 		townList = new ArrayList<Municipality>();
 		
 		red = PlayerReference.getDummyPlayerReference(0);
+		red2 = PlayerReference.getDummyPlayerReference(0);
 		green = PlayerReference.getDummyPlayerReference(1);
 		blue = PlayerReference.getDummyPlayerReference(2);
 		
@@ -493,6 +494,8 @@ public class BoardTest {
 				new EdgeLocation( 0, 0, EdgeDirection.NorthWest)));
 		assertTrue(board.canBuildRoadAt(red,
 				new EdgeLocation( 0, 0, EdgeDirection.NorthWest)));
+		assertTrue(board.canBuildRoadAt(red2,
+				new EdgeLocation( 0, 0, EdgeDirection.NorthWest))); // make sure they are .equal, not just ==
 		assertTrue(board.canBuildRoadAt(blue,
 				new EdgeLocation( 0,-1, EdgeDirection.NorthWest))); // No road, only a settlement (can't technically happen... whatever)
 
@@ -525,6 +528,8 @@ public class BoardTest {
 				new VertexLocation(0,0, VertexDirection.West)));
 		assertTrue(board.canBuildSettlement(red, 
 				new VertexLocation(0,0, VertexDirection.West)));
+		assertTrue(board.canBuildSettlement(red2, 
+				new VertexLocation(0,0, VertexDirection.West))); // Make sure it still works with a different object of the same value
 		assertTrue(board.canBuildSettlement(green, 
 				new VertexLocation(-1,-1, VertexDirection.West)));
 	}
@@ -541,9 +546,11 @@ public class BoardTest {
 				new VertexLocation( 0, 0, VertexDirection.East))); // already your own city there
 		assertFalse(board.canBuildCity(blue, 
 				new VertexLocation( 0, 0, VertexDirection.East))); // opponent's city there
-		
+
 		assertTrue(board.canBuildCity(red, 
 				new VertexLocation(-1, 1, VertexDirection.SouthEast)));
+		assertTrue(board.canBuildCity(red2, 
+				new VertexLocation(-1, 1, VertexDirection.SouthEast))); // Check by value as well as reference
 		assertTrue(board.canBuildCity(green, 
 				new VertexLocation(-1, 1, VertexDirection.West)));
 		

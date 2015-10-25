@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import client.base.*;
+import client.utils.FontUtils;
 
 /**
  * Implementation of the domestic trade view, which contains the
@@ -22,11 +23,10 @@ public class DomesticTradeView extends PanelView implements IDomesticTradeView
 		
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
-		Font font = new JButton().getFont();
-		Font newFont = font.deriveFont(font.getStyle(), 20);
+		Font font = FontUtils.getFont(20);
 		
 		button = new JButton("Domestic Trade");
-		button.setFont(newFont);
+		button.setFont(font);
 		button.addActionListener(buttonListener);
 		
 		this.add(button);

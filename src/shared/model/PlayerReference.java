@@ -3,6 +3,7 @@ package shared.model;
 import java.util.*;
 
 import shared.communication.GameHeader;
+import shared.definitions.CatanColor;
 
 /** Represents an immutable reference to a player in a game.
  * This class's purpose is to make JSON serialization easier.
@@ -26,8 +27,7 @@ public class PlayerReference {
 				
 		this.playerIndex = playerIndex;
 		if (game == null) {
-			assert false; // Nothing in production should execute this branch
-			playerUUID = UUID.randomUUID();
+			playerUUID = Player.generateUUID(-1, playerIndex);
 		}
 		else {
 			playerUUID = Player.generateUUID(game, playerIndex);
@@ -62,7 +62,14 @@ public class PlayerReference {
 	}
 	
 	public int getIndex() {
-		return playerIndex;
+		if (playerIndex == INVALID_INDEX) {
+			return getPlayer().getPlayerIndex();
+		}
+		else return playerIndex;
+	}
+	
+	public CatanColor getColor() {
+		return getPlayer().getColor();
 	}
 	
 	// TODO: incomplete... needed by boards;

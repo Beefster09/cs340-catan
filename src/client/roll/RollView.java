@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import client.base.*;
+import client.utils.FontUtils;
 
 
 
@@ -53,9 +54,7 @@ public class RollView extends OverlayView implements IRollView {
 		this.setBorder(BorderFactory.createLineBorder(Color.black, BORDER_WIDTH));
 		
 		label = new JLabel("Roll View");
-		Font labelFont = label.getFont();
-		labelFont = labelFont.deriveFont(labelFont.getStyle(), LABEL_TEXT_SIZE);
-		label.setFont(labelFont);
+		FontUtils.setFont(label, LABEL_TEXT_SIZE);
 		this.add(label, BorderLayout.NORTH);
 		
         try {
