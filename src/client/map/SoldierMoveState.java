@@ -1,13 +1,12 @@
 package client.map;
 
-import client.misc.ClientManager;
 import shared.exceptions.InvalidActionException;
 import shared.locations.HexLocation;
+import client.misc.ClientManager;
 
-public class MoveRobberState extends MapControllerState {
-	
+public class SoldierMoveState extends MapControllerState {
 
-	public MoveRobberState(MapController controller) {
+	public SoldierMoveState(MapController controller) {
 		super(controller);
 	}
 
@@ -17,10 +16,15 @@ public class MoveRobberState extends MapControllerState {
 		getController().robDialog(hex);
 		return new RobPlayerState(this, hex);
 	}
-	
+
 	@Override
 	public boolean canMoveRobber(HexLocation loc) {
 		return ClientManager.getModel().canRob(loc);
 	}
-	
+
+	@Override
+	public MapControllerState cancelMove() throws InvalidActionException {
+		return new YourTurnState(getController());
+	}
+
 }
