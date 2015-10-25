@@ -1,7 +1,18 @@
 package client.devcards;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import shared.communication.IServer;
+import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
+import shared.model.DevCardList;
+import shared.model.ModelFacade;
 import client.base.*;
+import client.misc.ClientManager;
+import client.misc.IMessageView;
 
 
 /**
@@ -9,6 +20,9 @@ import client.base.*;
  */
 public class DevCardController extends Controller implements IDevCardController {
 
+	private IMessageView messageView;
+	private IServer server = ClientManager.getServer();
+	private ModelFacade model = ClientManager.getModel();
 	private IBuyDevCardView buyCardView;
 	private IAction soldierAction;
 	private IAction roadAction;
@@ -53,13 +67,46 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void buyCard() {
-		
+		try {
+			server.buyDevCard(ClientManager.getLocalPlayer());
+		}
+		catch (ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
 		getBuyCardView().closeModal();
 	}
 
 	@Override
 	public void startPlayCard() {
+		List<DevCardType> listOfDevCards = new ArrayList<DevCardType>();
+		listOfDevCards.add(DevCardType.MONOPOLY);
+		listOfDevCards.add(DevCardType.MONUMENT);
+		listOfDevCards.add(DevCardType.ROAD_BUILD);
+		listOfDevCards.add(DevCardType.SOLDIER);
+		listOfDevCards.add(DevCardType.YEAR_OF_PLENTY);
 		
+		DevCardList devCards = model.getCatanModel().getPlayers().get(ClientManager.getLocalPlayer().getIndex()).getOldDevCards();
+
+		for(DevCardType type : listOfDevCards){
+			int count = devCards.count(type);
+			if(count > 0){
+				getPlayCardView().setCardEnabled(type, true);
+				getPlayCardView().setCardAmount(type, count);
+			}
+			else{
+				getPlayCardView().setCardEnabled(type, false);
+				getPlayCardView().setCardAmount(type, count);
+			}
+		}
 		getPlayCardView().showModal();
 	}
 
@@ -71,7 +118,7 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void playMonopolyCard(ResourceType resource) {
-		
+		server.monopoly(ClientManager.getLocalPlayer(), )
 	}
 
 	@Override
