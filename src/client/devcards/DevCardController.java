@@ -118,22 +118,39 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void playMonopolyCard(ResourceType resource) {
-		server.monopoly(ClientManager.getLocalPlayer(), )
+		try {
+			
+			server.monopoly(ClientManager.getLocalPlayer(), resource);
+		
+		} catch (ServerException | UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void playMonumentCard() {
+		
+		try {
+			server.monument(ClientManager.getLocalPlayer());
+		} catch (ServerException | UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
 	@Override
 	public void playRoadBuildCard() {
 		
+		
 		roadAction.execute();
 	}
 
 	@Override
 	public void playSoldierCard() {
+		
+		
 		
 		soldierAction.execute();
 	}
