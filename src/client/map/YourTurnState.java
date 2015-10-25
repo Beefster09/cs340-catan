@@ -11,7 +11,8 @@ public class YourTurnState extends MapControllerState {
 
 	@Override
 	public MapControllerState playSoldierCard() throws InvalidActionException {
-		return new MoveRobberState(getController());
+		getView().startDrop(PieceType.ROBBER, getYourColor(), true);
+		return new SoldierMoveState(getController());
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class YourTurnState extends MapControllerState {
 			break;
 		case ROBBER:
 			cancelable = false;
-			nextState = new MoveRobberState(getController(), false);
+			nextState = new MoveRobberState(getController());
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid piece type.");

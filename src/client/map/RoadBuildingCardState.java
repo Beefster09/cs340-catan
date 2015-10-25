@@ -6,6 +6,7 @@ import javax.swing.SwingWorker;
 
 import org.json.simple.JSONObject;
 
+import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeLocation;
 
@@ -23,12 +24,13 @@ public class RoadBuildingCardState extends MapControllerState {
 		if (firstRoad == null) {
 			firstRoad = edge;
 			getView().placeRoad(edge, getYourColor());
+			getView().startDrop(PieceType.ROAD, getYourColor(), true);
 			return this;
 		}
 		else {
 			getView().placeRoad(edge, getYourColor());
 			
-			SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object> () {
+			new SwingWorker<JSONObject, Object> () {
 
 				@Override
 				protected JSONObject doInBackground() throws Exception {
@@ -40,14 +42,13 @@ public class RoadBuildingCardState extends MapControllerState {
 					try {
 						getModel().updateFromJSON(get());
 					} catch (InterruptedException | ExecutionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 				
-			};
-			
-			worker.execute();
+			}.execute();
+			// If this were in a factory class, I would be creating a worker and
+			// immediately executing it. lol. The implications.
 			
 			return new YourTurnState(getController());
 		}
@@ -62,6 +63,8 @@ public class RoadBuildingCardState extends MapControllerState {
 			firstRoad = null;
 			// Refresh to previous state to "delete" piece
 			getController().refreshPieces();
+			// Bring up the road placement overlay for the previous piece
+			getView().startDrop(PieceType.ROAD, getYourColor(), true);
 			return this;
 		}
 	}
