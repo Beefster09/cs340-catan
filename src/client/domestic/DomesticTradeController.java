@@ -2,8 +2,11 @@ package client.domestic;
 
 import java.util.Map;
 
+import com.sun.java_cup.internal.runtime.Symbol;
+
 import shared.definitions.*;
 import shared.model.ModelFacade;
+import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.*;
 
@@ -70,6 +73,7 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	@Override
 	public void startTrade() {
 
+		assert ClientManager.getModel().getCatanModel().getTurnTracker().equals(TurnStatus.Playing);
 		getTradeOverlay().showModal();
 		
 	}
@@ -140,6 +144,18 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	public void acceptTrade(boolean willAccept) {
 
 		getAcceptOverlay().closeModal();
+	}
+	
+	@Override
+	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if (turnTracker.getCurrentPlayer().getIndex() == 
+				ClientManager.getLocalPlayer().getIndex() &&
+				turnTracker.getStatus().equals(TurnStatus.Playing)) {
+			getTradeView().enableDomesticTrade(true);
+		}
+		else {
+			getTradeView().enableDomesticTrade(false);
+		}
 	}
 
 }
