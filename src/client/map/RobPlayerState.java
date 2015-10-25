@@ -10,62 +10,67 @@ import shared.exceptions.InvalidActionException;
 import shared.locations.HexLocation;
 import shared.model.PlayerReference;
 import client.data.RobPlayerInfo;
+import client.misc.ClientManager;
 
 public class RobPlayerState extends MapControllerState {
 
 	private HexLocation newRobberLoc;
-	private MoveRobberState previous;
+	private MapControllerState previous;
 
 	public RobPlayerState(MapController controller) {
 		super(controller);
 		assert false;
 	}
-	
-	public RobPlayerState(MoveRobberState previous, HexLocation hex) {
+
+	public RobPlayerState(MapControllerState previous, HexLocation hex) {
 		super(previous.getController());
-		
+
 		newRobberLoc = hex;
 		this.previous = previous;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see client.map.MapControllerState#robPlayer(client.data.RobPlayerInfo)
 	 */
 	@Override
-	public MapControllerState robPlayer(final RobPlayerInfo victim)
+	public MapControllerState robPlayer(final RobPlayerInfo victimInfo)
 			throws InvalidActionException {
-		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object>() {
+		new SwingWorker<JSONObject, Object>() {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				MapController controller = getController();
-				return controller.getServer().robPlayer(controller.getYourself(), newRobberLoc,
-						PlayerReference.getDummyPlayerReference(victim.getPlayerIndex()));
+				
+				PlayerReference victim = new PlayerReference(ClientManager
+						.getModel().getCatanModel().getHeader(),
+						victimInfo.getPlayerIndex());
+
+				if (previous instanceof SoldierMoveState) {
+					return ClientManager.getServer().soldier(getYourself(),
+							newRobberLoc, victim);
+				} else if (previous instanceof MoveRobberState) {
+					return ClientManager.getServer().robPlayer(getYourself(),
+							newRobberLoc, victim);
+				} else return null;
 			}
 
 			@Override
 			protected void done() {
 				try {
-					getController().getModel().updateFromJSON(get());
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
+					ClientManager.getModel().updateFromJSON(get());
+				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
 			}
-		};
-		worker.execute();
-		
-		return super.robPlayer(victim);
+		}.execute();
+
+		return new YourTurnState(getController());
 	}
 
 	@Override
 	public MapControllerState cancelMove() throws InvalidActionException {
 		return previous;
 	}
-	
-	
 
 }

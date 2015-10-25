@@ -118,6 +118,7 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void playMonopolyCard(ResourceType resource) {
+<<<<<<< HEAD
 		try {
 			
 			server.monopoly(ClientManager.getLocalPlayer(), resource);
@@ -126,10 +127,29 @@ public class DevCardController extends Controller implements IDevCardController 
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+=======
+		try{
+			server.monopoly(ClientManager.getLocalPlayer(), resource);
+		}
+		catch (ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
+		getPlayCardView().closeModal();
+>>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 	}
 
 	@Override
 	public void playMonumentCard() {
+<<<<<<< HEAD
 		
 		try {
 			server.monument(ClientManager.getLocalPlayer());
@@ -138,26 +158,68 @@ public class DevCardController extends Controller implements IDevCardController 
 			e.printStackTrace();
 		}
 		
+=======
+		try{
+			server.monument(ClientManager.getLocalPlayer());
+		}
+		catch(ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
+		getPlayCardView().closeModal();
+>>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 	}
 
 	@Override
 	public void playRoadBuildCard() {
 		
+<<<<<<< HEAD
 		
+=======
+		getPlayCardView().closeModal();
+>>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 		roadAction.execute();
 	}
 
 	@Override
 	public void playSoldierCard() {
+<<<<<<< HEAD
 		
 		
 		
+=======
+
+		getPlayCardView().closeModal();
+>>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 		soldierAction.execute();
 	}
 
 	@Override
 	public void playYearOfPlentyCard(ResourceType resource1, ResourceType resource2) {
-		
+		try{
+			server.yearOfPlenty(ClientManager.getLocalPlayer(), resource1, resource2);
+		}
+		catch(ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
+		getPlayCardView().closeModal();
 	}
 
 }

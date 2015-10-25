@@ -60,10 +60,10 @@ public class MapController extends Controller implements IMapController {
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
 		System.out.println("MapController: TurnTracker has changed");
-		System.out.println("Local Player: " + ClientManager.getLocalPlayer().getPlayer().getName()
-				+ " (" + ClientManager.getLocalPlayer() + ")");
-		System.out.println("Current Player: " + turnTracker.getCurrentPlayer().getPlayer().getName()
-				+ " (" + turnTracker.getCurrentPlayer() + ")");
+//		System.out.println("Local Player: " + ClientManager.getLocalPlayer().getPlayer().getName()
+//				+ " (" + ClientManager.getLocalPlayer() + ")");
+//		System.out.println("Current Player: " + turnTracker.getCurrentPlayer().getPlayer().getName()
+//				+ " (" + turnTracker.getCurrentPlayer() + ")");
 		System.out.println("Phase: " + turnTracker.getStatus());
 		
 		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer()) &&
@@ -80,9 +80,12 @@ public class MapController extends Controller implements IMapController {
 				startMove(PieceType.SETTLEMENT, true, true);
 				break;
 			case Robbing:
-				System.out.println("This should occur only if you roll a 7...");
+				// This should occur only if you roll a 7...
 				startMove(PieceType.ROBBER, false, false);
 				break;
+			case Discarding:
+				// You can't interact with the map when you need to discard
+				state = new NullState(this);
 			default:
 				break;
 			}
