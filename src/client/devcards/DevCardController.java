@@ -118,29 +118,76 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void playMonopolyCard(ResourceType resource) {
-		server.monopoly(ClientManager.getLocalPlayer(), )
+		try{
+			server.monopoly(ClientManager.getLocalPlayer(), resource);
+		}
+		catch (ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
+		getPlayCardView().closeModal();
 	}
 
 	@Override
 	public void playMonumentCard() {
-		
+		try{
+			server.monument(ClientManager.getLocalPlayer());
+		}
+		catch(ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
+		getPlayCardView().closeModal();
 	}
 
 	@Override
 	public void playRoadBuildCard() {
 		
+		getPlayCardView().closeModal();
 		roadAction.execute();
 	}
 
 	@Override
 	public void playSoldierCard() {
-		
+
+		getPlayCardView().closeModal();
 		soldierAction.execute();
 	}
 
 	@Override
 	public void playYearOfPlentyCard(ResourceType resource1, ResourceType resource2) {
-		
+		try{
+			server.yearOfPlenty(ClientManager.getLocalPlayer(), resource1, resource2);
+		}
+		catch(ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
+		getPlayCardView().closeModal();
 	}
 
 }
