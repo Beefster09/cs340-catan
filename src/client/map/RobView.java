@@ -9,6 +9,7 @@ import javax.swing.border.Border;
 import java.util.*;
 
 import shared.definitions.PieceType;
+import shared.model.PlayerReference;
 import client.base.*;
 import client.data.*;
 import client.utils.FontUtils;
@@ -73,12 +74,17 @@ public class RobView extends OverlayView implements IRobView {
 				closeModal();
 			}
 			else{
-				
+				boolean hasRobbed = false;
 				for(int i = 0; i < victimButtons.size(); i++){
 					if(e.getSource() == victimButtons.get(i)){
 						closeModal();
 						getController().robPlayer(victims[i]);
+						hasRobbed = true;
 					}
+				}
+				if (!hasRobbed) {
+					closeModal();
+					getController().robPlayer(null);
 				}
 				
 			}
