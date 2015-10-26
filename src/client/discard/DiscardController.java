@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import shared.communication.IServer;
 import shared.definitions.*;
 import shared.exceptions.ServerException;
@@ -212,20 +214,12 @@ public class DiscardController extends Controller implements IDiscardController 
 	@Override
 	public void discard() {
 		try {
+				
+			PlayerReference localPlayer = ClientManager.getLocalPlayer();
 			
-			int playerID = modelFacade.getLocalPlayer().getPlayerID();
-			List<Player> players = modelFacade.getCatanModel().getPlayers();
-			Player player = null;
+			JSONObject discardMap = ResourcesToLowerCase(cardsToBeDiscarded);
 			
-			for(Player p : players) {
-				if(p.getPlayerID() == playerID) {
-					player = p;
-					break;
-				}
-			}
-			
-			PlayerReference localPlayer = player.getReference();
-			ResourceList cards = new ResourceList(cardsToBeDiscarded);
+			ResourceList cards = new ResourceList(discardMap);
 			
 			serverProxy.discardCards(localPlayer, cards);
 			
@@ -256,15 +250,25 @@ public class DiscardController extends Controller implements IDiscardController 
 		return cardsToBeDiscarded;
 	}
 	
+	@SuppressWarnings("unchecked")
+	private JSONObject ResourcesToLowerCase(Map<ResourceType, Integer> map) {
+		
+		JSONObject lowerCaseMap = new JSONObject();
+		
+		for(Map.Entry<ResourceType, Integer> entry : map.entrySet()) {
+			
+			String stringTemp = entry.getKey().toString().toLowerCase();
+			int valueTemp = entry.getValue();
+			
+			lowerCaseMap.put(stringTemp, valueTemp);
+		}
+		
+		return lowerCaseMap;
+	}
+	
 	private int getTotalCardsToDiscard() {
 		
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		List<Player> players = modelFacade.getCatanModel().getPlayers();
-		Player localPlayer = null;
-		
-		for(Player p : players) 
-			if(p.getPlayerID() == playerID)
-				localPlayer = p;
+		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
 		
 		ResourceList hand = localPlayer.getResources();
 		
@@ -282,13 +286,7 @@ public class DiscardController extends Controller implements IDiscardController 
 	
 	private Map<ResourceType, Integer> getLocalHand() {
 		
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		List<Player> players = modelFacade.getCatanModel().getPlayers();
-		Player localPlayer = null;
-		
-		for(Player p : players) 
-			if(p.getPlayerID() == playerID)
-				localPlayer = p;
+		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
 		
 		ResourceList hand = localPlayer.getResources();
 		
