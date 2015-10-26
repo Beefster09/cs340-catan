@@ -283,6 +283,17 @@ public class ModelFacade {
 					e.printStackTrace();
 				}
 			}
+			else if (model.getTradeOffer() != null) {
+				model.setTradeOffer(null);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.tradeOfferChanged(null);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 		
 		private void updateChatFromJSON(JSONObject json) {

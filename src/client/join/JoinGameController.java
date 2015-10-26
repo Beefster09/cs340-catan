@@ -126,6 +126,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
 			//localPlayer.setPlayerIndex(0);
 			
+			getJoinGameView().closeModal();
 			getJoinGameView().setGames(games, localPlayer);
 			getJoinGameView().showModal();
 		} catch (ServerException | UserException e) {
@@ -218,8 +219,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 
 	@Override
 	public void cancelJoinGame() {
-	
-		getJoinGameView().closeModal();
+		getSelectColorView().closeModal();
+		getJoinGameView().showModal();
 	}
 
 	

@@ -217,9 +217,12 @@ public class DiscardController extends Controller implements IDiscardController 
 			List<Player> players = modelFacade.getCatanModel().getPlayers();
 			Player player = null;
 			
-			for(Player p : players) 
-				if(p.getPlayerID() == playerID)
+			for(Player p : players) {
+				if(p.getPlayerID() == playerID) {
 					player = p;
+					break;
+				}
+			}
 			
 			PlayerReference localPlayer = player.getReference();
 			ResourceList cards = new ResourceList(cardsToBeDiscarded);
