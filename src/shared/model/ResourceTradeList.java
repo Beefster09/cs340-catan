@@ -60,6 +60,10 @@ public class ResourceTradeList {
 		}
 	}
 	
+	public ResourceTradeList() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * @return a copy of the offered resources, as a Map
 	 */
@@ -132,10 +136,12 @@ public class ResourceTradeList {
 		JSONObject tradeList = new JSONObject();
 		for (ResourceType type : ResourceType.values()) {
 			String resource = type.toString().toLowerCase();
-			if(wanted.containsKey(type)){
+			if(wanted.containsKey(type) &&
+					wanted.get(type) > 0){
 				tradeList.put(resource, -wanted.get(type));
 			}
-			else if(offered.containsKey(type)){
+			else if(offered.containsKey(type) &&
+					offered.get(type) > 0){
 				tradeList.put(resource, offered.get(type));
 			}
 			else{
@@ -148,6 +154,9 @@ public class ResourceTradeList {
 	public void setWanted(Map<ResourceType, Integer> wanted) {
 		this.wanted = wanted;
 		
+	}
+	public void setOffered(Map<ResourceType, Integer> offered) {
+		this.offered = offered;
 	}
 
 	@Override
