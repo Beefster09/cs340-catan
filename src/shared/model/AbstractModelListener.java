@@ -15,7 +15,7 @@ public abstract class AbstractModelListener implements IModelListener {
 	public void longestRoadChanged(PlayerReference otherPlayer) {}
 	public void tradeOfferChanged(TradeOffer otherOffer) {}
 	public void chatChanged(MessageList otherChat) {}
-	public void winnerChanged(PlayerReference otherPlayer) {}
+	public void winnerChanged(int winner) {}
 	public void logChanged(MessageList otherLog) {}
 	
 	
