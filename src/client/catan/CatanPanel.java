@@ -131,9 +131,7 @@ public class CatanPanel extends JPanel
 	
 	private void setMaxAmountsInDiscardView() {
 		
-		ModelFacade modelFacade = ClientManager.getModel();
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
+		Player player = ClientManager.getLocalPlayer().getPlayer();
 		ResourceList hand = player.getResources();
 		
 		Map<ResourceType, Integer> resourceMap = hand.getResources();
