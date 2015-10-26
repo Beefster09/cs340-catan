@@ -511,5 +511,6 @@ public class MaritimeTradeOverlay extends OverlayView implements IMaritimeTradeO
 		g2d.dispose();
 		return bi;
 	}
+	
 }
 

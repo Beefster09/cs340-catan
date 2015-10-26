@@ -24,12 +24,13 @@ public class CatanModel {
 	private List<Player> players;
 	private PlayerReference longestRoad;
 	private PlayerReference largestArmy;
-	private PlayerReference winner;
+	private int winner;
 	
 	private int version;
 
 	public CatanModel() {
 		version = -1;
+		winner = -1;
 	}
 
 	/**
@@ -49,7 +50,7 @@ public class CatanModel {
 	public CatanModel(MessageList chat, MessageList log, Board map,
 			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
 			List<Player> players, PlayerReference longestRoad,
-			PlayerReference largestArmy, PlayerReference winner, int version) {
+			PlayerReference largestArmy, int winner, int version) {
 		super();
 		this.chat = chat;
 		this.log = log;
@@ -151,7 +152,7 @@ public class CatanModel {
 	/**
 	 * @return the winner
 	 */
-	public PlayerReference getWinner() {
+	public int getWinner() {
 		return winner;
 	}
 
@@ -179,7 +180,7 @@ public class CatanModel {
 		this.players = players;
 	}
 
-	public void setWinner(PlayerReference winner) {
+	public void setWinner(int winner) {
 		this.winner = winner;
 	}
 

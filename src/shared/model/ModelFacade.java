@@ -342,12 +342,12 @@ public class ModelFacade {
 		
 		private void updateWinnerFromJSON(JSONObject json) {
 			int winner = (int) (long) json.get("winner");
-			PlayerReference otherPlayer = new PlayerReference(model, winner);
-			if (model.getWinner() == null || !model.getWinner().equals(otherPlayer)) {
-				model.setWinner(otherPlayer);
+			//PlayerReference otherPlayer = new PlayerReference(model, winner);
+			if (model.getWinner() != -1 || model.getWinner() != winner) {
+				model.setWinner(winner);
 				for (IModelListener listener : listeners) {
 					try {
-						listener.winnerChanged(otherPlayer);
+						listener.winnerChanged(winner);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

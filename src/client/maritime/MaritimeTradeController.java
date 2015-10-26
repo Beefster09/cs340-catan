@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
 
 import shared.communication.IServer;
 import shared.definitions.*;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 import shared.model.Board;
 import shared.model.CatanModel;
 import shared.model.ModelFacade;
@@ -19,6 +21,7 @@ import shared.model.Port;
 import shared.model.ResourceList;
 import client.base.*;
 import client.misc.ClientManager;
+import client.misc.IMessageView;
 
 
 /**
@@ -26,16 +29,23 @@ import client.misc.ClientManager;
  */
 public class MaritimeTradeController extends Controller implements IMaritimeTradeController {
 
+	private IMessageView messageView;
 	private IMaritimeTradeOverlay tradeOverlay;
 	private IServer server;
 	private ModelFacade modelFacade;
 	private PlayerReference localPlayer;
 	private Board board;
 	private List<ResourceType> typesOfResources;
+	private ResourceType inResource;
+	private ResourceType outResource;
+	private int ratio;
 	
 	public MaritimeTradeController(IMaritimeTradeView tradeView, IMaritimeTradeOverlay tradeOverlay) {
 		
 		super(tradeView);
+		inResource = null;
+		outResource = null;
+		ratio = 4;
 		typesOfResources = new ArrayList<ResourceType>();
 		typesOfResources.add(ResourceType.BRICK);
 		typesOfResources.add(ResourceType.ORE);
@@ -70,6 +80,10 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 */
 	@Override
 	public void startTrade() {
+		inResource = null;
+		outResource = null;
+		ratio = 4;
+		getTradeOverlay().reset();
 		server = ClientManager.getServer();
 		modelFacade = ClientManager.getModel();
 		localPlayer = ClientManager.getLocalPlayer();
@@ -123,7 +137,21 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 * */
 	@Override
 	public void makeTrade() {
-
+		try{
+			server.maritimeTrade(ClientManager.getLocalPlayer(), inResource, outResource, ratio);
+		}
+		catch(ServerException e){
+			messageView.setTitle("Server Error");
+			messageView.setMessage("Unable to reach server at this point");
+			messageView.showModal();
+			return;
+		}
+		catch (UserException e) {
+			messageView.setTitle("User Error");
+			messageView.setMessage("Unable to complete action at this time)");
+			messageView.showModal();
+			return;
+		}
 		getTradeOverlay().closeModal();
 	}
 
@@ -145,8 +173,9 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 */
 	@Override
 	public void setGetResource(ResourceType resource) {
-		
-
+		outResource = resource;
+		getTradeOverlay().setTradeEnabled(true);
+		getTradeOverlay().selectGetOption(resource, 1);
 	}
 
 	/**
@@ -155,7 +184,8 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 */
 	@Override
 	public void setGiveResource(ResourceType resource) {
-		int ratio = 4;
+		inResource = resource;
+		ratio = 4;
 		ResourceList resouces = modelFacade.getCatanModel().getPlayers().get(ClientManager.getLocalPlayer().getIndex()).getResources();
 		Collection<Port> ports = board.getPorts();
 		for(Port port : ports){
@@ -187,7 +217,15 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 */
 	@Override
 	public void unsetGetValue() {
-
+		outResource = null;
+		ResourceType[] resources = new ResourceType[5];
+		resources[0] = ResourceType.BRICK;
+		resources[1] = ResourceType.ORE;
+		resources[2] = ResourceType.SHEEP;
+		resources[3] = ResourceType.WHEAT;
+		resources[4] = ResourceType.WOOD;
+		getTradeOverlay().showGetOptions(resources);
+		getTradeOverlay().setTradeEnabled(false);
 	}
 
 	
@@ -197,7 +235,13 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 */
 	@Override
 	public void unsetGiveValue() {
-
+		inResource = null;
+		outResource = null;
+		ratio = 4;
+		getTradeOverlay().hideGetOptions();
+		getTradeOverlay().setTradeEnabled(false);
+		startTrade();
 	}
+	
 }
 
