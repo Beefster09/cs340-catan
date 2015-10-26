@@ -178,6 +178,13 @@ public class MaritimeTradeOverlay extends OverlayView implements IMaritimeTradeO
 		//displays the undo button
 		givereload.setVisible(true);
 		givereload.setEnabled(true);
+		ResourceType[] resources = new ResourceType[5];
+		resources[0] = ResourceType.BRICK;
+		resources[1] = ResourceType.ORE;
+		resources[2] = ResourceType.SHEEP;
+		resources[3] = ResourceType.WHEAT;
+		resources[4] = ResourceType.WOOD;
+		showGetOptions(resources);
 	}
 
 	@Override
@@ -275,8 +282,7 @@ public class MaritimeTradeOverlay extends OverlayView implements IMaritimeTradeO
 				if (e.getSource() == givereload)	
 				{getController().unsetGiveValue();hideGetOptions();}
 
-				else if (e.getSource() == givewood) 
-				{getController().setGiveResource(ResourceType.WOOD);}
+				else if (e.getSource() == givewood) {getController().setGiveResource(ResourceType.WOOD);}
 
 				else if (e.getSource() == givebrick) 
 				{getController().setGiveResource(ResourceType.BRICK);}

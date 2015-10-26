@@ -12,6 +12,7 @@ import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
+import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.*;
 
@@ -51,6 +52,52 @@ public class DiscardController extends Controller implements IDiscardController 
 		return waitView;
 	}
 
+	@Override
+	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if (turnTracker.getStatus() == TurnStatus.Discarding) {
+			System.out.println("Discarding...");
+			
+			int playerID = modelFacade.getLocalPlayer().getPlayerID();
+			Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
+			ResourceList hand = player.getResources();
+			
+			if(hand.count() > 7) {
+				getDiscardView().showModal();
+				setMaxAmountsInDiscardView();
+				
+			}
+			if(hand.count() <= 7) {
+				getWaitView().showModal();
+			}
+			
+		}
+		else {
+			getDiscardView().closeModal();
+			getWaitView().closeModal();
+		}
+	}
+	
+	
+	private void setMaxAmountsInDiscardView() {
+		
+		int playerID = modelFacade.getLocalPlayer().getPlayerID();
+		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
+		ResourceList hand = player.getResources();
+		
+		Map<ResourceType, Integer> resourceMap = hand.getResources();
+		
+		for(Map.Entry<ResourceType, Integer> entry : resourceMap.entrySet()) {
+			
+			getDiscardView().setResourceMaxAmount(entry.getKey(), entry.getValue());
+			
+			if(entry.getValue() > 0)
+				getDiscardView().setResourceAmountChangeEnabled(entry.getKey(), true, false);
+			
+		}
+		
+		getDiscardView().setStateMessage("0/" + discardCount()/2);
+		getDiscardView().setDiscardButtonEnabled(false);
+	}
 	
 	/**
 	 * add recource to a list to be discarded
@@ -155,6 +202,7 @@ public class DiscardController extends Controller implements IDiscardController 
 			serverProxy.discardCards(localPlayer, cards);
 			
 			getDiscardView().closeModal();
+			getWaitView().showModal();
 			
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
