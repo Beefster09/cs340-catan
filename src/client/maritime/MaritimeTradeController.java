@@ -155,7 +155,29 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	 */
 	@Override
 	public void setGiveResource(ResourceType resource) {
-
+		int ratio = 4;
+		ResourceList resouces = modelFacade.getCatanModel().getPlayers().get(ClientManager.getLocalPlayer().getIndex()).getResources();
+		Collection<Port> ports = board.getPorts();
+		for(Port port : ports){
+			if(port.getRatio() == 3){
+				if(board.getPortOwner(port) == null){
+					continue;
+				}
+				if(board.getPortOwner(port).equals(ClientManager.getLocalPlayer())){
+					ratio = 3;
+				}
+			}
+			else if(port.getResource().equals(resource)){
+				if(board.getPortOwner(port) == null){
+					continue;
+				}
+				if(board.getPortOwner(port).equals(ClientManager.getLocalPlayer())){
+					ratio = 2;
+					break;
+				}
+			}
+		}
+		getTradeOverlay().selectGiveOption(resource, ratio);
 	}
 
 	
