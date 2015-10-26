@@ -2,6 +2,8 @@ package client.map;
 
 import java.util.*;
 
+import javax.swing.SwingUtilities;
+
 import shared.communication.IServer;
 import shared.definitions.*;
 import shared.exceptions.InvalidActionException;
@@ -11,26 +13,26 @@ import client.base.*;
 import client.data.*;
 import client.misc.ClientManager;
 
-
 /**
  * Implementation for the map controller
  */
 public class MapController extends Controller implements IMapController {
-	
+
 	private IRobView robView;
-	
+
 	private MapControllerState state;
 
 	private boolean boardBuilt = false;
-	
+
 	public MapController(IMapView view, IRobView robView) {
-		// The superclass now registers this as a listener to the client's instance of the model.
+		// The superclass now registers this as a listener to the client's
+		// instance of the model.
 		super(view);
-		
+
 		setRobView(robView);
-		
+
 		initFromModel();
-		
+
 		// Default state until you can control things on the map.
 		// Active before the game starts and when it isn't your turn.
 		// It does NOTHING but throw exceptions and return false. Always.
@@ -39,73 +41,82 @@ public class MapController extends Controller implements IMapController {
 
 	@Override
 	public void mapChanged(Board newMap) {
-		
+
 		System.out.println("MapController: updating map");
-		
-		if (!boardBuilt) buildBoard(newMap);
-		
+
+		if (!boardBuilt)
+			buildBoard(newMap);
+
 		// Assume (for now) that only pieces will change
-		//MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
+		// MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
 		refreshPieces();
 	}
-	
+
 	@Override
 	public void mapInitialized() {
-		
+
 		System.out.println("MapController: initializing map from server data");
-		
+
 		this.initFromModel();
 	}
 
 	@Override
-	public void turnTrackerChanged(TurnTracker turnTracker) {
-		System.out.println("MapController: TurnTracker has changed");
-//		System.out.println("Local Player: " + ClientManager.getLocalPlayer().getPlayer().getName()
-//				+ " (" + ClientManager.getLocalPlayer() + ")");
-//		System.out.println("Current Player: " + turnTracker.getCurrentPlayer().getPlayer().getName()
-//				+ " (" + turnTracker.getCurrentPlayer() + ")");
-		System.out.println("Phase: " + turnTracker.getStatus());
-		
-		if (turnTracker.getCurrentPlayer().equals(ClientManager.getLocalPlayer()) &&
-				getModel().getCatanModel().getPlayers().size() >= 4) {
-			System.out.println("It's your turn!");
-			state = new YourTurnState(this);
-			
-			// TODO: logic to check if an overlay is already open.
-			
-			switch (turnTracker.getStatus()) {
-			case FirstRound:
-			case SecondRound:
-				System.out.println("Setup Round!");
-				startMove(PieceType.SETTLEMENT, true, true);
-				break;
-			case Robbing:
-				// This should occur only if you roll a 7...
-				startMove(PieceType.ROBBER, false, false);
-				break;
-			case Discarding:
-				// You can't interact with the map when you need to discard
-				state = new NullState(this);
-			default:
-				break;
+	public void turnTrackerChanged(final TurnTracker turnTracker) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("MapController: TurnTracker has changed");
+				// System.out.println("Local Player: " +
+				// ClientManager.getLocalPlayer().getPlayer().getName()
+				// + " (" + ClientManager.getLocalPlayer() + ")");
+				// System.out.println("Current Player: " +
+				// turnTracker.getCurrentPlayer().getPlayer().getName()
+				// + " (" + turnTracker.getCurrentPlayer() + ")");
+				System.out.println("Phase: " + turnTracker.getStatus());
+
+				if (turnTracker.getCurrentPlayer().equals(
+						ClientManager.getLocalPlayer())
+						&& getModel().getCatanModel().getPlayers().size() >= 4) {
+					System.out.println("It's your turn!");
+					state = new YourTurnState(MapController.this);
+
+					// TODO: logic to check if an overlay is already open.
+
+					switch (turnTracker.getStatus()) {
+					case FirstRound:
+					case SecondRound:
+						System.out.println("Setup Round!");
+						startMove(PieceType.SETTLEMENT, true, true);
+						break;
+					case Robbing:
+						// This should occur only if you roll a 7...
+						startMove(PieceType.ROBBER, false, false);
+						break;
+					case Discarding:
+						// You can't interact with the map when you need to
+						// discard
+						state = new NullState(MapController.this);
+					default:
+						break;
+					}
+				} else {
+					System.out.println("It's not your turn!");
+					state = new NullState(MapController.this);
+				}
+				System.out.println("Done...");
 			}
-		}
-		else {
-			System.out.println("It's not your turn!");
-			state = new NullState(this);
-		}
-		System.out.println("Done...");
+		});
 	}
-	
+
 	public IMapView getView() {
-		
-		return (IMapView)super.getView();
+
+		return (IMapView) super.getView();
 	}
-	
+
 	private IRobView getRobView() {
 		return robView;
 	}
-	
+
 	private void setRobView(IRobView robView) {
 		this.robView = robView;
 	}
@@ -113,11 +124,11 @@ public class MapController extends Controller implements IMapController {
 	public IServer getServer() {
 		return ClientManager.getServer();
 	}
-	
+
 	public CatanColor getYourColor() {
 		return ClientManager.getLocalPlayer().getPlayer().getColor();
 	}
-	
+
 	protected void initFromModel() {
 
 		Board board = getModel().getCatanModel().getMap();
@@ -125,17 +136,16 @@ public class MapController extends Controller implements IMapController {
 			buildBoard(board);
 			placePieces(board);
 		}
-		
+
 	}
 
 	private void buildBoard(Board board) {
 		IMapView view = getView();
-		
+
 		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
 			if (hexLoc.getDistanceFromCenter() > 2) {
 				view.addHex(hexLoc, HexType.WATER);
-			}
-			else {
+			} else {
 				Hex hex = board.getHexAt(hexLoc);
 				HexType type = HexType.fromResourceType(hex.getResource());
 				view.addHex(hex.getLocation(), type);
@@ -144,22 +154,23 @@ public class MapController extends Controller implements IMapController {
 				}
 			}
 		}
-		
+
 		for (Port port : board.getPorts()) {
-			view.addPort(port.getLocation(), PortType.fromResourceType(port.getResource()));
+			view.addPort(port.getLocation(),
+					PortType.fromResourceType(port.getResource()));
 		}
-		
-		boardBuilt  = true;
+
+		boardBuilt = true;
 	}
-		
+
 	private void placePieces(Board board) {
 		IMapView view = getView();
-		
+
 		for (Road road : board.getRoads()) {
 			CatanColor color = road.getOwner().getPlayer().getColor();
 			view.placeRoad(road.getLocation(), color);
 		}
-		
+
 		for (Municipality town : board.getMunicipalities()) {
 			CatanColor color = town.getOwner().getPlayer().getColor();
 			switch (town.getType()) {
@@ -173,7 +184,7 @@ public class MapController extends Controller implements IMapController {
 				break;
 			}
 		}
-		
+
 		view.placeRobber(board.getRobberLocation());
 	}
 
@@ -194,91 +205,83 @@ public class MapController extends Controller implements IMapController {
 	}
 
 	public void placeRoad(EdgeLocation edgeLoc) {
-		
+
 		try {
 			state = state.placeRoad(edgeLoc);
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
 		}
 	}
 
 	public void placeSettlement(VertexLocation vertLoc) {
-		
+
 		try {
 			state = state.placeSettlement(vertLoc);
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-			
+
 		}
 	}
 
 	public void placeCity(VertexLocation vertLoc) {
 		try {
 			state = state.placeCity(vertLoc);
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-			
+
 		}
 	}
 
 	public void placeRobber(HexLocation hexLoc) {
 		try {
 			state = state.placeRobber(hexLoc);
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-		}		
+		}
 	}
-	
-	public void startMove(PieceType pieceType, boolean isFree, boolean allowDisconnected) {	
+
+	public void startMove(PieceType pieceType, boolean isFree,
+			boolean allowDisconnected) {
 		try {
 			state = state.startMove(pieceType, isFree, allowDisconnected);
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-		}	
+		}
 	}
-	
+
 	public void cancelMove() {
 		try {
 			state = state.cancelMove();
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-			
+
 		}
 	}
-	
-	public void playSoldierCard() {	
+
+	public void playSoldierCard() {
 		try {
 			state = state.playSoldierCard();
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-			
+
 		}
 	}
-	
-	public void playRoadBuildingCard() {	
+
+	public void playRoadBuildingCard() {
 		try {
 			state = state.playRoadBuildingCard();
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-			
+
 		}
 	}
-	
-	public void robPlayer(RobPlayerInfo victim) {	
+
+	public void robPlayer(RobPlayerInfo victim) {
 		try {
 			state = state.robPlayer(victim);
-		}
-		catch (InvalidActionException e) {
+		} catch (InvalidActionException e) {
 			System.out.println(e);
-			
+
 		}
 	}
 
@@ -292,16 +295,17 @@ public class MapController extends Controller implements IMapController {
 
 	public void robDialog(HexLocation hex) {
 		IRobView view = getRobView();
-		
+
 		// Get the victim list
-		Collection<Municipality> adjacentTowns = ClientManager.getModel().getMunicipalitiesAround(hex);
+		Collection<Municipality> adjacentTowns = ClientManager.getModel()
+				.getMunicipalitiesAround(hex);
 		List<RobPlayerInfo> victims = new ArrayList<>();
-		boolean[] playerIndicesUsed = {false, false, false, false};
+		boolean[] playerIndicesUsed = { false, false, false, false };
 		for (Municipality town : adjacentTowns) {
 			PlayerReference ownerRef = town.getOwner();
 			if (!playerIndicesUsed[ownerRef.getIndex()]) {
 				Player owner = ownerRef.getPlayer();
-				
+
 				RobPlayerInfo victim = new RobPlayerInfo();
 				victim.setName(owner.getName());
 				victim.setId(owner.getPlayerID());
@@ -309,21 +313,23 @@ public class MapController extends Controller implements IMapController {
 				victim.setPlayerIndex(ownerRef.getIndex());
 				victim.setNumCards(owner.getResources().count());
 				victims.add(victim);
-				
+
 				playerIndicesUsed[ownerRef.getIndex()] = true;
 			}
 		}
-		// I still don't understand why Java doesn't have a better way to convert lists to arrays.
-		RobPlayerInfo[] candidateVictims = victims.toArray(new RobPlayerInfo[victims.size()]);
-		
+		// I still don't understand why Java doesn't have a better way to
+		// convert lists to arrays.
+		RobPlayerInfo[] candidateVictims = victims
+				.toArray(new RobPlayerInfo[victims.size()]);
+
 		view.setPlayers(candidateVictims);
 		view.showModal();
 	}
 
 	public void refreshPieces() {
 		getView().removeAllPieces();
-		
+
 		placePieces(getModel().getCatanModel().getMap());
 	}
-	
+
 }
