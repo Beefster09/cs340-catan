@@ -42,9 +42,13 @@ public class RobPlayerState extends MapControllerState {
 			@Override
 			protected JSONObject doInBackground() throws Exception {
 				
-				PlayerReference victim = new PlayerReference(ClientManager
+				PlayerReference victim = null;
+				
+				if (victimInfo != null) {
+					victim = new PlayerReference(ClientManager
 						.getModel().getCatanModel().getHeader(),
 						victimInfo.getPlayerIndex());
+				}
 
 				if (previous instanceof SoldierMoveState) {
 					return ClientManager.getServer().soldier(getYourself(),

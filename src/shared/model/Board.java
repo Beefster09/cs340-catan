@@ -367,6 +367,7 @@ public class Board {
 			// Adjacent road
 			for (EdgeLocation neighbor : location.getNeighbors()) {
 				if (neighbor.getDistanceFromCenter() > radius) continue;
+				
 				Road road = getRoadAt(neighbor);
 				if (road != null && player.equals(road.getOwner())) {
 					// check if blocked by opponent's municipality
@@ -380,6 +381,8 @@ public class Board {
 			}
 			// Adjacent municipality
 			for (VertexLocation vertex : location.getVertices()) {
+				if (vertex.getDistanceFromCenter() > radius) continue;
+				
 				Municipality town = getMunicipalityAt(vertex);
 				if (town != null && player.equals(town.getOwner())) return true;
 			}
@@ -424,6 +427,8 @@ public class Board {
 			}
 			// There must be one of your roads next to the vertex
 			for (EdgeLocation edge : location.getEdges()) {
+				if (edge.getDistanceFromCenter() > radius) continue;
+				
 				Road road = getRoadAt(edge);
 				if (road != null && player.equals(road.getOwner())) return true;
 			}
@@ -440,6 +445,7 @@ public class Board {
 	 */
 	public boolean canBuildCity(PlayerReference player, VertexLocation location) {
 		if (location.getDistanceFromCenter() > radius) return false;
+		
 		Municipality town = getMunicipalityAt(location);
 		if (town == null) return false; // no settlement at that location
 		return (town.getType() == MunicipalityType.SETTLEMENT
@@ -463,6 +469,8 @@ public class Board {
 		if (getMunicipalityAt(settlement) == null) { // spot is open
 			// Apply Distance Rule
 			for (VertexLocation neighbor : settlement.getNeighbors()) {
+				if (neighbor.getDistanceFromCenter() > radius) continue;
+				
 				Municipality town = getMunicipalityAt(neighbor);
 				if (town != null) return false;
 			}
@@ -482,6 +490,7 @@ public class Board {
 		if (getMunicipalityAt(settlement) == null) { // spot is open
 			// Apply Distance Rule
 			for (VertexLocation neighbor : settlement.getNeighbors()) {
+				if (neighbor.getDistanceFromCenter() > radius) continue;
 				Municipality town = getMunicipalityAt(neighbor);
 				if (town != null) return false;
 			}
@@ -561,6 +570,7 @@ public class Board {
 	 */
 	public boolean canBuild2Roads(PlayerReference player,
 			EdgeLocation firstRoad, EdgeLocation secondRoad) {
+		if (firstRoad.equals(secondRoad)) return false;
 		if (!canBuildRoadAt(player, firstRoad))	{
 			return false;
 		}
