@@ -62,6 +62,7 @@ public class MapController extends Controller implements IMapController {
 
 	@Override
 	public void turnTrackerChanged(final TurnTracker turnTracker) {
+		// A nasty hack to keep this from interfering with the discard controller.
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -303,6 +304,9 @@ public class MapController extends Controller implements IMapController {
 		boolean[] playerIndicesUsed = { false, false, false, false };
 		for (Municipality town : adjacentTowns) {
 			PlayerReference ownerRef = town.getOwner();
+			// Don't put yourself on the list; it makes no sense to rob yourself.
+			if (ownerRef.equals(ClientManager.getLocalPlayer())) continue;
+			
 			if (!playerIndicesUsed[ownerRef.getIndex()]) {
 				Player owner = ownerRef.getPlayer();
 
