@@ -229,7 +229,7 @@ public class DiscardController extends Controller implements IDiscardController 
 			if(getDiscardView().isModalShowing())
 				getDiscardView().closeModal();
 			
-			if(!getDiscardView().isModalShowing())
+			if(!getWaitView().isModalShowing())
 				getWaitView().showModal();
 			
 			
