@@ -225,6 +225,7 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 		resources[3] = ResourceType.WHEAT;
 		resources[4] = ResourceType.WOOD;
 		getTradeOverlay().showGetOptions(resources);
+		getTradeOverlay().setTradeEnabled(false);
 	}
 
 	
@@ -238,6 +239,7 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 		outResource = null;
 		ratio = 4;
 		getTradeOverlay().hideGetOptions();
+		getTradeOverlay().setTradeEnabled(false);
 		startTrade();
 	}
 	
