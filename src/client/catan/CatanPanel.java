@@ -23,6 +23,8 @@ import client.roll.RollView;
 @SuppressWarnings("serial")
 public class CatanPanel extends JPanel
 {
+	private boolean TESTING = false;
+	
 	private TitlePanel titlePanel;
 	private LeftPanel leftPanel;
 	private MidPanel midPanel;
@@ -63,73 +65,73 @@ public class CatanPanel extends JPanel
 		rollView.setController(rollController);
 		rollResultView.setController(rollController);
 		
-		JButton testButton = new JButton("Test");
-		testButton.addActionListener(new ActionListener() {
-			
-//			 @Override
-//			 public void actionPerformed(ActionEvent e) {
-//			
-//			 new client.points.GameFinishedView().showModal();
-//			 }
-//			
-//			 @Override
-//			 public void actionPerformed(ActionEvent e) {
-//			
-//			 rollView.showModal();
-//			 }
-//			
-//			 @Override
-//			 public void actionPerformed(java.awt.event.ActionEvent
-//			 e) {
-//			
-//			 midPanel.getMapController().startMove(PieceType.ROBBER,
-//			 false, false);
-//			 }
-			
-			int state = 0;
-			
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
+		if (TESTING) {
+			JButton testButton = new JButton("Test");
+			testButton.addActionListener(new ActionListener() {
 				
-				setMaxAmountsInDiscardView();
+	//			 @Override
+	//			 public void actionPerformed(ActionEvent e) {
+	//			
+	//			 new client.points.GameFinishedView().showModal();
+	//			 }
+	//			
+	//			 @Override
+	//			 public void actionPerformed(ActionEvent e) {
+	//			
+	//			 rollView.showModal();
+	//			 }
+	//			
+	//			 @Override
+	//			 public void actionPerformed(java.awt.event.ActionEvent
+	//			 e) {
+	//			
+	//			 midPanel.getMapController().startMove(PieceType.ROBBER,
+	//			 false, false);
+	//			 }
 				
-//				rollView.showModal();
+				int state = 0;
 				
-//				discardView.setResourceMaxAmount(ResourceType.WOOD, 1);
-//				discardView.setResourceMaxAmount(ResourceType.BRICK, 0);
-//				discardView.setResourceMaxAmount(ResourceType.SHEEP, 11);
-//				discardView.setResourceMaxAmount(ResourceType.WHEAT, 1);
-//				discardView.setResourceMaxAmount(ResourceType.ORE, 0);
-//				
-//				discardView.setResourceAmountChangeEnabled(ResourceType.WOOD, true, false);
-//				discardView.setResourceAmountChangeEnabled(ResourceType.SHEEP, true, false);
-//				discardView.setResourceAmountChangeEnabled(ResourceType.WHEAT, true, false);
-//				
-//				discardView.setStateMessage("0/6");
-//				
-//				discardView.setDiscardButtonEnabled(true);
-				
-				if(state == 0)
+				@Override
+				public void actionPerformed(ActionEvent e)
 				{
-					discardView.showModal();
-					state = 1;
+					
+					setMaxAmountsInDiscardView();
+					
+	//				rollView.showModal();
+					
+	//				discardView.setResourceMaxAmount(ResourceType.WOOD, 1);
+	//				discardView.setResourceMaxAmount(ResourceType.BRICK, 0);
+	//				discardView.setResourceMaxAmount(ResourceType.SHEEP, 11);
+	//				discardView.setResourceMaxAmount(ResourceType.WHEAT, 1);
+	//				discardView.setResourceMaxAmount(ResourceType.ORE, 0);
+	//				
+	//				discardView.setResourceAmountChangeEnabled(ResourceType.WOOD, true, false);
+	//				discardView.setResourceAmountChangeEnabled(ResourceType.SHEEP, true, false);
+	//				discardView.setResourceAmountChangeEnabled(ResourceType.WHEAT, true, false);
+	//				
+	//				discardView.setStateMessage("0/6");
+	//				
+	//				discardView.setDiscardButtonEnabled(true);
+					
+					if(state == 0)
+					{
+						discardView.showModal();
+						state = 1;
+					}
+					else if(state == 1)
+					{
+						discardWaitView.showModal();
+						state = 2;
+					}
 				}
-				else if(state == 1)
-				{
-					discardWaitView.showModal();
-					state = 2;
-				}
-			}
-		});
-		this.add(testButton, BorderLayout.SOUTH);
+			});
+			this.add(testButton, BorderLayout.SOUTH);
+		}
 	}
 	
 	private void setMaxAmountsInDiscardView() {
 		
-		ModelFacade modelFacade = ClientManager.getModel();
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
+		Player player = ClientManager.getLocalPlayer().getPlayer();
 		ResourceList hand = player.getResources();
 		
 		Map<ResourceType, Integer> resourceMap = hand.getResources();

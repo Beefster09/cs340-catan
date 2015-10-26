@@ -168,7 +168,7 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 			
 			getTradeOverlay().setResourceAmount(resource, Integer.toString(current));
 			
-			if (getLocalHand().get(resource) >= current) {
+			if (getLocalHand().get(resource) <= current) {
 				getTradeOverlay().setResourceAmountChangeEnabled(resource, false, true);
 			}
 		}
@@ -178,10 +178,7 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	}
 	
 	private Map<ResourceType, Integer> getLocalHand() {
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
-
-		return player.getResources().getResources();
+		return ClientManager.getLocalPlayer().getPlayer().getResources().getResources();
 	}
 	
 	private void setTradeState() {
@@ -226,24 +223,20 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	@Override
 	public void sendTradeOffer() {
 
-		PlayerReference receiver = null;
-		
-		PlayerInfo playerToTradeWith = playerInfos[indexToTradeWith];
-		List<Player> players = ClientManager.getModel().getCatanModel().getPlayers();
-		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).getPlayerID() == playerToTradeWith.getId()) {
-				receiver = players.get(i).getReference();
-			}
-		}
-		//If we can't find the player...things are seriously wrong.
-		if (receiver == null)
-			assert 1 == 0;
+		PlayerReference user = ClientManager.getLocalPlayer();
 		
 		ResourceTradeList offer = new ResourceTradeList();
 		offer.setOffered(offered);
 		offer.setWanted(wanted);
 		
-		PlayerReference user = ClientManager.getLocalPlayer();
+		PlayerReference receiver = getPlayerRefToTradeWith();
+		
+		//If we can't find the player...things are seriously wrong.
+		if (receiver == null)
+			assert 1 == 0;
+		
+		reset();
+		
 		
 		try {
 			ClientManager.getServer().offerTrade(user, offer, receiver);
@@ -256,10 +249,25 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		getTradeOverlay().closeModal();
 		getWaitOverlay().showModal();
 	}
+	
+	private PlayerReference getPlayerRefToTradeWith() {
+		List<Player> players = ClientManager.getModel().getCatanModel().getPlayers();
+		return players.get(indexToTradeWith).getReference();
+	}
+	
+	//Once we send a trade, we need to reset the entire interface and begin again.
+	private void reset() {
+		offered = new HashMap<ResourceType, Integer>();
+		wanted = new HashMap<ResourceType, Integer>();
+		resourceToReceive = null;
+		resourceToSend = null;
+		indexToTradeWith = -1;
+		getTradeOverlay().reset();
+	}
 
 	@Override
 	public void setPlayerToTradeWith(int playerIndex) {
-		indexToTradeWith = playerIndex-1;
+		indexToTradeWith = playerIndex;
 		setTradeState();
 	}
 
@@ -316,6 +324,7 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	public void acceptTrade(boolean willAccept) {
 		try {
 			ClientManager.getServer().respondToTrade(ClientManager.getLocalPlayer(), willAccept);
+			getAcceptOverlay().reset();
 		} catch (ServerException e) {
 			e.printStackTrace();
 		} catch (UserException e) {
@@ -360,9 +369,12 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 			if (getWaitOverlay().isModalShowing()) {
 				getWaitOverlay().closeModal();
 			}
+			return;
 		}
 	
-		int localPlayerID = ClientManager.getLocalPlayer().getPlayer().getPlayerID();
+		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
+		int localPlayerID = localPlayer.getPlayerID();
+		
 		if (offer.getReceiver().getPlayer().getPlayerID() == localPlayerID) {
 			
 			this.getAcceptOverlay().setPlayerName(offer.getSender().getPlayer().getName());
@@ -371,13 +383,18 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 			for(Map.Entry<ResourceType, Integer> entry : offeredCards.entrySet()) {
 				this.getAcceptOverlay().addGetResource(entry.getKey(), entry.getValue());
 			}
-			
+
+			getAcceptOverlay().setAcceptEnabled(true);
 			Map<ResourceType, Integer> wantedCards = offer.getOffer().getWanted();
 			for(Map.Entry<ResourceType, Integer> entry : wantedCards.entrySet()) {
 				this.getAcceptOverlay().addGiveResource(entry.getKey(), entry.getValue());
+				
+				//This if is to check if the player has enough resources to give
+				if (localPlayer.getResources().getResources().get(entry.getKey()) < entry.getValue()) {
+					getAcceptOverlay().setAcceptEnabled(false);
+				}
 			}
 			
-			getAcceptOverlay().setAcceptEnabled(true);
 			getAcceptOverlay().showModal();
 		}
 	}
