@@ -58,22 +58,34 @@ public class DiscardController extends Controller implements IDiscardController 
 			System.out.println("Discarding...");
 			
 			int playerID = modelFacade.getLocalPlayer().getPlayerID();
-			Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
-			ResourceList hand = player.getResources();
+			List<Player> players = modelFacade.getCatanModel().getPlayers();
+			Player localPlayer = null;
+			
+			for(Player p : players) 
+				if(p.getPlayerID() == playerID)
+					localPlayer = p;
+			
+			ResourceList hand = localPlayer.getResources();
 			
 			if(hand.count() > 7) {
-				getDiscardView().showModal();
-				setMaxAmountsInDiscardView();
+				
+				if(!getDiscardView().isModalShowing()) {
+					getDiscardView().showModal();
+					setMaxAmountsInDiscardView();
+				}
 				
 			}
 			if(hand.count() <= 7) {
-				getWaitView().showModal();
+				if(!getWaitView().isModalShowing())
+					getWaitView().showModal();
 			}
 			
 		}
 		else {
-			getDiscardView().closeModal();
-			getWaitView().closeModal();
+			if(getDiscardView().isModalShowing())
+				getDiscardView().closeModal();
+			if(getWaitView().isModalShowing())
+				getWaitView().closeModal();
 		}
 	}
 	
@@ -81,8 +93,14 @@ public class DiscardController extends Controller implements IDiscardController 
 	private void setMaxAmountsInDiscardView() {
 		
 		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
-		ResourceList hand = player.getResources();
+		List<Player> players = modelFacade.getCatanModel().getPlayers();
+		Player localPlayer = null;
+		
+		for(Player p : players) 
+			if(p.getPlayerID() == playerID)
+				localPlayer = p;
+		
+		ResourceList hand = localPlayer.getResources();
 		
 		Map<ResourceType, Integer> resourceMap = hand.getResources();
 		
@@ -95,7 +113,7 @@ public class DiscardController extends Controller implements IDiscardController 
 			
 		}
 		
-		getDiscardView().setStateMessage("0/" + discardCount()/2);
+		getDiscardView().setStateMessage("0/" + hand.count()/2);
 		getDiscardView().setDiscardButtonEnabled(false);
 	}
 	
@@ -196,13 +214,24 @@ public class DiscardController extends Controller implements IDiscardController 
 		try {
 			
 			int playerID = modelFacade.getLocalPlayer().getPlayerID();
-			PlayerReference localPlayer = modelFacade.getCatanModel().getPlayers().get(playerID).getReference();
+			List<Player> players = modelFacade.getCatanModel().getPlayers();
+			Player player = null;
+			
+			for(Player p : players) 
+				if(p.getPlayerID() == playerID)
+					player = p;
+			
+			PlayerReference localPlayer = player.getReference();
 			ResourceList cards = new ResourceList(cardsToBeDiscarded);
 			
 			serverProxy.discardCards(localPlayer, cards);
 			
-			getDiscardView().closeModal();
-			getWaitView().showModal();
+			if(getDiscardView().isModalShowing())
+				getDiscardView().closeModal();
+			
+			if(!getDiscardView().isModalShowing())
+				getWaitView().showModal();
+			
 			
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
@@ -227,8 +256,14 @@ public class DiscardController extends Controller implements IDiscardController 
 	private int getTotalCardsToDiscard() {
 		
 		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
-		ResourceList hand = player.getResources();
+		List<Player> players = modelFacade.getCatanModel().getPlayers();
+		Player localPlayer = null;
+		
+		for(Player p : players) 
+			if(p.getPlayerID() == playerID)
+				localPlayer = p;
+		
+		ResourceList hand = localPlayer.getResources();
 		
 		int discardRequirement = hand.count()/2;
 		return discardRequirement;
@@ -245,8 +280,16 @@ public class DiscardController extends Controller implements IDiscardController 
 	private Map<ResourceType, Integer> getLocalHand() {
 		
 		int playerID = modelFacade.getLocalPlayer().getPlayerID();
-		Player player = modelFacade.getCatanModel().getPlayers().get(playerID);
-		return player.getResources().getResources();
+		List<Player> players = modelFacade.getCatanModel().getPlayers();
+		Player localPlayer = null;
+		
+		for(Player p : players) 
+			if(p.getPlayerID() == playerID)
+				localPlayer = p;
+		
+		ResourceList hand = localPlayer.getResources();
+		
+		return hand.getResources();
 		
 	}
 	
