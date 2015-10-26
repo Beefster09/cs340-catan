@@ -118,16 +118,6 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void playMonopolyCard(ResourceType resource) {
-<<<<<<< HEAD
-		try {
-			
-			server.monopoly(ClientManager.getLocalPlayer(), resource);
-		
-		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-=======
 		try{
 			server.monopoly(ClientManager.getLocalPlayer(), resource);
 		}
@@ -144,21 +134,10 @@ public class DevCardController extends Controller implements IDevCardController 
 			return;
 		}
 		getPlayCardView().closeModal();
->>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 	}
 
 	@Override
 	public void playMonumentCard() {
-<<<<<<< HEAD
-		
-		try {
-			server.monument(ClientManager.getLocalPlayer());
-		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-=======
 		try{
 			server.monument(ClientManager.getLocalPlayer());
 		}
@@ -175,30 +154,19 @@ public class DevCardController extends Controller implements IDevCardController 
 			return;
 		}
 		getPlayCardView().closeModal();
->>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 	}
 
 	@Override
 	public void playRoadBuildCard() {
 		
-<<<<<<< HEAD
-		
-=======
 		getPlayCardView().closeModal();
->>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 		roadAction.execute();
 	}
 
 	@Override
 	public void playSoldierCard() {
-<<<<<<< HEAD
-		
-		
-		
-=======
 
 		getPlayCardView().closeModal();
->>>>>>> d37939f03e23572c0c50260d4ac893f381d77fe2
 		soldierAction.execute();
 	}
 
@@ -221,6 +189,5 @@ public class DevCardController extends Controller implements IDevCardController 
 		}
 		getPlayCardView().closeModal();
 	}
-
+	
 }
-
