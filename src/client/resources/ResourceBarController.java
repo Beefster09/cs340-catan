@@ -27,21 +27,28 @@ public class ResourceBarController extends Controller implements
 	public IResourceBarView getView() {
 		return (IResourceBarView) super.getView();
 	}
+	
+	
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see shared.model.AbstractModelListener#playersChanged(java.util.List)
-	 */
+	@Override
+	public void turnTrackerChanged(TurnTracker otherTurnTracker) {
+		if (ClientManager.getModel().getCurrentPlayer().equals(ClientManager.getLocalPlayer())) {
+			enableAvailableActions();
+		}
+		else {
+			disableAllActions();
+		}
+	}
+
 	@Override
 	public void playersChanged(List<Player> players) {
 		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
 
-		// Set the counts
 		ResourceList resources = localPlayer.getResources();
 		
 		IResourceBarView view = getView();
 
+		// Set the counts
 		view.setElementAmount(ResourceBarElement.BRICK,
 				resources.count(ResourceType.BRICK));
 		view.setElementAmount(ResourceBarElement.WOOD,
@@ -52,7 +59,7 @@ public class ResourceBarController extends Controller implements
 				resources.count(ResourceType.ORE));
 		view.setElementAmount(ResourceBarElement.SHEEP,
 				resources.count(ResourceType.SHEEP));
-
+		
 		int numRoads = localPlayer.getRoads();
 		int numSettlements = localPlayer.getSettlements();
 		int numCities = localPlayer.getCities();
@@ -60,6 +67,39 @@ public class ResourceBarController extends Controller implements
 		view.setElementAmount(ResourceBarElement.ROAD, numRoads);
 		view.setElementAmount(ResourceBarElement.SETTLEMENT, numSettlements);
 		view.setElementAmount(ResourceBarElement.CITY, numCities);
+
+		view.setElementAmount(ResourceBarElement.SOLDIERS,
+				localPlayer.getSoldiers());
+
+		if (ClientManager.getModel().getCurrentPlayer().equals(localPlayer)) {
+			enableAvailableActions();
+		}
+		else {
+			disableAllActions();
+		}
+		
+	}
+
+	private void disableAllActions() {
+		IResourceBarView view = getView();
+
+		view.setElementEnabled(ResourceBarElement.ROAD, false);
+		view.setElementEnabled(ResourceBarElement.SETTLEMENT, false);
+		view.setElementEnabled(ResourceBarElement.CITY, false);
+		view.setElementEnabled(ResourceBarElement.BUY_CARD, false);
+		view.setElementEnabled(ResourceBarElement.PLAY_CARD, false);
+	}
+
+	private void enableAvailableActions() {
+		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
+
+		ResourceList resources = localPlayer.getResources();
+		
+		IResourceBarView view = getView();
+		
+		int numRoads = localPlayer.getRoads();
+		int numSettlements = localPlayer.getSettlements();
+		int numCities = localPlayer.getCities();
 
 		if (numRoads >= 1
 				&& resources.count(ResourceType.BRICK) >= 1
@@ -69,6 +109,7 @@ public class ResourceBarController extends Controller implements
 		else {
 			view.setElementEnabled(ResourceBarElement.ROAD, false);
 		}
+		
 		if (numSettlements >= 1
 				&& resources.count(ResourceType.BRICK) >= 1
 				&& resources.count(ResourceType.WOOD) >= 1
@@ -79,6 +120,7 @@ public class ResourceBarController extends Controller implements
 		else {
 			view.setElementEnabled(ResourceBarElement.SETTLEMENT, false);
 		}
+		
 		if (numCities >= 1
 				&& resources.count(ResourceType.ORE) >= 3
 				&& resources.count(ResourceType.WHEAT) >= 2) {
@@ -87,11 +129,15 @@ public class ResourceBarController extends Controller implements
 		else {
 			view.setElementEnabled(ResourceBarElement.CITY, false);
 		}
+		
+		if (ClientManager.getModel().canBuyDevelopmentCard()) {
+			view.setElementEnabled(ResourceBarElement.BUY_CARD, true);
+		}
+		else {
+			view.setElementEnabled(ResourceBarElement.BUY_CARD, false);
+		}
 
-		getView().setElementAmount(ResourceBarElement.SOLDIERS,
-				localPlayer.getSoldiers());
-		
-		
+		view.setElementEnabled(ResourceBarElement.PLAY_CARD, true);
 	}
 
 	/**
