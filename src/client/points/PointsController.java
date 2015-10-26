@@ -5,6 +5,7 @@ import java.util.List;
 import client.base.*;
 import client.misc.ClientManager;
 import shared.model.Player;
+import shared.model.PlayerReference;
 
 
 /**
@@ -63,5 +64,20 @@ public class PointsController extends Controller implements IPointsController {
 				break;
 			}
 		}
+	}
+	
+	@Override
+	public void winnerChanged(PlayerReference winner) {
+		if (winner.getIndex() == -1)
+			return;
+		int localIndex = ClientManager.getLocalPlayer().getIndex();
+		String winnerName = winner.getPlayer().getName();
+		if (localIndex == winner.getIndex()) {
+			getFinishedView().setWinner(winnerName, true);
+		}
+		else {
+			getFinishedView().setWinner(winnerName, false);
+		}
+		getFinishedView().showModal();
 	}
 }
