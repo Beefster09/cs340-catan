@@ -146,7 +146,13 @@ public class DiscardController extends Controller implements IDiscardController 
 	}
 
 
-
+	private void setResourcesInViewToZero() {
+		
+		for (ResourceType type : ResourceType.values()) {
+			
+			getDiscardView().setResourceDiscardAmount(type, 0);
+		}
+	}
 
 
 	private void checkIfMaxedOut(ResourceType resource, Map<ResourceType, Integer> hand, int maxCards) {
@@ -222,6 +228,10 @@ public class DiscardController extends Controller implements IDiscardController 
 			ResourceList cards = new ResourceList(discardMap);
 			
 			serverProxy.discardCards(localPlayer, cards);
+			
+			setResourcesInViewToZero();
+			
+			cardsToBeDiscarded = initializecardsToBeDiscarded();
 			
 			if(getDiscardView().isModalShowing())
 				getDiscardView().closeModal();
