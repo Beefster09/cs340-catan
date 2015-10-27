@@ -28,11 +28,13 @@ public class ResourceBarController extends Controller implements
 		return (IResourceBarView) super.getView();
 	}
 	
-	
+	private boolean isYourTurn() {
+		return ClientManager.getModel().getCurrentPlayer().equals(ClientManager.getLocalPlayer());
+	}
 
 	@Override
-	public void turnTrackerChanged(TurnTracker otherTurnTracker) {
-		if (ClientManager.getModel().getCurrentPlayer().equals(ClientManager.getLocalPlayer())) {
+	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if (isYourTurn()) {
 			enableAvailableActions();
 		}
 		else {
@@ -71,7 +73,7 @@ public class ResourceBarController extends Controller implements
 		view.setElementAmount(ResourceBarElement.SOLDIERS,
 				localPlayer.getSoldiers());
 
-		if (ClientManager.getModel().getCurrentPlayer().equals(localPlayer)) {
+		if (isYourTurn()) {
 			enableAvailableActions();
 		}
 		else {
@@ -81,6 +83,8 @@ public class ResourceBarController extends Controller implements
 	}
 
 	private void disableAllActions() {
+		System.out.println("Disabling all actions on the ResourceBar.");
+		
 		IResourceBarView view = getView();
 
 		view.setElementEnabled(ResourceBarElement.ROAD, false);
@@ -91,6 +95,8 @@ public class ResourceBarController extends Controller implements
 	}
 
 	private void enableAvailableActions() {
+		System.out.println("Enabling valid actions on the ResourceBar.");
+		
 		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
 
 		ResourceList resources = localPlayer.getResources();
@@ -137,7 +143,12 @@ public class ResourceBarController extends Controller implements
 			view.setElementEnabled(ResourceBarElement.BUY_CARD, false);
 		}
 
-		view.setElementEnabled(ResourceBarElement.PLAY_CARD, true);
+		if (!localPlayer.hasPlayedDevCard()) {
+			view.setElementEnabled(ResourceBarElement.PLAY_CARD, true);
+		}
+		else {
+			view.setElementEnabled(ResourceBarElement.PLAY_CARD, false);
+		}
 	}
 
 	/**
@@ -175,7 +186,7 @@ public class ResourceBarController extends Controller implements
 	}
 
 	@Override
-	public void playCard() {
+	public void playCard() {		
 		executeElementAction(ResourceBarElement.PLAY_CARD);
 	}
 

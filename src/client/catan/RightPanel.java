@@ -45,8 +45,11 @@ public class RightPanel extends JPanel
 				mapController.playRoadBuildingCard();
 			}
 		};
+		// Need a forward declaration
+		resourceView = new ResourceBarView();
+		
 		devCardController = new DevCardController(playCardView, buyCardView,
-												  soldierAction, roadAction);
+												  soldierAction, roadAction, resourceView);
 		playCardView.setController(devCardController);
 		buyCardView.setController(devCardController);
 		
@@ -58,8 +61,7 @@ public class RightPanel extends JPanel
 		pointsView.setController(pointsController);
 		
 		// Initialize resource bar view and controller
-		//
-		resourceView = new ResourceBarView();
+		// resourceView = new ResourceBarView(); declared earlier
 		resourceController = new ResourceBarController(resourceView);
 		resourceController.setElementAction(ResourceBarElement.ROAD,
 											createStartMoveAction(mapController,

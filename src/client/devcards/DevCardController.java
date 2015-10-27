@@ -2,6 +2,11 @@ package client.devcards;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.SwingWorker;
+
+import org.json.simple.JSONObject;
 
 import shared.communication.IServer;
 import shared.definitions.DevCardType;
@@ -13,6 +18,8 @@ import shared.model.ModelFacade;
 import client.base.*;
 import client.misc.ClientManager;
 import client.misc.IMessageView;
+import client.resources.IResourceBarView;
+import client.resources.ResourceBarElement;
 
 
 /**
@@ -26,6 +33,7 @@ public class DevCardController extends Controller implements IDevCardController 
 	private IBuyDevCardView buyCardView;
 	private IAction soldierAction;
 	private IAction roadAction;
+	private IResourceBarView resourceBarView;
 	
 	/**
 	 * DevCardController constructor
@@ -36,13 +44,14 @@ public class DevCardController extends Controller implements IDevCardController 
 	 * @param roadAction Action to be executed when the user plays a road building card.  It calls "mapController.playRoadBuildingCard()".
 	 */
 	public DevCardController(IPlayDevCardView view, IBuyDevCardView buyCardView, 
-								IAction soldierAction, IAction roadAction) {
+								IAction soldierAction, IAction roadAction, IResourceBarView resourceBarView) {
 
 		super(view);
 		
 		this.buyCardView = buyCardView;
 		this.soldierAction = soldierAction;
 		this.roadAction = roadAction;
+		this.resourceBarView = resourceBarView;
 	}
 
 	public IPlayDevCardView getPlayCardView() {
@@ -67,21 +76,42 @@ public class DevCardController extends Controller implements IDevCardController 
 
 	@Override
 	public void buyCard() {
-		try {
-			server.buyDevCard(ClientManager.getLocalPlayer());
-		}
-		catch (ServerException e){
-			messageView.setTitle("Server Error");
-			messageView.setMessage("Unable to reach server at this point");
-			messageView.showModal();
-			return;
-		}
-		catch (UserException e) {
-			messageView.setTitle("User Error");
-			messageView.setMessage("Unable to complete action at this time)");
-			messageView.showModal();
-			return;
-		}
+		
+		// A little hack to make sure you can't buy 2 dev cards without 2 sets of resources if you're fast
+		resourceBarView.setElementEnabled(ResourceBarElement.BUY_CARD, false);
+		
+		// Using a SwingWorker to make it feel responsive
+		new SwingWorker<JSONObject, Object> () {
+
+			@Override
+			protected JSONObject doInBackground() throws Exception {
+				return server.buyDevCard(ClientManager.getLocalPlayer());
+			}
+			
+			@Override
+			protected void done() {
+				try {
+					ClientManager.getModel().updateFromJSON(get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					Throwable cause = e.getCause();
+				
+					if (cause instanceof ServerException){
+						messageView.setTitle("Server Error");
+						messageView.setMessage("Unable to reach server at this point");
+						messageView.showModal();
+					}
+					else if (cause instanceof UserException) {
+						messageView.setTitle("User Error");
+						messageView.setMessage("Unable to complete action at this time)");
+						messageView.showModal();
+					}
+				}
+			}
+			
+		}.execute();
+		
 		getBuyCardView().closeModal();
 	}
 

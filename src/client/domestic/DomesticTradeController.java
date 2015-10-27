@@ -92,7 +92,10 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	@Override
 	public void startTrade() {
 
-		assert ClientManager.getModel().getCatanModel().getTurnTracker().equals(TurnStatus.Playing);
+		if (ClientManager.getModel().getCatanModel().getTurnTracker()
+				.getStatus() != TurnStatus.Playing) {
+			return;
+		}
 		getTradeOverlay().showModal();
 		getTradeOverlay().setTradeEnabled(false);
 
