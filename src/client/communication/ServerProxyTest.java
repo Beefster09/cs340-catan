@@ -34,7 +34,7 @@ public class ServerProxyTest {
 	@Test
 	public void testOne() {
 		start = System.currentTimeMillis();
-		SP = new ServerProxy();
+		SP = new ServerProxy("localhost", 8081);
 		try{
 			JSONObject gameJSON = new JSONObject();
 			gameJSON.put("title", "Yes");
@@ -975,7 +975,7 @@ public class ServerProxyTest {
 	
 	@Test
 	public void testTwo() throws UserException, ServerException, GameInitializationException, InvalidActionException, JoinGameException{
-		SP = new ServerProxy();
+		SP = new ServerProxy("localhost", 8081);
 		SP.login("Sam", "sam");
 		System.out.println("Sam logged in");
 		
