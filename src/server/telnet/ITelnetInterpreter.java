@@ -11,5 +11,6 @@ public interface ITelnetInterpreter {
 	
 	void onOpen();
 	void onClose();
+	void prompt();
 
 }

@@ -12,7 +12,7 @@ public class SimpleTelnetInterpreter implements ITelnetInterpreter {
 	}
 
 	@Override
-	public boolean interpret(String line) {
+	public boolean interpret(String line) {		
 		String[] parts = line.split("\\s+", 2);
 		
 		if (parts.length == 2) {
@@ -21,6 +21,7 @@ public class SimpleTelnetInterpreter implements ITelnetInterpreter {
 			return handle(command, args);
 		}
 		else if (parts.length == 1) {
+			if (parts[0].length() == 0) return true;
 			return handle(parts[0], new String[0]);
 		}
 		else return true;
@@ -34,6 +35,11 @@ public class SimpleTelnetInterpreter implements ITelnetInterpreter {
 	@Override
 	public void onClose() {
 		getWriter().println("Goodbye");
+	}
+	
+	public void prompt() {
+		getWriter().print("> ");
+		getWriter().flush();
 	}
 	
 	protected boolean handle(String command, String[] args) {
