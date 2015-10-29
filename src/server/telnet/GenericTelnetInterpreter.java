@@ -64,6 +64,7 @@ public class GenericTelnetInterpreter extends SimpleTelnetInterpreter {
 				commands.add(method.getName());
 			}
 		}
+		Collections.sort(commands);
 		out.print("Available Commands: ");
 		Iterator<String> iter = commands.iterator();
 		while(iter.hasNext()) {
@@ -97,6 +98,7 @@ public class GenericTelnetInterpreter extends SimpleTelnetInterpreter {
 		
 		out.println("Available Commands:");
 		
+		// TODO: pretty printing
 		for (Entry<String, CommandInfo> commandEntry : helpData.entrySet()) {
 			String command = commandEntry.getKey();
 			CommandInfo info = commandEntry.getValue();

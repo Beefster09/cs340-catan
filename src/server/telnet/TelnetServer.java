@@ -36,6 +36,7 @@ public class TelnetServer implements Runnable {
 
 	@Override
 	public void run() {
+		// TODO: use a thread pool?
 		while (true) {
 			try {
 				Socket socket = serverSocket.accept();
@@ -65,7 +66,7 @@ public class TelnetServer implements Runnable {
 
 				socket.close();
 
-				return;
+				//return;
 
 			} catch (IOException e) {
 				e.printStackTrace();
