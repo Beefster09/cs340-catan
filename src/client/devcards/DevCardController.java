@@ -15,6 +15,7 @@ import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.DevCardList;
 import shared.model.ModelFacade;
+import shared.model.Player;
 import client.base.*;
 import client.misc.ClientManager;
 import client.misc.IMessageView;
@@ -124,19 +125,28 @@ public class DevCardController extends Controller implements IDevCardController 
 		listOfDevCards.add(DevCardType.SOLDIER);
 		listOfDevCards.add(DevCardType.YEAR_OF_PLENTY);
 		
-		DevCardList devCards = model.getCatanModel().getPlayers().get(ClientManager.getLocalPlayer().getIndex()).getOldDevCards();
+		Player currentPlayer = model.getCatanModel().getPlayers().get(ClientManager.getLocalPlayer().getIndex());
+		DevCardList oldCards = currentPlayer.getOldDevCards();
+		DevCardList newCards = currentPlayer.getNewDevCards();
 
 		for(DevCardType type : listOfDevCards){
-			int count = devCards.count(type);
-			if(count > 0){
-				getPlayCardView().setCardEnabled(type, true);
-				getPlayCardView().setCardAmount(type, count);
+			int oldCount = oldCards.count(type);
+			int newCount = newCards.count(type);
+			if(oldCount + newCount > 0){
+				if(oldCount > 0){
+					getPlayCardView().setCardEnabled(type, true);
+				}
+				else{
+					getPlayCardView().setCardEnabled(type, false);
+				}
+				getPlayCardView().setCardAmount(type, oldCount + newCount);
 			}
 			else{
 				getPlayCardView().setCardEnabled(type, false);
-				getPlayCardView().setCardAmount(type, count);
+				getPlayCardView().setCardAmount(type, 0);
 			}
 		}
+		
 		getPlayCardView().showModal();
 	}
 
