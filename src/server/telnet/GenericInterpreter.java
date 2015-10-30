@@ -24,10 +24,12 @@ public class GenericInterpreter extends SimpleInterpreter {
 
 		for (Method method : getClass().getMethods()) {
 			if (method.isAnnotationPresent(Command.class)) {
+				
+				String commandName = camelToDash(method.getName());
 				// you can't overload commands... yet.
-				assert !dispatchTable.containsKey(method.getName());
+				assert !dispatchTable.containsKey(commandName);
 
-				dispatchTable.put(method.getName(), method);
+				dispatchTable.put(commandName, method);
 
 				// annotation is also used to derive help data
 				Command command = null;
@@ -43,13 +45,25 @@ public class GenericInterpreter extends SimpleInterpreter {
 					description = command.info();
 				}
 
-				helpData.put(method.getName(), new CommandInfo(command.args(),
+				helpData.put(commandName, new CommandInfo(command.args(),
 						command.info(), description));
-
-				System.out.println(method);
 			}
 		}
 
+	}
+
+	private static String camelToDash(String str) {
+		StringBuilder result = new StringBuilder();
+		
+		for (int i = 0; i < str.length(); ++i) {
+			char c = str.charAt(i);
+			if (Character.isUpperCase(c)) {
+				result.append('-');
+			}
+			result.append(Character.toLowerCase(c));
+		}
+		
+		return result.toString();
 	}
 
 	public GenericInterpreter(OutputStream ostream) {
@@ -60,8 +74,8 @@ public class GenericInterpreter extends SimpleInterpreter {
 	}
 
 	@Override
-	protected void handle(String command, String[] strArgs) {
-		command = command.toLowerCase();
+	final protected void handle(String command, String[] strArgs) {
+		command = camelToDash(command);
 		if (dispatchTable.containsKey(command)) {
 			Method handler = dispatchTable.get(command);
 			int numArgs = handler.getParameterTypes().length;
@@ -108,7 +122,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 			try {
 				Object result = handler.invoke(this, args.toArray());
 				if (result != null) {
-					getWriter().println("RESULT: " + result.toString());
+					getWriter().println(resultString() + result.toString());
 				}
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
@@ -119,6 +133,10 @@ public class GenericInterpreter extends SimpleInterpreter {
 		} else {
 			getWriter().println("No such command: " + command);
 		}
+	}
+
+	protected String resultString() {
+		return "RESULT: ";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -152,6 +170,18 @@ public class GenericInterpreter extends SimpleInterpreter {
 	@Command(info = "Closes this interpreter session.")
 	public void quit() {
 		exitInterpreter();
+	}
+	
+	@Command(info = "Echoes user input.")
+	public int echo(String... input) {
+		PrintWriter out = getWriter();
+		for(String chunk : input) {
+			out.print(chunk);
+			out.print(' ');
+		}
+		out.println();
+		
+		return input.length;
 	}
 
 	@Command(info = "Shows a list of available commands")

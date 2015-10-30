@@ -6,26 +6,32 @@ import server.telnet.*;
 
 public class CatanCheatHandler extends GenericInterpreter {
 
-	private static final String cheatCode = "secret";
-
-	/*static {
-		registerHelp("cheat", new CommandInfo(new String[] { "<code>" },
-				"Enables cheats if the cheat code is correct."));
-		registerHelp("setroll", new CommandInfo("Sets the next roll(s)."));
-		registerHelp("uncheat", new CommandInfo("Disables cheats."));
-	}*/
+	private final String cheatCode;
 
 	private boolean cheatsEnabled = false;
 
 	public static void main(String[] args) throws Exception {
 		TelnetServer server = new TelnetServer(
-				new GenericInterpreterFactory(CatanCheatHandler.class));
+				new GenericInterpreterFactory(CatanCheatHandler.class, "qwerty"));
 
 		server.run();
 	}
 
 	public CatanCheatHandler(OutputStream ostream) {
 		super(ostream);
+		
+		cheatCode = "secret";
+	}
+
+	public CatanCheatHandler(OutputStream ostream, String code) {
+		super(ostream);
+		
+		cheatCode = code;
+	}
+	
+	@Override
+	protected String resultString() {
+		return "==> ";
 	}
 
 	@Command(args = {"<code>"}, info = "Enables cheats if the cheat code is correct.")
@@ -45,7 +51,7 @@ public class CatanCheatHandler extends GenericInterpreter {
 	}
 
 	@Command(args = {"<roll...>"}, info = "Sets the next roll(s).")
-	public void setroll(Integer... rolls) {
+	public void setRoll(Integer... rolls) {
 		if (!cheatsEnabled) {
 			getWriter().println("Cheats are disabled.");
 			return;
@@ -55,8 +61,9 @@ public class CatanCheatHandler extends GenericInterpreter {
 		for (int roll : rolls) getWriter().println(roll);
 		getWriter().println("Success!");
 	}
-	
-	public void setDevCardStack(String... cards) {
+
+	@Command(args = {"<card...>"}, info = "Sets the next dev card(s).")
+	public void setDevCard(String... cards) {
 		if (!cheatsEnabled) {
 			getWriter().println("Cheats are disabled.");
 			return;
