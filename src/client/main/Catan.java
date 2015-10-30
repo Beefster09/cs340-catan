@@ -87,7 +87,6 @@ public class Catan extends JFrame
 																				 newGameView,
 																				 selectColorView,
 																				 joinMessageView);
-				joinController.setPWC(playerWaitingController);
 				joinController.setJoinAction(new IAction() {
 					@Override
 					public void execute()
@@ -113,7 +112,6 @@ public class Catan extends JFrame
 					}
 				});
 				loginView.setController(loginController);
-//				loginView.setController(loginController);
 				
 				loginController.start();
 			}
