@@ -283,7 +283,7 @@ public class ModelFacade {
 					e.printStackTrace();
 				}
 			}
-			else if (model.getTradeOffer() != null) {
+			else{// if (model.getTradeOffer() != null) {
 				model.setTradeOffer(null);
 				for (IModelListener listener : listeners) {
 					try {
