@@ -16,7 +16,16 @@ public class ClientManager {
 	public static final int SERVER_TYPE_SERVER = 1;
 	public static final int SERVER_TYPE_MOCK = 2;
 	
+	public static String host = null;
+	public static int port = -1;
+	
 	public static final int DEFAULT_SERVER_TYPE = SERVER_TYPE_PROXY;
+		
+	
+	public static void setServerHostAndPort(String host, int port){
+		ClientManager.host = host;
+		ClientManager.port = port;
+	}
 	
 	public static ModelFacade getModel() {
 		if (model == null) {
@@ -36,7 +45,7 @@ public class ClientManager {
 		switch (type) {
 		default:
 		case SERVER_TYPE_PROXY:
-			server = new ServerProxy();
+			server = new ServerProxy(ClientManager.host, ClientManager.port);
 			break;
 		case SERVER_TYPE_SERVER:
 			//server = new Server();

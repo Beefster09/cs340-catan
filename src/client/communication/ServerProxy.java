@@ -35,7 +35,7 @@ import shared.model.ResourceTradeList;
  *
  */
 public class ServerProxy implements IServer {
-	
+		
 	//Get the Singleton for this class
 	//private static IServer instance = new ServerProxy();
 	@Deprecated
@@ -45,8 +45,12 @@ public class ServerProxy implements IServer {
 	
 
 	private ClientCommunicator commuincator = new ClientCommunicator();
-	
-	public static void main(String[] args) throws UserException, ServerException, UserException, GameInitializationException, IllegalArgumentException, JoinGameException{
+	private String host = null;
+	private int port = -1;
+
+	public ServerProxy(String host, int port){
+		this.host = host;
+		this.port = port;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -54,7 +58,7 @@ public class ServerProxy implements IServer {
 	public Session login(String username, String password)
 			throws UserException, ServerException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/user/login");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/user/login");
 		o.put("requestType", "POST");
 		o.put("username", username);
 		o.put("password", password);
@@ -70,7 +74,7 @@ public class ServerProxy implements IServer {
 	public Session register(String username, String password)
 			throws UserException, ServerException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/user/register");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/user/register");
 		o.put("requestType", "POST");
 		o.put("username", username);
 		o.put("password", password);
@@ -86,7 +90,7 @@ public class ServerProxy implements IServer {
 	public List<GameHeader> getGameList() throws ServerException, UserException {
 		try{
 			JSONObject o = new JSONObject();
-			o.put("url","http://localhost:8081/games/list");
+			o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/list");
 			o.put("requestType", "GET");
 			JSONObject returned = commuincator.preJoin(o);
 				
@@ -124,7 +128,7 @@ public class ServerProxy implements IServer {
 			throws GameInitializationException, ServerException, UserException {
 		try{
 			JSONObject o = new JSONObject();
-			o.put("url","http://localhost:8081/games/create");
+			o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/create");
 			o.put("requestType", "POST");
 			o.put("name", name);
 			o.put("randomTiles", randomTiles);
@@ -160,7 +164,7 @@ public class ServerProxy implements IServer {
 	public boolean joinGame(int gameID, CatanColor color)
 			throws JoinGameException, ServerException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/games/join");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
 		o.put("requestType", "POST");
 		o.put("id", gameID);
 		o.put("color", (color.toString()).toLowerCase());
@@ -179,7 +183,7 @@ public class ServerProxy implements IServer {
 			throws GamePersistenceException, ServerException, UserException{
 		try{
 			JSONObject o = new JSONObject();
-			o.put("url","http://localhost:8081/games/save");
+			o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/save");
 			o.put("requestType", "POST");
 			o.put("id", gameID);
 			o.put("name", filename);
@@ -196,7 +200,7 @@ public class ServerProxy implements IServer {
 			throws ServerException, UserException {
 		try{
 			JSONObject o = new JSONObject();
-			o.put("url","http://localhost:8081/games/load");
+			o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/load");
 			o.put("requestType", "POST");
 			o.put("name", filename);
 			commuincator.preJoin(o);
@@ -211,7 +215,7 @@ public class ServerProxy implements IServer {
 	public JSONObject getModel(int version)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/model?version=" + version);
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/model?version=" + version);
 		o.put("requestType", "GET");
 		o.put("version", version);
 
@@ -223,7 +227,7 @@ public class ServerProxy implements IServer {
 	public JSONObject resetGame()
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/reset");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/reset");
 		o.put("requestType", "POST");
 		
 		return commuincator.send(o);
@@ -234,7 +238,7 @@ public class ServerProxy implements IServer {
 	public List<Command> getCommands()
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/commands");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/commands");
 		o.put("requestType", "GET");
 		JSONObject returned = commuincator.send(o);
 		//TODO figure out how the list is returned
@@ -246,7 +250,7 @@ public class ServerProxy implements IServer {
 	public JSONObject executeCommands(List<Command> commands)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/commands");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/commands");
 		o.put("requestType", "POST");
 		o.put("commands", commands);
 		
@@ -258,7 +262,7 @@ public class ServerProxy implements IServer {
 	public void addAIPlayer(AIType type)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/addAI");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/addAI");
 		o.put("requestType", "POST");
 		o.put("AIType", type.toString());
 		commuincator.send(o);
@@ -269,7 +273,7 @@ public class ServerProxy implements IServer {
 	public List<String> getAITypes()
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/game/listAI");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/listAI");
 		o.put("requestType", "GET");
 		JSONObject returned = commuincator.send(o);
 		
@@ -281,7 +285,7 @@ public class ServerProxy implements IServer {
 	public JSONObject sendChat(PlayerReference user, String message)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/sendChat");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/sendChat");
 		o.put("requestType", "POST");
 		o.put("playerIndex", user.getIndex());
 		o.put("type", "sendChat");
@@ -295,7 +299,7 @@ public class ServerProxy implements IServer {
 	public JSONObject rollDice(PlayerReference user, int number)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/rollNumber");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/rollNumber");
 		o.put("requestType", "POST");
 		o.put("type", "rollNumber");
 		o.put("playerIndex",user.getIndex());
@@ -310,7 +314,7 @@ public class ServerProxy implements IServer {
 			PlayerReference victim)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/robPlayer");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/robPlayer");
 		o.put("requestType", "POST");
 		o.put("type", "robPlayer");
 		o.put("playerIndex", user.getIndex());
@@ -328,7 +332,7 @@ public class ServerProxy implements IServer {
 	public JSONObject buyDevCard(PlayerReference user)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/buyDevCard");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buyDevCard");
 		o.put("requestType", "POST");
 		o.put("type", "buyDevCard");
 		o.put("playerIndex", user.getIndex());
@@ -342,7 +346,7 @@ public class ServerProxy implements IServer {
 			ResourceType type2)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/Year_of_Plenty");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Year_of_Plenty");
 		o.put("requestType", "POST");
 		o.put("type", "Year_of_Plenty");
 		o.put("playerIndex", user.getIndex());
@@ -358,7 +362,7 @@ public class ServerProxy implements IServer {
 			EdgeLocation road2)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/Road_Building");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Road_Building");
 		o.put("requestType", "POST");
 		o.put("type", "Road_Building");
 		o.put("playerIndex", user.getIndex());
@@ -376,7 +380,7 @@ public class ServerProxy implements IServer {
 			PlayerReference victim)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/Soldier");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Soldier");
 		o.put("requestType", "POST");
 		o.put("type", "Soldier");
 		o.put("playerIndex", user.getIndex());
@@ -394,7 +398,7 @@ public class ServerProxy implements IServer {
 	public JSONObject monopoly(PlayerReference user, ResourceType type)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/Monopoly");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monopoly");
 		o.put("requestType", "POST");
 		o.put("type", "Monopoly");
 		o.put("resource", type.toString().toLowerCase());
@@ -409,7 +413,7 @@ public class ServerProxy implements IServer {
 			boolean free)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/buildRoad");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildRoad");
 		o.put("requestType", "POST");
 		o.put("type", "buildRoad");
 		o.put("playerIndex", user.getIndex());
@@ -426,7 +430,7 @@ public class ServerProxy implements IServer {
 			boolean free)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/buildSettlement");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildSettlement");
 		o.put("requestType", "POST");
 		o.put("type", "buildSettlement");
 		o.put("playerIndex", user.getIndex());
@@ -442,7 +446,7 @@ public class ServerProxy implements IServer {
 	public JSONObject buildCity(PlayerReference user, VertexLocation location)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/buildCity");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildCity");
 		o.put("requestType", "POST");
 		o.put("type", "buildCity");
 		o.put("playerIndex", user.getIndex());
@@ -458,7 +462,7 @@ public class ServerProxy implements IServer {
 			PlayerReference receiver)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/offerTrade");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/offerTrade");
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
 		o.put("playerIndex", user.getIndex());
@@ -473,7 +477,7 @@ public class ServerProxy implements IServer {
 	public JSONObject respondToTrade(PlayerReference user, boolean accept)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/acceptTrade");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/acceptTrade");
 		o.put("requestType", "POST");
 		o.put("type", "acceptTrade");
 		o.put("playerIndex", user.getIndex());
@@ -488,7 +492,7 @@ public class ServerProxy implements IServer {
 			ResourceType outResource, int ratio)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/maritimeTrade");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/maritimeTrade");
 		o.put("requestType", "POST");
 		o.put("type", "maritimeTrade");
 		o.put("playerIndex", user.getIndex());
@@ -504,7 +508,7 @@ public class ServerProxy implements IServer {
 	public JSONObject discardCards(PlayerReference user, ResourceList cards)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/discardCards");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/discardCards");
 		o.put("requestType", "POST");
 		o.put("type", "discardCards");
 		o.put("playerIndex", user.getIndex());
@@ -518,7 +522,7 @@ public class ServerProxy implements IServer {
 	public JSONObject finishTurn(PlayerReference user)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/finishTurn");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/finishTurn");
 		o.put("requestType", "POST");
 		o.put("type", "finishTurn");
 		o.put("playerIndex", user.getIndex());
@@ -530,7 +534,7 @@ public class ServerProxy implements IServer {
 	public void changeLogLevel(LogLevel level)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/");
 		o.put("requestType", "POST");
 		o.put("logLevel", level.toString());
 		commuincator.send(o);
@@ -542,7 +546,7 @@ public class ServerProxy implements IServer {
 	public JSONObject monument(PlayerReference user)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
-		o.put("url","http://localhost:8081/moves/Monument");
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monument");
 		o.put("requestType", "POST");
 		o.put("type", "Monument");
 		o.put("playerIndex", user.getIndex());
