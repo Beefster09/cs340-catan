@@ -4,12 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.java_cup.internal.runtime.Symbol;
-
 import shared.definitions.*;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.PlayerReference;
 import shared.model.ResourceTradeList;
@@ -28,7 +25,6 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	private IDomesticTradeOverlay tradeOverlay;
 	private IWaitView waitOverlay;
 	private IAcceptTradeOverlay acceptOverlay;
-	private ModelFacade modelFacade = ClientManager.getModel();
 	
 	private Map<ResourceType, Integer> offered = new HashMap<ResourceType, Integer>();
 	private Map<ResourceType, Integer> wanted = new HashMap<ResourceType, Integer>();
