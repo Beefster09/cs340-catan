@@ -1,6 +1,6 @@
 package server.telnet;
 
-public interface ITelnetInterpreter {
+public interface Interpreter {
 	
 	/**
 	 * @param command

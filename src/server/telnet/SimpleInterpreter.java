@@ -3,28 +3,33 @@ package server.telnet;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-public class SimpleTelnetInterpreter implements ITelnetInterpreter {
+public class SimpleInterpreter implements Interpreter {
 	
 	private PrintWriter out;
+	private boolean keepOpen = true;
 	
-	public SimpleTelnetInterpreter(OutputStream ostream) {
+	public SimpleInterpreter(OutputStream ostream) {
 		setOut(new PrintWriter(ostream, true));
 	}
 
 	@Override
-	public boolean interpret(String line) {		
+	public boolean interpret(String line) {
+		// TODO: quote escapes
+		
 		String[] parts = line.split("\\s+", 2);
 		
 		if (parts.length == 2) {
 			String command = parts[0];
 			String[] args = parts[1].split("\\s+");
-			return handle(command, args);
+			handle(command, args);
 		}
 		else if (parts.length == 1) {
 			if (parts[0].length() == 0) return true;
-			return handle(parts[0], new String[0]);
+			handle(parts[0], new String[0]);
 		}
 		else return true;
+		
+		return keepOpen;
 	}
 
 	@Override
@@ -42,16 +47,21 @@ public class SimpleTelnetInterpreter implements ITelnetInterpreter {
 		getWriter().flush();
 	}
 	
-	protected boolean handle(String command, String[] args) {
-		if (command.equals("quit")) return false;
+	protected void handle(String command, String[] args) {
+		if (command.equals("quit")) {
+			exitInterpreter();
+			return;
+		}
 		
 		getWriter().print(command + " ");
 		for (String arg : args) {
 			getWriter().print(arg + " ");
 		}
 		getWriter().println();
-		
-		return true;
+	}
+
+	final protected void exitInterpreter() {
+		keepOpen = false;
 	}
 
 	public PrintWriter getWriter() {

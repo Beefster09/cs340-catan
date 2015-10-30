@@ -4,19 +4,19 @@ import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class GenericTelnetInterpreterFactory implements
-		ITelnetInterpreterFactory {
+public class GenericInterpreterFactory implements
+		InterpreterFactory {
 	
-	Constructor<? extends GenericTelnetInterpreter> interpCtor;
+	Constructor<? extends GenericInterpreter> interpCtor;
 	
-	public GenericTelnetInterpreterFactory(
-			Class<? extends GenericTelnetInterpreter> interpClass)
+	public GenericInterpreterFactory(
+			Class<? extends GenericInterpreter> interpClass)
 			throws NoSuchMethodException, SecurityException {
 		this.interpCtor = interpClass.getConstructor(OutputStream.class);
 	}
 
 	@Override
-	public ITelnetInterpreter getInterpreter(OutputStream out) {
+	public Interpreter getInterpreter(OutputStream out) {
 		try {
 			return interpCtor.newInstance(out);
 		} catch (InstantiationException | IllegalAccessException

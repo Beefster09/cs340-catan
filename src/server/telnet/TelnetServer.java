@@ -14,59 +14,71 @@ public class TelnetServer implements Runnable {
 	 */
 	public static void main(String[] args) throws Exception {
 		TelnetServer telnet = new TelnetServer(
-				new GenericTelnetInterpreterFactory(
-						GenericTelnetInterpreter.class));
+				new GenericInterpreterFactory(
+						GenericInterpreter.class));
 		System.out.println("Starting Telnet Server on port " + DEFAULT_PORT);
 		telnet.run();
 	}
 
 	private ServerSocket serverSocket;
-	private ITelnetInterpreterFactory interpreterFactory;
+	private InterpreterFactory interpreterFactory;
 
-	public TelnetServer(int port, ITelnetInterpreterFactory interpreterFactory)
+	public TelnetServer(int port, InterpreterFactory interpreterFactory)
 			throws IOException {
 		serverSocket = new ServerSocket(port);
 		this.interpreterFactory = interpreterFactory;
 	}
 
-	public TelnetServer(ITelnetInterpreterFactory interpreter)
+	public TelnetServer(InterpreterFactory interpreter)
 			throws IOException {
 		this(DEFAULT_PORT, interpreter);
 	}
 
 	@Override
 	public void run() {
-		// TODO: use a thread pool?
 		while (true) {
 			try {
-				Socket socket = serverSocket.accept();
+				final Socket socket = serverSocket.accept();
 				System.out.println("Accepted Telnet connection from "
 						+ socket.getInetAddress().toString() + ":"
 						+ socket.getPort());
 
 				OutputStream os = socket.getOutputStream();
-				ITelnetInterpreter interpreter = interpreterFactory
+				final Interpreter interpreter = interpreterFactory
 						.getInterpreter(os);
 
-				interpreter.onOpen();
+				new Thread() {
 
-				BufferedReader br = new BufferedReader(new InputStreamReader(
-						socket.getInputStream()));
+					@Override
+					public void run() {
+						try {
+							interpreter.onOpen();
 
-				do {
-					interpreter.prompt();
-				}
-				while (interpreter.interpret(br.readLine()));
+							BufferedReader br = new BufferedReader(new InputStreamReader(
+									socket.getInputStream()));
 
-				interpreter.onClose();
+							do {
+								interpreter.prompt();
+							}
+							while (interpreter.interpret(br.readLine()));
 
-				System.out.println("Closing Telnet connection from "
-						+ socket.getInetAddress().toString() + ":"
-						+ socket.getPort());
+							interpreter.onClose();
 
-				socket.close();
-
-				//return;
+						} catch (IOException e) {
+							e.printStackTrace();
+						} finally {
+							System.out.println("Closing Telnet connection from "
+									+ socket.getInetAddress().toString() + ":"
+									+ socket.getPort());
+							try {
+								socket.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+				}.start();
 
 			} catch (IOException e) {
 				e.printStackTrace();
