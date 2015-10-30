@@ -7,7 +7,8 @@ import java.util.regex.*;
 
 public class SimpleInterpreter implements Interpreter {
 	
-	private static Pattern tokenRegex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
+	private static Pattern tokenRegex = //Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
+			Pattern.compile("\"([^\"]*)\"|'([^']*)'|[^\\s]+");
 	
 	private PrintWriter out;
 	private boolean keepOpen = true;
