@@ -2,6 +2,8 @@ package client.resources;
 
 import java.util.*;
 
+import javax.swing.SwingUtilities;
+
 import shared.definitions.*;
 import shared.model.*;
 
@@ -73,12 +75,21 @@ public class ResourceBarController extends Controller implements
 		view.setElementAmount(ResourceBarElement.SOLDIERS,
 				localPlayer.getSoldiers());
 
-		if (isYourTurn()) {
-			enableAvailableActions();
-		}
-		else {
-			disableAllActions();
-		}
+		// Ugly workaround to avoid checking if it's your turn before the turn tracker has
+		// been initialized.
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				if (isYourTurn()) {
+					enableAvailableActions();
+				}
+				else {
+					disableAllActions();
+				}
+			}
+			
+		});
 		
 	}
 
