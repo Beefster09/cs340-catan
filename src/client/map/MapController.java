@@ -67,12 +67,6 @@ public class MapController extends Controller implements IMapController {
 			@Override
 			public void run() {
 				System.out.println("MapController: TurnTracker has changed");
-				// System.out.println("Local Player: " +
-				// ClientManager.getLocalPlayer().getPlayer().getName()
-				// + " (" + ClientManager.getLocalPlayer() + ")");
-				// System.out.println("Current Player: " +
-				// turnTracker.getCurrentPlayer().getPlayer().getName()
-				// + " (" + turnTracker.getCurrentPlayer() + ")");
 				System.out.println("Phase: " + turnTracker.getStatus());
 
 				if (turnTracker.getCurrentPlayer().equals(
@@ -80,8 +74,6 @@ public class MapController extends Controller implements IMapController {
 						&& getModel().getCatanModel().getPlayers().size() >= 4) {
 					System.out.println("It's your turn!");
 					state = new YourTurnState(MapController.this);
-
-					// TODO: logic to check if an overlay is already open.
 
 					switch (turnTracker.getStatus()) {
 					case FirstRound:

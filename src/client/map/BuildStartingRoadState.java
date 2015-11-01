@@ -6,6 +6,7 @@ import javax.swing.SwingWorker;
 
 import org.json.simple.JSONObject;
 
+import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeLocation;
 import shared.locations.VertexLocation;
@@ -56,6 +57,7 @@ public class BuildStartingRoadState extends MapControllerState {
 	@Override
 	public MapControllerState cancelMove() throws InvalidActionException {
 		getController().refreshPieces();
+		getView().startDrop(PieceType.SETTLEMENT, getYourColor(), false);
 		return new BuildStartingSettlementState(getController());
 	}
 

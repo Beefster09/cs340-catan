@@ -22,7 +22,6 @@ public class Catan extends JFrame
 	
 	public Catan()
 	{
-		
 		client.base.OverlayView.setWindow(this);
 		
 		this.setTitle("Settlers of Catan");
@@ -46,6 +45,14 @@ public class Catan extends JFrame
 	
 	public static void main(final String[] args)
 	{
+		String host = "localhost";
+		int port = 8081;
+		if(args.length == 2){
+			host = args[0];
+			port = Integer.valueOf(args[1]);
+		}
+		ClientManager.setServerHostAndPort(host, port);
+
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -80,7 +87,6 @@ public class Catan extends JFrame
 																				 newGameView,
 																				 selectColorView,
 																				 joinMessageView);
-				joinController.setPWC(playerWaitingController);
 				joinController.setJoinAction(new IAction() {
 					@Override
 					public void execute()
@@ -106,7 +112,6 @@ public class Catan extends JFrame
 					}
 				});
 				loginView.setController(loginController);
-//				loginView.setController(loginController);
 				
 				loginController.start();
 			}
