@@ -85,7 +85,10 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			}
 			return;
 		}
-		
+		else {
+			int i = 0;
+			updatePlayerScoreView(ClientManager.getModel().getCurrentPlayer().getIndex());
+		}
 	}
 	
 	@Override
