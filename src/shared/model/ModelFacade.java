@@ -347,7 +347,7 @@ public class ModelFacade {
 		private void updateWinnerFromJSON(JSONObject json) {
 			int winner = (int) (long) json.get("winner");
 			//PlayerReference otherPlayer = new PlayerReference(model, winner);
-			if (model.getWinner() != -1 || model.getWinner() != winner) {
+			if (model.getWinner() != -1) {
 				model.setWinner(winner);
 				for (IModelListener listener : listeners) {
 					try {
