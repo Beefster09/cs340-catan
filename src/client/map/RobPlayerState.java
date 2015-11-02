@@ -41,8 +41,8 @@ public class RobPlayerState extends MapControllerState {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				
-				PlayerReference victim = null;
+			
+				PlayerReference victim =  PlayerReference.getDummyPlayerReference(-1);
 				
 				if (victimInfo != null) {
 					victim = new PlayerReference(ClientManager
