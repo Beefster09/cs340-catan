@@ -115,10 +115,14 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 			if (wanted.get(resource) != null) {
 				current = wanted.get(resource) - 1;
 				wanted.put(resource, current);
+				offered.remove(resource);
 				getTradeOverlay().setResourceAmount(resource, Integer.toString(current));
 				
 				if (current <= 0) {
 					getTradeOverlay().setResourceAmountChangeEnabled(resource, true, false);
+				}
+				else{
+					getTradeOverlay().setResourceAmountChangeEnabled(resource, true, true);
 				}
 			}
 		}
@@ -126,9 +130,13 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		if (offered.get(resource) != null) {
 			int current = offered.get(resource)-1;
 			offered.put(resource, current);
+			wanted.remove(resource);
 			getTradeOverlay().setResourceAmount(resource, Integer.toString(current));
-			if (current == 0) {
+			if (current <= 0) {
 				getTradeOverlay().setResourceAmountChangeEnabled(resource, true, false);
+			}
+			else{
+				getTradeOverlay().setResourceAmountChangeEnabled(resource, true, true);
 			}
 		}
 		
@@ -148,11 +156,15 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 				current = 1;
 			}
 			wanted.put(resource, current);
+			offered.remove(resource);
 			getTradeOverlay().setResourceAmount(resource, Integer.toString(current));
 			
 			getTradeOverlay().setResourceAmountChangeEnabled(resource, true, true);
 			if (current >= 15) {
 				getTradeOverlay().setResourceAmountChangeEnabled(resource, false, true);
+			}
+			else{
+				getTradeOverlay().setResourceAmountChangeEnabled(resource, true, true);
 			}
 		}
 		else {
@@ -164,11 +176,15 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 				current = 1;
 			}
 			offered.put(resource, current);
+			wanted.remove(resource);
 			
 			getTradeOverlay().setResourceAmount(resource, Integer.toString(current));
 			
 			if (getLocalHand().get(resource) <= current) {
 				getTradeOverlay().setResourceAmountChangeEnabled(resource, false, true);
+			}
+			else{
+				getTradeOverlay().setResourceAmountChangeEnabled(resource, true, true);
 			}
 		}
 		

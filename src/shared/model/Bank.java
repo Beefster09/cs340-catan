@@ -15,11 +15,11 @@ import shared.exceptions.SchemaMismatchException;
  */
 public class Bank {
 	
-	private final int NUM_MONOPOLY_CARDS = 2;
-	private final int NUM_MONUMENT_CARDS = 5;
-	private final int NUM_ROAD_BUILD_CARDS = 2;
-	private final int NUM_SOLDIER_CARDS = 14;
-	private final int NUM_YEAR_OF_PLENTY_CARDS = 2;
+	private static final int NUM_MONOPOLY_CARDS = 2;
+	private static final int NUM_MONUMENT_CARDS = 5;
+	private static final int NUM_ROAD_BUILD_CARDS = 2;
+	private static final int NUM_SOLDIER_CARDS = 14;
+	private static final int NUM_YEAR_OF_PLENTY_CARDS = 2;
 
 	private ResourceList resources;
 	private DevCardList devCards;
@@ -51,7 +51,13 @@ public class Bank {
 	}
 	
 	public Bank(JSONObject json) throws SchemaMismatchException {
-		resources = ResourceList.fromJSONObject(json);
+		try {
+			resources = ResourceList.fromJSONObject((JSONObject) json.get("bank"));
+			devCards = DevCardList.fromJSONObject((JSONObject) json.get("deck"));
+		} catch (ClassCastException | IllegalArgumentException e) {
+			throw new SchemaMismatchException("The JSON does not match the expected schema" +
+					"for the Bank:\n" + json.toJSONString());
+		}
 	}
 	
 	/**
@@ -97,5 +103,15 @@ public class Bank {
 			return false;
 		return true;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Bank [resources=" + resources + ", devCards=" + devCards + "]";
+	}
+	
+	
 	
 }

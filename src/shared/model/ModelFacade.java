@@ -99,10 +99,10 @@ public class ModelFacade {
 			//TRADEOFFER
 			updateTradeOfferFromJSON(json,players);
 			
-			//CHAT NOT DONE
+			//CHAT
 			updateChatFromJSON(json);
 			
-			//LOG NOT DONE
+			//LOG
 			updateLogFromJSON(json);
 			
 			//WINNER
@@ -113,9 +113,9 @@ public class ModelFacade {
 		}
 		
 		private void updateBankFromJSON(JSONObject json) {
-			JSONObject object = (JSONObject) json.get("bank");
+			//JSONObject object = (JSONObject) json.get("bank");
 			try {
-				Bank otherBank = new Bank(object);
+				Bank otherBank = new Bank(json);
 				if (model.getBank() == null || !model.getBank().equals(otherBank)) {
 					model.setBank(otherBank);
 					for (IModelListener listener : listeners) {
@@ -283,7 +283,7 @@ public class ModelFacade {
 					e.printStackTrace();
 				}
 			}
-			else if (model.getTradeOffer() != null) {
+			else{// if (model.getTradeOffer() != null) {
 				model.setTradeOffer(null);
 				for (IModelListener listener : listeners) {
 					try {
@@ -452,6 +452,10 @@ public class ModelFacade {
 		 * @return false if otherwise
 		 */
 		public synchronized boolean canBuyDevelopmentCard() {
+			// Make sure there are development cards in the bank.
+			if (getCatanModel().getBank().getDevCards().count() <= 0) {
+				return false;
+			}
 			
 			Player currentPlayer = getCurrentPlayer().getPlayer();
 			ResourceList hand = currentPlayer.getResources();
