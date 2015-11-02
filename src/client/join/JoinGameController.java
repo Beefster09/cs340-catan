@@ -128,7 +128,10 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		}
 	}
 	
-	
+	@Override
+	public void gameFinished() {
+		this.start();
+	}
 
 	@Override
 	public void startCreateNewGame() {

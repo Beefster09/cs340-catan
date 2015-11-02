@@ -786,4 +786,15 @@ public class ModelFacade {
 		public synchronized Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
 			return model.getMap().getMunicipalitiesAround(hex);
 		}
+
+		public void notifyGameFinished() {
+			for (IModelListener listener : listeners) {
+				try {
+					listener.gameFinished();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 }

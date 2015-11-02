@@ -17,6 +17,7 @@ public abstract class AbstractModelListener implements IModelListener {
 	public void chatChanged(MessageList otherChat) {}
 	public void winnerChanged(int winner) {}
 	public void logChanged(MessageList otherLog) {}
+	public void gameFinished() {}
 	
 	
 }
