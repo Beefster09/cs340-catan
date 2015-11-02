@@ -38,12 +38,6 @@ public class MapController extends Controller implements IMapController {
 		// It does NOTHING but throw exceptions and return false. Always.
 		state = new NullState(this);
 	}
-	
-	@Override
-	public void winnerChanged(int winner) {
-		boardBuilt = false;
-		getView().resetBoard();
-	}
 
 	@Override
 	public void mapChanged(Board newMap) {
@@ -54,6 +48,7 @@ public class MapController extends Controller implements IMapController {
 			buildBoard(newMap);
 
 		// Assume (for now) that only pieces will change
+		// MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
 		refreshPieces();
 	}
 
@@ -72,6 +67,12 @@ public class MapController extends Controller implements IMapController {
 			@Override
 			public void run() {
 				System.out.println("MapController: TurnTracker has changed");
+				// System.out.println("Local Player: " +
+				// ClientManager.getLocalPlayer().getPlayer().getName()
+				// + " (" + ClientManager.getLocalPlayer() + ")");
+				// System.out.println("Current Player: " +
+				// turnTracker.getCurrentPlayer().getPlayer().getName()
+				// + " (" + turnTracker.getCurrentPlayer() + ")");
 				System.out.println("Phase: " + turnTracker.getStatus());
 
 				if (turnTracker.getCurrentPlayer().equals(
@@ -79,6 +80,8 @@ public class MapController extends Controller implements IMapController {
 						&& getModel().getCatanModel().getPlayers().size() >= 4) {
 					System.out.println("It's your turn!");
 					state = new YourTurnState(MapController.this);
+
+					// TODO: logic to check if an overlay is already open.
 
 					switch (turnTracker.getStatus()) {
 					case FirstRound:
@@ -139,8 +142,6 @@ public class MapController extends Controller implements IMapController {
 
 	private void buildBoard(Board board) {
 		IMapView view = getView();
-		
-		view.resetBoard();
 
 		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
 			if (hexLoc.getDistanceFromCenter() > 2) {

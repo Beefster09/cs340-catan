@@ -1151,11 +1151,12 @@ public class MapComponent extends JComponent
 
 	public void reset() {
 		hexes.clear();
+		numbers.clear();
 		ports.clear();
 		roads.clear();
 		settlements.clear();
 		cities.clear();
-		
+		robber = null;
 	}
 	
 }
