@@ -38,6 +38,12 @@ public class MapController extends Controller implements IMapController {
 		// It does NOTHING but throw exceptions and return false. Always.
 		state = new NullState(this);
 	}
+	
+	@Override
+	public void winnerChanged(int winner) {
+		boardBuilt = false;
+		getView().resetBoard();
+	}
 
 	@Override
 	public void mapChanged(Board newMap) {
@@ -48,7 +54,6 @@ public class MapController extends Controller implements IMapController {
 			buildBoard(newMap);
 
 		// Assume (for now) that only pieces will change
-		// MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
 		refreshPieces();
 	}
 
@@ -134,6 +139,8 @@ public class MapController extends Controller implements IMapController {
 
 	private void buildBoard(Board board) {
 		IMapView view = getView();
+		
+		view.resetBoard();
 
 		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(3)) {
 			if (hexLoc.getDistanceFromCenter() > 2) {

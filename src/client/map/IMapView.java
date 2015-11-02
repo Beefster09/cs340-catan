@@ -94,5 +94,7 @@ public interface IMapView extends IView
 				   boolean isCancelAllowed);
 
 	void removeAllPieces();
+
+	void resetBoard();
 }
 
