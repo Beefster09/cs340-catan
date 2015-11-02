@@ -14,9 +14,12 @@ import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.SchemaMismatchException;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
+import client.communication.ServerPoller;
 import client.data.GameInfo;
 import client.misc.ClientManager;
 
@@ -36,6 +39,7 @@ public class ModelFacade {
 		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 		
 		private List<IModelListener> listeners;
+		private ServerPoller poller;
 		
 		public ModelFacade() {
 			
@@ -343,7 +347,8 @@ public class ModelFacade {
 		private void updateWinnerFromJSON(JSONObject json) {
 			int winner = (int) (long) json.get("winner");
 			//PlayerReference otherPlayer = new PlayerReference(model, winner);
-			if (model.getWinner() != -1 || model.getWinner() != winner) {
+			if (model.getWinner() != -1 || model.getWinner() != winner ||
+					winner != -1) {
 				model.setWinner(winner);
 				for (IModelListener listener : listeners) {
 					try {
@@ -785,5 +790,25 @@ public class ModelFacade {
 
 		public synchronized Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
 			return model.getMap().getMunicipalitiesAround(hex);
+		}
+
+		public void notifyGameFinished() {
+			if (poller.isRunning()) {
+				poller.stop();
+			}
+			this.model = new CatanModel();
+			for (IModelListener listener : listeners) {
+				try {
+					listener.gameFinished();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		public void setPoller(ServerPoller poller) {
+			this.poller = poller;
+			
 		}
 }

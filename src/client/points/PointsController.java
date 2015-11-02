@@ -90,4 +90,9 @@ public class PointsController extends Controller implements IPointsController {
 		}
 		getFinishedView().showModal();
 	}
+	
+	@Override
+	public void gameFinishedFromView() {
+		ClientManager.getModel().notifyGameFinished();
+	}
 }
