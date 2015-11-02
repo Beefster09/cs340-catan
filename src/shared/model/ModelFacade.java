@@ -14,9 +14,12 @@ import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.SchemaMismatchException;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
+import client.communication.ServerPoller;
 import client.data.GameInfo;
 import client.misc.ClientManager;
 
@@ -36,6 +39,7 @@ public class ModelFacade {
 		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 		
 		private List<IModelListener> listeners;
+		private ServerPoller poller;
 		
 		public ModelFacade() {
 			
@@ -788,6 +792,10 @@ public class ModelFacade {
 		}
 
 		public void notifyGameFinished() {
+			if (poller.isRunning()) {
+				poller.stop();
+			}
+			this.model = new CatanModel();
 			for (IModelListener listener : listeners) {
 				try {
 					listener.gameFinished();
@@ -796,5 +804,10 @@ public class ModelFacade {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		public void setPoller(ServerPoller poller) {
+			this.poller = poller;
+			
 		}
 }

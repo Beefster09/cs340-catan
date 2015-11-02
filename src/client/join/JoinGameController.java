@@ -235,6 +235,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			}
 			if (modelFacade.getLocalPlayer() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
+				modelFacade.setPoller(poller);
 				poller.start();
 			}
 			// If join succeeded
