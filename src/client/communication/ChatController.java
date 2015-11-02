@@ -38,14 +38,10 @@ public class ChatController extends Controller implements IChatController {
 			
 		try {
 			
-			int localPlayerID = modelFacade.getLocalPlayer().getPlayerID();
-			List<Player> players = modelFacade.getCatanModel().getPlayers();
 			
-			Player localPlayer = players.get(localPlayerID);
+			PlayerReference localPlayer = ClientManager.getLocalPlayer();
 			
-			PlayerReference localPlayerReference = localPlayer.getReference();
-			
-			serverProxy.sendChat(localPlayerReference, message);
+			serverProxy.sendChat(localPlayer, message);
 
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
