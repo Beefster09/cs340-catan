@@ -85,7 +85,10 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			}
 			return;
 		}
-		
+		else {
+			int i = 0;
+			updatePlayerScoreView(ClientManager.getModel().getCurrentPlayer().getIndex());
+		}
 	}
 	
 	@Override
@@ -143,9 +146,9 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			boolean largestArmy = false;
 			boolean longestRoad = false;
 			boolean isTurn = false;
-			if (armyIndex == currentIndex)
+			if (armyIndex == i)
 				largestArmy = true;
-			if (roadIndex == currentIndex)
+			if (roadIndex == i)
 				longestRoad = true;
 			if (currentIndex == i)
 				isTurn = true;

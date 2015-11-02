@@ -19,6 +19,7 @@ import shared.model.Player;
 import shared.model.PlayerReference;
 import shared.model.Port;
 import shared.model.ResourceList;
+import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
 import client.misc.IMessageView;
@@ -243,5 +244,17 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 		startTrade();
 	}
 	
+	@Override
+	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if (turnTracker.getCurrentPlayer().getIndex() == 
+				ClientManager.getLocalPlayer().getIndex() &&
+				turnTracker.getStatus().equals(TurnStatus.Playing)) {
+			getTradeView().enableMaritimeTrade(true);
+		}
+		else {
+			getTradeView().enableMaritimeTrade(false);
+		}
+	}
+
 }
 

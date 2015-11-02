@@ -15,5 +15,6 @@ public interface IModelListener {
 	void chatChanged(MessageList otherChat);
 	void winnerChanged(int otherPlayer);
 	void logChanged(MessageList otherLog);
+	void gameFinished();
 
 }
