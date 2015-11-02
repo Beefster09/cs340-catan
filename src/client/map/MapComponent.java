@@ -1148,6 +1148,15 @@ public class MapComponent extends JComponent
 		settlements.clear();
 		cities.clear();
 	}
+
+	public void reset() {
+		hexes.clear();
+		ports.clear();
+		roads.clear();
+		settlements.clear();
+		cities.clear();
+		
+	}
 	
 }
 

@@ -311,6 +311,11 @@ public class MapView extends PanelView implements IMapView
 	public void removeAllPieces() {
 		map.removeGamePieces();
 	}
+
+	@Override
+	public void resetBoard() {
+		map.reset();
+	}
 	
 }
 
