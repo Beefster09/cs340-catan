@@ -33,6 +33,26 @@ public class ResourceBarController extends Controller implements
 	private boolean isYourTurn() {
 		return ClientManager.getModel().getCurrentPlayer().equals(ClientManager.getLocalPlayer());
 	}
+	
+	@Override
+	public void winnerChanged(int winner) {
+		disableAllActions();
+
+		resetAmounts();
+	}
+
+	private void resetAmounts() {
+		IResourceBarView view = getView();
+		view.setElementAmount(ResourceBarElement.BRICK, 0);
+		view.setElementAmount(ResourceBarElement.WOOD, 0);
+		view.setElementAmount(ResourceBarElement.WHEAT, 0);
+		view.setElementAmount(ResourceBarElement.ORE, 0);
+		view.setElementAmount(ResourceBarElement.SHEEP, 0);
+		view.setElementAmount(ResourceBarElement.ROAD, 0);
+		view.setElementAmount(ResourceBarElement.SETTLEMENT, 0);
+		view.setElementAmount(ResourceBarElement.CITY, 0);
+		view.setElementAmount(ResourceBarElement.SOLDIERS, 0);
+	}
 
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
