@@ -38,6 +38,13 @@ public class MapController extends Controller implements IMapController {
 		// It does NOTHING but throw exceptions and return false. Always.
 		state = new NullState(this);
 	}
+	
+
+	@Override
+	public void winnerChanged(int winner) {
+		boardBuilt = false;
+		getView().resetBoard();
+	}
 
 	@Override
 	public void mapChanged(Board newMap) {
