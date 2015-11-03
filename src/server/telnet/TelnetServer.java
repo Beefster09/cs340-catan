@@ -62,10 +62,10 @@ public class TelnetServer implements Runnable {
 							BufferedReader br = new BufferedReader(new InputStreamReader(
 									socket.getInputStream()));
 
-							do {
+							while (interpreter.isActive()) {
 								interpreter.prompt();
+								interpreter.interpret(br.readLine());
 							}
-							while (interpreter.interpret(br.readLine()));
 
 							interpreter.onClose();
 
@@ -76,7 +76,7 @@ public class TelnetServer implements Runnable {
 									+ socket.getInetAddress().toString() + ":"
 									+ socket.getPort());
 							try {
-								socket.close();
+								if (!socket.isClosed()) socket.close();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}

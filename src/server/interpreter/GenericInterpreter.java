@@ -9,8 +9,9 @@ import java.util.Map.Entry;
 
 /**
  * <b>Gotcha:</b> varargs <i>cannot</i> be primitive types.
+ * 
  * @author Justin Snyder
- *
+ * 
  */
 public class GenericInterpreter extends SimpleInterpreter {
 
@@ -24,7 +25,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 
 		for (Method method : getClass().getMethods()) {
 			if (method.isAnnotationPresent(Command.class)) {
-				
+
 				String commandName = camelToDash(method.getName());
 				// you can't overload commands... yet.
 				assert !dispatchTable.containsKey(commandName);
@@ -54,7 +55,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 
 	private static String camelToDash(String str) {
 		StringBuilder result = new StringBuilder();
-		
+
 		for (int i = 0; i < str.length(); ++i) {
 			char c = str.charAt(i);
 			if (Character.isUpperCase(c)) {
@@ -62,7 +63,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 			}
 			result.append(Character.toLowerCase(c));
 		}
-		
+
 		return result.toString();
 	}
 
@@ -101,8 +102,9 @@ public class GenericInterpreter extends SimpleInterpreter {
 					try {
 						value = convertString(strArgs[currentArg], type);
 					} catch (Exception e) {
-						getWriter().println(
-								"Invalid type for argument #" + currentArg);
+						getWriter().println("Invalid type for argument #" + currentArg);
+						getWriter().println(e.getMessage());
+						helpOnCommand(command);
 						return;
 					}
 				}
@@ -114,7 +116,14 @@ public class GenericInterpreter extends SimpleInterpreter {
 				Class<?> type = varArgType.getComponentType();
 				List<Object> varArgs = new ArrayList<>();
 				for (; currentArg < strArgs.length; ++currentArg) {
-					varArgs.add(convertString(strArgs[currentArg], type));
+					try {
+						varArgs.add(convertString(strArgs[currentArg], type));
+					} catch (Exception e) {
+						getWriter().println("Invalid type for argument #" + currentArg);
+						getWriter().println(e.getMessage());
+						helpOnCommand(command);
+						return;
+					}
 				}
 				processVarArgs(args, varArgs, currentArg, type);
 			}
@@ -126,7 +135,8 @@ public class GenericInterpreter extends SimpleInterpreter {
 				}
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
-			} catch (IllegalArgumentException | NullPointerException | ClassCastException e) {
+			} catch (IllegalArgumentException | NullPointerException
+					| ClassCastException e) {
 				e.printStackTrace();
 				helpOnCommand(command);
 			}
@@ -143,7 +153,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 	private <T> void processVarArgs(List<Object> args, List<Object> varArgs,
 			int currentArg, Class<T> type) {
 		T[] arr = (T[]) Array.newInstance(type, varArgs.size());
-		for (int i=0; i<varArgs.size(); ++i) {
+		for (int i = 0; i < varArgs.size(); ++i) {
 			arr[i] = (T) type.cast(varArgs.get(i));
 		}
 
@@ -151,11 +161,18 @@ public class GenericInterpreter extends SimpleInterpreter {
 		args.add((T[]) arr);
 	}
 
-	private Object convertString(String string, Type type) {
+	private Object convertString(String string, Class<?> type)
+			throws UnsupportedTypeException {
 		if (type.equals(String.class)) {
 			return string;
 		} else if (type.equals(Integer.TYPE) || type.equals(Integer.class)) {
 			return Integer.parseInt(string);
+		} else if (type.equals(Long.TYPE) || type.equals(Long.class)) {
+			return Long.parseLong(string);
+		} else if (type.equals(Short.TYPE) || type.equals(Short.class)) {
+			return Short.parseShort(string);
+		} else if (type.equals(Byte.TYPE) || type.equals(Byte.class)) {
+			return Byte.parseByte(string);
 		} else if (type.equals(Boolean.TYPE) || type.equals(Boolean.class)) {
 			return Boolean.parseBoolean(string);
 		} else if (type.equals(Double.TYPE) || type.equals(Double.class)) {
@@ -163,7 +180,32 @@ public class GenericInterpreter extends SimpleInterpreter {
 		} else if (type.equals(Float.TYPE) || type.equals(Float.class)) {
 			return Float.parseFloat(string);
 		} else {
-			return null;
+			if (type.isEnum()) {
+				try {
+					Method converter = type.getMethod("fromString",
+							String.class);
+
+					if (Modifier.isStatic(converter.getModifiers())
+							&& converter.getReturnType().equals(type)) {
+						return converter.invoke(null, string);
+					} else {
+						throw new UnsupportedTypeException(String.class, type);
+					}
+				} catch (NoSuchMethodException | SecurityException
+						| IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					throw new UnsupportedTypeException(String.class, type);
+				}
+
+			} else {
+				try {
+					return type.getConstructor(String.class).newInstance(string);
+				} catch (NoSuchMethodException | SecurityException
+						| InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException e) {
+					throw new UnsupportedTypeException(String.class, type);
+				}
+			}
 		}
 	}
 
@@ -171,16 +213,16 @@ public class GenericInterpreter extends SimpleInterpreter {
 	public void quit() {
 		exitInterpreter();
 	}
-	
+
 	@Command(info = "Echoes user input.")
 	public int echo(String... input) {
 		PrintWriter out = getWriter();
-		for(String chunk : input) {
+		for (String chunk : input) {
 			out.print(chunk);
 			out.print(' ');
 		}
 		out.println();
-		
+
 		return input.length;
 	}
 

@@ -17,5 +17,23 @@ public enum DevCardType
 	public String toString() {
 		return stringRepr;
 	}
+	
+	public static DevCardType fromString(String input) {
+		switch (input.toLowerCase()) {
+		case "soldier":
+			return SOLDIER;
+		case "yearofplenty":
+			return YEAR_OF_PLENTY;
+		case "monopoly":
+			return MONOPOLY;
+		case "roadbuilding":
+		case "roadbuild":
+			return ROAD_BUILD;
+		case "monument":
+			return MONUMENT;
+		default:
+			return null;
+		}
+	}
 }
 

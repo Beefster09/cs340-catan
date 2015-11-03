@@ -6,6 +6,7 @@ import server.interpreter.Command;
 import server.interpreter.GenericInterpreter;
 import server.interpreter.GenericInterpreterFactory;
 import server.telnet.*;
+import shared.definitions.DevCardType;
 
 public class CatanCheatHandler extends GenericInterpreter {
 
@@ -62,17 +63,18 @@ public class CatanCheatHandler extends GenericInterpreter {
 		
 		// TODO: in the future this will actually do something
 		for (int roll : rolls) getWriter().println(roll);
-		getWriter().println("Success!");
+		getWriter().println("Success-ish!");
 	}
 
 	@Command(args = {"<card...>"}, info = "Sets the next dev card(s).")
-	public void setDevCard(String... cards) {
+	public void setDevCard(DevCardType... cards) {
 		if (!cheatsEnabled) {
 			getWriter().println("Cheats are disabled.");
 			return;
 		}
-		
-		getWriter().println("Not implemented!");
+
+		for (DevCardType card : cards) getWriter().println(card);
+		getWriter().println("Success-ish!");
 	}
 
 }

@@ -11,14 +11,23 @@ public class SimpleInterpreter implements Interpreter {
 			Pattern.compile("\"([^\"]*)\"|'([^']*)'|[^\\s]+");
 	
 	private PrintWriter out;
-	private boolean keepOpen = true;
+	private boolean active = true;
 	
 	public SimpleInterpreter(OutputStream ostream) {
 		setOut(new PrintWriter(ostream, true));
 	}
+	
+	@Override
+	public boolean isActive() {
+		return active;
+	}
 
 	@Override
-	final public boolean interpret(String line) {
+	final public void interpret(String line) {
+		if (line == null) {
+			exitInterpreter();
+			return;
+		}
 		String[] parts = line.split("\\s+", 2);
 		
 		// TODO: quote escapes
@@ -28,12 +37,9 @@ public class SimpleInterpreter implements Interpreter {
 			handle(command, args);
 		}
 		else if (parts.length == 1) {
-			if (parts[0].length() == 0) return true;
+			if (parts[0].length() == 0) return;
 			handle(parts[0], new String[0]);
 		}
-		else return true;
-		
-		return keepOpen;
 	}
 	
 	private String[] splitWithQuoteEscapes(String input) {
@@ -85,7 +91,7 @@ public class SimpleInterpreter implements Interpreter {
 	}
 
 	final protected void exitInterpreter() {
-		keepOpen = false;
+		active = false;
 	}
 
 	public PrintWriter getWriter() {
