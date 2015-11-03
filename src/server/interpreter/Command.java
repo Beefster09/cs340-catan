@@ -1,4 +1,4 @@
-package server.telnet;
+package server.interpreter;
 
 import java.lang.annotation.*;
 

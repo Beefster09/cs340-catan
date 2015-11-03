@@ -1,4 +1,4 @@
-package server.telnet;
+package server.interpreter;
 
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;

@@ -2,6 +2,9 @@ package server.cheat;
 
 import java.io.OutputStream;
 
+import server.interpreter.Command;
+import server.interpreter.GenericInterpreter;
+import server.interpreter.GenericInterpreterFactory;
 import server.telnet.*;
 
 public class CatanCheatHandler extends GenericInterpreter {

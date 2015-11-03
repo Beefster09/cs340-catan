@@ -1,4 +1,4 @@
-package server.telnet;
+package server.interpreter;
 
 public interface Interpreter {
 	

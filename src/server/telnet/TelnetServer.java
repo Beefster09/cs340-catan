@@ -4,6 +4,11 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import server.interpreter.GenericInterpreter;
+import server.interpreter.GenericInterpreterFactory;
+import server.interpreter.Interpreter;
+import server.interpreter.InterpreterFactory;
+
 public class TelnetServer implements Runnable {
 
 	public static final int DEFAULT_PORT = 2323;
