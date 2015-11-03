@@ -38,7 +38,7 @@ public class Hex {
 		try {
 			location = new HexLocation((JSONObject) json.get("location"));
 			if (json.containsKey("resource")) {
-				resource = ResourceType.getTypeFromString((String) json.get("resource"));
+				resource = ResourceType.fromString((String) json.get("resource"));
 				setNumber((int) (long) json.get("number"));
 			}
 			else {

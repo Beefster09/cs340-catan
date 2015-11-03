@@ -15,13 +15,12 @@ import java.util.Map.Entry;
  */
 public class GenericInterpreter extends SimpleInterpreter {
 
-	private static Map<String, CommandInfo> helpData = null;
 	private static Map<String, Method> dispatchTable = null;
+	private int accessLevel;
 
 	// Workaround for this not being able to be static
 	private void initializeDispatchTable() {
 		dispatchTable = new HashMap<>();
-		helpData = new TreeMap<>();
 
 		for (Method method : getClass().getMethods()) {
 			if (method.isAnnotationPresent(Command.class)) {
@@ -46,8 +45,6 @@ public class GenericInterpreter extends SimpleInterpreter {
 					description = command.info();
 				}
 
-				helpData.put(commandName, new CommandInfo(command.args(),
-						command.info(), description));
 			}
 		}
 
@@ -70,8 +67,11 @@ public class GenericInterpreter extends SimpleInterpreter {
 	public GenericInterpreter(OutputStream ostream) {
 		super(ostream);
 
-		if (dispatchTable == null)
-			initializeDispatchTable();
+		// This can't be done polymorphically at the static level,
+		// so we'll do it on first instantiation instead.
+		if (dispatchTable == null) initializeDispatchTable();
+		
+		accessLevel = 0;
 	}
 
 	@Override
@@ -79,6 +79,22 @@ public class GenericInterpreter extends SimpleInterpreter {
 		command = camelToDash(command);
 		if (dispatchTable.containsKey(command)) {
 			Method handler = dispatchTable.get(command);
+			
+			// Check access level
+			Command metadata = handler.getAnnotation(Command.class);
+			if (accessLevel < metadata.runLevel()) {
+				// You don't have access to this command
+				// Check if the command is viewable to the user
+				if (accessLevel >= metadata.viewLevel()) {
+					getWriter().println(accessDeniedString());
+				}
+				else {
+					// Pretend the command doesn't even exist if it is unviewable
+					getWriter().println("No such command: " + command);
+				}
+				return;
+			}
+			
 			int numArgs = handler.getParameterTypes().length;
 
 			if (!handler.isVarArgs() && strArgs.length > numArgs) {
@@ -100,7 +116,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 				Object value = null;
 				if (currentArg < strArgs.length) {
 					try {
-						value = convertString(strArgs[currentArg], type);
+						value = TypeConverter.convertString(strArgs[currentArg], type);
 					} catch (Exception e) {
 						getWriter().println("Invalid type for argument #" + currentArg);
 						getWriter().println(e.getMessage());
@@ -117,7 +133,7 @@ public class GenericInterpreter extends SimpleInterpreter {
 				List<Object> varArgs = new ArrayList<>();
 				for (; currentArg < strArgs.length; ++currentArg) {
 					try {
-						varArgs.add(convertString(strArgs[currentArg], type));
+						varArgs.add(TypeConverter.convertString(strArgs[currentArg], type));
 					} catch (Exception e) {
 						getWriter().println("Invalid type for argument #" + currentArg);
 						getWriter().println(e.getMessage());
@@ -145,6 +161,10 @@ public class GenericInterpreter extends SimpleInterpreter {
 		}
 	}
 
+	protected String accessDeniedString() {
+		return "Access denied!";
+	}
+
 	protected String resultString() {
 		return "RESULT: ";
 	}
@@ -161,52 +181,11 @@ public class GenericInterpreter extends SimpleInterpreter {
 		args.add((T[]) arr);
 	}
 
-	private Object convertString(String string, Class<?> type)
-			throws UnsupportedTypeException {
-		if (type.equals(String.class)) {
-			return string;
-		} else if (type.equals(Integer.TYPE) || type.equals(Integer.class)) {
-			return Integer.parseInt(string);
-		} else if (type.equals(Long.TYPE) || type.equals(Long.class)) {
-			return Long.parseLong(string);
-		} else if (type.equals(Short.TYPE) || type.equals(Short.class)) {
-			return Short.parseShort(string);
-		} else if (type.equals(Byte.TYPE) || type.equals(Byte.class)) {
-			return Byte.parseByte(string);
-		} else if (type.equals(Boolean.TYPE) || type.equals(Boolean.class)) {
-			return Boolean.parseBoolean(string);
-		} else if (type.equals(Double.TYPE) || type.equals(Double.class)) {
-			return Double.parseDouble(string);
-		} else if (type.equals(Float.TYPE) || type.equals(Float.class)) {
-			return Float.parseFloat(string);
-		} else {
-			if (type.isEnum()) {
-				try {
-					Method converter = type.getMethod("fromString",
-							String.class);
-
-					if (Modifier.isStatic(converter.getModifiers())
-							&& converter.getReturnType().equals(type)) {
-						return converter.invoke(null, string);
-					} else {
-						throw new UnsupportedTypeException(String.class, type);
-					}
-				} catch (NoSuchMethodException | SecurityException
-						| IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-					throw new UnsupportedTypeException(String.class, type);
-				}
-
-			} else {
-				try {
-					return type.getConstructor(String.class).newInstance(string);
-				} catch (NoSuchMethodException | SecurityException
-						| InstantiationException | IllegalAccessException
-						| IllegalArgumentException | InvocationTargetException e) {
-					throw new UnsupportedTypeException(String.class, type);
-				}
-			}
-		}
+	/**
+	 * @param accessLevel the accessLevel to set
+	 */
+	final protected void setAccessLevel(int accessLevel) {
+		this.accessLevel = accessLevel;
 	}
 
 	@Command(info = "Closes this interpreter session.")
@@ -230,7 +209,15 @@ public class GenericInterpreter extends SimpleInterpreter {
 	public void commands() {
 		PrintWriter out = getWriter();
 
-		List<String> commands = new ArrayList<>(dispatchTable.keySet());
+		List<String> commands = new ArrayList<>();
+		for (Entry<String, Method> dispatchEntry : dispatchTable.entrySet()) {
+			String command = dispatchEntry.getKey();
+			Command info = dispatchEntry.getValue().getAnnotation(Command.class);
+			if (accessLevel >= info.viewLevel()) {
+				commands.add(command);
+			}
+		}
+		
 		Collections.sort(commands);
 		out.print("Available Commands: ");
 		Iterator<String> iter = commands.iterator();
@@ -260,35 +247,50 @@ public class GenericInterpreter extends SimpleInterpreter {
 		out.println("Available Commands:");
 
 		// TODO: pretty printing
-		for (Entry<String, CommandInfo> commandEntry : helpData.entrySet()) {
-			String command = commandEntry.getKey();
-			CommandInfo info = commandEntry.getValue();
-			out.print("  " + command + " ");
-			for (String arg : info.getArguments()) {
-				out.print(arg + " ");
+		for (Entry<String, Method> dispatchEntry : dispatchTable.entrySet()) {
+			String command = dispatchEntry.getKey();
+			Command info = dispatchEntry.getValue().getAnnotation(Command.class);
+			if (accessLevel >= info.viewLevel()) {
+				out.print("  " + command + " ");
+				for (String arg : info.args()) {
+					out.print(arg + " ");
+				}
+				out.print("\t");
+				out.println(info.info());
 			}
-			out.print("\t");
-			out.println(info.getShortDescription());
 		}
 	}
 
 	private void helpOnCommand(String command) {
 		PrintWriter out = getWriter();
 
-		if (!helpData.containsKey(command)) {
+		if (!dispatchTable.containsKey(command)) {
 			out.println("Unrecognized command: " + command);
 			return;
 		}
 
-		CommandInfo info = helpData.get(command);
+		Command info = dispatchTable.get(command).getAnnotation(Command.class);
+		
+		if (accessLevel < info.viewLevel()) {
+			// You can't see the command, so pretend it doesn't exist
+			out.println("Unrecognized command: " + command);
+			return;
+		}
 
 		out.print(command + " ");
-		for (String arg : info.getArguments()) {
+		for (String arg : info.args()) {
 			out.print(arg + " ");
 		}
 		out.println();
+		
+		out.println(requirementDescription(info.runLevel()));
 
-		out.println(info.getLongDescription());
+		if (!info.description().equals(""))	out.println(info.description());
+		else out.println(info.info());
+	}
+
+	protected String requirementDescription(int runLevel) {
+		return "Requires access level: " + runLevel;
 	}
 
 }

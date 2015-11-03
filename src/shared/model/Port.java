@@ -44,7 +44,7 @@ public class Port {
 	public Port(JSONObject json) throws SchemaMismatchException {
 		try {
 			if (json.containsKey("resource")) {
-				resource = ResourceType.getTypeFromString((String) json.get("resource"));
+				resource = ResourceType.fromString((String) json.get("resource"));
 			}
 			else {
 				resource = null;

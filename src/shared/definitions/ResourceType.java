@@ -4,7 +4,7 @@ public enum ResourceType
 {
 	WOOD, BRICK, SHEEP, WHEAT, ORE;
 	
-	static public ResourceType getTypeFromString(String input) throws IllegalArgumentException{
+	static public ResourceType fromString(String input) throws IllegalArgumentException{
 		String lowerInput = input.toLowerCase();
 		if (lowerInput.equals("wood")) return WOOD;
 		else if (lowerInput.equals("brick")) return BRICK;
