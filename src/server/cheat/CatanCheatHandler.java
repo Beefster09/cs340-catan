@@ -87,11 +87,11 @@ public class CatanCheatHandler extends GenericInterpreter {
 		getWriter().println("Success-ish!");
 	}
 	
-	@Command(args = {"<game id>", "<player id>", "<resource>", "<amount>"}, runLevel = CHEATS_ENABLED,
+	/*@Command(args = {"<game id>", "<player id>", "<resource>", "<amount>"}, runLevel = CHEATS_ENABLED,
 			info = "gives the amount of a given resource to the given player of a game")
 	public void giveResources(int gameid, int player, ResourceType resource, int amount) {
 		
-	}
+	}*/
 	
 	@Command(info = "saves a game to a file", runLevel = CHEATS_ENABLED, viewLevel = CHEATS_ENABLED)
 	public void save(int gameid, String savename) {
@@ -101,6 +101,11 @@ public class CatanCheatHandler extends GenericInterpreter {
 	@Command(info = "saves a game to a file", runLevel = CHEATS_ENABLED, viewLevel = CHEATS_ENABLED)
 	public void load(int gameid, String savename) {
 		
+	}
+	
+	@Override
+	public void echo(String... strings) {
+		// This erases echo as a command
 	}
 
 }

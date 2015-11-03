@@ -103,46 +103,8 @@ public class GenericInterpreter extends SimpleInterpreter {
 				return;
 			}
 
-			// Convert args to typed args
-			List<Object> args = new ArrayList<>();
-			int currentArg = 0;
-			Class<?> varArgType = null;
-			for (Class<?> type : handler.getParameterTypes()) {
-				if (handler.isVarArgs() && currentArg >= numArgs - 1) {
-					varArgType = type;
-					break;
-				}
-
-				Object value = null;
-				if (currentArg < strArgs.length) {
-					try {
-						value = TypeConverter.convertString(strArgs[currentArg], type);
-					} catch (Exception e) {
-						getWriter().println("Invalid type for argument #" + currentArg);
-						getWriter().println(e.getMessage());
-						helpOnCommand(command);
-						return;
-					}
-				}
-				args.add(value);
-				++currentArg;
-			}
-
-			if (varArgType != null && handler.isVarArgs()) {
-				Class<?> type = varArgType.getComponentType();
-				List<Object> varArgs = new ArrayList<>();
-				for (; currentArg < strArgs.length; ++currentArg) {
-					try {
-						varArgs.add(TypeConverter.convertString(strArgs[currentArg], type));
-					} catch (Exception e) {
-						getWriter().println("Invalid type for argument #" + currentArg);
-						getWriter().println(e.getMessage());
-						helpOnCommand(command);
-						return;
-					}
-				}
-				processVarArgs(args, varArgs, currentArg, type);
-			}
+			List<Object> args = getArgList(command, strArgs, handler, numArgs);
+			if (args == null) return;
 
 			try {
 				Object result = handler.invoke(this, args.toArray());
@@ -161,12 +123,62 @@ public class GenericInterpreter extends SimpleInterpreter {
 		}
 	}
 
+	protected List<Object> getArgList(String command, String[] strArgs,
+			Method handler, int numArgs) {
+		// Convert args to typed args
+		List<Object> args = new ArrayList<>();
+		int currentArg = 0;
+		Class<?> varArgType = null;
+		for (Class<?> type : handler.getParameterTypes()) {
+			if (handler.isVarArgs() && currentArg >= numArgs - 1) {
+				varArgType = type;
+				break;
+			}
+
+			Object value = null;
+			if (currentArg < strArgs.length) {
+				try {
+					value = TypeConverter.convertString(strArgs[currentArg], type);
+				} catch (Exception e) {
+					getWriter().println("Invalid type for argument #" + currentArg);
+					getWriter().println(e.getMessage());
+					helpOnCommand(command);
+					return null;
+				}
+			}
+			args.add(value);
+			++currentArg;
+		}
+
+		// varargs
+		if (varArgType != null && handler.isVarArgs()) {
+			Class<?> type = varArgType.getComponentType();
+			List<Object> varArgs = new ArrayList<>();
+			for (; currentArg < strArgs.length; ++currentArg) {
+				try {
+					varArgs.add(TypeConverter.convertString(strArgs[currentArg], type));
+				} catch (Exception e) {
+					getWriter().println("Invalid type for argument #" + currentArg);
+					getWriter().println(e.getMessage());
+					helpOnCommand(command);
+					return null;
+				}
+			}
+			processVarArgs(args, varArgs, currentArg, type);
+		}
+		return args;
+	}
+
 	protected String accessDeniedString() {
 		return "Access denied!";
 	}
 
 	protected String resultString() {
 		return "RESULT: ";
+	}
+
+	protected String requirementDescription(int runLevel) {
+		return "Requires access level: " + runLevel;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -194,15 +206,13 @@ public class GenericInterpreter extends SimpleInterpreter {
 	}
 
 	@Command(info = "Echoes user input.")
-	public int echo(String... input) {
+	public void echo(String... input) {
 		PrintWriter out = getWriter();
 		for (String chunk : input) {
 			out.print(chunk);
 			out.print(' ');
 		}
 		out.println();
-
-		return input.length;
 	}
 
 	@Command(info = "Shows a list of available commands")
@@ -240,24 +250,81 @@ public class GenericInterpreter extends SimpleInterpreter {
 			helpOnCommand(command);
 		}
 	}
+	
+	private class HelpEntry implements Comparable<HelpEntry> {
+		String command;
+		String[] args;
+		String info;
+		
+		HelpEntry(String command, String[] args, String info) {
+			this.command = command;
+			this.args = args;
+			this.info = info;
+		}
+
+		@Override
+		public int compareTo(HelpEntry other) {
+			return command.compareTo(other.command);
+		}
+		
+		// This includes the space at the end...
+		int argsLength() {
+			int length = 0;
+			for (String arg : args) {
+				length += arg.length() + 1;
+			}
+			return length;
+		}
+		
+		String toPaddedString(int commandLength, int argsLength) {
+			StringBuilder result = new StringBuilder();
+			
+			result.append(command);
+			for (int i=command.length(); i<=commandLength; ++i) {
+				result.append(' ');
+			}
+			
+			int pos = 0;
+			for (String arg : args) {
+				result.append(arg);
+				result.append(' ');
+				pos += arg.length() + 1;
+			}
+			for (; pos<argsLength; ++pos) {
+				result.append(' ');
+			}
+			
+			result.append(info);
+			
+			return result.toString();
+		}
+	}
 
 	private void help() {
 		PrintWriter out = getWriter();
 
 		out.println("Available Commands:");
-
-		// TODO: pretty printing
+		Set<HelpEntry> commandInfo = new TreeSet<>();
+		int maxCommandLength = 0;
+		int maxArgsLength = 0;
 		for (Entry<String, Method> dispatchEntry : dispatchTable.entrySet()) {
 			String command = dispatchEntry.getKey();
 			Command info = dispatchEntry.getValue().getAnnotation(Command.class);
 			if (accessLevel >= info.viewLevel()) {
-				out.print("  " + command + " ");
-				for (String arg : info.args()) {
-					out.print(arg + " ");
+				HelpEntry help = new HelpEntry(command, info.args(), info.info());
+				commandInfo.add(help);
+				if (help.command.length() > maxCommandLength) {
+					maxCommandLength = help.command.length();
 				}
-				out.print("\t");
-				out.println(info.info());
+				if (help.argsLength() > maxArgsLength) {
+					maxArgsLength = help.argsLength();
+				}
 			}
+		}
+
+		for (HelpEntry helpEntry : commandInfo) {
+			out.print("  ");
+			out.println(helpEntry.toPaddedString(maxCommandLength, maxArgsLength));
 		}
 	}
 
@@ -287,10 +354,6 @@ public class GenericInterpreter extends SimpleInterpreter {
 
 		if (!info.description().equals(""))	out.println(info.description());
 		else out.println(info.info());
-	}
-
-	protected String requirementDescription(int runLevel) {
-		return "Requires access level: " + runLevel;
 	}
 
 }
