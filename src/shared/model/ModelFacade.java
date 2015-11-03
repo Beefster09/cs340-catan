@@ -199,7 +199,9 @@ public class ModelFacade {
 		}
 		
 		private void updateTurnTrackerFromJSON(JSONObject json, List<Player> players) {
+			
 			if (json.containsKey("turnTracker")) {
+				
 				JSONObject object = (JSONObject) json.get("turnTracker");
 				try {
 					TurnTracker otherTurnTracker = new TurnTracker(players,object);

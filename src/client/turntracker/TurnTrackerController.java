@@ -128,14 +128,18 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 //			return;
 
 		int armyIndex;
-		try {
-			armyIndex = ClientManager.getModel().getCatanModel().getLargestArmy().getIndex();
-		} catch(NullPointerException e) {
-			armyIndex = -1;
+		
+		if (ClientManager.getModel().getCatanModel() != null &&
+				ClientManager.getModel().getCatanModel().getTurnTracker() != null) {
+			
+				armyIndex = ClientManager.getModel().getCatanModel().getTurnTracker().getLargestArmy();
 		}
+		else
+			armyIndex = -1;
+		
 		int roadIndex;
 		try {
-			roadIndex = ClientManager.getModel().getCatanModel().getLongestRoad().getIndex();
+			roadIndex = ClientManager.getModel().getCatanModel().getTurnTracker().getLongestRoad();
 		} catch(NullPointerException e) {
 			roadIndex = -1;
 		}
@@ -156,6 +160,12 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			getView().updatePlayer(i, player.getVictoryPoints(), isTurn, largestArmy, longestRoad);
 			i++;
 		}
+	}
+	
+	
+	@Override
+	public void winnerChanged(int winner) {
+		
 	}
 
 }
