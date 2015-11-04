@@ -1,6 +1,9 @@
-package server.interpreter;
+package server.telnet;
 
 import java.io.OutputStream;
+
+import server.interpreter.Interpreter;
+import server.interpreter.SimpleInterpreter;
 
 public class SimpleInterpreterFactory implements InterpreterFactory {
 	

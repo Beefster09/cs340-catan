@@ -4,7 +4,6 @@ import java.io.OutputStream;
 
 import server.interpreter.Command;
 import server.interpreter.GenericInterpreter;
-import server.interpreter.GenericInterpreterFactory;
 import server.telnet.*;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;

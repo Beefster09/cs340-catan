@@ -1,9 +1,12 @@
-package server.interpreter;
+package server.telnet;
 
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
+import server.interpreter.GenericInterpreter;
+import server.interpreter.Interpreter;
 
 public class GenericInterpreterFactory implements
 		InterpreterFactory {

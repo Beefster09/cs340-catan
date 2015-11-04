@@ -1,6 +1,8 @@
-package server.interpreter;
+package server.telnet;
 
 import java.io.OutputStream;
+
+import server.interpreter.Interpreter;
 
 public interface InterpreterFactory {
 	
