@@ -502,7 +502,15 @@ public class ModelFacade {
 			
 		}
 		
+		public synchronized boolean doBuildRoad(EdgeLocation loc, String happyDanceString) {
+			System.out.println(loc);
+			System.out.println("Success!");
+			System.out.println("I'm doing my happy dance: " + happyDanceString);
+			return true;
+		}
+		
 		public synchronized boolean doBuildRoad() {
+			System.out.println("Less success... :/");
 			return true;
 		}
 		
