@@ -32,18 +32,14 @@ public class CatanCommand implements ICatanCommand {
 
 	public static void main(String[] args) throws Exception {
 		ModelFacade model = new ModelFacade();
-		CatanCommand command_old = new CatanCommand("doBuildRoad",
+		ICatanCommand command_old = new CatanCommand("doBuildRoad",
 				new EdgeLocation(0, 0, EdgeDirection.North), "asdffdsa!");
-
-		JSONObject json = command_old.toJSONObject();
-
-		String jsonString = json.toJSONString();
+		
+		String jsonString = CommandSerializer.serialize(command_old);
 
 		System.out.println(jsonString);
 
-		JSONObject json_new = (JSONObject) (new JSONParser().parse(jsonString));
-
-		CatanCommand command = new CatanCommand(json_new);
+		ICatanCommand command = CommandSerializer.deserialize(jsonString);
 
 		command.execute(model);
 	}
@@ -55,9 +51,8 @@ public class CatanCommand implements ICatanCommand {
 	 * Creates a generic command from the ModelFacade class by inferring the correct
 	 * method from argument types
 	 * 
-	 * @param clazz
-	 * @param method
-	 * @param args
+	 * @param method the name of the method
+	 * @param args the arguments you want to pass to the method
 	 * @throws SecurityException if the method is inaccessible
 	 * @throws NoSuchMethodException if the method doesn't exist
 	 */
@@ -66,6 +61,7 @@ public class CatanCommand implements ICatanCommand {
 		setDispatch(method, args);
 	}
 
+	// Infers the correct method to use from argument types
 	private void setDispatch(String method, Object... args)
 			throws NoSuchMethodException, SecurityException {
 		List<Class<?>> argTypes = new ArrayList<>();
@@ -169,7 +165,6 @@ public class CatanCommand implements ICatanCommand {
 			} catch (NoSuchMethodException | SecurityException
 					| IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				assert false;
 				return null;
