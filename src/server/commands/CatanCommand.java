@@ -159,7 +159,7 @@ public class CatanCommand implements ICatanCommand {
 
 				// Make sure to put in type information so we can get the data
 				// back later
-				json.put("<class>", type.getCanonicalName());
+				json.put("<class>", type.getName());
 
 				return json;
 			} catch (NoSuchMethodException | SecurityException
