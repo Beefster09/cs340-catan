@@ -16,6 +16,7 @@ import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
@@ -44,7 +45,7 @@ public class ServerProxy implements IServer {
 	}
 	
 
-	private ClientCommunicator commuincator = new ClientCommunicator();
+	private ClientCommunicator communicator = new ClientCommunicator();
 	private String host = null;
 	private int port = -1;
 
@@ -62,7 +63,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("username", username);
 		o.put("password", password);
-		JSONObject returned = commuincator.login(o);
+		JSONObject returned = communicator.login(o);
 		String returnedName = (String) returned.get("name");
 		String returnedPassword = (String) returned.get("password");
 		int playerID = ((Long)returned.get("playerID")).intValue();
@@ -78,7 +79,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("username", username);
 		o.put("password", password);
-		JSONObject returned = commuincator.login(o);
+		JSONObject returned = communicator.login(o);
 		String returnedName = (String) returned.get("name");
 		String returnedPassword = (String) returned.get("password");
 		int playerID = ((Long)returned.get("playerID")).intValue();
@@ -92,26 +93,17 @@ public class ServerProxy implements IServer {
 			JSONObject o = new JSONObject();
 			o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/list");
 			o.put("requestType", "GET");
-			JSONObject returned = commuincator.preJoin(o);
+			JSONObject returned = communicator.preJoin(o);
 				
 			List<GameHeader> returnList = new ArrayList<GameHeader>();
 			List<JSONObject> listOfGames = (List<JSONObject>) returned.get("games");
 			for(JSONObject game : listOfGames){
-				String title = (String) game.get("title");
-				int id = ((Long)game.get("id")).intValue();
-				List<JSONObject> players = (List<JSONObject>) game.get("players");
-				List<PlayerHeader> playerHeaders = new ArrayList<PlayerHeader>();
-				for(JSONObject json : players){
-					if(json.isEmpty()){
-						playerHeaders.add(null);
-						continue;
-					}
-					CatanColor playerColor = CatanColor.getColorFromString((String)json.get("color"));
-					String playerName = (String) json.get("name");
-					int playerID = ((Long)json.get("id")).intValue();
-					playerHeaders.add(new PlayerHeader(playerColor, playerName, playerID));
+				try {
+					returnList.add(new GameHeader(game));
+				} catch (SchemaMismatchException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				returnList.add(new GameHeader(title, id, playerHeaders));
 			}
 			return returnList;
 		}
@@ -135,26 +127,15 @@ public class ServerProxy implements IServer {
 			o.put("randomNumbers", randomNumbers);
 			o.put("randomPorts", randomPorts);
 			
-			JSONObject returned = commuincator.preJoin(o);
+			JSONObject returned = communicator.preJoin(o);
 			
-			String title = (String)returned.get("title");
-			int id = ((Long)returned.get("id")).intValue();
-			List<JSONObject> players = (List<JSONObject>) returned.get("players");
-			List<PlayerHeader> playerHeader = new ArrayList<PlayerHeader>();
-			for(JSONObject player : players){
-				if(player.isEmpty()){
-					playerHeader.add(null);
-					continue;
-				}
-				String playerName = (String)player.get("name");
-				int playerID = ((Long)player.get("id")).intValue();
-				CatanColor playerColor = CatanColor.getColorFromString((String)player.get("color"));
-				playerHeader.add(new PlayerHeader(playerColor, playerName, playerID));
-			}
-			return new GameHeader(title, id, playerHeader);
+			return new GameHeader(returned);
 		}
 		catch(UserException e){
 			System.out.println("There was a typo somewhere in order for me to get here!!!");
+		} catch (SchemaMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -169,7 +150,7 @@ public class ServerProxy implements IServer {
 		o.put("id", gameID);
 		o.put("color", (color.toString()).toLowerCase());
 		
-		JSONObject returned = commuincator.joinGame(o);
+		JSONObject returned = communicator.joinGame(o);
 		
 		if(returned.get("success").equals("Success")){
 			return true;
@@ -187,7 +168,7 @@ public class ServerProxy implements IServer {
 			o.put("requestType", "POST");
 			o.put("id", gameID);
 			o.put("name", filename);
-			commuincator.preJoin(o);
+			communicator.preJoin(o);
 		}
 		catch(GameInitializationException e){
 			System.out.println("Another typo");
@@ -203,7 +184,7 @@ public class ServerProxy implements IServer {
 			o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/load");
 			o.put("requestType", "POST");
 			o.put("name", filename);
-			commuincator.preJoin(o);
+			communicator.preJoin(o);
 		}
 		catch(GameInitializationException e){
 			System.out.println("I don't even know");
@@ -219,7 +200,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "GET");
 		o.put("version", version);
 
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -230,7 +211,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/reset");
 		o.put("requestType", "POST");
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -240,7 +221,7 @@ public class ServerProxy implements IServer {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/commands");
 		o.put("requestType", "GET");
-		JSONObject returned = commuincator.send(o);
+		JSONObject returned = communicator.send(o);
 		//TODO figure out how the list is returned
 		return (List<Command>) returned.get("commands");
 	}
@@ -254,7 +235,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("commands", commands);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -265,7 +246,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/addAI");
 		o.put("requestType", "POST");
 		o.put("AIType", type.toString());
-		commuincator.send(o);
+		communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -275,7 +256,7 @@ public class ServerProxy implements IServer {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/listAI");
 		o.put("requestType", "GET");
-		JSONObject returned = commuincator.send(o);
+		JSONObject returned = communicator.send(o);
 		
 		return (List<String>)returned.get("list");
 	}
@@ -291,7 +272,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "sendChat");
 		o.put("content", message);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -305,7 +286,7 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex",user.getIndex());
 		o.put("number", number);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -324,7 +305,7 @@ public class ServerProxy implements IServer {
 		location.put("y", newRobberLocation.getY());
 		o.put("location", location);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -337,7 +318,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buyDevCard");
 		o.put("playerIndex", user.getIndex());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -353,7 +334,7 @@ public class ServerProxy implements IServer {
 		o.put("resource1", type1.toString().toLowerCase());
 		o.put("resource2", type2.toString().toLowerCase());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -371,7 +352,7 @@ public class ServerProxy implements IServer {
 		o.put("spot1", firstRoad);
 		o.put("spot2", secondRoad);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -390,7 +371,7 @@ public class ServerProxy implements IServer {
 		location.put("y", newRobberLocation.getY());
 		o.put("location", location);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -404,7 +385,7 @@ public class ServerProxy implements IServer {
 		o.put("resource", type.toString().toLowerCase());
 		o.put("playerIndex", user.getIndex());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -421,7 +402,7 @@ public class ServerProxy implements IServer {
 		o.put("roadLocation", roadLocation);
 		o.put("free", free);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -438,7 +419,7 @@ public class ServerProxy implements IServer {
 		o.put("vertexLocation", vertexLocation);
 		o.put("free", free);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -453,7 +434,7 @@ public class ServerProxy implements IServer {
 		JSONObject vertexLocation = location.toJSONObject();
 		o.put("vertexLocation", vertexLocation);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -469,7 +450,7 @@ public class ServerProxy implements IServer {
 		o.put("offer", offer.toJSONObject());
 		o.put("receiver", receiver.getIndex());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -483,7 +464,7 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.getIndex());
 		o.put("willAccept", accept);
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -500,7 +481,7 @@ public class ServerProxy implements IServer {
 		o.put("inputResource", inResource.toString().toLowerCase());
 		o.put("outputResource", outResource.toString().toLowerCase());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -514,7 +495,7 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.getIndex());
 		o.put("discardedCards", cards.toJSONObject());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -526,7 +507,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "finishTurn");
 		o.put("playerIndex", user.getIndex());
-		return commuincator.send(o);
+		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -537,7 +518,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/");
 		o.put("requestType", "POST");
 		o.put("logLevel", level.toString());
-		commuincator.send(o);
+		communicator.send(o);
 		
 	}
 
@@ -551,5 +532,5 @@ public class ServerProxy implements IServer {
 		o.put("type", "Monument");
 		o.put("playerIndex", user.getIndex());
 		
-		return commuincator.send(o);
+		return communicator.send(o);
 	}}

@@ -114,7 +114,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			
 			GameInfo[] games = DataConverter.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
-			localPlayer.setId(modelFacade.getLocalPlayer().getPlayerID());
+			//localPlayer.setUUID(modelFacade.getLocalPlayer().getPlayerID());
+			localPlayer.setUUID(null);
 			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
 			
 			getJoinGameView().closeModal();

@@ -17,6 +17,7 @@ public class CatanModel {
 	private GameHeader header;
 	
 	private UUID id;
+	private String title;
 	
 	private MessageList chat;
 	private MessageList log;
@@ -196,6 +197,14 @@ public class CatanModel {
 
 	public void setHeader(GameHeader gameHeader) {
 		this.header = gameHeader;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	void setTitle(String title) {
+		this.title = title;
 	}
 	
 	

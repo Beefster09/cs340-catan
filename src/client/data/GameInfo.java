@@ -18,19 +18,19 @@ import shared.communication.PlayerHeader;
  */
 public class GameInfo
 {
-	private int id;
+	private UUID uuid;
 	private String title;
 	private List<PlayerInfo> players;
 	
 	public GameInfo()
 	{
-		setId(-1);
+		uuid = null;
 		setTitle("");
 		players = new ArrayList<PlayerInfo>();
 	}
 	
 	public GameInfo(GameHeader gameHeader) {
-		setId(gameHeader.getId());
+		uuid = gameHeader.getUUID();
 		setTitle(gameHeader.getTitle());
 		players = new ArrayList<>();
 		for (PlayerHeader player : gameHeader.getPlayers()) {
@@ -40,12 +40,11 @@ public class GameInfo
 
 	public int getId()
 	{
-		return id;
+		return uuid.hashCode();
 	}
 	
-	public void setId(int id)
-	{
-		this.id = id;
+	public UUID getUUID() {
+		return uuid;
 	}
 	
 	public String getTitle()

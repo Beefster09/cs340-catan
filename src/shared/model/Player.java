@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.json.simple.JSONObject;
 
 import shared.communication.GameHeader;
+import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
@@ -99,6 +100,10 @@ public class Player {
 		JSONObject json = new JSONObject();
 		
 		return json;
+	}
+	
+	public PlayerHeader toPlayerHeader() {
+		return new PlayerHeader(color, name, uuid);
 	}
 	
 	/** Gives a PlayerReference that refers to this player. 

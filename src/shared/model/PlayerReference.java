@@ -60,6 +60,9 @@ public class PlayerReference {
 		return Player.getPlayerByUUID(playerUUID);
 	}
 	
+	/** Gets the turn index of the player this reference is pointing to
+	 * @return the turn index of the player
+	 */
 	public int getIndex() {
 		if (playerIndex == INVALID_INDEX) {
 			return playerIndex = getPlayer().getPlayerIndex();

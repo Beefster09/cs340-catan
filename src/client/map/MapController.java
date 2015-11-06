@@ -319,7 +319,7 @@ public class MapController extends Controller implements IMapController {
 
 				RobPlayerInfo victim = new RobPlayerInfo();
 				victim.setName(owner.getName());
-				victim.setId(owner.getPlayerID());
+				victim.setUUID(owner.getUUID());
 				victim.setColor(owner.getColor());
 				victim.setPlayerIndex(ownerRef.getIndex());
 				victim.setNumCards(owner.getResources().count());

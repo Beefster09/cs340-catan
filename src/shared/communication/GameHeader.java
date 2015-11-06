@@ -2,6 +2,7 @@ package shared.communication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
@@ -12,16 +13,21 @@ import shared.exceptions.SchemaMismatchException;
 
 public class GameHeader {
 	private String title;
-	private int id;
+	private UUID uuid;
 	private List<PlayerHeader> players;
 	
+	@SuppressWarnings("unchecked")
 	public GameHeader(JSONObject json) throws SchemaMismatchException {
 		try {
 			title = (String) json.get("title");
-			id = (int) (long) json.get("id");
+			uuid = UUID.fromString( (String) json.get("id"));
 			players = new ArrayList<>();
-			for (Object obj : (List) json.get("players")) {
-				players.add(new PlayerHeader((JSONObject) obj));
+			for (JSONObject obj : (List<JSONObject>) json.get("players")) {
+				if(obj.isEmpty()){
+					players.add(null);
+					continue;
+				}
+				players.add(new PlayerHeader(obj));
 			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
@@ -31,15 +37,15 @@ public class GameHeader {
 		}
 	}
 	
-	public GameHeader(String title, int id, List<PlayerHeader> players){
+	public GameHeader(String title, UUID id, List<PlayerHeader> players){
 		this.title = title;
-		this.id = id;
+		this.uuid = id;
 		this.players = players;
 	}
 
 	public GameHeader(GameInfo info) {
 		title = info.getTitle();
-		id = info.getId();
+		uuid = info.getUUID();
 		players = new ArrayList<>();
 		for (PlayerInfo player : info.getPlayers()) {
 			players.add(new PlayerHeader(player));
@@ -56,8 +62,13 @@ public class GameHeader {
 	 * @return the id
 	 */
 	public int getId() {
-		return id;
+		return uuid.hashCode();
 	}
+	
+	public UUID getUUID() {
+		return uuid;
+	}
+	
 	/**
 	 * @return the players
 	 */

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -45,7 +46,9 @@ public class ModelFacadeTest {
 		JSONObject json = ((JSONObject) parseResult);
 		
 		model = new CatanModel();
-		model.setHeader(new GameHeader("Dummy Game", 1337, new ArrayList<PlayerHeader>()));
+		model.setHeader(new GameHeader("Dummy Game", 
+				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),
+				new ArrayList<PlayerHeader>()));
 		m = new ModelFacade(model);
 		m.updateFromJSON(json);
 	}
