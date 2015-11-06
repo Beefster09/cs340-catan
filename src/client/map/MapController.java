@@ -41,7 +41,7 @@ public class MapController extends Controller implements IMapController {
 	
 
 	@Override
-	public void winnerChanged(int winner) {
+	public void winnerChanged(PlayerReference winner) {
 		boardBuilt = false;
 		getView().resetBoard();
 	}

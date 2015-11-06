@@ -67,8 +67,8 @@ public class PointsController extends Controller implements IPointsController {
 	}
 	
 	@Override
-	public void winnerChanged(int winner) {
-		if (winner == -1)
+	public void winnerChanged(PlayerReference winner) {
+		if (winner == null)
 			return;
 		
 		Player winningPlayer = null;

@@ -1,6 +1,7 @@
 package shared.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import client.data.GameInfo;
 import shared.communication.GameHeader;
@@ -15,6 +16,8 @@ import shared.communication.GameHeader;
 public class CatanModel {
 	private GameHeader header;
 	
+	private UUID id;
+	
 	private MessageList chat;
 	private MessageList log;
 	private Board map;
@@ -24,13 +27,14 @@ public class CatanModel {
 	private List<Player> players;
 	private PlayerReference longestRoad;
 	private PlayerReference largestArmy;
-	private int winner;
+	
+	private PlayerReference winner = null;
 	
 	private int version;
 
 	public CatanModel() {
 		version = -1;
-		winner = -1;
+		winner = null;
 	}
 
 	/**
@@ -50,7 +54,7 @@ public class CatanModel {
 	public CatanModel(MessageList chat, MessageList log, Board map,
 			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
 			List<Player> players, PlayerReference longestRoad,
-			PlayerReference largestArmy, int winner, int version) {
+			PlayerReference largestArmy, PlayerReference winner, int version) {
 		super();
 		this.chat = chat;
 		this.log = log;
@@ -152,7 +156,7 @@ public class CatanModel {
 	/**
 	 * @return the winner
 	 */
-	public int getWinner() {
+	public PlayerReference getWinner() {
 		return winner;
 	}
 
@@ -160,31 +164,31 @@ public class CatanModel {
 		this.chat = chat;
 	}
 
-	public void setLog(MessageList log) {
+	void setLog(MessageList log) {
 		this.log = log;
 	}
 
-	public void setMap(Board map) {
+	void setMap(Board map) {
 		this.map = map;
 	}
 
-	public void setTurnTracker(TurnTracker turnTracker) {
+	void setTurnTracker(TurnTracker turnTracker) {
 		this.turnTracker = turnTracker;
 	}
 
-	public void setBank(Bank bank) {
+	void setBank(Bank bank) {
 		this.bank = bank;
 	}
 
-	public void setPlayers(List<Player> players) {
+	void setPlayers(List<Player> players) {
 		this.players = players;
 	}
 
-	public void setWinner(int winner) {
+	void setWinner(PlayerReference winner) {
 		this.winner = winner;
 	}
 
-	public void setVersion(int version) {
+	void setVersion(int version) {
 		this.version = version;
 	}
 

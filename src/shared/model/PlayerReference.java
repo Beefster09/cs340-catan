@@ -54,6 +54,10 @@ public class PlayerReference {
 		playerUUID = Player.generateUUID(header, playerIndex);
 	}
 	
+	public PlayerReference(String string) {
+		playerUUID = UUID.fromString(string);
+	}
+
 	/** Gets the player that this object references.
 	 * @return the player 'pointed' to by this PlayerReference
 	 */
