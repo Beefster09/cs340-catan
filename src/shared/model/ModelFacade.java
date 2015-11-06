@@ -171,7 +171,7 @@ public class ModelFacade {
 				JSONObject player = (JSONObject) obj;
 				if (player != null) {
 					try {
-						Player newPlayer = new Player(model, player);
+						Player newPlayer = new Player(player);
 						if (this.getLocalPlayer() != null && newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
 							ClientManager.setLocalPlayer(new PlayerReference(model, i));
 						}

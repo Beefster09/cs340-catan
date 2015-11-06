@@ -22,21 +22,21 @@ public class PlayerReference {
 	 * @param game
 	 * @param playerIndex
 	 */
-	PlayerReference(CatanModel game, int playerIndex) {
-		super();
-				
+	private PlayerReference(int playerIndex) {
 		this.playerIndex = playerIndex;
-		if (game == null) {
-			playerUUID = Player.generateUUID(-1, playerIndex);
-		}
-		else {
-			playerUUID = Player.generateUUID(game, playerIndex);
-		}
+		playerUUID = Player.generateUUID(-1, playerIndex);
+	}
+	
+	// Needed for backwards compatibility
+	public PlayerReference(CatanModel game, int playerIndex) {
+		assert game != null;
+		this.playerIndex = playerIndex;
+		playerUUID = game.getPlayers().get(playerIndex).getUUID();
 	}
 	
 	// This is for debugging with the old server.
 	public static PlayerReference getDummyPlayerReference(int playerIndex) {
-		return new PlayerReference((CatanModel) null, playerIndex);
+		return new PlayerReference(playerIndex);
 	}
 	
 	public PlayerReference(UUID uuid) {
@@ -47,11 +47,6 @@ public class PlayerReference {
 	public PlayerReference(UUID uuid, int index) {
 		playerUUID = uuid;
 		playerIndex = index;
-	}
-	
-	public PlayerReference(GameHeader header, int playerIndex) {
-		this.playerIndex = playerIndex;
-		playerUUID = Player.generateUUID(header, playerIndex);
 	}
 	
 	public PlayerReference(String string) {
@@ -67,7 +62,7 @@ public class PlayerReference {
 	
 	public int getIndex() {
 		if (playerIndex == INVALID_INDEX) {
-			return getPlayer().getPlayerIndex();
+			return playerIndex = getPlayer().getPlayerIndex();
 		}
 		else return playerIndex;
 	}
@@ -75,8 +70,6 @@ public class PlayerReference {
 	public CatanColor getColor() {
 		return getPlayer().getColor();
 	}
-	
-	// TODO: incomplete... needed by boards;
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

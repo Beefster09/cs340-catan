@@ -15,22 +15,6 @@ public class TradeOffer {
 	private PlayerReference sender;
 	private PlayerReference receiver;
 	private ResourceTradeList offer;
-	
-	public static void main(String[] args) throws Exception {
-		List<Player> players = new ArrayList<>();
-		players.add(new Player(null, 0));
-		players.add(new Player(null, 1));
-		players.add(new Player(null, 2));
-		players.add(new Player(null, 3));
-		
-		JSONParser parser = new JSONParser();
-		Reader r = new BufferedReader(new FileReader("tradeoffer.json"));
-		Object parseResult = parser.parse(r);
-		TradeOffer trade = new TradeOffer(players, (JSONObject) parseResult);
-
-		System.out.println(parseResult);
-		System.out.println(trade);
-	}
 
 	public TradeOffer() {
 		

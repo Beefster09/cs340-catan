@@ -32,41 +32,22 @@ public class CatanModel {
 	
 	private int version;
 
+	/** Makes a brand spanking new Model
+	 * 
+	 */
 	public CatanModel() {
 		version = -1;
 		winner = null;
+		
+		id = UUID.randomUUID();
 	}
-
-	/**
-	 * @param chat
-	 * @param log
-	 * @param map
-	 * @param tradeOffer
-	 * @param turnTracker
-	 * @param bank
-	 * @param players
-	 * @param longestRoad
-	 * @param largestArmy
-	 * @param winner
-	 * @param version
-	 */
 	
-	public CatanModel(MessageList chat, MessageList log, Board map,
-			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
-			List<Player> players, PlayerReference longestRoad,
-			PlayerReference largestArmy, PlayerReference winner, int version) {
-		super();
-		this.chat = chat;
-		this.log = log;
-		this.map = map;
-		this.tradeOffer = tradeOffer;
-		this.turnTracker = turnTracker;
-		this.bank = bank;
-		this.players = players;
-		this.longestRoad = longestRoad;
-		this.largestArmy = largestArmy;
-		this.winner = winner;
-		this.version = version;
+	public UUID getID() {
+		return id;
+	}
+	
+	public int getShortID() {
+		return id.hashCode();
 	}
 
 	/**

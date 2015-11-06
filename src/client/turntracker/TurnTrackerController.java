@@ -161,12 +161,6 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			i++;
 		}
 	}
-	
-	
-	@Override
-	public void winnerChanged(int winner) {
-		
-	}
 
 }
 
