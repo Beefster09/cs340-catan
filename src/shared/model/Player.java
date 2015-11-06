@@ -60,17 +60,25 @@ public class Player {
 		return UUID.nameUUIDFromBytes(data);
 	}
 	
+	private void setUUID(UUID uuid) {
+		if (uuid == null) {
+			uuid = UUID.randomUUID();
+		}
+		this.uuid = uuid;
+		playerTable.put(uuid, this);
+	}
+	
 	public Player(int index) {
 		playerIndex = index;
 		
-		uuid = UUID.randomUUID();
+		setUUID(uuid);
 	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {
 		
 		try {
 			playerIndex	= (int) (long) json.get("playerIndex");
-			uuid = UUID.fromString((String) json.get("uuid"));
+			setUUID(UUID.fromString((String) json.get("uuid")));
 			
 			name = (String) json.get("name");
 			color = CatanColor.getColorFromString((String) json.get("color"));

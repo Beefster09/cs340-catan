@@ -13,9 +13,7 @@ import shared.communication.PlayerHeader;
  * @author Jordan
  *
  */
-public class CatanModel {
-	//private GameHeader header;
-	
+public class CatanModel {	
 	private UUID id;
 	private String title;
 	

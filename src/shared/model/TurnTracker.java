@@ -32,10 +32,7 @@ public class TurnTracker {
 	public TurnTracker(List<Player> players, JSONObject json) throws SchemaMismatchException {
 		
 		try {
-			
-			//longestRoad = (int) (long) json.get("longestRoad");
-			//largestArmy = (int) (long) json.get("largestArmy");
-			currentPlayer = players.get((int) (long) json.get("currentTurn")).getReference();
+			currentPlayer = new PlayerReference((String) json.get("currentTurn"));
 			status = TurnStatus.getStatusFromString((String) json.get("status"));
 			/*
 			 * MIGHT NEED TO CHANGE THIS IMPLEMENTATION.  WHAT IF NOBODY HAS THESE, SHOULD

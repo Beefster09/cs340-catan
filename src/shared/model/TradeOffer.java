@@ -23,8 +23,8 @@ public class TradeOffer {
 	public TradeOffer(List<Player> players, JSONObject json) throws SchemaMismatchException {
 		try {
 			offer = new ResourceTradeList((JSONObject) json.get("offer"));
-			sender = players.get((int) (long) json.get("sender")).getReference();
-			receiver = players.get((int) (long) json.get("receiver")).getReference();
+			sender = new PlayerReference((String) json.get("sender"));
+			receiver = new PlayerReference((String) json.get("receiver"));
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();

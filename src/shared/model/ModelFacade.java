@@ -64,6 +64,7 @@ public class ModelFacade {
 		 * @param json
 		 * @return
 		 */
+		@SuppressWarnings("unchecked")
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
 			//We are still waiting for players.
@@ -364,16 +365,6 @@ public class ModelFacade {
 		public PlayerReference getCurrentPlayer() {
 			return model.getTurnTracker().getCurrentPlayer();
 		}
-		
-		//Possibly want to move this up, just make the facade have a reference to the
-		//current player.
-		/*public void setLocalPlayer(Session player) {
-			localPlayer = player;
-		}
-		
-		public Session getLocalPlayer() {
-			return localPlayer;
-		}*/
 		
 		public void setGameInfo(GameInfo header) {
 			model.setHeader(header);
