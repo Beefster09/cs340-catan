@@ -58,7 +58,7 @@ public interface IServer {
 	 * @post player joins the game
 	 * @author-Grant
 	 */
-	public boolean joinGame(int gameID, CatanColor color)
+	public boolean joinGame(Session player, int gameID, CatanColor color)
 			throws JoinGameException, ServerException;
 	/**
 	 * @pre game filename must not be empty string
@@ -79,35 +79,35 @@ public interface IServer {
 	 * @post corresponding model is returned
 	 * @author-Grant
 	 */
-	public JSONObject getModel(int version)
+	public JSONObject getModel(int gameID, int version)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post game is reset
 	 * @author-Grant
 	 */
-	public JSONObject resetGame()
+	public JSONObject resetGame(int gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post a list of commands is returned
 	 * @author-Grant
 	 */
-	public List<Command> getCommands()
+	public List<Command> getCommands(int gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre list of commands must not be empty
 	 * @post commands will be executed
 	 * @author-Grant
 	 */
-	public JSONObject executeCommands(List<Command> commands)
+	public JSONObject executeCommands(int gameID, List<Command> commands)
 			throws ServerException, UserException;
 	/**
 	 * @pre AI type must be specified and valid
 	 * @post an AIPlayer must be added
 	 * @author-Grant
 	 */
-	public void addAIPlayer(AIType type)
+	public void addAIPlayer(int gameID, AIType type)
 			throws ServerException, UserException;
 	/**
 	 * @pre
@@ -121,14 +121,14 @@ public interface IServer {
 	 * @post message is sent
 	 * @author-Grant
 	 */
-	public JSONObject sendChat(PlayerReference user, String message)
+	public JSONObject sendChat(PlayerReference user, int gameID, String message)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post dice is rolled
 	 * @author-Grant
 	 */
-	public JSONObject rollDice(PlayerReference user, int number)
+	public JSONObject rollDice(PlayerReference user, int gameID, int number)
 			throws ServerException, UserException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -136,7 +136,7 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public JSONObject robPlayer(PlayerReference user,
+	public JSONObject robPlayer(PlayerReference user, int gameID,
 			HexLocation newRobberLocation, PlayerReference victim)
 					throws ServerException, UserException;
 	/**
@@ -144,7 +144,7 @@ public interface IServer {
 	 * @post Development card is bought
 	 * @author-Grant
 	 */
-	public JSONObject buyDevCard(PlayerReference user)
+	public JSONObject buyDevCard(PlayerReference user, int gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre two types of valid resources are specified
@@ -152,7 +152,7 @@ public interface IServer {
 	 * @post player receives two specified resources
 	 * @author-Grant
 	 */
-	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1, ResourceType type2)
+	public JSONObject yearOfPlenty(PlayerReference user, int gameID, ResourceType type1, ResourceType type2)
 			throws ServerException, UserException;
 	/**
 	 * @pre edge locations must be connected to exisiting road that is owned by player
@@ -160,7 +160,7 @@ public interface IServer {
 	 * @post two roads are built at specified edge locations
 	 * @author-Grant
 	 */
-	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1, EdgeLocation road2)
+	public JSONObject roadBuilding(PlayerReference user, int gameID, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, UserException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -169,7 +169,7 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public JSONObject soldier(PlayerReference user, 
+	public JSONObject soldier(PlayerReference user, int gameID,
 			HexLocation newRobberLocation, PlayerReference victim)
 					throws ServerException, UserException;
 	/**
@@ -178,13 +178,13 @@ public interface IServer {
 	 * @post player receives all cards of specified resource type from all other players
 	 * @author-Grant
 	 */
-	public JSONObject monopoly(PlayerReference user, ResourceType type)
+	public JSONObject monopoly(PlayerReference user, int gameID, ResourceType type)
 			throws ServerException, UserException;
 	
 	/**
 	 * 
 	 */
-	public JSONObject monument(PlayerReference user)
+	public JSONObject monument(PlayerReference user, int gameID)
 			throws ServerException, UserException;
 	
 	/**
@@ -192,7 +192,7 @@ public interface IServer {
 	 * @post road is built at specified location
 	 * @author-Grant
 	 */
-	public JSONObject buildRoad(PlayerReference user, EdgeLocation location, boolean free)
+	public JSONObject buildRoad(PlayerReference user, int gameID, EdgeLocation location, boolean free)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and must be connected to road owned by player.  Must be at least two
@@ -200,21 +200,21 @@ public interface IServer {
 	 * @post settlement is built at existing location
 	 * @author-Grant
 	 */
-	public JSONObject buildSettlement(PlayerReference user, VertexLocation location, boolean free)
+	public JSONObject buildSettlement(PlayerReference user, int gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and settlement that is owned by the player already exists at vertex location
 	 * @post city replaces settlement
 	 * @author-Grant
 	 */
-	public JSONObject buildCity(PlayerReference user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, int gameID, VertexLocation location)
 			throws ServerException, UserException;
 	/**
 	 * @pre offer is specified and player must have at least as many resources in his hand as his offer does
 	 * @post offer is made to another player
 	 * @author-Grant
 	 */
-	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
+	public JSONObject offerTrade(PlayerReference user, int gameID, ResourceTradeList offer,
 			PlayerReference receiver)
 					throws ServerException, UserException;
 	/**
@@ -222,7 +222,7 @@ public interface IServer {
 	 * @post trade is declined or accepted according to user's decision
 	 * @author-Grant
 	 */
-	public JSONObject respondToTrade(PlayerReference user, boolean accept)
+	public JSONObject respondToTrade(PlayerReference user, int gameID, boolean accept)
 			throws ServerException, UserException;
 	/**
 	 * @pre user must have correct ratio for trade that he wants to do
@@ -231,7 +231,7 @@ public interface IServer {
 	 * @post user trades in specified resources for specified resource
 	 * @author-Grant
 	 */
-	public JSONObject maritimeTrade(PlayerReference user,
+	public JSONObject maritimeTrade(PlayerReference user, int gameID, 
 			ResourceType inResource, ResourceType outResource, int ratio)
 					throws ServerException, UserException;
 	/**
@@ -239,14 +239,14 @@ public interface IServer {
 	 * @post player loses half of his cards, rounding down
 	 * @author-Grant
 	 */
-	public JSONObject discardCards(PlayerReference user, ResourceList cards)
+	public JSONObject discardCards(PlayerReference user, int gameID, ResourceList cards)
 			throws ServerException, UserException;
 	/**
 	 * @pre player must have rolled
 	 * @post player ends turn
 	 * @author-Grant
 	 */
-	public JSONObject finishTurn(PlayerReference user)
+	public JSONObject finishTurn(PlayerReference user, int gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre
