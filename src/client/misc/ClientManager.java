@@ -3,6 +3,7 @@ package client.misc;
 import client.communication.MockServer;
 import client.communication.ServerProxy;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.model.ModelFacade;
 import shared.model.PlayerReference;
 
@@ -18,6 +19,7 @@ public class ClientManager {
 	
 	public static String host = null;
 	public static int port = -1;
+	private static Session session = null;
 	
 	public static final int DEFAULT_SERVER_TYPE = SERVER_TYPE_PROXY;
 		
@@ -74,6 +76,14 @@ public class ClientManager {
 
 	public static void setLocalPlayer(PlayerReference localPlayer) {
 		ClientManager.localPlayer = localPlayer;
+	}
+
+	public static void setSession(Session session) {
+		ClientManager.session  = session;
+	}
+	
+	public static Session getSession() {
+		return session;
 	}
 	
 

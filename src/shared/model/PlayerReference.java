@@ -2,7 +2,6 @@ package shared.model;
 
 import java.util.*;
 
-import shared.communication.GameHeader;
 import shared.definitions.CatanColor;
 
 /** Represents an immutable reference to a player in a game.
@@ -104,8 +103,11 @@ public class PlayerReference {
 	 */
 	@Override
 	public String toString() {
-		return "PlayerReference [playerIndex=" + playerIndex + ", playerUUID="
-				+ playerUUID + "]";
+		return "PlayerReference ["	+ playerUUID + "]";
+	}
+
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 	
 }

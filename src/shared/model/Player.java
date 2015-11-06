@@ -102,7 +102,7 @@ public class Player {
 		return json;
 	}
 	
-	public PlayerHeader toPlayerHeader() {
+	public PlayerHeader getHeader() {
 		return new PlayerHeader(color, name, uuid);
 	}
 	

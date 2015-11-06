@@ -25,18 +25,9 @@ import client.misc.ClientManager;
 
 
 public class ModelFacade {
-	
-	
-		//Get the Singleton for this class
-		//private static ModelFacade instance = new ModelFacade();
-		@Deprecated
-		public static ModelFacade getInstance(){
-		    return ClientManager.getModel();
-		}
+		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 	
 		private CatanModel model;
-		private Session localPlayer;
-		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 		
 		private List<IModelListener> listeners;
 		private ServerPoller poller;
@@ -68,6 +59,11 @@ public class ModelFacade {
 			listeners.remove(listener);
 		}
 		
+		/** Updates the model from json
+		 * THIS is a CLIENT-ONLY method!
+		 * @param json
+		 * @return
+		 */
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
 			//We are still waiting for players.
@@ -172,7 +168,7 @@ public class ModelFacade {
 				if (player != null) {
 					try {
 						Player newPlayer = new Player(player);
-						if (this.getLocalPlayer() != null && newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
+						if (ClientManager.getSession() != null && newPlayer.getPlayerID() == ClientManager.getSession().getPlayerID()) {
 							ClientManager.setLocalPlayer(new PlayerReference(model, i));
 						}
 						players.add(newPlayer);
@@ -371,13 +367,13 @@ public class ModelFacade {
 		
 		//Possibly want to move this up, just make the facade have a reference to the
 		//current player.
-		public void setLocalPlayer(Session player) {
+		/*public void setLocalPlayer(Session player) {
 			localPlayer = player;
 		}
 		
 		public Session getLocalPlayer() {
 			return localPlayer;
-		}
+		}*/
 		
 		public void setGameInfo(GameInfo header) {
 			model.setHeader(header);

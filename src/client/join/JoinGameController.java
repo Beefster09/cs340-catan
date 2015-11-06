@@ -116,7 +116,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			PlayerInfo localPlayer = new PlayerInfo();
 			//localPlayer.setUUID(modelFacade.getLocalPlayer().getPlayerID());
 			localPlayer.setUUID(null);
-			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
+			localPlayer.setName(ClientManager.getSession().getUsername());
 			
 			getJoinGameView().closeModal();
 			getJoinGameView().setGames(games, localPlayer);
@@ -198,7 +198,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getId() != modelFacade.getLocalPlayer().getPlayerID()) {
+			if (player.getId() != ClientManager.getSession().getPlayerID()) {
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 			else{
@@ -234,8 +234,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
 				modelFacade.updateFromJSON(ClientManager.getServer().getModel(-1));
 			}
-			if (modelFacade.getLocalPlayer() != null) {
-				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
+			if (ClientManager.getSession() != null) {
+				ServerPoller poller = new ServerPoller(serverProxy,ClientManager.getSession());
 				modelFacade.setPoller(poller);
 				poller.start();
 			}

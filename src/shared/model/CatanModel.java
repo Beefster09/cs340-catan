@@ -1,10 +1,10 @@
 package shared.model;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import client.data.GameInfo;
 import shared.communication.GameHeader;
+import shared.communication.PlayerHeader;
 
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
@@ -14,7 +14,7 @@ import shared.communication.GameHeader;
  *
  */
 public class CatanModel {
-	private GameHeader header;
+	//private GameHeader header;
 	
 	private UUID id;
 	private String title;
@@ -182,21 +182,26 @@ public class CatanModel {
 	}
 
 	public GameInfo getGameInfo() {
-		if (header != null)
-			return new GameInfo(header);
-		return null;
+		return new GameInfo(getHeader());
 	}
 
 	public GameHeader getHeader() {
-		return header;
+		List<PlayerHeader> players = new ArrayList<>();
+		for (Player player : getPlayers()) {
+			players.add(player.getHeader());
+		}
+		return new GameHeader(title, id, players);
 	}
 
 	public void setHeader(GameInfo info) {
-		this.header = new GameHeader(info);
+		title  = info.getTitle();
+		id = info.getUUID();
+		
 	}
 
 	public void setHeader(GameHeader gameHeader) {
-		this.header = gameHeader;
+		title  = gameHeader.getTitle();
+		id = gameHeader.getUUID();
 	}
 
 	public String getTitle() {

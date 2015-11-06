@@ -82,7 +82,7 @@ public class LoginController extends Controller implements ILoginController {
 
 		try {
 			Session player = serverProxy.login(username, password);
-			modelFacade.setLocalPlayer(player);
+			ClientManager.setSession(player);
 			logger.log(Level.INFO, "Login was successful");
 			// If log in succeeded
 			getLoginView().closeModal();
@@ -138,7 +138,7 @@ public class LoginController extends Controller implements ILoginController {
 		
 		try {
 			Session player = serverProxy.register(username, password);
-			modelFacade.setLocalPlayer(player);
+			ClientManager.setSession(player);
 			System.out.println("Register was successful");
 			logger.log(Level.INFO, "Register was successful");
 			// If register succeeded
