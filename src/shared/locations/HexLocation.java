@@ -43,6 +43,7 @@ public class HexLocation
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JSONObject toJSONObject() {
 		JSONObject json = new JSONObject();
 

@@ -1,11 +1,11 @@
 package client.testing;
 
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.model.ModelFacade;
 import client.misc.ClientManager;
 
 public class AddThreePlayersToGame {
@@ -17,11 +17,11 @@ public class AddThreePlayersToGame {
 	}
 	
 	public AddThreePlayersToGame() throws UserException, ServerException, JoinGameException{
-		serverProxy.login("Sam", "sam");
-		serverProxy.joinGame(3, CatanColor.RED);
+		Session user = serverProxy.login("Sam", "sam");
+		serverProxy.joinGame(user, 3, CatanColor.RED);
 		serverProxy.login("Brooke", "brooke");
-		serverProxy.joinGame(3, CatanColor.BLUE);
+		serverProxy.joinGame(user, 3, CatanColor.BLUE);
 		serverProxy.login("Pete", "pete");
-		serverProxy.joinGame(3, CatanColor.GREEN);
+		serverProxy.joinGame(user, 3, CatanColor.GREEN);
 	}
 }

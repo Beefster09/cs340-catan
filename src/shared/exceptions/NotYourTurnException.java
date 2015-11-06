@@ -8,6 +8,11 @@ package shared.exceptions;
  */
 public class NotYourTurnException extends InvalidActionException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 677183430658834885L;
+
 	public NotYourTurnException(String string) {
 		super(string);
 		// TODO Auto-generated constructor stub

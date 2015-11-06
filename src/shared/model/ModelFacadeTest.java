@@ -3,12 +3,10 @@ package shared.model;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,9 +51,6 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanRoll() {
-			
-		CatanModel model = new CatanModel();
-		
 		
 		//test if it's players current turn and he hasn't rolled
 		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
@@ -119,7 +114,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoFinishTurn() {
 		
-		boolean did = m.doFinishTurn();
+		m.doFinishTurn();
 	}
 	
 	@Test
@@ -145,7 +140,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoBuyDevelopmentCard() {
 		
-		boolean did = m.doBuyDevelopmentCard();
+		m.doBuyDevelopmentCard();
 	}
 	
 	@Test
@@ -183,7 +178,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoBuildRoad() {
 		
-		boolean did = m.doBuildRoad();
+		m.doBuildRoad();
 	}
 	
 	@Test
@@ -241,7 +236,7 @@ public class ModelFacadeTest {
 		
 		HexLocation hexLoc = new HexLocation(0, 0);
 		VertexLocation vertexLoc = new VertexLocation(hexLoc, VertexDirection.East);
-		boolean did = m.doBuildSettlement(vertexLoc);
+		m.doBuildSettlement(vertexLoc);
 	}
 	
 	@Test
@@ -264,7 +259,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoYearOfPlenty() {
 		
-		boolean did = m.doYearOfPlenty();
+		m.doYearOfPlenty();
 	}
 	
 	@Test
@@ -287,7 +282,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoRoadBuildingCard() {
 		
-		boolean did = m.doRoadBuildCard();
+		m.doRoadBuildCard();
 	}
 	
 	@Test
@@ -310,7 +305,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoSoldier() {
 		
-		boolean did = m.doSoldier();
+		m.doSoldier();
 	}
 	
 	@Test
@@ -333,7 +328,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoMonopoly() {
 		
-		boolean did = m.doMonopoly();
+		m.doMonopoly();
 	}
 	
 	@Test
@@ -356,7 +351,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoMonument() {
 		
-		boolean did = m.doMonument();
+		m.doMonument();
 	}
 	
 	@Test
@@ -382,7 +377,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoOfferTrade() {
 		
-		boolean did = m.doOfferTrade();
+		m.doOfferTrade();
 	}
 	
 	@Test
@@ -416,7 +411,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoAcceptTrade() {
 		
-		boolean did = m.doAcceptTrade();
+		m.doAcceptTrade();
 	}
 	
 	@Test
@@ -442,7 +437,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoMaritimeTrade() {
 		
-		boolean did = m.doMaritimeTrade();
+		m.doMaritimeTrade();
 	}
 	
 

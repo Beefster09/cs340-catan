@@ -7,4 +7,9 @@ package shared.exceptions;
  */
 public class UserException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8424304928224465252L;
+
 }

@@ -6,6 +6,7 @@ import javax.swing.SwingWorker;
 
 import org.json.simple.JSONObject;
 
+import client.misc.ClientManager;
 import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeLocation;
@@ -34,9 +35,10 @@ public class BuildStartingRoadState extends MapControllerState {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				getServer().buildSettlement(getYourself(), settlement, true);
-				getServer().buildRoad(getYourself(), edge, true);
-				return getServer().finishTurn(getYourself());
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				getServer().buildSettlement(getYourself(), gameID, settlement, true);
+				getServer().buildRoad(getYourself(), gameID, edge, true);
+				return getServer().finishTurn(getYourself(), gameID);
 			}
 
 			@Override

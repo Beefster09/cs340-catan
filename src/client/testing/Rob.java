@@ -2,10 +2,9 @@ package client.testing;
 
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
@@ -26,19 +25,16 @@ public class Rob {
 	}
 	
 	public Rob(String username, String password) throws JoinGameException, ServerException, UserException{
-		serverProxy.login("Steve", "steve");
-		serverProxy.joinGame(3, CatanColor.PURPLE);
+		Session user = serverProxy.login("Steve", "steve");
+		serverProxy.joinGame(user, 3, CatanColor.PURPLE);
 		List<GameHeader> games = serverProxy.getGameList();
 		modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(games.get(3)));
-		JSONObject model = serverProxy.getModel(-1);
-		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
-		Long currentTurn = (Long) turnTracker.get("currentTurn");
-		String status = (String) turnTracker.get("status");
+		int gameID = modelFacade.getGameHeader().getId();
 		PlayerReference zero = new PlayerReference(modelFacade.getGameHeader(), 0);			
 		PlayerReference nullPlayer = PlayerReference.getDummyPlayerReference(-1);
 		HexLocation hexLocation = new HexLocation(1,-2);
 		
-		serverProxy.robPlayer(zero, hexLocation, nullPlayer);
+		serverProxy.robPlayer(zero, gameID, hexLocation, nullPlayer);
 	}
 
 }

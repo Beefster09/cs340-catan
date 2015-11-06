@@ -1,7 +1,5 @@
 package client.main;
 
-import java.awt.Font;
-
 import javax.swing.*;
 
 import client.catan.*;

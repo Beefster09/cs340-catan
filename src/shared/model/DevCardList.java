@@ -6,7 +6,6 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import shared.definitions.DevCardType;
-import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
@@ -54,7 +53,6 @@ public class DevCardList {
 	 * @throws IllegalArgumentException if any of the amounts are negative
 	 */
 	public DevCardList(Map<DevCardType, Integer> cards) throws IllegalArgumentException {
-		// TODO validate
 		this.cards = new HashMap<>(cards);
 	}
 	

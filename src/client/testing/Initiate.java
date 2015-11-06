@@ -21,17 +21,14 @@ public class Initiate {
 	
 	public Initiate() throws UserException, ServerException, JoinGameException, GameInitializationException, SchemaMismatchException{
 		new Register("Steve", "steve");
-		new CreateGame("Steve", "steve");
-		new JoinGame(3, CatanColor.PURPLE);
+		int gameID = new CreateGame().run("Steve", "steve");
+		new JoinGame(null, 3, CatanColor.PURPLE);
 		new AddThreePlayersToGame();
 		new FirstTwoTurns("Steve", "steve");
 		
 		PlayerReference zero = new PlayerReference(modelFacade.getGameHeader(), 0);
-		PlayerReference one = new PlayerReference(modelFacade.getGameHeader(), 1);
-		PlayerReference two = new PlayerReference(modelFacade.getGameHeader(), 2);
-		PlayerReference three = new PlayerReference(modelFacade.getGameHeader(), 3);
 
-		serverProxy.rollDice(zero, 6);
+		serverProxy.rollDice(zero, gameID, 6);
 	}
 
 }

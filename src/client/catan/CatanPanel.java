@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import shared.definitions.ResourceType;
-import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.ResourceList;
 import client.discard.DiscardController;

@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
@@ -26,11 +27,12 @@ public class RollASeven {
 	}
 	
 	public RollASeven(String username, String password) throws ServerException, UserException, JoinGameException{
-		serverProxy.login("Steve", "steve");
-		serverProxy.joinGame(3, CatanColor.PURPLE);
+		Session user = serverProxy.login("Steve", "steve");
+		serverProxy.joinGame(user, 3, CatanColor.PURPLE);
 		List<GameHeader> games = serverProxy.getGameList();
 		modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(games.get(3)));
-		JSONObject model = serverProxy.getModel(-1);
+		int gameID = modelFacade.getGameHeader().getId();
+		JSONObject model = serverProxy.getModel(gameID, -1);
 		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
 		Long currentTurn = (Long) turnTracker.get("currentTurn");
 		String status = (String) turnTracker.get("status");
@@ -39,8 +41,8 @@ public class RollASeven {
 		HexLocation hexLocation = new HexLocation(1,-2);
 		
 		if(currentTurn == 0 && status.equals("Rolling")){
-			serverProxy.rollDice(zero, 7);
-			serverProxy.robPlayer(zero, hexLocation, nullPlayer);
+			serverProxy.rollDice(zero, gameID, 7);
+			serverProxy.robPlayer(zero, gameID, hexLocation, nullPlayer);
 		}
 		else{
 			System.out.println("It wasn't your turn");

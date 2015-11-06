@@ -11,10 +11,7 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
 import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
 import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
-import shared.exceptions.UserException;
 import shared.locations.*;
 import shared.model.*;
 

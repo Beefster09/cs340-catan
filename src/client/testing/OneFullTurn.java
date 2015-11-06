@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.JoinGameException;
@@ -26,27 +27,25 @@ public class OneFullTurn {
 	}
 	
 	public OneFullTurn(String username, String password) throws UserException, ServerException, JoinGameException{
-		serverProxy.login("Steve", "steve");
-		serverProxy.joinGame(3, CatanColor.PURPLE);
+		Session user = serverProxy.login("Steve", "steve");
+		serverProxy.joinGame(user, 3, CatanColor.PURPLE);
 		List<GameHeader> games = serverProxy.getGameList();
 		modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(games.get(3)));
-		JSONObject model = serverProxy.getModel(-1);
+		int gameID = modelFacade.getGameHeader().getId();
+		JSONObject model = serverProxy.getModel(gameID, -1);
 		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
 		Long currentTurn = (Long) turnTracker.get("currentTurn");
 		String status = (String) turnTracker.get("status");
 		PlayerReference zero = new PlayerReference(modelFacade.getGameHeader(), 0);
-		PlayerReference one = new PlayerReference(modelFacade.getGameHeader(), 1);
-		PlayerReference two = new PlayerReference(modelFacade.getGameHeader(), 2);
-		PlayerReference three = new PlayerReference(modelFacade.getGameHeader(), 3);
 
 		if(currentTurn == 0){
 			if(status.equals("Rolling")){
-				serverProxy.rollDice(zero, 6);
+				serverProxy.rollDice(zero, gameID, 6);
 			}
-			serverProxy.finishTurn(zero);
+			serverProxy.finishTurn(zero, gameID);
 		}
 		new BecomeMyTurn(username, password);
-		serverProxy.rollDice(zero, 6);
+		serverProxy.rollDice(zero, gameID, 6);
 	}
 
 }

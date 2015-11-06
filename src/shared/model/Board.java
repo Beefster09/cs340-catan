@@ -43,7 +43,6 @@ public class Board {
 	}
 	
 	public Board(boolean hasRandomNumbers, boolean hasRandomHexes, boolean hasRandomPorts) {
-		// TODO: when implementing server
 	}
 	
 	public Board(int boardRadius, List<Hex> hexList, List<Port> ports,
@@ -60,13 +59,14 @@ public class Board {
 		robber = robberLocation;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Board(List<Player> players, JSONObject json)
 			throws SchemaMismatchException, GameInitializationException {
 		try {
 			radius = (int) (long) json.get("radius") - 1; // Remove center from radius
 			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
-				for (Object obj : (List) json.get("hexes")) {
+				for (Object obj : (List<Object>) json.get("hexes")) {
 					hexData.add(new Hex((JSONObject) obj));
 				}
 				initializeHexesFromList(hexData);
@@ -77,22 +77,22 @@ public class Board {
 			robber = new HexLocation((JSONObject) json.get("robber"));
 			
 			List<Port> portData = new ArrayList<>();
-			for (Object obj : (List) json.get("ports")) {
+			for (Object obj : (List<Object>) json.get("ports")) {
 				portData.add(new Port((JSONObject) obj));
 			}
 			initializePortsFromList(portData);
 			
 			List<Road> roadData = new ArrayList<>();
-			for (Object obj : (List) json.get("roads")) {
+			for (Object obj : (List<Object>) json.get("roads")) {
 				roadData.add(new Road(players, (JSONObject) obj));
 			}
 			initializeRoadsFromList(roadData);
 			
 			List<Municipality> towns = new ArrayList<>();
-			for (Object obj : (List) json.get("settlements")) {
+			for (Object obj : (List<Object>) json.get("settlements")) {
 				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.SETTLEMENT));
 			}
-			for (Object obj : (List) json.get("cities")) {
+			for (Object obj : (List<Object>) json.get("cities")) {
 				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.CITY));
 			}
 			initializeMunicipalitiesFromList(towns);
@@ -187,7 +187,6 @@ public class Board {
 		hexes = new HashMap<>();
 		for (Hex hex : hexList) {
 			HexLocation location = hex.getLocation();
-			int hash = location.hashCode();
 			if (location.getDistanceFromCenter() > radius) {
 				throw new IndexOutOfBoundsException();
 			}
@@ -546,14 +545,6 @@ public class Board {
 		return new HashMap<>(roads);
 	}
 	
-	private void initializeNumbers(boolean hasRandomNumbers) {
-		
-	}
-	
-	private void intializeHexes(boolean hasRandomHexes) {
-		
-	}
-
 	void setRoads(Map<EdgeLocation, Road> roads) {
 		this.roads = roads;
 	}

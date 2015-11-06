@@ -14,8 +14,6 @@ import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.SchemaMismatchException;
-import shared.exceptions.ServerException;
-import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
@@ -68,6 +66,7 @@ public class ModelFacade {
 			listeners.remove(listener);
 		}
 		
+		@SuppressWarnings("unchecked")
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
 			//We are still waiting for players.
@@ -211,8 +210,8 @@ public class ModelFacade {
 						for (IModelListener listener : listeners) {
 							try {
 								listener.turnTrackerChanged(otherTurnTracker);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
@@ -240,8 +239,8 @@ public class ModelFacade {
 					for (IModelListener listener : listeners) {
 						try {
 							listener.largestArmyChanged(otherPlayer);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
+						}
+						catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -259,8 +258,8 @@ public class ModelFacade {
 					for (IModelListener listener : listeners) {
 						try {
 							listener.longestRoadChanged(otherPlayer);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
+						}
+						catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -279,8 +278,8 @@ public class ModelFacade {
 						for (IModelListener listener : listeners) {
 							try {
 								listener.tradeOfferChanged(otherOffer);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
@@ -294,8 +293,8 @@ public class ModelFacade {
 				for (IModelListener listener : listeners) {
 					try {
 						listener.tradeOfferChanged(null);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
+					}
+					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -313,8 +312,8 @@ public class ModelFacade {
 						for (IModelListener listener : listeners) {
 							try {
 								listener.chatChanged(otherChat);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
@@ -355,8 +354,8 @@ public class ModelFacade {
 				for (IModelListener listener : listeners) {
 					try {
 						listener.winnerChanged(winner);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
+					}
+					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -810,8 +809,8 @@ public class ModelFacade {
 			for (IModelListener listener : listeners) {
 				try {
 					listener.gameFinished();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

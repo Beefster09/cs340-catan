@@ -7,7 +7,6 @@ import org.json.simple.JSONObject;
 
 import client.data.GameInfo;
 import client.data.PlayerInfo;
-
 import shared.exceptions.SchemaMismatchException;
 
 public class GameHeader {
@@ -15,12 +14,13 @@ public class GameHeader {
 	private int id;
 	private List<PlayerHeader> players;
 	
+	@SuppressWarnings("unchecked")
 	public GameHeader(JSONObject json) throws SchemaMismatchException {
 		try {
 			title = (String) json.get("title");
 			id = (int) (long) json.get("id");
 			players = new ArrayList<>();
-			for (Object obj : (List) json.get("players")) {
+			for (Object obj : (List<Object>) json.get("players")) {
 				players.add(new PlayerHeader((JSONObject) obj));
 			}
 		}

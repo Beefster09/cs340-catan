@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
@@ -25,15 +26,15 @@ public class BecomeMyTurn {
 	}
 	
 	public BecomeMyTurn(String username, String password) throws UserException, ServerException, JoinGameException{
-		serverProxy.login("Steve", "steve");
-		serverProxy.joinGame(3, CatanColor.PURPLE);
+		Session user = serverProxy.login("Steve", "steve");
+		serverProxy.joinGame(user, 3, CatanColor.PURPLE);
 		List<GameHeader> games = serverProxy.getGameList();
 		modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(games.get(3)));
-		JSONObject model = serverProxy.getModel(-1);
+		int gameID = modelFacade.getGameHeader().getId();
+		JSONObject model = serverProxy.getModel(gameID, -1);
 		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
 		Long currentTurn = (Long) turnTracker.get("currentTurn");
 		String status = (String) turnTracker.get("status");
-		PlayerReference zero = new PlayerReference(modelFacade.getGameHeader(), 0);
 		PlayerReference one = new PlayerReference(modelFacade.getGameHeader(), 1);
 		PlayerReference two = new PlayerReference(modelFacade.getGameHeader(), 2);
 		PlayerReference three = new PlayerReference(modelFacade.getGameHeader(), 3);
@@ -45,28 +46,28 @@ public class BecomeMyTurn {
 			
 			if(status.equals("Rolling")){
 				switch (currentTurn.intValue()){
-					case 1:	serverProxy.rollDice(one, 6);
+					case 1:	serverProxy.rollDice(one, gameID, 6);
 							break;
-					case 2:	serverProxy.rollDice(two, 6);
+					case 2:	serverProxy.rollDice(two, gameID, 6);
 							break;
-					case 3:	serverProxy.rollDice(three, 6);
+					case 3:	serverProxy.rollDice(three, gameID, 6);
 							break;
 				}
-				model = serverProxy.getModel(-1);
+				model = serverProxy.getModel(gameID, -1);
 				turnTracker = (JSONObject) model.get("turnTracker");
 				currentTurn = (Long) turnTracker.get("currentTurn");
 				status = (String) turnTracker.get("status");
 			}
 			else if(status.equals("Playing")){
 				switch (currentTurn.intValue()){
-					case 1:	serverProxy.finishTurn(one);
+					case 1:	serverProxy.finishTurn(one, gameID);
 							break;
-					case 2:	serverProxy.finishTurn(two);
+					case 2:	serverProxy.finishTurn(two, gameID);
 							break;
-					case 3:	serverProxy.finishTurn(three);
+					case 3:	serverProxy.finishTurn(three, gameID);
 							break;
 				}
-				model = serverProxy.getModel(-1);
+				model = serverProxy.getModel(gameID, -1);
 				turnTracker = (JSONObject) model.get("turnTracker");
 				currentTurn = (Long) turnTracker.get("currentTurn");
 				status = (String) turnTracker.get("status");

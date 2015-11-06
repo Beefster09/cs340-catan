@@ -6,4 +6,9 @@ package shared.exceptions;
  */
 public class GamePersistenceException extends ServerException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2955078050320082145L;
+
 }

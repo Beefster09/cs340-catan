@@ -1,15 +1,8 @@
 package shared.model;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import shared.definitions.TurnStatus;
 import shared.exceptions.SchemaMismatchException;
 

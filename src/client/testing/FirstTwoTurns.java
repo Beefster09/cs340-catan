@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.SchemaMismatchException;
@@ -20,6 +21,7 @@ import client.misc.ClientManager;
 
 public class FirstTwoTurns {
 
+	private int gameID;
 	private IServer serverProxy = ClientManager.getServer();
 	private ModelFacade modelFacade = ClientManager.getModel();
 
@@ -28,11 +30,12 @@ public class FirstTwoTurns {
 	}
 	
 	public FirstTwoTurns(String username, String password) throws ServerException, UserException, SchemaMismatchException, JoinGameException{
-		serverProxy.login("Steve", "steve");
-		serverProxy.joinGame(3, CatanColor.PURPLE);
+		Session user = serverProxy.login("Steve", "steve");
+		serverProxy.joinGame(user, 3, CatanColor.PURPLE);
 		List<GameHeader> games = serverProxy.getGameList();
 		modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(games.get(3)));
-		JSONObject model = serverProxy.getModel(-1);
+		gameID = modelFacade.getGameHeader().getId();
+		JSONObject model = serverProxy.getModel(gameID, -1);
 		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
 		Long currentTurn = (Long) turnTracker.get("currentTurn");
 		String status = (String) turnTracker.get("status");
@@ -72,7 +75,7 @@ public class FirstTwoTurns {
 						break;
 			}
 			
-			model = serverProxy.getModel(-1);
+			model = serverProxy.getModel(gameID, -1);
 			turnTracker = (JSONObject) model.get("turnTracker");
 			currentTurn = (Long) turnTracker.get("currentTurn");
 			status = (String) turnTracker.get("status");
@@ -80,6 +83,7 @@ public class FirstTwoTurns {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void makeMove(PlayerReference player, Long x, Long y, String direction,
 						 Long x2, Long y2, String direction2) throws ServerException, UserException, SchemaMismatchException{
 		JSONObject location = new JSONObject();
@@ -92,8 +96,8 @@ public class FirstTwoTurns {
 		location.put("y", y2);
 		location.put("direction", direction2);
 		VertexLocation vertexLocation = new VertexLocation(location);
-		serverProxy.buildRoad(player, edgeLocation, true);
-		serverProxy.buildSettlement(player, vertexLocation, true);
-		serverProxy.finishTurn(player);
+		serverProxy.buildRoad(player, gameID, edgeLocation, true);
+		serverProxy.buildSettlement(player, gameID, vertexLocation, true);
+		serverProxy.finishTurn(player, gameID);
 	}
 }
