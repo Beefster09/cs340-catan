@@ -6,14 +6,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.json.simple.JSONObject;
-
 import shared.communication.IServer;
 import shared.definitions.*;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.Board;
-import shared.model.CatanModel;
 import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.PlayerReference;
@@ -139,7 +136,8 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	@Override
 	public void makeTrade() {
 		try{
-			server.maritimeTrade(ClientManager.getLocalPlayer(), inResource, outResource, ratio);
+			int gameID = ClientManager.getModel().getGameHeader().getId();
+			server.maritimeTrade(ClientManager.getLocalPlayer(), gameID, inResource, outResource, ratio);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");
@@ -187,7 +185,6 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	public void setGiveResource(ResourceType resource) {
 		inResource = resource;
 		ratio = 4;
-		ResourceList resouces = modelFacade.getCatanModel().getPlayers().get(ClientManager.getLocalPlayer().getIndex()).getResources();
 		Collection<Port> ports = board.getPorts();
 		for(Port port : ports){
 			if(port.getRatio() == 3){

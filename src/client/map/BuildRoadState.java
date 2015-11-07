@@ -6,6 +6,7 @@ import javax.swing.SwingWorker;
 
 import org.json.simple.JSONObject;
 
+import client.misc.ClientManager;
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeLocation;
 
@@ -23,7 +24,8 @@ public class BuildRoadState extends MapControllerState {
 			@Override
 			protected JSONObject doInBackground() throws Exception {
 				MapController controller = getController();
-				return controller.getServer().buildRoad(controller.getYourself(), edge, false);
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				return controller.getServer().buildRoad(controller.getYourself(), gameID, edge, false);
 			}
 
 			@Override

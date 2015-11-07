@@ -218,6 +218,7 @@ public class DiscardController extends Controller implements IDiscardController 
 	/**
 	 * send request to server with a map of resource types and how many of each are discarded
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void discard() {
 		try {
@@ -228,7 +229,8 @@ public class DiscardController extends Controller implements IDiscardController 
 			
 			ResourceList cards = new ResourceList(discardMap);
 			
-			serverProxy.discardCards(localPlayer, cards);
+			int gameID = ClientManager.getModel().getGameHeader().getId();
+			serverProxy.discardCards(localPlayer, gameID, cards);
 			
 			setResourcesInViewToZero();
 			
@@ -241,8 +243,8 @@ public class DiscardController extends Controller implements IDiscardController 
 				getWaitView().showModal();
 			
 			
-		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (ServerException | UserException e) {
 			e.printStackTrace();
 		}
 		

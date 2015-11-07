@@ -11,7 +11,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import shared.exceptions.GameInitializationException;
-import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.NameAlreadyInUseException;
 import shared.exceptions.ServerException;

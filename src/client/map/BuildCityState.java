@@ -31,7 +31,8 @@ public class BuildCityState extends MapControllerState {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				return ClientManager.getServer().buildCity(getYourself(), vertex);
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				return ClientManager.getServer().buildCity(getYourself(), gameID, vertex);
 			}
 
 			@Override

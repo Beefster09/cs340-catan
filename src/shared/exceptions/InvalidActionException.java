@@ -7,6 +7,11 @@ package shared.exceptions;
  */
 public class InvalidActionException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4748472084760753942L;
+
 	public InvalidActionException(String string) {
 		super(string);
 	}

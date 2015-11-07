@@ -4,7 +4,6 @@ import java.util.*;
 
 import client.base.*;
 import client.misc.ClientManager;
-import shared.communication.IServer;
 import shared.definitions.*;
 import shared.model.MessageList;
 import shared.model.ModelFacade;
@@ -16,7 +15,6 @@ import shared.model.Player;
  */
 public class GameHistoryController extends Controller implements IGameHistoryController {
 
-	private IServer serverProxy = ClientManager.getServer();
 	private ModelFacade modelFacade = ClientManager.getModel();
 	
 	public GameHistoryController(IGameHistoryView view) {

@@ -17,7 +17,6 @@ import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
 import shared.exceptions.DuplicateKeyException;
 import shared.exceptions.GameInitializationException;
-import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;

@@ -7,6 +7,11 @@ package shared.exceptions;
  */
 public class GameInitializationException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6882423696286615099L;
+
 	public GameInitializationException(String string) {
 		super(string);
 	}

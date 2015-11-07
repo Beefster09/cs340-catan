@@ -50,11 +50,12 @@ public class RobPlayerState extends MapControllerState {
 						victimInfo.getPlayerIndex());
 				}
 
+				int gameID = ClientManager.getModel().getGameHeader().getId();
 				if (previous instanceof SoldierMoveState) {
-					return ClientManager.getServer().soldier(getYourself(),
+					return ClientManager.getServer().soldier(getYourself(), gameID,
 							newRobberLoc, victim);
 				} else if (previous instanceof MoveRobberState) {
-					return ClientManager.getServer().robPlayer(getYourself(),
+					return ClientManager.getServer().robPlayer(getYourself(), gameID,
 							newRobberLoc, victim);
 				} else return null;
 			}

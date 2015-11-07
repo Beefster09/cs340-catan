@@ -130,8 +130,6 @@ public class VertexLocation
 		if (!self.hexLoc.isAdjacent(other.hexLoc)) return false;
 
 		int dx = other.hexLoc.getX() - self.hexLoc.getX();
-		int dy = other.hexLoc.getY() - self.hexLoc.getY();
-		
 		switch (self.dir) {
 		case NorthWest:
 			return dx == -1 && other.dir == VertexDirection.NorthEast;

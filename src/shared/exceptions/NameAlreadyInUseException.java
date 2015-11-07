@@ -8,4 +8,9 @@ package shared.exceptions;
  */
 public class NameAlreadyInUseException extends UserException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5532482530874231364L;
+
 }

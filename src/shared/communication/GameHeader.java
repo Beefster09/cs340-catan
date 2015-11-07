@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 
 import client.data.GameInfo;
 import client.data.PlayerInfo;
-
 import shared.exceptions.SchemaMismatchException;
 
 public class GameHeader {

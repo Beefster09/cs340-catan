@@ -31,7 +31,8 @@ public class BuildSettlementState extends MapControllerState {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				return ClientManager.getServer().buildSettlement(getYourself(),
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				return ClientManager.getServer().buildSettlement(getYourself(), gameID,
 						vertex, false);
 			}
 

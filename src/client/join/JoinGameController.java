@@ -4,6 +4,7 @@ import java.util.List;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.JoinGameException;
@@ -224,7 +225,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			if (serverProxy.joinGame(modelFacade.getGameInfo().getId(), color)) {
+			Session user = modelFacade.getLocalPlayer();
+			if (serverProxy.joinGame(user, modelFacade.getGameInfo().getId(), color)) {
 				if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
 				if (getSelectColorView().isModalShowing()) {
 					getSelectColorView().closeModal();
@@ -232,7 +234,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				List<GameHeader> gameHeaders = serverProxy.getGameList();
 				GameHeader thisHeader = gameHeaders.get(modelFacade.getGameInfo().getId());
 				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
-				modelFacade.updateFromJSON(ClientManager.getServer().getModel(-1));
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				modelFacade.updateFromJSON(ClientManager.getServer().getModel(gameID, -1));
 			}
 			if (ClientManager.getSession() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,ClientManager.getSession());
