@@ -1,18 +1,24 @@
 package shared.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.simple.JSONObject;
 
 import shared.definitions.MunicipalityType;
+import shared.definitions.ResourceType;
 import shared.exceptions.DuplicateKeyException;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
+import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
@@ -38,13 +44,150 @@ public class Board {
 	
 	private HexLocation robber;
 
-	public Board() {
-		this(true, true, true);
+	public Board() throws GameInitializationException {
+		this(false, false, false);
 	}
 	
-	public Board(boolean hasRandomNumbers, boolean hasRandomHexes, boolean hasRandomPorts) {
+	public Board(boolean hasRandomNumbers, boolean hasRandomHexes,
+			boolean hasRandomPorts) throws GameInitializationException {
+		List<ResourceType> hexTypes;
+		if (!hasRandomHexes) {
+			hexTypes = initDefaultHexTypes();
+		}
+		else {
+			hexTypes = initRandomHexTypes();
+		}
+		if (!hasRandomNumbers) {
+			initHexesWithDefaultNumbers(hexTypes);
+		}
+		else {
+			initRandomNumbers(hexTypes);
+		}
+		if (!hasRandomPorts) {
+			initDefaultPorts();
+		}
+		else {
+			initRandomPorts();
+		}
+	}
+
+	private static final List<ResourceType> defaultHexTypes = Arrays.asList(
+			new ResourceType[] {
+		ResourceType.ORE,  ResourceType.SHEEP, ResourceType.SHEEP, 
+		ResourceType.WHEAT, ResourceType.WOOD, ResourceType.ORE,
+		ResourceType.WHEAT, ResourceType.WOOD, ResourceType.BRICK, 
+		ResourceType.WOOD, ResourceType.ORE, ResourceType.WHEAT, 
+		ResourceType.BRICK, ResourceType.SHEEP, ResourceType.WHEAT, 
+		ResourceType.WOOD, ResourceType.BRICK, ResourceType.SHEEP,
+		null
+		});
+	private List<ResourceType> initDefaultHexTypes() {
+		return defaultHexTypes;
+	}
+
+	private List<ResourceType> initRandomHexTypes() {
+		List<ResourceType> resources = new ArrayList<>(defaultHexTypes);
+		Collections.shuffle(resources);
+		return resources;
+	}
+
+	// This is actually slightly different from the official number layout,
+	// but is modified to keep 6s and 8s and same numbers apart when iterating
+	// the way the cycle iterates.
+	private static final List<Integer> defaultNumbers = Arrays.asList(new Integer[]
+			{11, 10, 3, 6, 5, 4, 9, 8, 4, 11, 12, 9, 10, 8, 3, 6, 2, 5});
+	
+	private void initHexesWithDefaultNumbers(List<ResourceType> resources) throws GameInitializationException {
+		try {
+			initializeHexesFromList(makeHexes(resources, defaultNumbers));
+		} catch (DuplicateKeyException e) {
+			e.printStackTrace();
+			assert false;
+		}
+	}
+
+	private void initRandomNumbers(List<ResourceType> resources) throws GameInitializationException {
+		List<Integer> numbers = new ArrayList<>(defaultNumbers);
+		Collections.shuffle(numbers);
+		try {
+			initializeHexesFromList(makeHexes(resources, numbers));
+		} catch (DuplicateKeyException e) {
+			e.printStackTrace();
+			assert false;
+		}
+	}
+
+	private List<Hex> makeHexes(List<ResourceType> resources, List<Integer> numbers) {
+		Iterator<ResourceType> resIter = resources.iterator();
+		Iterator<Integer> numIter = numbers.iterator();
+		List<Hex> hexes = new ArrayList<>();
+		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(2)) {
+			ResourceType resource = resIter.next();
+			if (resource != null) {
+				hexes.add(new Hex(hexLoc, resource, numIter.next()));
+			}
+			else {
+				// Desert
+				hexes.add(new Hex(hexLoc, resource));
+			}
+		}
+		return hexes;
 	}
 	
+	private static final EdgeLocation[] portLocations = {
+		new EdgeLocation( 0, -2, EdgeDirection.North),
+		new EdgeLocation( 1, -2, EdgeDirection.NorthEast),
+		new EdgeLocation( 2, -1, EdgeDirection.NorthEast),
+		new EdgeLocation( 2,  0, EdgeDirection.SouthEast),
+		new EdgeLocation( 1,  1, EdgeDirection.South),
+		new EdgeLocation(-1,  2, EdgeDirection.South),
+		new EdgeLocation(-2,  2, EdgeDirection.SouthWest),
+		new EdgeLocation(-2,  1, EdgeDirection.NorthWest),
+		new EdgeLocation(-1, -1, EdgeDirection.NorthWest),
+	};
+	
+	private static final List<ResourceType> defaultPortTypes = Arrays.asList(
+			new ResourceType[] {
+					null,
+					ResourceType.BRICK,
+					ResourceType.WHEAT,
+					null,
+					null,
+					ResourceType.SHEEP,
+					null,
+					ResourceType.WOOD,
+					ResourceType.ORE,
+			});
+
+	private void initDefaultPorts() throws GameInitializationException {
+		try {
+			initializePortsFromList(makePorts(defaultPortTypes));
+		} catch (DuplicateKeyException e) {
+			e.printStackTrace();
+			assert false;
+		}
+	}
+	
+	private void initRandomPorts() throws GameInitializationException {
+		List<ResourceType> portTypes = new ArrayList<>(defaultPortTypes);
+		Collections.shuffle(portTypes);
+		try {
+			initializePortsFromList(makePorts(portTypes));
+		} catch (DuplicateKeyException e) {
+			e.printStackTrace();
+			assert false;
+		}
+	}
+
+	private List<Port> makePorts(List<ResourceType> portTypes) {
+		Iterator<ResourceType> resIter = portTypes.iterator();
+		List<Port> ports = new ArrayList<>();
+		for (EdgeLocation edge : portLocations) {
+			ports.add(new Port(edge, resIter.next()));
+		}
+		return ports;
+	}
+
 	public Board(int boardRadius, List<Hex> hexList, List<Port> ports,
 			List<Road> roads, List<Municipality> towns,	HexLocation robberLocation)
 					throws DuplicateKeyException, GameInitializationException {
@@ -118,12 +261,9 @@ public class Board {
 		for (Port port : portData) {
 			// Make sure the port is on the edge of the board
 			EdgeLocation location = port.getLocation();
-			/*
-			 * This function doesn't work for the moment.
 			if (location.getDistanceFromCenter() != radius || location.isSpoke()) {
 				throw new IndexOutOfBoundsException();
 			}
-			*/
 			// Ensure ports are not too close together
 			for (EdgeLocation neighbor : location.getNeighbors()) {
 				if (ports.containsKey(neighbor)) {
@@ -571,8 +711,10 @@ public class Board {
 			return true;
 		}
 		// Case 2: Road 2 is immediately adjacent to Road 1, but not connected to the rest
-		// of the roads
-		return secondRoad.isAdjacent(firstRoad);
+		// of the roads AND there is not another player's settlement between them
+		Municipality townBetween = getMunicipalityAt(firstRoad.getVertexBetween(secondRoad));
+		return secondRoad.isAdjacent(firstRoad) && 
+				(townBetween == null) || townBetween.getOwner().equals(player);
 	}
 
 	@Override
@@ -628,7 +770,7 @@ public class Board {
 		return true;
 	}
 
-	Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
+	public Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
 		Collection<Municipality> result = new ArrayList<>();
 		for (VertexLocation loc : hex.getVertices()) {
 			Municipality town = getMunicipalityAt(loc);

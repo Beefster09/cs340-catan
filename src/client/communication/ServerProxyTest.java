@@ -44,9 +44,9 @@ public class ServerProxyTest {
 		try{
 			JSONObject gameJSON = new JSONObject();
 			gameJSON.put("title", "Yes");
-			gameJSON.put("id", 0L);
+			gameJSON.put("id", "df5d7de5-77b7-4ceb-be98-d489e73d9e1f");
 			JSONObject playerJSON = new JSONObject();
-			playerJSON.put("id", 0L);
+			playerJSON.put("id", "2115d1a1-663f-43f6-ae46-169caf641bec");
 			playerJSON.put("name", "blah");
 			playerJSON.put("color", "red");
 			List<JSONObject> newList = new ArrayList<JSONObject>();

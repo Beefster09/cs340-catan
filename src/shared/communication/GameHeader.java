@@ -30,7 +30,7 @@ public class GameHeader {
 			}
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
 					"for a GameHeader:\n" + json.toJSONString());
 		}
