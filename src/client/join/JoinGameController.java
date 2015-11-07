@@ -225,7 +225,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			Session user = modelFacade.getLocalPlayer();
+			Session user = ClientManager.getSession();
 			if (serverProxy.joinGame(user, modelFacade.getGameInfo().getId(), color)) {
 				if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
 				if (getSelectColorView().isModalShowing()) {

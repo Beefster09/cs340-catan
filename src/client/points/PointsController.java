@@ -5,6 +5,7 @@ import java.util.List;
 import client.base.*;
 import client.misc.ClientManager;
 import shared.model.Player;
+import shared.model.PlayerReference;
 
 
 /**
