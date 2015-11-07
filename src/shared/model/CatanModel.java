@@ -1,9 +1,10 @@
 package shared.model;
 
-import java.util.List;
+import java.util.*;
 
 import client.data.GameInfo;
 import shared.communication.GameHeader;
+import shared.communication.PlayerHeader;
 
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
@@ -12,8 +13,9 @@ import shared.communication.GameHeader;
  * @author Jordan
  *
  */
-public class CatanModel {
-	private GameHeader header;
+public class CatanModel {	
+	private UUID id;
+	private String title;
 	
 	private MessageList chat;
 	private MessageList log;
@@ -24,45 +26,27 @@ public class CatanModel {
 	private List<Player> players;
 	private PlayerReference longestRoad;
 	private PlayerReference largestArmy;
-	private int winner;
+	
+	private PlayerReference winner = null;
 	
 	private int version;
 
+	/** Makes a brand spanking new Model
+	 * 
+	 */
 	public CatanModel() {
 		version = -1;
-		winner = -1;
+		winner = null;
+		
+		id = UUID.randomUUID();
 	}
-
-	/**
-	 * @param chat
-	 * @param log
-	 * @param map
-	 * @param tradeOffer
-	 * @param turnTracker
-	 * @param bank
-	 * @param players
-	 * @param longestRoad
-	 * @param largestArmy
-	 * @param winner
-	 * @param version
-	 */
 	
-	public CatanModel(MessageList chat, MessageList log, Board map,
-			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
-			List<Player> players, PlayerReference longestRoad,
-			PlayerReference largestArmy, int winner, int version) {
-		super();
-		this.chat = chat;
-		this.log = log;
-		this.map = map;
-		this.tradeOffer = tradeOffer;
-		this.turnTracker = turnTracker;
-		this.bank = bank;
-		this.players = players;
-		this.longestRoad = longestRoad;
-		this.largestArmy = largestArmy;
-		this.winner = winner;
-		this.version = version;
+	public UUID getID() {
+		return id;
+	}
+	
+	public int getShortID() {
+		return id.hashCode();
 	}
 
 	/**
@@ -152,7 +136,7 @@ public class CatanModel {
 	/**
 	 * @return the winner
 	 */
-	public int getWinner() {
+	public PlayerReference getWinner() {
 		return winner;
 	}
 
@@ -160,31 +144,31 @@ public class CatanModel {
 		this.chat = chat;
 	}
 
-	public void setLog(MessageList log) {
+	void setLog(MessageList log) {
 		this.log = log;
 	}
 
-	public void setMap(Board map) {
+	void setMap(Board map) {
 		this.map = map;
 	}
 
-	public void setTurnTracker(TurnTracker turnTracker) {
+	void setTurnTracker(TurnTracker turnTracker) {
 		this.turnTracker = turnTracker;
 	}
 
-	public void setBank(Bank bank) {
+	void setBank(Bank bank) {
 		this.bank = bank;
 	}
 
-	public void setPlayers(List<Player> players) {
+	void setPlayers(List<Player> players) {
 		this.players = players;
 	}
 
-	public void setWinner(int winner) {
+	void setWinner(PlayerReference winner) {
 		this.winner = winner;
 	}
 
-	public void setVersion(int version) {
+	void setVersion(int version) {
 		this.version = version;
 	}
 
@@ -196,21 +180,34 @@ public class CatanModel {
 	}
 
 	public GameInfo getGameInfo() {
-		if (header != null)
-			return new GameInfo(header);
-		return null;
+		return new GameInfo(getHeader());
 	}
 
 	public GameHeader getHeader() {
-		return header;
+		List<PlayerHeader> players = new ArrayList<>();
+		for (Player player : getPlayers()) {
+			players.add(player.getHeader());
+		}
+		return new GameHeader(title, id, players);
 	}
 
 	public void setHeader(GameInfo info) {
-		this.header = new GameHeader(info);
+		title  = info.getTitle();
+		id = info.getUUID();
+		
 	}
 
 	public void setHeader(GameHeader gameHeader) {
-		this.header = gameHeader;
+		title  = gameHeader.getTitle();
+		id = gameHeader.getUUID();
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	void setTitle(String title) {
+		this.title = title;
 	}
 	
 	

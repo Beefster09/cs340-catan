@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -60,8 +61,10 @@ public class MockServer implements IServer {
 		
 		List<GameHeader> returnList = new ArrayList<GameHeader>();
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 1));
-		GameHeader returnGame = new GameHeader("GameTest", 1, players);
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim",
+				UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92")));
+		GameHeader returnGame = new GameHeader("GameTest", 
+				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"), players);
 		returnList.add(returnGame);
 		return returnList;
 	}
@@ -73,8 +76,10 @@ public class MockServer implements IServer {
 			ServerException {
 		
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 1));
-		GameHeader returnGame = new GameHeader("GameTest", 1, players);
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 
+				UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92")));
+		GameHeader returnGame = new GameHeader("GameTest", 
+				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"), players);
 		
 		return returnGame;
 	}

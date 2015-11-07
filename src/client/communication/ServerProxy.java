@@ -16,6 +16,7 @@ import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
@@ -97,21 +98,12 @@ public class ServerProxy implements IServer {
 			List<GameHeader> returnList = new ArrayList<GameHeader>();
 			List<JSONObject> listOfGames = (List<JSONObject>) returned.get("games");
 			for(JSONObject game : listOfGames){
-				String title = (String) game.get("title");
-				int id = ((Long)game.get("id")).intValue();
-				List<JSONObject> players = (List<JSONObject>) game.get("players");
-				List<PlayerHeader> playerHeaders = new ArrayList<PlayerHeader>();
-				for(JSONObject json : players){
-					if(json.isEmpty()){
-						playerHeaders.add(null);
-						continue;
-					}
-					CatanColor playerColor = CatanColor.getColorFromString((String)json.get("color"));
-					String playerName = (String) json.get("name");
-					int playerID = ((Long)json.get("id")).intValue();
-					playerHeaders.add(new PlayerHeader(playerColor, playerName, playerID));
+				try {
+					returnList.add(new GameHeader(game));
+				} catch (SchemaMismatchException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				returnList.add(new GameHeader(title, id, playerHeaders));
 			}
 			return returnList;
 		}
@@ -137,24 +129,13 @@ public class ServerProxy implements IServer {
 			
 			JSONObject returned = communicator.preJoin(o);
 			
-			String title = (String)returned.get("title");
-			int id = ((Long)returned.get("id")).intValue();
-			List<JSONObject> players = (List<JSONObject>) returned.get("players");
-			List<PlayerHeader> playerHeader = new ArrayList<PlayerHeader>();
-			for(JSONObject player : players){
-				if(player.isEmpty()){
-					playerHeader.add(null);
-					continue;
-				}
-				String playerName = (String)player.get("name");
-				int playerID = ((Long)player.get("id")).intValue();
-				CatanColor playerColor = CatanColor.getColorFromString((String)player.get("color"));
-				playerHeader.add(new PlayerHeader(playerColor, playerName, playerID));
-			}
-			return new GameHeader(title, id, playerHeader);
+			return new GameHeader(returned);
 		}
 		catch(UserException e){
 			System.out.println("There was a typo somewhere in order for me to get here!!!");
+		} catch (SchemaMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}

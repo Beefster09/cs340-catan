@@ -3,6 +3,7 @@ package client.discard;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
@@ -59,12 +60,12 @@ public class DiscardController extends Controller implements IDiscardController 
 		if (turnTracker.getStatus() == TurnStatus.Discarding) {
 			System.out.println("Discarding...");
 			
-			int playerID = modelFacade.getLocalPlayer().getPlayerID();
+			UUID playerID = ClientManager.getLocalPlayer().getPlayerUUID();
 			List<Player> players = modelFacade.getCatanModel().getPlayers();
 			Player localPlayer = null;
 			
 			for(Player p : players) 
-				if(p.getPlayerID() == playerID)
+				if(p.getUUID().equals(playerID))
 					localPlayer = p;
 			
 			ResourceList hand = localPlayer.getResources();
@@ -94,12 +95,12 @@ public class DiscardController extends Controller implements IDiscardController 
 	
 	private void setMaxAmountsInDiscardView() {
 		
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
+		UUID playerID = ClientManager.getLocalPlayer().getPlayerUUID();
 		List<Player> players = modelFacade.getCatanModel().getPlayers();
 		Player localPlayer = null;
 		
 		for(Player p : players) 
-			if(p.getPlayerID() == playerID)
+			if(p.getUUID().equals(playerID))
 				localPlayer = p;
 		
 		ResourceList hand = localPlayer.getResources();

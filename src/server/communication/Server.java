@@ -59,7 +59,7 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public boolean joinGame(int gameID, CatanColor color)
+	public boolean joinGame(Session player, int gameID, CatanColor color)
 			throws JoinGameException, ServerException {
 		// TODO Auto-generated method stub
 		return false;
@@ -79,33 +79,36 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public JSONObject getModel(int version) throws ServerException,
+	public JSONObject getModel(int gameID, int version) throws ServerException,
 			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject resetGame() throws ServerException, UserException {
+	public JSONObject resetGame(int gameID) throws ServerException,
+			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Command> getCommands() throws ServerException, UserException {
+	public List<Command> getCommands(int gameID) throws ServerException,
+			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject executeCommands(List<Command> commands)
+	public JSONObject executeCommands(int gameID, List<Command> commands)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void addAIPlayer(AIType type) throws ServerException, UserException {
+	public void addAIPlayer(int gameID, AIType type) throws ServerException,
+			UserException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -117,21 +120,21 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public JSONObject sendChat(PlayerReference user, String message)
+	public JSONObject sendChat(PlayerReference user, int gameID, String message)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject rollDice(PlayerReference user, int number)
+	public JSONObject rollDice(PlayerReference user, int gameID, int number)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject robPlayer(PlayerReference user,
+	public JSONObject robPlayer(PlayerReference user, int gameID,
 			HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
@@ -139,28 +142,30 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public JSONObject buyDevCard(PlayerReference user) throws ServerException,
+	public JSONObject buyDevCard(PlayerReference user, int gameID)
+			throws ServerException, UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JSONObject yearOfPlenty(PlayerReference user, int gameID,
+			ResourceType type1, ResourceType type2) throws ServerException,
 			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1,
-			ResourceType type2) throws ServerException, UserException {
+	public JSONObject roadBuilding(PlayerReference user, int gameID,
+			EdgeLocation road1, EdgeLocation road2) throws ServerException,
+			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1,
-			EdgeLocation road2) throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JSONObject soldier(PlayerReference user,
+	public JSONObject soldier(PlayerReference user, int gameID,
 			HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
@@ -168,28 +173,29 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public JSONObject monopoly(PlayerReference user, ResourceType type)
+	public JSONObject monopoly(PlayerReference user, int gameID,
+			ResourceType type) throws ServerException, UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JSONObject monument(PlayerReference user, int gameID)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject monument(PlayerReference user) throws ServerException,
+	public JSONObject buildRoad(PlayerReference user, int gameID,
+			EdgeLocation location, boolean free) throws ServerException,
 			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject buildRoad(PlayerReference user, EdgeLocation location,
-			boolean free) throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JSONObject buildSettlement(PlayerReference user,
+	public JSONObject buildSettlement(PlayerReference user, int gameID,
 			VertexLocation location, boolean free) throws ServerException,
 			UserException {
 		// TODO Auto-generated method stub
@@ -197,28 +203,29 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public JSONObject buildCity(PlayerReference user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, int gameID,
+			VertexLocation location) throws ServerException, UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JSONObject offerTrade(PlayerReference user, int gameID,
+			ResourceTradeList offer, PlayerReference receiver)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
-			PlayerReference receiver) throws ServerException, UserException {
+	public JSONObject respondToTrade(PlayerReference user, int gameID,
+			boolean accept) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject respondToTrade(PlayerReference user, boolean accept)
-			throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JSONObject maritimeTrade(PlayerReference user,
+	public JSONObject maritimeTrade(PlayerReference user, int gameID,
 			ResourceType inResource, ResourceType outResource, int ratio)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
@@ -226,15 +233,15 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public JSONObject discardCards(PlayerReference user, ResourceList cards)
-			throws ServerException, UserException {
+	public JSONObject discardCards(PlayerReference user, int gameID,
+			ResourceList cards) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject finishTurn(PlayerReference user) throws ServerException,
-			UserException {
+	public JSONObject finishTurn(PlayerReference user, int gameID)
+			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}

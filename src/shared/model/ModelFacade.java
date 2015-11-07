@@ -23,18 +23,9 @@ import client.misc.ClientManager;
 
 
 public class ModelFacade {
-	
-	
-		//Get the Singleton for this class
-		//private static ModelFacade instance = new ModelFacade();
-		@Deprecated
-		public static ModelFacade getInstance(){
-		    return ClientManager.getModel();
-		}
+		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 	
 		private CatanModel model;
-		private Session localPlayer;
-		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 		
 		private List<IModelListener> listeners;
 		private ServerPoller poller;
@@ -66,6 +57,11 @@ public class ModelFacade {
 			listeners.remove(listener);
 		}
 		
+		/** Updates the model from json
+		 * THIS is a CLIENT-ONLY method!
+		 * @param json
+		 * @return
+		 */
 		@SuppressWarnings("unchecked")
 		public synchronized CatanModel updateFromJSON(JSONObject json) {
 			int newVersion = (int) (long) json.get("version");
@@ -170,8 +166,8 @@ public class ModelFacade {
 				JSONObject player = (JSONObject) obj;
 				if (player != null) {
 					try {
-						Player newPlayer = new Player(model, player);
-						if (this.getLocalPlayer() != null && newPlayer.getPlayerID() == this.getLocalPlayer().getPlayerID()) {
+						Player newPlayer = new Player(player);
+						if (ClientManager.getSession() != null && newPlayer.getPlayerID() == ClientManager.getSession().getPlayerID()) {
 							ClientManager.setLocalPlayer(new PlayerReference(model, i));
 						}
 						players.add(newPlayer);
@@ -346,10 +342,12 @@ public class ModelFacade {
 		}
 		
 		private void updateWinnerFromJSON(JSONObject json) {
-			int winner = (int) (long) json.get("winner");
+			if (!json.containsKey("winner")) {
+				return;
+			}
+			PlayerReference winner = new PlayerReference((String) json.get("winner"));
 			//PlayerReference otherPlayer = new PlayerReference(model, winner);
-			if (model.getWinner() != -1 || model.getWinner() != winner ||
-					winner != -1) {
+			if (model.getWinner() != null || !model.getWinner().equals(winner)) {
 				model.setWinner(winner);
 				for (IModelListener listener : listeners) {
 					try {
@@ -364,16 +362,6 @@ public class ModelFacade {
 		
 		public PlayerReference getCurrentPlayer() {
 			return model.getTurnTracker().getCurrentPlayer();
-		}
-		
-		//Possibly want to move this up, just make the facade have a reference to the
-		//current player.
-		public void setLocalPlayer(Session player) {
-			localPlayer = player;
-		}
-		
-		public Session getLocalPlayer() {
-			return localPlayer;
 		}
 		
 		public void setGameInfo(GameInfo header) {

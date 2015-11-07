@@ -46,7 +46,7 @@ public class RobPlayerState extends MapControllerState {
 				
 				if (victimInfo != null) {
 					victim = new PlayerReference(ClientManager
-						.getModel().getCatanModel().getHeader(),
+						.getModel().getCatanModel(),
 						victimInfo.getPlayerIndex());
 				}
 

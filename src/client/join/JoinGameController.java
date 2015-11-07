@@ -115,8 +115,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			
 			GameInfo[] games = DataConverter.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
-			localPlayer.setId(modelFacade.getLocalPlayer().getPlayerID());
-			localPlayer.setName(modelFacade.getLocalPlayer().getUsername());
+			//localPlayer.setUUID(modelFacade.getLocalPlayer().getPlayerID());
+			localPlayer.setUUID(null);
+			localPlayer.setName(ClientManager.getSession().getUsername());
 			
 			getJoinGameView().closeModal();
 			getJoinGameView().setGames(games, localPlayer);
@@ -198,7 +199,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getId() != modelFacade.getLocalPlayer().getPlayerID()) {
+			if (player.getId() != ClientManager.getSession().getPlayerID()) {
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 			else{
@@ -224,7 +225,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	@Override
 	public void joinGame(CatanColor color) {
 		try{
-			Session user = modelFacade.getLocalPlayer();
+			Session user = ClientManager.getSession();
 			if (serverProxy.joinGame(user, modelFacade.getGameInfo().getId(), color)) {
 				if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
 				if (getSelectColorView().isModalShowing()) {
@@ -236,8 +237,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				modelFacade.updateFromJSON(ClientManager.getServer().getModel(gameID, -1));
 			}
-			if (modelFacade.getLocalPlayer() != null) {
-				ServerPoller poller = new ServerPoller(serverProxy,modelFacade.getLocalPlayer());
+			if (ClientManager.getSession() != null) {
+				ServerPoller poller = new ServerPoller(serverProxy,ClientManager.getSession());
 				modelFacade.setPoller(poller);
 				poller.start();
 			}
