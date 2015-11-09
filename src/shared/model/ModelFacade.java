@@ -12,7 +12,11 @@ import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
+import shared.definitions.TurnStatus;
 import shared.exceptions.GameInitializationException;
+import shared.exceptions.InsufficientResourcesException;
+import shared.exceptions.InvalidActionException;
+import shared.exceptions.NotYourTurnException;
 import shared.exceptions.SchemaMismatchException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
@@ -476,7 +480,6 @@ public class ModelFacade {
 		 * no currently placed road at that location.
 		 * @return false otherwise
 		 */
-		//What do I do if there is an enemy city in the way?
 		public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {			
 					
 			try {
@@ -496,11 +499,53 @@ public class ModelFacade {
 			return true;
 		}
 		
-		public synchronized boolean doBuildRoad() {
-			System.out.println("Less success... :/");
-			return true;
+		public synchronized void buildRoad(PlayerReference player, EdgeLocation loc)
+				throws InvalidActionException {
+			if (!isTurn(player)) {
+				throw new NotYourTurnException();
+			}
+			TurnStatus phase = currentPhase();
+			if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
+				if (!canBuildStartingRoad(loc)) {
+					throw new InvalidActionException("Invalid Starting Road Placement");
+				}
+				// This movement is free.
+				model.getMap().buildStartingRoad(player, loc);
+			}
+			else {
+				if (!canBuildRoad(loc)) {
+					throw new InvalidActionException("Invalid Road Placement");
+				}
+				// Check resource counts
+				ResourceList hand = player.getPlayer().getResources();
+				if (hand.count(ResourceType.WOOD) < 1 || hand.count(ResourceType.BRICK) < 1) {
+					throw new InsufficientResourcesException("You need a wood and a brick for a road.");
+				}
+				ResourceList bank = model.getBank().getResources();
+				hand.transferTo(bank, ResourceType.WOOD, 1);
+				hand.transferTo(bank, ResourceType.BRICK, 1);
+				model.getMap().buildRoad(player, loc);
+			}
 		}
 		
+		public boolean canBuildStartingRoad(EdgeLocation loc) {
+			try {
+				Board map = model.getMap();
+				PlayerReference currentPlayer = getCurrentPlayer();
+				return map.canBuildStartingRoadAt(currentPlayer, loc);
+			} catch (IndexOutOfBoundsException e) {
+				return false;
+			}
+		}
+
+		private TurnStatus currentPhase() {
+			return model.getTurnTracker().getStatus();
+		}
+
+		private boolean isTurn(PlayerReference player) {
+			return player.equals(getCurrentPlayer());
+		}
+
 		/**
 		 * 
 		 * @param vertexLoc The location (one of the 6 vertices of one hex on the board)
@@ -522,8 +567,54 @@ public class ModelFacade {
 
 		}
 		
-		public synchronized boolean doBuildSettlement(VertexLocation vertexLoc) {
-			return true;
+		public synchronized void buildSettlement(PlayerReference player, 
+				VertexLocation loc) throws InvalidActionException {
+			if (!isTurn(player)) {
+				throw new NotYourTurnException();
+			}
+			TurnStatus phase = currentPhase();
+			Board map = model.getMap();
+			if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
+				if (!canBuildStartingSettlement(loc)) {
+					throw new InvalidActionException("Invalid Starting Road Placement");
+				}
+				// This movement is free.
+				map.buildStartingSettlement(player, loc);
+				
+				// Give starting resources
+				if (phase == TurnStatus.SecondRound) {
+					ResourceList bank = model.getBank().getResources();
+					ResourceList hand = player.getPlayer().getResources();
+					for (HexLocation hexLoc : loc.getHexes()) {
+						try {
+							Hex hex = map.getHexAt(hexLoc);
+							ResourceType resource = hex.getResource();
+							if (resource != null) {
+								bank.transferTo(hand, resource, 1);
+							}
+						} catch (IndexOutOfBoundsException e) {
+							continue;
+						}
+					}
+				}
+			}
+			else {
+				if (!canBuildSettlement(loc)) {
+					throw new InvalidActionException("Invalid Road Placement");
+				}
+				// Check resource counts
+				ResourceList hand = player.getPlayer().getResources();
+				if (hand.count(ResourceType.WOOD) < 1 || hand.count(ResourceType.BRICK) < 1 ||
+					hand.count(ResourceType.SHEEP) < 1 || hand.count(ResourceType.WHEAT) < 1) {
+					throw new InsufficientResourcesException("You need wood, brick, sheep, and wheat for a settlement.");
+				}
+				ResourceList bank = model.getBank().getResources();
+				hand.transferTo(bank, ResourceType.WOOD, 1);
+				hand.transferTo(bank, ResourceType.BRICK, 1);
+				hand.transferTo(bank, ResourceType.SHEEP, 1);
+				hand.transferTo(bank, ResourceType.WHEAT, 1);
+				model.getMap().buildSettlement(player, loc);
+			}
 		}
 		
 		/**
@@ -547,9 +638,27 @@ public class ModelFacade {
 		 * 
 		 * @param vertexLoc
 		 * @return
+		 * @throws InvalidActionException 
 		 */
-		public synchronized boolean doBuildCity(VertexLocation vertexLoc) {
-			return true;
+		public synchronized void buildCity(PlayerReference player, VertexLocation loc)
+				throws InvalidActionException {
+			if (!isTurn(player)) {
+				throw new NotYourTurnException();
+			}
+			if (!canBuildCity(loc)) {
+				throw new InvalidActionException("You must build a city over one " +
+						"of your existing settlements.");
+			}
+
+			ResourceList hand = player.getPlayer().getResources();
+			if (hand.count(ResourceType.ORE) < 3 || hand.count(ResourceType.WHEAT) < 2) {
+				throw new InsufficientResourcesException("You need 3 ore and 2 wheat for a city.");
+			}
+			ResourceList bank = model.getBank().getResources();
+			hand.transferTo(bank, ResourceType.ORE, 3);
+			hand.transferTo(bank, ResourceType.WHEAT, 2);
+			
+			model.getMap().upgradeSettlementAt(player, loc);
 		}
 		
 		/**
@@ -775,7 +884,8 @@ public class ModelFacade {
 			return model.getMap().canPlaceStartingSettlement(loc);
 		}
 		
-		public synchronized boolean canBuildStartingPieces(VertexLocation settlement, EdgeLocation road) {
+		public synchronized boolean canBuildStartingPieces(VertexLocation settlement,
+				EdgeLocation road) {
 			return model.getMap().canPlaceStartingPieces(settlement, road);
 		}
 		

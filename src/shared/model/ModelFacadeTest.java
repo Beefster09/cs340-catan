@@ -179,9 +179,9 @@ public class ModelFacadeTest {
 	}
 
 	@Test
-	public void testDoBuildRoad() {
+	public void testDoBuildRoad() throws Exception {
 		
-		m.doBuildRoad();
+		m.buildRoad(null, null);
 	}
 	
 	@Test

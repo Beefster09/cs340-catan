@@ -18,8 +18,17 @@ client.roll
 client.turntracker
 client.utils
 server.ai
+server.cheat
+server.commands
 server.communication
+server.gamehandlers
+server.interpreter
 server.logging
+server.model
+server.movehandlers
+server.telnet
+server.userhandlers
+shared
 shared.communication
 shared.definitions
 shared.exceptions

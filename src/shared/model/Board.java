@@ -781,4 +781,57 @@ public class Board {
 		return result;
 	}
 
+	public void buildRoad(PlayerReference player, EdgeLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void buildStartingRoad(PlayerReference player, EdgeLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean canBuildStartingRoadAt(PlayerReference player, EdgeLocation loc) {
+		if (loc.getDistanceFromCenter() > radius) {
+			throw new IndexOutOfBoundsException();
+		}
+		for (Municipality town : municipalities.values()) {
+			// Look for the settlement owned by the same player that doesn't have a road
+			// next to it and then check if the given location is next to it.
+			if (town.getOwner().equals(player)) {
+				boolean hasNeighbor = false;
+				for (EdgeLocation edge : town.getLocation().getEdges()) {
+					try {
+						if (getRoadAt(edge) != null) {
+							hasNeighbor = true;
+							break;
+						}
+					} catch (IndexOutOfBoundsException e) {
+						continue;
+					}
+				}
+				if (hasNeighbor) continue;
+				
+				if (town.getLocation().getEdges().contains(loc)) return true;
+			}
+		}
+		return false;
+	}
+
+	public void buildStartingSettlement(PlayerReference player,
+			VertexLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void buildSettlement(PlayerReference player, VertexLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void upgradeSettlementAt(PlayerReference player, VertexLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
