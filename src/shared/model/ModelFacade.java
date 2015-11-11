@@ -35,7 +35,7 @@ public class ModelFacade {
 		this.dice = dice;
 	}
 
-	public synchronized CatanModel getCatanModel() {
+	public CatanModel getCatanModel() {
 		return model;
 	}
 

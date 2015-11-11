@@ -6,6 +6,7 @@ import client.data.GameInfo;
 import shared.communication.GameHeader;
 import shared.communication.PlayerHeader;
 import shared.definitions.ResourceType;
+import shared.definitions.TurnStatus;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
@@ -317,9 +318,25 @@ public class CatanModel {
 		++version;
 	}
 
-	public void roll(int roll) {
-		// TODO Auto-generated method stub
+	void roll(int roll) {
+		assert turnTracker.getStatus() == TurnStatus.Rolling;
 		
+		// Give resources to the appropriate players
+		ResourceList resBank = bank.getResources();
+		for (Hex hex : map.getHexesByNumber(roll)) {
+			for (Municipality town : map.getMunicipalitiesAround(hex.getLocation())) {
+				try {
+					resBank.transferTo(town.getOwner().getPlayer().getResources(),
+							hex.getResource(), town.getIncome());
+				} catch (InsufficientResourcesException e) {
+					// Sucks to be you. You don't get your resources.
+				}
+			}
+		}
+		
+		// Change the status of the game
+		
+		++version;
 	}
 	
 	
