@@ -3,6 +3,8 @@ package shared.model;
 import java.util.Collection;
 import java.util.Map;
 
+import shared.IDice;
+import shared.NormalDice;
 import shared.communication.GameHeader;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -17,13 +19,20 @@ import shared.locations.VertexLocation;
 public class ModelFacade {
 
 	protected CatanModel model;
+	private IDice dice;
 
 	public ModelFacade() {
-		super();
+		this(new CatanModel(), new NormalDice());
 	}
 
 	public ModelFacade(CatanModel startingModel) {
+		this(startingModel, new NormalDice());
+	}
+
+	public ModelFacade(CatanModel startingModel, IDice dice) {
 		model = startingModel;
+		
+		this.dice = dice;
 	}
 
 	public synchronized CatanModel getCatanModel() {
@@ -54,12 +63,14 @@ public class ModelFacade {
 		}
 	}
 
-	public synchronized void doRoll(PlayerReference player) {
+	public synchronized void rollDice(PlayerReference player) throws NotYourTurnException {
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
 		
+		model.roll(dice.roll());
 		
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		
-		currentPlayer.setHasRolled(true);
+		player.getPlayer().setHasRolled(true);
 	}
 
 	/**
@@ -67,15 +78,8 @@ public class ModelFacade {
 	 * @return true if the hex is not a desert hex.
 	 * @return false otherwise
 	 */
-	public synchronized boolean canRob(HexLocation hexLoc) {
-		
-		Board map = model.getMap();
-		//Hex tile = map.getHexAt(hexLoc);
-		
-		if(map.canMoveRobberTo(hexLoc))
-			return true;
-		else
-			return false;
+	public synchronized boolean canRob(HexLocation hexLoc) {		
+		return model.getMap().canMoveRobberTo(hexLoc);
 	}
 
 	public synchronized void doRob() {
@@ -88,13 +92,16 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canFinishTurn() {
-		
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		
-		if(!currentPlayer.hasRolled())
-			return true;
-		else
-			return false;
+		return !getCurrentPlayer().getPlayer().hasRolled();
+	}
+
+	/**
+	 * 
+	 * @return true if the player has already rolled the die
+	 * @return false otherwise
+	 */
+	public synchronized boolean canFinishTurn(PlayerReference player) {
+		return isTurn(player) && !player.getPlayer().hasRolled();
 	}
 
 	public synchronized boolean doFinishTurn() {

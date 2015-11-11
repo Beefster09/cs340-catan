@@ -316,6 +316,11 @@ public class CatanModel {
 		
 		++version;
 	}
+
+	public void roll(int roll) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

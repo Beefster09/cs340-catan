@@ -108,7 +108,7 @@ public class ModelFacadeTest {
 		
 		//test if current player has rolled
 		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
-		m.doRoll(currentPlayer);
+		m.rollDice(currentPlayer);
 		can = m.canFinishTurn();
 		assertFalse(can);
 		
