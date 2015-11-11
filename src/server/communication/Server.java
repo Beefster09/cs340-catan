@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import server.ai.AIType;
+import server.commands.CatanCommand;
 import server.logging.LogLevel;
 import shared.communication.Command;
 import shared.communication.GameHeader;
@@ -30,6 +31,8 @@ import shared.model.ResourceTradeList;
 
 public class Server implements IServer {
 
+	List<CatanCommand> commands;
+	
 	@Override
 	public Session login(String username, String password)
 			throws UserException, ServerException {
