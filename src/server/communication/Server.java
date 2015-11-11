@@ -36,7 +36,7 @@ public class Server implements IServer {
 	@Override
 	public Session login(String username, String password)
 			throws UserException, ServerException {
-		// TODO Auto-generated method stub
+		System.out.println("logging in");
 		return null;
 	}
 

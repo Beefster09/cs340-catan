@@ -1,4 +1,4 @@
-package server.gamehandlers;
+package server.movehandlers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,12 +15,12 @@ import com.sun.net.httpserver.HttpHandler;
 import server.communication.Server;
 
 /**
- * Handles getModel requests by communicating with the Server Facade,
+ * Handles Monopoly requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class ModelHandler implements HttpHandler {
+public class MonopolyHandler implements HttpHandler {
 
 	Server server;
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
