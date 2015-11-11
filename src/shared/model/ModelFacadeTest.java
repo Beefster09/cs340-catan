@@ -239,7 +239,7 @@ public class ModelFacadeTest {
 		
 		HexLocation hexLoc = new HexLocation(0, 0);
 		VertexLocation vertexLoc = new VertexLocation(hexLoc, VertexDirection.East);
-		m.doBuildSettlement(vertexLoc);
+		//m.buildSettlement(vertexLoc);
 	}
 	
 	@Test

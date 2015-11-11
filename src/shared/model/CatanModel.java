@@ -5,6 +5,12 @@ import java.util.*;
 import client.data.GameInfo;
 import shared.communication.GameHeader;
 import shared.communication.PlayerHeader;
+import shared.definitions.ResourceType;
+import shared.exceptions.InsufficientResourcesException;
+import shared.exceptions.InvalidActionException;
+import shared.exceptions.NotYourTurnException;
+import shared.locations.EdgeLocation;
+import shared.locations.VertexLocation;
 
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
@@ -208,6 +214,107 @@ public class CatanModel {
 
 	void setTitle(String title) {
 		this.title = title;
+	}
+
+	/**
+	 * 
+	 * @param player TODO
+	 * @param loc TODO
+	 * @return
+	 * @throws InvalidActionException 
+	 */
+	void buildCity(PlayerReference player, VertexLocation loc)
+			throws InvalidActionException {
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
+		if (!player.getPlayer().canBuildCity()) {
+			throw new InsufficientResourcesException("You do not have the sufficient " +
+					"resources for a city.");
+		}
+		if (!canBuildCity(player, loc)) {
+			throw new InvalidActionException("You must build a city over one " +
+					"of your existing settlements.");
+		}
+		
+		ResourceList hand = player.getPlayer().getResources();
+		ResourceList bank = getBank().getResources();
+		hand.transferTo(bank, ResourceType.ORE, 3);
+		hand.transferTo(bank, ResourceType.WHEAT, 2);
+		
+		getMap().upgradeSettlementAt(player, loc);
+		
+		++version;
+	}
+
+	public boolean canBuildCity(PlayerReference player,	VertexLocation loc) {
+		return isTurn(player) && player.getPlayer().canBuildCity()
+				&& map.canBuildCity(player, loc);
+	}
+
+	public boolean isTurn(PlayerReference player) {
+		return player.equals(turnTracker.getCurrentPlayer());
+	}
+
+	void buildStartingRoad(PlayerReference player, EdgeLocation loc)
+			throws InvalidActionException {
+		if (!map.canBuildStartingRoadAt(player, loc)) {
+			throw new InvalidActionException("Invalid Starting Road Placement");
+		}
+		// This movement is free.
+		getMap().buildStartingRoad(player, loc);
+		
+		++version;
+	}
+
+	void buildRoad(PlayerReference player, EdgeLocation loc)
+			throws InvalidActionException, InsufficientResourcesException {
+		if (!map.canBuildRoadAt(player, loc)) {
+			throw new InvalidActionException("Invalid Road Placement");
+		}
+		// Check resource counts
+		ResourceList hand = player.getPlayer().getResources();
+		if (player.getPlayer().canBuildRoad()) {
+			throw new InsufficientResourcesException("Insufficient " +
+					"resources for a road.");
+		}
+		ResourceList bank = getBank().getResources();
+		hand.transferTo(bank, ResourceType.WOOD, 1);
+		hand.transferTo(bank, ResourceType.BRICK, 1);
+		getMap().buildRoad(player, loc);
+		
+		++version;
+	}
+
+	void buildStartingSettlement(PlayerReference player, VertexLocation loc) throws InvalidActionException {
+		if (!map.canPlaceStartingSettlement(loc)) {
+			throw new InvalidActionException("Invalid Starting Road Placement");
+		}
+		// This movement is free.
+		map.buildStartingSettlement(player, loc);
+		
+		++version;
+	}
+
+	void buildSettlement(PlayerReference player, VertexLocation loc)
+			throws InvalidActionException, InsufficientResourcesException {
+		if (!map.canBuildSettlement(player, loc)) {
+			throw new InvalidActionException("Invalid Road Placement");
+		}
+		if (player.getPlayer().canBuildSettlement()) {
+			throw new InsufficientResourcesException("Insufficient resources " +
+					"for a settlement.");
+		}
+		// Check resource counts
+		ResourceList hand = player.getPlayer().getResources();
+		ResourceList bank = getBank().getResources();
+		hand.transferTo(bank, ResourceType.WOOD, 1);
+		hand.transferTo(bank, ResourceType.BRICK, 1);
+		hand.transferTo(bank, ResourceType.SHEEP, 1);
+		hand.transferTo(bank, ResourceType.WHEAT, 1);
+		map.buildSettlement(player, loc);
+		
+		++version;
 	}
 	
 	

@@ -400,4 +400,27 @@ public class Player {
 		return uuid;
 	}
 
+	public boolean canBuildRoad() {
+		return resources.count(ResourceType.WOOD) >= 1 &&
+				resources.count(ResourceType.BRICK) >= 1;
+	}
+
+	public boolean canBuildSettlement() {
+		return resources.count(ResourceType.WOOD) >= 1 &&
+				resources.count(ResourceType.BRICK) >= 1 &&
+				resources.count(ResourceType.SHEEP) >= 1 &&
+				resources.count(ResourceType.WHEAT) >= 1;
+	}
+
+	public boolean canBuildCity() {
+		return resources.count(ResourceType.ORE) >= 3 &&
+				resources.count(ResourceType.WHEAT) >= 2;
+	}
+
+	public boolean canBuyDevCard() {
+		return resources.count(ResourceType.ORE) >= 1 &&
+				resources.count(ResourceType.WHEAT) >= 1 &&
+				resources.count(ResourceType.SHEEP) >= 1;
+	}
+
 }

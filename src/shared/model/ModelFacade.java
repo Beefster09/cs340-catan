@@ -29,7 +29,7 @@ import client.misc.ClientManager;
 public class ModelFacade {
 		private static final Logger log = Logger.getLogger( ModelFacade.class.getName() );
 	
-		private CatanModel model;
+		CatanModel model;
 		
 		private List<IModelListener> listeners;
 		private ServerPoller poller;
@@ -455,15 +455,7 @@ public class ModelFacade {
 				return false;
 			}
 			
-			Player currentPlayer = getCurrentPlayer().getPlayer();
-			ResourceList hand = currentPlayer.getResources();
-			
-			if(hand.count(ResourceType.SHEEP) > 0 &&
-					hand.count(ResourceType.ORE) > 0 &&
-					hand.count(ResourceType.WHEAT) > 0)
-				return true;
-			else
-				return false;
+			return getCurrentPlayer().getPlayer().canBuyDevCard();
 		}
 		
 		
@@ -492,13 +484,6 @@ public class ModelFacade {
 			
 		}
 		
-		public synchronized boolean doBuildRoad(EdgeLocation loc, String happyDanceString) {
-			System.out.println(loc);
-			System.out.println("Success!");
-			System.out.println("I'm doing my happy dance: " + happyDanceString);
-			return true;
-		}
-		
 		public synchronized void buildRoad(PlayerReference player, EdgeLocation loc)
 				throws InvalidActionException {
 			if (!isTurn(player)) {
@@ -506,29 +491,14 @@ public class ModelFacade {
 			}
 			TurnStatus phase = currentPhase();
 			if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-				if (!canBuildStartingRoad(loc)) {
-					throw new InvalidActionException("Invalid Starting Road Placement");
-				}
-				// This movement is free.
-				model.getMap().buildStartingRoad(player, loc);
+				model.buildStartingRoad(player, loc);
 			}
 			else {
-				if (!canBuildRoad(loc)) {
-					throw new InvalidActionException("Invalid Road Placement");
-				}
-				// Check resource counts
-				ResourceList hand = player.getPlayer().getResources();
-				if (hand.count(ResourceType.WOOD) < 1 || hand.count(ResourceType.BRICK) < 1) {
-					throw new InsufficientResourcesException("You need a wood and a brick for a road.");
-				}
-				ResourceList bank = model.getBank().getResources();
-				hand.transferTo(bank, ResourceType.WOOD, 1);
-				hand.transferTo(bank, ResourceType.BRICK, 1);
-				model.getMap().buildRoad(player, loc);
+				model.buildRoad(player, loc);
 			}
 		}
-		
-		public boolean canBuildStartingRoad(EdgeLocation loc) {
+
+		public synchronized boolean canBuildStartingRoad(EdgeLocation loc) {
 			try {
 				Board map = model.getMap();
 				PlayerReference currentPlayer = getCurrentPlayer();
@@ -542,8 +512,8 @@ public class ModelFacade {
 			return model.getTurnTracker().getStatus();
 		}
 
-		private boolean isTurn(PlayerReference player) {
-			return player.equals(getCurrentPlayer());
+		boolean isTurn(PlayerReference player) {
+			return model.isTurn(player);
 		}
 
 		/**
@@ -573,50 +543,38 @@ public class ModelFacade {
 				throw new NotYourTurnException();
 			}
 			TurnStatus phase = currentPhase();
-			Board map = model.getMap();
 			if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-				if (!canBuildStartingSettlement(loc)) {
-					throw new InvalidActionException("Invalid Starting Road Placement");
-				}
-				// This movement is free.
-				map.buildStartingSettlement(player, loc);
-				
-				// Give starting resources
+				// Give starting resources- Do this before so that it will be in sync
+				// with the model's version.
 				if (phase == TurnStatus.SecondRound) {
-					ResourceList bank = model.getBank().getResources();
-					ResourceList hand = player.getPlayer().getResources();
-					for (HexLocation hexLoc : loc.getHexes()) {
-						try {
-							Hex hex = map.getHexAt(hexLoc);
-							ResourceType resource = hex.getResource();
-							if (resource != null) {
-								bank.transferTo(hand, resource, 1);
-							}
-						} catch (IndexOutOfBoundsException e) {
-							continue;
-						}
-					}
+					giveStartingResources(player, loc);
 				}
+				
+				model.buildStartingSettlement(player, loc);
 			}
 			else {
-				if (!canBuildSettlement(loc)) {
-					throw new InvalidActionException("Invalid Road Placement");
-				}
-				// Check resource counts
-				ResourceList hand = player.getPlayer().getResources();
-				if (hand.count(ResourceType.WOOD) < 1 || hand.count(ResourceType.BRICK) < 1 ||
-					hand.count(ResourceType.SHEEP) < 1 || hand.count(ResourceType.WHEAT) < 1) {
-					throw new InsufficientResourcesException("You need wood, brick, sheep, and wheat for a settlement.");
-				}
-				ResourceList bank = model.getBank().getResources();
-				hand.transferTo(bank, ResourceType.WOOD, 1);
-				hand.transferTo(bank, ResourceType.BRICK, 1);
-				hand.transferTo(bank, ResourceType.SHEEP, 1);
-				hand.transferTo(bank, ResourceType.WHEAT, 1);
-				model.getMap().buildSettlement(player, loc);
+				model.buildSettlement(player, loc);
 			}
 		}
-		
+
+		private void giveStartingResources(PlayerReference player,
+				VertexLocation loc)
+				throws InsufficientResourcesException {
+			ResourceList bank = model.getBank().getResources();
+			ResourceList hand = player.getPlayer().getResources();
+			for (HexLocation hexLoc : loc.getHexes()) {
+				try {
+					Hex hex = model.getMap().getHexAt(hexLoc);
+					ResourceType resource = hex.getResource();
+					if (resource != null) {
+						bank.transferTo(hand, resource, 1);
+					}
+				} catch (IndexOutOfBoundsException e) {
+					continue;
+				}
+			}
+		}
+
 		/**
 		 * 
 		 * @param vertexLoc The location (one of the 6 vertices of one hex on the board)
@@ -632,7 +590,7 @@ public class ModelFacade {
 			
 			PlayerReference currentPlayer = getCurrentPlayer();
 			
-			return map.canBuildCity(currentPlayer, vertexLoc);
+			return model.canBuildCity(currentPlayer, vertexLoc);
 		}
 		/**
 		 * 
@@ -642,23 +600,7 @@ public class ModelFacade {
 		 */
 		public synchronized void buildCity(PlayerReference player, VertexLocation loc)
 				throws InvalidActionException {
-			if (!isTurn(player)) {
-				throw new NotYourTurnException();
-			}
-			if (!canBuildCity(loc)) {
-				throw new InvalidActionException("You must build a city over one " +
-						"of your existing settlements.");
-			}
-
-			ResourceList hand = player.getPlayer().getResources();
-			if (hand.count(ResourceType.ORE) < 3 || hand.count(ResourceType.WHEAT) < 2) {
-				throw new InsufficientResourcesException("You need 3 ore and 2 wheat for a city.");
-			}
-			ResourceList bank = model.getBank().getResources();
-			hand.transferTo(bank, ResourceType.ORE, 3);
-			hand.transferTo(bank, ResourceType.WHEAT, 2);
-			
-			model.getMap().upgradeSettlementAt(player, loc);
+			model.buildCity(player, loc);
 		}
 		
 		/**
