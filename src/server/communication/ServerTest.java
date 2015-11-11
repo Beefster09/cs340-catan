@@ -31,7 +31,7 @@ import shared.locations.HexLocation;
 import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
 import shared.model.CatanModel;
-import shared.model.ModelFacade;
+import shared.model.ClientModelFacade;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;

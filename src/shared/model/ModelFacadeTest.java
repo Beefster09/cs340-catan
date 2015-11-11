@@ -32,7 +32,7 @@ import shared.locations.VertexLocation;
 public class ModelFacadeTest {
 
 	private CatanModel model;
-	private ModelFacade m;
+	private ClientModelFacade m;
 
 	
 	@Before
@@ -47,7 +47,7 @@ public class ModelFacadeTest {
 		model.setHeader(new GameHeader("Dummy Game", 
 				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),
 				new ArrayList<PlayerHeader>()));
-		m = new ModelFacade(model);
+		m = new ClientModelFacade(model);
 		m.updateFromJSON(json);
 	}
 	

@@ -4,12 +4,12 @@ import client.communication.MockServer;
 import client.communication.ServerProxy;
 import shared.communication.IServer;
 import shared.communication.Session;
-import shared.model.ModelFacade;
+import shared.model.ClientModelFacade;
 import shared.model.PlayerReference;
 
 public class ClientManager {
 	
-	private static volatile ModelFacade model = null;
+	private static volatile ClientModelFacade model = null;
 	private static IServer server;
 	private static PlayerReference localPlayer;
 
@@ -29,11 +29,11 @@ public class ClientManager {
 		ClientManager.port = port;
 	}
 	
-	public static ModelFacade getModel() {
+	public static ClientModelFacade getModel() {
 		if (model == null) {
 			synchronized (ClientManager.class) {
 				if (model == null) {
-					model = new ModelFacade();
+					model = new ClientModelFacade();
 				}
 			}
 		}

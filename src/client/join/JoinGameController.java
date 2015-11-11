@@ -10,7 +10,7 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.model.ModelFacade;
+import shared.model.ClientModelFacade;
 import client.base.*;
 import client.communication.DataConverter;
 import client.communication.ServerPoller;
@@ -28,7 +28,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	private IMessageView messageView;
 	private IAction joinAction;
 	private IServer serverProxy = ClientManager.getServer();
-	private ModelFacade modelFacade = ClientManager.getModel();
+	private ClientModelFacade modelFacade = ClientManager.getModel();
 	
 	/**
 	 * JoinGameController constructor

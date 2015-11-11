@@ -293,7 +293,7 @@ public class MapController extends Controller implements IMapController {
 		}
 	}
 
-	public ModelFacade getModel() {
+	public ClientModelFacade getModel() {
 		return ClientManager.getModel();
 	}
 

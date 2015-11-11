@@ -13,6 +13,7 @@ import shared.Utils;
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
+import shared.model.ClientModelFacade;
 import shared.model.ModelFacade;
 
 /**
@@ -31,7 +32,7 @@ import shared.model.ModelFacade;
 public class CatanCommand implements ICatanCommand {
 
 	public static void main(String[] args) throws Exception {
-		ModelFacade model = new ModelFacade();
+		ModelFacade model = new ClientModelFacade();
 		ICatanCommand command_old = new CatanCommand("doBuildRoad",
 				new EdgeLocation(0, 0, EdgeDirection.North), "asdffdsa!");
 		
@@ -68,7 +69,7 @@ public class CatanCommand implements ICatanCommand {
 		for (Object arg : args) {
 			argTypes.add(arg.getClass());
 		}
-		this.method = ModelFacade.class.getMethod(method,
+		this.method = ClientModelFacade.class.getMethod(method,
 				argTypes.toArray(new Class<?>[argTypes.size()]));
 		arguments = args;
 	}
