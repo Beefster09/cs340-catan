@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 
 import shared.definitions.CatanColor;
 import shared.model.Player;
-import shared.model.PlayerReference;
 import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
@@ -40,15 +39,16 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer());
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer(), gameID);
 			}
 
 			@Override
 			protected void done() {
 				try {
 					ClientManager.getModel().updateFromJSON(get());
-				} catch (InterruptedException | ExecutionException e) {
-					// TODO Auto-generated catch block
+				}
+				catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
 			}
@@ -86,7 +86,6 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			return;
 		}
 		else {
-			int i = 0;
 			updatePlayerScoreView(ClientManager.getModel().getCurrentPlayer().getIndex());
 		}
 	}
@@ -132,14 +131,15 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 		if (ClientManager.getModel().getCatanModel() != null &&
 				ClientManager.getModel().getCatanModel().getTurnTracker() != null) {
 			
-				armyIndex = ClientManager.getModel().getCatanModel().getTurnTracker().getLargestArmy();
+			armyIndex = ClientManager.getModel().getCatanModel().getLargestArmy().getIndex();
 		}
 		else
 			armyIndex = -1;
 		
 		int roadIndex;
 		try {
-			roadIndex = ClientManager.getModel().getCatanModel().getTurnTracker().getLongestRoad();
+			roadIndex = ClientManager.getModel().getCatanModel()
+					.getLongestRoad().getIndex();
 		} catch(NullPointerException e) {
 			roadIndex = -1;
 		}
@@ -160,12 +160,6 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			getView().updatePlayer(i, player.getVictoryPoints(), isTurn, largestArmy, longestRoad);
 			i++;
 		}
-	}
-	
-	
-	@Override
-	public void winnerChanged(int winner) {
-		
 	}
 
 }

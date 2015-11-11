@@ -5,18 +5,13 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import server.ai.AIType;
 import shared.communication.IServer;
-import shared.definitions.*;
 import shared.exceptions.*;
 import shared.model.ModelFacade;
 import shared.model.Player;
-import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
-import client.communication.ServerProxy;
 import client.data.PlayerInfo;
 
 
@@ -85,8 +80,8 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			
 			if(playerList.length > 3)
 				getView().closeModal();
-		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (ServerException | UserException e) {
 			e.printStackTrace();
 		}
 			
@@ -99,8 +94,6 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 	@Override
 	public void addAI() {
 		
-		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
-
 		String AITypeName = getView().getSelectedAI();
 		
 		final AIType aitype = AIType.getTypeFromString(AITypeName);
@@ -109,7 +102,8 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 			@Override
 			protected Object doInBackground() throws Exception {
-				serverProxy.addAIPlayer(aitype);
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				serverProxy.addAIPlayer(gameID, aitype);
 				return null;
 			}
 			
@@ -137,69 +131,4 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		if(players.size() > 3)
 			getView().closeModal();
 	}
-
-	private PlayerInfo[] listToPlayerArray(List<PlayerInfo> players) {
-		
-		PlayerInfo[] playerArray = new PlayerInfo[4];
-		
-		for(int i = 0; i < players.size(); i++)
-			playerArray[i] = players.get(i);
-		
-		return playerArray;
-	}
-
-	private String getUnusedName() {
-		
-		List<String> possibleAINames = new ArrayList<>();
-		possibleAINames.add("Jordan");
-		possibleAINames.add("Grant");
-		possibleAINames.add("Justin");
-		possibleAINames.add("Steve");
-		
-		List<String> usedNames = getUsedNames();
-		
-		for(String possibleAIName : possibleAINames) {
-			
-			if(!usedNames.contains(possibleAIName))
-				return possibleAIName;
-		}
-		
-		return null;
-	}
-
-	private List<String> getUsedNames() {
-		
-		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
-		
-		List<String> usedNames = new ArrayList<>();
-		
-		for(PlayerInfo p : players)
-			usedNames.add(p.getName());
-		
-		return usedNames;
-	}
-
-	private CatanColor getUnusedColor() {
-		
-		List<CatanColor> usedColors = getUsedColors();
-			
-		for(CatanColor c : CatanColor.values())
-			if(!usedColors.contains(c))
-				return c;
-			
-		return null;
-	}
-
-	private List<CatanColor> getUsedColors() {
-		
-		List<PlayerInfo> players = modelFacade.getCatanModel().getGameInfo().getPlayers();
-		
-		List<CatanColor> usedColors = new ArrayList<>();
-		
-		for(PlayerInfo p : players)
-			usedColors.add(p.getColor());
-		
-		return usedColors;
-	}
-	
 }

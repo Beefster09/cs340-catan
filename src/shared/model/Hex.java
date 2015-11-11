@@ -17,9 +17,9 @@ public class Hex {
 	private HexLocation location;
 	private ResourceType resource;
 	private int number;
-
-	public Hex() {
-		
+	
+	public Hex(HexLocation location, ResourceType resource) {
+		this(location, resource, EMPTY_NUMBER);
 	}
 	
 	public Hex(HexLocation location, ResourceType resource, int number) {

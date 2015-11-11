@@ -17,7 +17,6 @@ import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
 import shared.exceptions.DuplicateKeyException;
 import shared.exceptions.GameInitializationException;
-import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
@@ -178,6 +177,27 @@ public class BoardTest {
 		List<Port> badPorts;
 		List<Road> badRoads;
 		List<Municipality> badTowns;
+		
+		try {
+			assertEquals(new Board(false, false, false), new Board(false, false, false));
+		} catch (GameInitializationException e1) {
+			fail("Default board failed to initialize");
+		}
+		
+		Random rand = new Random();
+		for (int i=0; i<500; ++i) {
+			boolean randomHexes = rand.nextBoolean(),
+					randomNumbers = rand.nextBoolean(),
+					randomPorts = rand.nextBoolean();
+			try {
+				new Board(randomHexes, randomNumbers, randomPorts);
+			} catch (GameInitializationException e) {
+				fail("Board could not random-initialize on iteration " + i + "\n(" +
+					(randomHexes ? "Random Hexes, " : "Default Hexes, ") +
+					(randomNumbers ? "Random Numbers, " : "Default Ports, ") +
+					(randomPorts ? "Random Ports) " : "Default Ports)"));
+			}
+		}
 
 		// Hex out of bounds
 		try {

@@ -1,15 +1,8 @@
 package shared.model;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import shared.definitions.TurnStatus;
 import shared.exceptions.SchemaMismatchException;
 
@@ -22,8 +15,8 @@ import shared.exceptions.SchemaMismatchException;
 public class TurnTracker {
 	private PlayerReference currentPlayer;
 	private TurnStatus status;
-	private int longestRoad;
-	private int largestArmy;
+	//private int longestRoad;
+	//private int largestArmy;
 
 	public TurnTracker() {
 		
@@ -32,10 +25,7 @@ public class TurnTracker {
 	public TurnTracker(List<Player> players, JSONObject json) throws SchemaMismatchException {
 		
 		try {
-			
-			longestRoad = (int) (long) json.get("longestRoad");
-			largestArmy = (int) (long) json.get("largestArmy");
-			currentPlayer = players.get((int) (long) json.get("currentTurn")).getReference();
+			currentPlayer = new PlayerReference((String) json.get("currentTurn"));
 			status = TurnStatus.getStatusFromString((String) json.get("status"));
 			/*
 			 * MIGHT NEED TO CHANGE THIS IMPLEMENTATION.  WHAT IF NOBODY HAS THESE, SHOULD
@@ -75,13 +65,6 @@ public class TurnTracker {
 		currentPlayer = player;
 	}
 	
-	public int getLongestRoad() {
-		return longestRoad;
-	}
-	
-	public int getLargestArmy() {
-		return largestArmy;
-	}
 	/** Passes the turn to the next player
 	 * @pre The current player has finished all mandatory actions
 	 * @post Control is passed onto the next player
@@ -105,8 +88,6 @@ public class TurnTracker {
 		int result = 1;
 		result = prime * result
 				+ ((currentPlayer == null) ? 0 : currentPlayer.hashCode());
-		result = prime * result + largestArmy;
-		result = prime * result + longestRoad;
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
@@ -125,52 +106,10 @@ public class TurnTracker {
 				return false;
 		} else if (!currentPlayer.equals(other.currentPlayer))
 			return false;
-		if (largestArmy != other.largestArmy)
-			return false;
-		if (longestRoad != other.longestRoad)
-			return false;
 		if (status != other.status)
 			return false;
 		return true;
-	}
-
-	
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-//	@Override
-//	public int hashCode() {
-//		final int prime = 31;
-//		int result = 1;
-//		result = prime * result
-//				+ ((currentPlayer == null) ? 0 : currentPlayer.hashCode());
-//		result = prime * result + ((status == null) ? 0 : status.hashCode());
-//		return result;
-//	}
-//
-//	/* (non-Javadoc)
-//	 * @see java.lang.Object#equals(java.lang.Object)
-//	 */
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		TurnTracker other = (TurnTracker) obj;
-//		if (currentPlayer == null) {
-//			if (other.currentPlayer != null)
-//				return false;
-//		} else if (!currentPlayer.equals(other.currentPlayer))
-//			return false;
-//		if (status != other.status)
-//			return false;
-//		return true;
-//	}
-	
+	}	
 	
 }
 

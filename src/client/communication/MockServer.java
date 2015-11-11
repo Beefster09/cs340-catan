@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,7 +26,6 @@ import shared.exceptions.GamePersistenceException;
 import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
-import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
@@ -61,8 +61,10 @@ public class MockServer implements IServer {
 		
 		List<GameHeader> returnList = new ArrayList<GameHeader>();
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 1));
-		GameHeader returnGame = new GameHeader("GameTest", 1, players);
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim",
+				UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92")));
+		GameHeader returnGame = new GameHeader("GameTest", 
+				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"), players);
 		returnList.add(returnGame);
 		return returnList;
 	}
@@ -74,14 +76,16 @@ public class MockServer implements IServer {
 			ServerException {
 		
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 1));
-		GameHeader returnGame = new GameHeader("GameTest", 1, players);
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 
+				UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92")));
+		GameHeader returnGame = new GameHeader("GameTest", 
+				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"), players);
 		
 		return returnGame;
 	}
 
 	@Override
-	public boolean joinGame(int gameID, CatanColor color)
+	public boolean joinGame(Session player, int gameID, CatanColor color)
 			throws JoinGameException, ServerException {
 		
 		return true;
@@ -91,19 +95,15 @@ public class MockServer implements IServer {
 	public void saveGame(int gameID, String filename)
 			throws GamePersistenceException, UserException,
 			ServerException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void loadGame(String filename) throws ServerException,
 			UserException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public JSONObject getModel(int version) throws ServerException,
+	public JSONObject getModel(int gameID, int version) throws ServerException,
 			UserException {
 		
 		try {
@@ -117,7 +117,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject resetGame() throws ServerException,
+	public JSONObject resetGame(int gameID) throws ServerException,
 			UserException {
 		
 		try {
@@ -131,24 +131,20 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public List<Command> getCommands() throws ServerException,
+	public List<Command> getCommands(int gameID) throws ServerException,
 			UserException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JSONObject executeCommands(List<Command> commands)
+	public JSONObject executeCommands(int gameID, List<Command> commands)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void addAIPlayer(AIType type) throws ServerException,
+	public void addAIPlayer(int gameID, AIType type) throws ServerException,
 			UserException {
-		
-		//return "Success";
 		
 	}
 
@@ -162,9 +158,8 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject sendChat(PlayerReference user, String message)
+	public JSONObject sendChat(PlayerReference user, int gameID, String message)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
 		
 		try {
 			JSONParser parser = new JSONParser();
@@ -178,7 +173,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject rollDice(PlayerReference user, int number)
+	public JSONObject rollDice(PlayerReference user, int gameID, int number)
 			throws ServerException, UserException {
 		
 		try {
@@ -192,7 +187,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject robPlayer(PlayerReference user,
+	public JSONObject robPlayer(PlayerReference user, int gameID, 
 			HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, UserException {
 		
@@ -208,7 +203,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject buyDevCard(PlayerReference user) throws ServerException,
+	public JSONObject buyDevCard(PlayerReference user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
@@ -222,7 +217,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject yearOfPlenty(PlayerReference user, ResourceType type1,
+	public JSONObject yearOfPlenty(PlayerReference user, int gameID, ResourceType type1,
 			ResourceType type2) throws ServerException, UserException {
 		
 		try {
@@ -236,7 +231,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject roadBuilding(PlayerReference user, EdgeLocation road1,
+	public JSONObject roadBuilding(PlayerReference user, int gameID, EdgeLocation road1,
 			EdgeLocation road2) throws ServerException, UserException {
 		
 		try {
@@ -250,7 +245,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject soldier(PlayerReference user,
+	public JSONObject soldier(PlayerReference user, int gameID,
 			HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, UserException {
 		
@@ -265,7 +260,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject monopoly(PlayerReference user, ResourceType type)
+	public JSONObject monopoly(PlayerReference user, int gameID, ResourceType type)
 			throws ServerException, UserException {
 		
 		try {
@@ -279,7 +274,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject monument(PlayerReference user) throws ServerException,
+	public JSONObject monument(PlayerReference user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
@@ -293,7 +288,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject buildRoad(PlayerReference user, EdgeLocation location,
+	public JSONObject buildRoad(PlayerReference user, int gameID, EdgeLocation location,
 			boolean free) throws ServerException, UserException {
 		
 		try {
@@ -307,7 +302,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject buildSettlement(PlayerReference user,
+	public JSONObject buildSettlement(PlayerReference user, int gameID,
 			VertexLocation location, boolean free) throws ServerException,
 			UserException {
 		
@@ -322,7 +317,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject buildCity(PlayerReference user, VertexLocation location)
+	public JSONObject buildCity(PlayerReference user, int gameID, VertexLocation location)
 			throws ServerException, UserException {
 		
 		try {
@@ -336,7 +331,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject offerTrade(PlayerReference user, ResourceTradeList offer,
+	public JSONObject offerTrade(PlayerReference user, int gameID, ResourceTradeList offer,
 			PlayerReference receiver) throws ServerException,
 			UserException {
 		
@@ -351,7 +346,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject respondToTrade(PlayerReference user, boolean accept)
+	public JSONObject respondToTrade(PlayerReference user, int gameID, boolean accept)
 			throws ServerException, UserException {
 		
 		try {
@@ -365,7 +360,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject maritimeTrade(PlayerReference user,
+	public JSONObject maritimeTrade(PlayerReference user, int gameID,
 			ResourceType inResource, ResourceType outResource, int ratio)
 			throws ServerException, UserException {
 		
@@ -380,7 +375,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject discardCards(PlayerReference user, ResourceList cards)
+	public JSONObject discardCards(PlayerReference user, int gameID, ResourceList cards)
 			throws ServerException, UserException {
 		
 		try {
@@ -394,7 +389,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public JSONObject finishTurn(PlayerReference user) throws ServerException,
+	public JSONObject finishTurn(PlayerReference user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
@@ -410,7 +405,6 @@ public class MockServer implements IServer {
 	@Override
 	public void changeLogLevel(LogLevel level) throws ServerException,
 			UserException {
-		// TODO Auto-generated method stub
 		
 	}
 

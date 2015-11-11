@@ -8,4 +8,9 @@ package shared.exceptions;
  */
 public class JoinGameException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1823019046842209995L;
+
 }

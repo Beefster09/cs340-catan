@@ -19,31 +19,7 @@ public class DataConverter {
 		return games;
 	}
 	public static GameInfo convertHeaderToInfo(GameHeader header) {
-		int id = header.getId();
-		String title = header.getTitle();
-		
-		GameInfo newGame = new GameInfo();
-		newGame.setId(id);
-		newGame.setTitle(title);
-		//games[i] = newGame;
-		
-		List<PlayerHeader> players = header.getPlayers();
-		
-		int index = 0;
-		for (PlayerHeader player : players) {
-			if (player == null)
-				continue;
-			PlayerInfo newPlayer = new PlayerInfo();
-			newPlayer.setColor(player.getColor());
-			newPlayer.setId(player.getId());
-			newPlayer.setName(player.getName());
-			newPlayer.setPlayerIndex(index);
-			newGame.addPlayer(newPlayer);
-			//games[i].addPlayer(newPlayer);
-			
-			index++;
-		}
-		return newGame;
+		return new GameInfo(header);
 	}
 	public static GameHeader convertInfoToHeader(GameInfo info) {
 		 return new GameHeader(info);

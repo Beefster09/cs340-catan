@@ -67,22 +67,23 @@ public class PointsController extends Controller implements IPointsController {
 	}
 	
 	@Override
-	public void winnerChanged(int winner) {
-		if (winner == -1)
-			return;
+	public void winnerChanged(PlayerReference winner) {
+		if (winner == null) return;
 		
 		Player winningPlayer = null;
 		for (Player player : ClientManager.getModel().getCatanModel().getPlayers()) {
-			if (player.getPlayerID() == winner) {
+			if (player.getReference().equals(winner)) {
 				winningPlayer = player;
 				break;
 			}
 		}
 		
-		String winnerName = winningPlayer.getName();
-		int localPlayerID = ClientManager.getLocalPlayer().getPlayer().getPlayerID();
+		if (winningPlayer == null) return;
 		
-		if (localPlayerID == winner) {
+		String winnerName = winningPlayer.getName();
+		PlayerReference localPlayerRef = ClientManager.getLocalPlayer();
+		
+		if (localPlayerRef.equals(winner)) {
 			getFinishedView().setWinner(winnerName, true);
 		}
 		else {

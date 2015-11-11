@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 
-import shared.definitions.ResourceType;
 import shared.exceptions.SchemaMismatchException;
 
 /**
@@ -110,6 +109,7 @@ public class EdgeLocation
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public JSONObject toJSONObject() {
 		JSONObject json = hexLoc.toJSONObject();
 		

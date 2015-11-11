@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import shared.exceptions.SchemaMismatchException;
-import shared.locations.EdgeLocation;
 
 /** An immutable representation of a chat message
  * @author beefster
@@ -20,13 +19,14 @@ public class MessageList {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public MessageList(JSONObject json) throws SchemaMismatchException {
 		//JSONObject chat = (JSONObject) json.get("chat");
 		try {
 			if (json.containsKey("lines")) {
 				message = new ArrayList<String>();
 				source = new ArrayList<String>();
-				for (Object obj : (List) json.get("lines")) {
+				for (Object obj : (List<Object>) json.get("lines")) {
 					message.add((String) ((JSONObject)obj).get("message"));
 					source.add((String) ((JSONObject)obj).get("source"));
 				}

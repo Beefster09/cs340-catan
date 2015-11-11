@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.json.simple.JSONObject;
 
 import shared.communication.GameHeader;
+import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
@@ -24,10 +25,8 @@ public class Player {
 	// Meta-information
 	private UUID uuid; // For PlayerReferences
 	
-	private CatanModel game; // This is so you can get PlayerReferences.
 	private int playerIndex;
 	
-	private int playerID = -1337; // Arbitrary default.
 	private String name;
 	private CatanColor color;
 	
@@ -60,33 +59,26 @@ public class Player {
 		
 		return UUID.nameUUIDFromBytes(data);
 	}
-
-	static UUID generateUUID(CatanModel game, int index) {
-		return generateUUID(game.getHeader().getId(), index);
-	}
-
-	static UUID generateUUID(GameHeader header, int index) {
-		return generateUUID(header.getId(), index);
-	}
 	
-	private void assignUUID(CatanModel game, int index) {
-		uuid = generateUUID(game, index);
+	private void setUUID(UUID uuid) {
+		if (uuid == null) {
+			uuid = UUID.randomUUID();
+		}
+		this.uuid = uuid;
 		playerTable.put(uuid, this);
 	}
 	
-	public Player(CatanModel game, int index) {
-		this.game = game;
+	public Player(int index) {
 		playerIndex = index;
-		assignUUID(game, index);
+		
+		setUUID(uuid);
 	}
 
-	public Player(CatanModel game, JSONObject json) throws SchemaMismatchException {
-		this.game = game;
+	public Player(JSONObject json) throws SchemaMismatchException {
 		
 		try {
 			playerIndex	= (int) (long) json.get("playerIndex");
-			assignUUID(game, playerIndex);
-			playerID	= (int) (long) json.get("playerID");
+			setUUID(UUID.fromString((String) json.get("uuid")));
 			
 			name = (String) json.get("name");
 			color = CatanColor.getColorFromString((String) json.get("color"));
@@ -112,13 +104,23 @@ public class Player {
 		}
 	}
 	
+	public JSONObject toJSONObject() {
+		JSONObject json = new JSONObject();
+		
+		return json;
+	}
+	
+	public PlayerHeader getHeader() {
+		return new PlayerHeader(color, name, uuid);
+	}
+	
 	/** Gives a PlayerReference that refers to this player. 
 	 * <p>Gives a PlayerReference such that a call to getPlayer() on the result of this 
 	 * function will return this instance of Player</p>
 	 * @return a corresponding PlayerReference
 	 */
 	public PlayerReference getReference() {
-		return new PlayerReference(game.getHeader(), playerIndex);
+		return new PlayerReference(uuid);
 	}
 	
 	public static Player getPlayerByUUID(UUID uuid) {
@@ -128,6 +130,10 @@ public class Player {
 		else {
 			throw new IllegalArgumentException("Unrecognized UUID: " + uuid.toString());
 		}
+	}
+	
+	public int getPlayerID() {
+		return uuid.hashCode();
 	}
 
 	/**
@@ -141,13 +147,13 @@ public class Player {
 	 * @param resources the resources to set
 	 * @throws InsufficientResourcesException 
 	 */
-	public void setResources(ResourceList resources) throws InsufficientResourcesException {
+	void setResources(ResourceList resources) throws InsufficientResourcesException {
 		for (ResourceType type : ResourceType.values()) {
 			int numResourceCardsForPlayer = resources.count(type);
-			if (numResourceCardsForPlayer > 19)
-				throw new InsufficientResourcesException();
-			if (game.getBank().getResources().count(type) + numResourceCardsForPlayer > 19)
-				throw new InsufficientResourcesException();
+//			if (numResourceCardsForPlayer > 19)
+//				throw new InsufficientResourcesException();
+//			if (game.getBank().getResources().count(type) + numResourceCardsForPlayer > 19)
+//				throw new InsufficientResourcesException();
 		}
 		this.resources = resources;
 	}
@@ -162,7 +168,7 @@ public class Player {
 	/**
 	 * @param cities the cities to set
 	 */
-	public void setCities(int cities) {
+	void setCities(int cities) {
 		this.cities = cities;
 	}
 
@@ -176,7 +182,7 @@ public class Player {
 	/**
 	 * @param roads the roads to set
 	 */
-	public void setRoads(int roads) {
+	void setRoads(int roads) {
 		this.roads = roads;
 	}
 
@@ -190,7 +196,7 @@ public class Player {
 	/**
 	 * @param settlements the settlements to set
 	 */
-	public void setSettlements(int settlements) {
+	void setSettlements(int settlements) {
 		this.settlements = settlements;
 	}
 
@@ -204,7 +210,7 @@ public class Player {
 	/**
 	 * @param soldiers the soldiers to set
 	 */
-	public void setSoldiers(int soldiers) {
+	void setSoldiers(int soldiers) {
 		this.soldiers = soldiers;
 	}
 
@@ -271,19 +277,16 @@ public class Player {
 		return playerIndex;
 	}
 
-	/**
-	 * @return the playerID
-	 */
-	public int getPlayerID() {
-		return playerID;
-	}
-
 	public boolean hasRolled() {
 		return hasRolled;
 	}
 
-	public void setHasRolled(boolean hasRolled) {
+	void setHasRolled(boolean hasRolled) {
 		this.hasRolled = hasRolled;
+	}
+
+	void setOldDevCards(DevCardList devCards) {
+		this.oldDevCards = devCards;
 	}
 
 	/* (non-Javadoc)
@@ -291,21 +294,20 @@ public class Player {
 	 */
 	@Override
 	public String toString() {
-		return "Player [game=" + game + ", playerIndex=" + playerIndex
-				+ ", playerID=" + playerID + ", name=" + name + ", color="
-				+ color + ", newDevCards=" + newDevCards + ", oldDevCards="
-				+ oldDevCards + ", resources=" + resources + ", playedDevCard="
-				+ playedDevCard + ", discarded=" + discarded + ", cities="
-				+ cities + ", settlements=" + settlements + ", roads=" + roads
-				+ ", soldiers=" + soldiers + ", monuments=" + monuments
-				+ ", victoryPoints=" + victoryPoints + "]";
+		return "Player [uuid=" + uuid + ", playerIndex=" + playerIndex
+				+ ", name=" + name + ", color=" + color + ", newDevCards="
+				+ newDevCards + ", oldDevCards=" + oldDevCards + ", resources="
+				+ resources + ", playedDevCard=" + playedDevCard
+				+ ", discarded=" + discarded + ", hasRolled=" + hasRolled
+				+ ", cities=" + cities + ", settlements=" + settlements
+				+ ", roads=" + roads + ", soldiers=" + soldiers
+				+ ", monuments=" + monuments + ", victoryPoints="
+				+ victoryPoints + "]";
 	}
 
-
-	public void setOldDevCards(DevCardList devCards) {
-		this.oldDevCards = devCards;
-	}
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -316,12 +318,14 @@ public class Player {
 		result = prime * result + (hasRolled ? 1231 : 1237);
 		result = prime * result + monuments;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((newDevCards == null) ? 0 : newDevCards.hashCode());
-		result = prime * result + ((oldDevCards == null) ? 0 : oldDevCards.hashCode());
+		result = prime * result
+				+ ((newDevCards == null) ? 0 : newDevCards.hashCode());
+		result = prime * result
+				+ ((oldDevCards == null) ? 0 : oldDevCards.hashCode());
 		result = prime * result + (playedDevCard ? 1231 : 1237);
-		result = prime * result + playerID;
 		result = prime * result + playerIndex;
-		result = prime * result + ((resources == null) ? 0 : resources.hashCode());
+		result = prime * result
+				+ ((resources == null) ? 0 : resources.hashCode());
 		result = prime * result + roads;
 		result = prime * result + settlements;
 		result = prime * result + soldiers;
@@ -330,6 +334,9 @@ public class Player {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -366,8 +373,6 @@ public class Player {
 			return false;
 		if (playedDevCard != other.playedDevCard)
 			return false;
-		if (playerID != other.playerID)
-			return false;
 		if (playerIndex != other.playerIndex)
 			return false;
 		if (resources == null) {
@@ -389,6 +394,33 @@ public class Player {
 		if (victoryPoints != other.victoryPoints)
 			return false;
 		return true;
+	}
+
+	public UUID getUUID() {
+		return uuid;
+	}
+
+	public boolean canBuildRoad() {
+		return resources.count(ResourceType.WOOD) >= 1 &&
+				resources.count(ResourceType.BRICK) >= 1;
+	}
+
+	public boolean canBuildSettlement() {
+		return resources.count(ResourceType.WOOD) >= 1 &&
+				resources.count(ResourceType.BRICK) >= 1 &&
+				resources.count(ResourceType.SHEEP) >= 1 &&
+				resources.count(ResourceType.WHEAT) >= 1;
+	}
+
+	public boolean canBuildCity() {
+		return resources.count(ResourceType.ORE) >= 3 &&
+				resources.count(ResourceType.WHEAT) >= 2;
+	}
+
+	public boolean canBuyDevCard() {
+		return resources.count(ResourceType.ORE) >= 1 &&
+				resources.count(ResourceType.WHEAT) >= 1 &&
+				resources.count(ResourceType.SHEEP) >= 1;
 	}
 
 }

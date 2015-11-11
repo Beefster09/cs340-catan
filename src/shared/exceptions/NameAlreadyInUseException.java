@@ -8,4 +8,20 @@ package shared.exceptions;
  */
 public class NameAlreadyInUseException extends UserException {
 
+	public NameAlreadyInUseException(String username) {
+		super("The name \"" + username + "\" is already in use.");
+	}
+
+	/**
+	 * 
+	 */
+	public NameAlreadyInUseException() {
+		super();
+	}
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5532482530874231364L;
+
 }

@@ -1,6 +1,5 @@
 package shared.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -8,7 +7,6 @@ import org.json.simple.JSONObject;
 import shared.definitions.MunicipalityType;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
-import shared.locations.EdgeLocation;
 import shared.locations.VertexLocation;
 
 /**
@@ -114,6 +112,10 @@ public class Municipality {
 		if (type != other.type)
 			return false;
 		return true;
+	}
+
+	public int getIncome() {
+		return type.getIncome();
 	}
 
 }

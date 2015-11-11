@@ -1,4 +1,5 @@
 {
+  "id": "4a82287b-d9a9-4797-b3dc-78fc9fbb70cf",
   "deck": {
     "yearOfPlenty": 2,
     "monopoly": 2,
@@ -278,7 +279,7 @@
       "monuments": 0,
       "playedDevCard": false,
       "discarded": false,
-      "playerID": 12,
+      "uuid": "8ea41db5-0a7a-46aa-a644-e5376dd8a1a3",
       "playerIndex": 0,
       "name": "SAM",
       "color": "red"
@@ -313,7 +314,7 @@
       "monuments": 0,
       "playedDevCard": false,
       "discarded": false,
-      "playerID": 13,
+      "uuid": "f94a8341-d7b4-457e-a3a1-5761e2c3d5b8",
       "playerIndex": 1,
       "name": "ME",
       "color": "orange"
@@ -348,7 +349,7 @@
       "monuments": 0,
       "playedDevCard": false,
       "discarded": false,
-      "playerID": 14,
+      "uuid": "0817eb96-336c-4cf7-8f4c-f254f1ee8cad",
       "playerIndex": 2,
       "name": "BOB",
       "color": "green"
@@ -383,7 +384,7 @@
       "monuments": 0,
       "playedDevCard": false,
       "discarded": false,
-      "playerID": 15,
+      "uuid": "cee7da67-2e3a-4ddd-8757-8cdab26e5831",
       "playerIndex": 3,
       "name": "JOE",
       "color": "blue"
@@ -403,8 +404,8 @@
     "ore": 24
   },
   "tradeOffer": {
- "sender": 1,
- "receiver": 0,
+ "sender": "f94a8341-d7b4-457e-a3a1-5761e2c3d5b8",
+ "receiver": "8ea41db5-0a7a-46aa-a644-e5376dd8a1a3",
  "offer": {
  "brick": 1,
  "ore": 1,
@@ -415,10 +416,7 @@
 },
   "turnTracker": {
     "status": "FirstRound",
-    "currentTurn": 0,
-    "longestRoad": -1,
-    "largestArmy": -1
+    "currentTurn": "8ea41db5-0a7a-46aa-a644-e5376dd8a1a3"
   },
-  "winner": -1,
   "version": 0
 }

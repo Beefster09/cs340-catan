@@ -13,7 +13,7 @@ public interface IModelListener {
 	void longestRoadChanged(PlayerReference otherPlayer);
 	void tradeOfferChanged(TradeOffer otherOffer);
 	void chatChanged(MessageList otherChat);
-	void winnerChanged(int otherPlayer);
+	void winnerChanged(PlayerReference winner);
 	void logChanged(MessageList otherLog);
 	void gameFinished();
 

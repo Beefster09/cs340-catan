@@ -3,6 +3,7 @@ package client.discard;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
@@ -59,12 +60,12 @@ public class DiscardController extends Controller implements IDiscardController 
 		if (turnTracker.getStatus() == TurnStatus.Discarding) {
 			System.out.println("Discarding...");
 			
-			int playerID = modelFacade.getLocalPlayer().getPlayerID();
+			UUID playerID = ClientManager.getLocalPlayer().getPlayerUUID();
 			List<Player> players = modelFacade.getCatanModel().getPlayers();
 			Player localPlayer = null;
 			
 			for(Player p : players) 
-				if(p.getPlayerID() == playerID)
+				if(p.getUUID().equals(playerID))
 					localPlayer = p;
 			
 			ResourceList hand = localPlayer.getResources();
@@ -94,12 +95,12 @@ public class DiscardController extends Controller implements IDiscardController 
 	
 	private void setMaxAmountsInDiscardView() {
 		
-		int playerID = modelFacade.getLocalPlayer().getPlayerID();
+		UUID playerID = ClientManager.getLocalPlayer().getPlayerUUID();
 		List<Player> players = modelFacade.getCatanModel().getPlayers();
 		Player localPlayer = null;
 		
 		for(Player p : players) 
-			if(p.getPlayerID() == playerID)
+			if(p.getUUID().equals(playerID))
 				localPlayer = p;
 		
 		ResourceList hand = localPlayer.getResources();
@@ -217,6 +218,7 @@ public class DiscardController extends Controller implements IDiscardController 
 	/**
 	 * send request to server with a map of resource types and how many of each are discarded
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void discard() {
 		try {
@@ -227,7 +229,8 @@ public class DiscardController extends Controller implements IDiscardController 
 			
 			ResourceList cards = new ResourceList(discardMap);
 			
-			serverProxy.discardCards(localPlayer, cards);
+			int gameID = ClientManager.getModel().getGameHeader().getId();
+			serverProxy.discardCards(localPlayer, gameID, cards);
 			
 			setResourcesInViewToZero();
 			
@@ -240,8 +243,8 @@ public class DiscardController extends Controller implements IDiscardController 
 				getWaitView().showModal();
 			
 			
-		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (ServerException | UserException e) {
 			e.printStackTrace();
 		}
 		

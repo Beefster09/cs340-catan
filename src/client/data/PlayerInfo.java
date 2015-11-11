@@ -1,8 +1,11 @@
 package client.data;
 
+import java.util.UUID;
+
 import shared.communication.PlayerHeader;
 import shared.definitions.*;
 import shared.model.Player;
+import shared.model.PlayerReference;
 
 /**
  * Used to pass player information into views<br>
@@ -19,29 +22,29 @@ import shared.model.Player;
 public class PlayerInfo
 {
 	
-	private int id;
+	private UUID uuid;
 	private int playerIndex;
 	private String name;
 	private CatanColor color;
 	
 	public PlayerInfo()
 	{
-		setId(-1);
+		setUUID(null);
 		setPlayerIndex(-1);
 		setName("");
 		setColor(CatanColor.WHITE);
 	}
 	
 	public PlayerInfo(PlayerHeader player) {
-		setId(player.getId());
-		setPlayerIndex(player.getId());
+		setUUID(player.getUUID());
+		setPlayerIndex(new PlayerReference(player.getUUID()).getIndex());
 		setName(player.getName());
 		setColor(player.getColor());
 	}
 	
 	public PlayerInfo(Player player) {
 		
-		setId(player.getPlayerID());
+		setUUID(player.getUUID());
 		setPlayerIndex(player.getPlayerIndex());
 		setName(player.getName());
 		setColor(player.getColor());
@@ -49,12 +52,12 @@ public class PlayerInfo
 
 	public int getId()
 	{
-		return id;
+		return uuid.hashCode();
 	}
 	
-	public void setId(int id)
+	public void setUUID(UUID id)
 	{
-		this.id = id;
+		this.uuid = id;
 	}
 	
 	public int getPlayerIndex()
@@ -90,7 +93,7 @@ public class PlayerInfo
 	@Override
 	public int hashCode()
 	{
-		return 31 * this.id;
+		return 31 * uuid.hashCode();
 	}
 
 	@Override
@@ -106,7 +109,11 @@ public class PlayerInfo
 		}
 		final PlayerInfo other = (PlayerInfo) obj;
 		
-		return this.id == other.id;
+		return this.uuid.equals(other.uuid);
+	}
+
+	public UUID getUUID() {
+		return uuid;
 	}
 }
 

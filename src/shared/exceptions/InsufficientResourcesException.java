@@ -7,6 +7,11 @@ package shared.exceptions;
  */
 public class InsufficientResourcesException extends InvalidActionException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5177392636821001798L;
+
 	public InsufficientResourcesException(String string) {
 		super(string);
 	}

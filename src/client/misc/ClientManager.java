@@ -3,12 +3,13 @@ package client.misc;
 import client.communication.MockServer;
 import client.communication.ServerProxy;
 import shared.communication.IServer;
-import shared.model.ModelFacade;
+import shared.communication.Session;
+import shared.model.ClientModelFacade;
 import shared.model.PlayerReference;
 
 public class ClientManager {
 	
-	private static volatile ModelFacade model = null;
+	private static volatile ClientModelFacade model = null;
 	private static IServer server;
 	private static PlayerReference localPlayer;
 
@@ -18,6 +19,7 @@ public class ClientManager {
 	
 	public static String host = null;
 	public static int port = -1;
+	private static Session session = null;
 	
 	public static final int DEFAULT_SERVER_TYPE = SERVER_TYPE_PROXY;
 		
@@ -27,11 +29,11 @@ public class ClientManager {
 		ClientManager.port = port;
 	}
 	
-	public static ModelFacade getModel() {
+	public static ClientModelFacade getModel() {
 		if (model == null) {
 			synchronized (ClientManager.class) {
 				if (model == null) {
-					model = new ModelFacade();
+					model = new ClientModelFacade();
 				}
 			}
 		}
@@ -74,6 +76,14 @@ public class ClientManager {
 
 	public static void setLocalPlayer(PlayerReference localPlayer) {
 		ClientManager.localPlayer = localPlayer;
+	}
+
+	public static void setSession(Session session) {
+		ClientManager.session  = session;
+	}
+	
+	public static Session getSession() {
+		return session;
 	}
 	
 

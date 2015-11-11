@@ -2,7 +2,6 @@ package shared.model;
 
 import java.util.*;
 
-import shared.communication.GameHeader;
 import shared.definitions.CatanColor;
 
 /** Represents an immutable reference to a player in a game.
@@ -22,21 +21,21 @@ public class PlayerReference {
 	 * @param game
 	 * @param playerIndex
 	 */
-	PlayerReference(CatanModel game, int playerIndex) {
-		super();
-				
+	private PlayerReference(int playerIndex) {
 		this.playerIndex = playerIndex;
-		if (game == null) {
-			playerUUID = Player.generateUUID(-1, playerIndex);
-		}
-		else {
-			playerUUID = Player.generateUUID(game, playerIndex);
-		}
+		playerUUID = Player.generateUUID(-1, playerIndex);
+	}
+	
+	// Needed for backwards compatibility
+	public PlayerReference(CatanModel game, int playerIndex) {
+		assert game != null;
+		this.playerIndex = playerIndex;
+		playerUUID = game.getPlayers().get(playerIndex).getUUID();
 	}
 	
 	// This is for debugging with the old server.
 	public static PlayerReference getDummyPlayerReference(int playerIndex) {
-		return new PlayerReference((CatanModel) null, playerIndex);
+		return new PlayerReference(playerIndex);
 	}
 	
 	public PlayerReference(UUID uuid) {
@@ -49,11 +48,10 @@ public class PlayerReference {
 		playerIndex = index;
 	}
 	
-	public PlayerReference(GameHeader header, int playerIndex) {
-		this.playerIndex = playerIndex;
-		playerUUID = Player.generateUUID(header, playerIndex);
+	public PlayerReference(String string) {
+		playerUUID = UUID.fromString(string);
 	}
-	
+
 	/** Gets the player that this object references.
 	 * @return the player 'pointed' to by this PlayerReference
 	 */
@@ -61,9 +59,12 @@ public class PlayerReference {
 		return Player.getPlayerByUUID(playerUUID);
 	}
 	
+	/** Gets the turn index of the player this reference is pointing to
+	 * @return the turn index of the player
+	 */
 	public int getIndex() {
 		if (playerIndex == INVALID_INDEX) {
-			return getPlayer().getPlayerIndex();
+			return playerIndex = getPlayer().getPlayerIndex();
 		}
 		else return playerIndex;
 	}
@@ -71,8 +72,6 @@ public class PlayerReference {
 	public CatanColor getColor() {
 		return getPlayer().getColor();
 	}
-	
-	// TODO: incomplete... needed by boards;
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -104,8 +103,11 @@ public class PlayerReference {
 	 */
 	@Override
 	public String toString() {
-		return "PlayerReference [playerIndex=" + playerIndex + ", playerUUID="
-				+ playerUUID + "]";
+		return "PlayerReference ["	+ playerUUID + "]";
+	}
+
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 	
 }

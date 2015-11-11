@@ -7,6 +7,11 @@ package shared.exceptions;
  */
 public class TradeException extends InsufficientResourcesException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6723403614201481094L;
+
 	public TradeException(String string) {
 		super(string);
 	}

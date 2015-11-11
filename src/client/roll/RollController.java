@@ -11,10 +11,6 @@ import org.json.simple.JSONObject;
 import shared.definitions.TurnStatus;
 import shared.model.TurnTracker;
 
-import shared.definitions.TurnStatus;
-import shared.exceptions.ServerException;
-import shared.exceptions.UserException;
-import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
 
@@ -75,7 +71,8 @@ public class RollController extends Controller implements IRollController {
 
 			@Override
 			protected JSONObject doInBackground() throws Exception {
-				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), result);
+				int gameID = ClientManager.getModel().getGameHeader().getId();
+				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), gameID, result);
 			}
 			
 			@Override

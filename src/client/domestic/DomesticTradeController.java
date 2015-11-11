@@ -254,7 +254,8 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		
 		
 		try {
-			ClientManager.getServer().offerTrade(user, offer, receiver);
+			int gameID = ClientManager.getModel().getGameHeader().getId();
+			ClientManager.getServer().offerTrade(user, gameID, offer, receiver);
 		} catch (ServerException e) {
 			e.printStackTrace();
 		} catch (UserException e) {
@@ -338,7 +339,8 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	@Override
 	public void acceptTrade(boolean willAccept) {
 		try {
-			ClientManager.getServer().respondToTrade(ClientManager.getLocalPlayer(), willAccept);
+			int gameID = ClientManager.getModel().getGameHeader().getId();
+			ClientManager.getServer().respondToTrade(ClientManager.getLocalPlayer(), gameID, willAccept);
 			getAcceptOverlay().reset();
 		} catch (ServerException e) {
 			e.printStackTrace();

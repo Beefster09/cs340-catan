@@ -1,9 +1,17 @@
 package shared.model;
 
-import java.util.List;
+import java.util.*;
 
 import client.data.GameInfo;
 import shared.communication.GameHeader;
+import shared.communication.PlayerHeader;
+import shared.definitions.ResourceType;
+import shared.definitions.TurnStatus;
+import shared.exceptions.InsufficientResourcesException;
+import shared.exceptions.InvalidActionException;
+import shared.exceptions.NotYourTurnException;
+import shared.locations.EdgeLocation;
+import shared.locations.VertexLocation;
 
 /**
  * Contains all information about the current game: references the map, players, chat, and bank
@@ -12,8 +20,9 @@ import shared.communication.GameHeader;
  * @author Jordan
  *
  */
-public class CatanModel {
-	private GameHeader header;
+public class CatanModel {	
+	private UUID id;
+	private String title;
 	
 	private MessageList chat;
 	private MessageList log;
@@ -24,45 +33,27 @@ public class CatanModel {
 	private List<Player> players;
 	private PlayerReference longestRoad;
 	private PlayerReference largestArmy;
-	private int winner;
+	
+	private PlayerReference winner = null;
 	
 	private int version;
 
+	/** Makes a brand spanking new Model
+	 * 
+	 */
 	public CatanModel() {
 		version = -1;
-		winner = -1;
+		winner = null;
+		
+		id = UUID.randomUUID();
 	}
-
-	/**
-	 * @param chat
-	 * @param log
-	 * @param map
-	 * @param tradeOffer
-	 * @param turnTracker
-	 * @param bank
-	 * @param players
-	 * @param longestRoad
-	 * @param largestArmy
-	 * @param winner
-	 * @param version
-	 */
 	
-	public CatanModel(MessageList chat, MessageList log, Board map,
-			TradeOffer tradeOffer, TurnTracker turnTracker, Bank bank,
-			List<Player> players, PlayerReference longestRoad,
-			PlayerReference largestArmy, int winner, int version) {
-		super();
-		this.chat = chat;
-		this.log = log;
-		this.map = map;
-		this.tradeOffer = tradeOffer;
-		this.turnTracker = turnTracker;
-		this.bank = bank;
-		this.players = players;
-		this.longestRoad = longestRoad;
-		this.largestArmy = largestArmy;
-		this.winner = winner;
-		this.version = version;
+	public UUID getID() {
+		return id;
+	}
+	
+	public int getShortID() {
+		return id.hashCode();
 	}
 
 	/**
@@ -152,7 +143,7 @@ public class CatanModel {
 	/**
 	 * @return the winner
 	 */
-	public int getWinner() {
+	public PlayerReference getWinner() {
 		return winner;
 	}
 
@@ -160,31 +151,31 @@ public class CatanModel {
 		this.chat = chat;
 	}
 
-	public void setLog(MessageList log) {
+	void setLog(MessageList log) {
 		this.log = log;
 	}
 
-	public void setMap(Board map) {
+	void setMap(Board map) {
 		this.map = map;
 	}
 
-	public void setTurnTracker(TurnTracker turnTracker) {
+	void setTurnTracker(TurnTracker turnTracker) {
 		this.turnTracker = turnTracker;
 	}
 
-	public void setBank(Bank bank) {
+	void setBank(Bank bank) {
 		this.bank = bank;
 	}
 
-	public void setPlayers(List<Player> players) {
+	void setPlayers(List<Player> players) {
 		this.players = players;
 	}
 
-	public void setWinner(int winner) {
+	void setWinner(PlayerReference winner) {
 		this.winner = winner;
 	}
 
-	public void setVersion(int version) {
+	void setVersion(int version) {
 		this.version = version;
 	}
 
@@ -196,21 +187,156 @@ public class CatanModel {
 	}
 
 	public GameInfo getGameInfo() {
-		if (header != null)
-			return new GameInfo(header);
-		return null;
+		return new GameInfo(getHeader());
 	}
 
 	public GameHeader getHeader() {
-		return header;
+		List<PlayerHeader> players = new ArrayList<>();
+		for (Player player : getPlayers()) {
+			players.add(player.getHeader());
+		}
+		return new GameHeader(title, id, players);
 	}
 
 	public void setHeader(GameInfo info) {
-		this.header = new GameHeader(info);
+		title  = info.getTitle();
+		id = info.getUUID();
+		
 	}
 
 	public void setHeader(GameHeader gameHeader) {
-		this.header = gameHeader;
+		title  = gameHeader.getTitle();
+		id = gameHeader.getUUID();
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * 
+	 * @param player TODO
+	 * @param loc TODO
+	 * @return
+	 * @throws InvalidActionException 
+	 */
+	void buildCity(PlayerReference player, VertexLocation loc)
+			throws InvalidActionException {
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
+		if (!player.getPlayer().canBuildCity()) {
+			throw new InsufficientResourcesException("You do not have the sufficient " +
+					"resources for a city.");
+		}
+		if (!canBuildCity(player, loc)) {
+			throw new InvalidActionException("You must build a city over one " +
+					"of your existing settlements.");
+		}
+		
+		ResourceList hand = player.getPlayer().getResources();
+		ResourceList bank = getBank().getResources();
+		hand.transferTo(bank, ResourceType.ORE, 3);
+		hand.transferTo(bank, ResourceType.WHEAT, 2);
+		
+		getMap().upgradeSettlementAt(player, loc);
+		
+		++version;
+	}
+
+	public boolean canBuildCity(PlayerReference player,	VertexLocation loc) {
+		return isTurn(player) && player.getPlayer().canBuildCity()
+				&& map.canBuildCity(player, loc);
+	}
+
+	public boolean isTurn(PlayerReference player) {
+		return player.equals(turnTracker.getCurrentPlayer());
+	}
+
+	void buildStartingRoad(PlayerReference player, EdgeLocation loc)
+			throws InvalidActionException {
+		if (!map.canBuildStartingRoadAt(player, loc)) {
+			throw new InvalidActionException("Invalid Starting Road Placement");
+		}
+		// This movement is free.
+		getMap().buildStartingRoad(player, loc);
+		
+		++version;
+	}
+
+	void buildRoad(PlayerReference player, EdgeLocation loc)
+			throws InvalidActionException, InsufficientResourcesException {
+		if (!map.canBuildRoadAt(player, loc)) {
+			throw new InvalidActionException("Invalid Road Placement");
+		}
+		// Check resource counts
+		ResourceList hand = player.getPlayer().getResources();
+		if (player.getPlayer().canBuildRoad()) {
+			throw new InsufficientResourcesException("Insufficient " +
+					"resources for a road.");
+		}
+		ResourceList bank = getBank().getResources();
+		hand.transferTo(bank, ResourceType.WOOD, 1);
+		hand.transferTo(bank, ResourceType.BRICK, 1);
+		getMap().buildRoad(player, loc);
+		
+		++version;
+	}
+
+	void buildStartingSettlement(PlayerReference player, VertexLocation loc) throws InvalidActionException {
+		if (!map.canPlaceStartingSettlement(loc)) {
+			throw new InvalidActionException("Invalid Starting Road Placement");
+		}
+		// This movement is free.
+		map.buildStartingSettlement(player, loc);
+		
+		++version;
+	}
+
+	void buildSettlement(PlayerReference player, VertexLocation loc)
+			throws InvalidActionException, InsufficientResourcesException {
+		if (!map.canBuildSettlement(player, loc)) {
+			throw new InvalidActionException("Invalid Road Placement");
+		}
+		if (player.getPlayer().canBuildSettlement()) {
+			throw new InsufficientResourcesException("Insufficient resources " +
+					"for a settlement.");
+		}
+		// Check resource counts
+		ResourceList hand = player.getPlayer().getResources();
+		ResourceList bank = getBank().getResources();
+		hand.transferTo(bank, ResourceType.WOOD, 1);
+		hand.transferTo(bank, ResourceType.BRICK, 1);
+		hand.transferTo(bank, ResourceType.SHEEP, 1);
+		hand.transferTo(bank, ResourceType.WHEAT, 1);
+		map.buildSettlement(player, loc);
+		
+		++version;
+	}
+
+	void roll(int roll) {
+		assert turnTracker.getStatus() == TurnStatus.Rolling;
+		
+		// Give resources to the appropriate players
+		ResourceList resBank = bank.getResources();
+		for (Hex hex : map.getHexesByNumber(roll)) {
+			for (Municipality town : map.getMunicipalitiesAround(hex.getLocation())) {
+				try {
+					resBank.transferTo(town.getOwner().getPlayer().getResources(),
+							hex.getResource(), town.getIncome());
+				} catch (InsufficientResourcesException e) {
+					// Sucks to be you. You don't get your resources.
+				}
+			}
+		}
+		
+		// Change the status of the game
+		
+		++version;
 	}
 	
 	

@@ -35,7 +35,7 @@ public class ResourceBarController extends Controller implements
 	}
 	
 	@Override
-	public void winnerChanged(int winner) {
+	public void winnerChanged(PlayerReference winner) {
 		disableAllActions();
 
 		resetAmounts();
