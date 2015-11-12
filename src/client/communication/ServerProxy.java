@@ -10,7 +10,6 @@ import server.logging.LogLevel;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
-import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
@@ -42,6 +41,11 @@ public class ServerProxy implements IServer {
 	@Deprecated
 	public static IServer getInstance(){
 		return ClientManager.getServer();
+	}
+	public static void main(String args[]) throws ServerException, UserException {
+		ServerProxy proxy = new ServerProxy("localhost", 8081);
+		proxy.login("Sam", "sam");
+		proxy.getGameList();
 	}
 	
 

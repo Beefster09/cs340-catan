@@ -2,6 +2,10 @@ package server.gamehandlers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URLEncoder;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +16,13 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import server.communication.MockServer;
 import server.communication.Server;
+import server.interpreter.ExchangeConverter;
+import shared.communication.GameHeader;
+import shared.communication.IServer;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 
 /**
  * Handles list requests by communicating with the Server Facade,
@@ -22,7 +32,7 @@ import server.communication.Server;
  */
 public class ListHandler implements HttpHandler {
 
-	Server server;
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -31,21 +41,31 @@ public class ListHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			InputStream input = arg0.getRequestBody();
-			int len = 0;
-			
-			byte[] buffer = new byte[1024];
-			StringBuilder string = new StringBuilder();
-			while(-1 != (len = input.read(buffer))){
-				string.append(new String(buffer, 0, len));
-			}
-	
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(string.toString());
+//			JSONObject json = ExchangeConverter.toJSON(arg0);
+			List<GameHeader> headers = server.getGameList();
 			
 			
-		} catch (ParseException e) {
+			JSONObject header = new JSONObject();
+
+			header.put("games", headers);
+			System.out.println(header.toString());
+//			StringBuilder str = new StringBuilder();
+//			str.append("catan.user=");
+//			str.append(URLEncoder.encode(header.toJSONString()));
+//			str.append(";Path=/;");
+//			String cookie = str.toString();
+//			arg0.getResponseHeaders().add("Set-cookie", cookie);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
+			output.write(header.toString());
+			output.flush();
+			arg0.getResponseBody().close();
 			
+		} catch (UserException e) {
+			
+		} catch (ServerException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			e.printStackTrace();
 		}
 	}
 

@@ -1,7 +1,6 @@
 package server.userhandlers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
@@ -9,14 +8,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.Server;
-import shared.communication.Session;
+import server.communication.*;
+import server.interpreter.ExchangeConverter;
+import shared.communication.*;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
@@ -28,7 +27,7 @@ import shared.exceptions.UserException;
  */
 public class LoginHandler implements HttpHandler {
 
-	Server server;
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -38,17 +37,9 @@ public class LoginHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			InputStream input = arg0.getRequestBody();
-			int len = 0;
+		
+			JSONObject json = ExchangeConverter.toJSON(arg0);
 			
-			byte[] buffer = new byte[1024];
-			StringBuilder string = new StringBuilder();
-			while(-1 != (len = input.read(buffer))){
-				string.append(new String(buffer, 0, len));
-			}
-	
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(string.toString());
 			String username = (String) json.get("username");
 			String password = (String) json.get("password");
 			Session user = server.login(username, password);
