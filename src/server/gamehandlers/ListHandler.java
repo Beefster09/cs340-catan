@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -46,32 +47,19 @@ public class ListHandler implements HttpHandler {
 //			JSONObject json = ExchangeConverter.toJSON(arg0);
 			List<GameHeader> headers = server.getGameList();
 			
+			Gson gson = new Gson();
 			
-//			JSONObject header = new JSONObject();
-//			JSONArray array = new JSONArray();
-//			for (GameHeader game : headers) {
-//				JSONObject item = new JSONObject();
-//				item.put("title", game.getTitle());
-//				item.put("UUID", game.getTitle());
-//				item.put("players", game.getPlayers());
-//				
-//				array.add(item);
-//			}
-//			
-//			header.put("game", array);
-//			System.out.println(header.toString());
 //			StringBuilder str = new StringBuilder();
 //			str.append("catan.user=");
 //			str.append(URLEncoder.encode(header.toJSONString()));
 //			str.append(";Path=/;");
 //			String cookie = str.toString();
 //			arg0.getResponseHeaders().add("Set-cookie", cookie);
-//			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-//			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-//			//output.write(header.toJSONString());
-//			JSONObject.writeJSONString(header, output);
-//			output.flush();
-//			arg0.getResponseBody().close();
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
+			output.write(gson.toJson(headers));
+			output.flush();
+			arg0.getResponseBody().close();
 			
 		} catch (UserException e) {
 			
