@@ -12,8 +12,14 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
+import shared.communication.GameHeader;
+import shared.communication.IServer;
+import shared.exceptions.GameInitializationException;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
 
 /**
  * Handles join requests by communicating with the Server Facade,
@@ -23,7 +29,7 @@ import server.interpreter.ExchangeConverter;
  */
 public class JoinHandler implements HttpHandler {
 	
-	Server server;
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -33,6 +39,7 @@ public class JoinHandler implements HttpHandler {
 
 		try{
 			JSONObject json = ExchangeConverter.toJSON(arg0);
+			
 			
 		} catch (ParseException e) {
 			

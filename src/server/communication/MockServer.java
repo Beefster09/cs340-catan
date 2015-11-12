@@ -11,6 +11,7 @@ import server.logging.LogLevel;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
@@ -49,7 +50,9 @@ public class MockServer implements IServer {
 		
 		List<GameHeader> headers = new ArrayList<GameHeader>();
 		for (int i = 0; i < 5; i++) {
-			GameHeader tempGame = new GameHeader("test"+Integer.toString(i),UUID.randomUUID(),null);
+			List<PlayerHeader> players = new ArrayList<PlayerHeader>();
+			players.add(new PlayerHeader(CatanColor.BLUE, "Sam", UUID.randomUUID()));
+			GameHeader tempGame = new GameHeader("test"+Integer.toString(i),UUID.randomUUID(),players);
 			headers.add(tempGame);
 		}
 		
