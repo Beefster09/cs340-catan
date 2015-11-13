@@ -44,17 +44,12 @@ public class ListHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-//			JSONObject json = ExchangeConverter.toJSON(arg0);
+			JSONObject json = ExchangeConverter.toJSON(arg0);
 			List<GameHeader> headers = server.getGameList();
 			
 			Gson gson = new Gson();
 			
-//			StringBuilder str = new StringBuilder();
-//			str.append("catan.user=");
-//			str.append(URLEncoder.encode(header.toJSONString()));
-//			str.append(";Path=/;");
-//			String cookie = str.toString();
-//			arg0.getResponseHeaders().add("Set-cookie", cookie);
+
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toJson(headers));
@@ -64,6 +59,9 @@ public class ListHandler implements HttpHandler {
 		} catch (UserException e) {
 			
 		} catch (ServerException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			e.printStackTrace();
+		} catch (ParseException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			e.printStackTrace();
 		}
