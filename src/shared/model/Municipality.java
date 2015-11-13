@@ -114,4 +114,8 @@ public class Municipality {
 		return true;
 	}
 
+	public int getIncome() {
+		return type.getIncome();
+	}
+
 }

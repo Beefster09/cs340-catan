@@ -8,6 +8,11 @@ public class Session {
 	private String password;
 	private int playerID;
 	
+	/**
+	 * @param username The player's username
+	 * @param password The player's password
+	 * @param playerID Their unique player ID
+	 */
 	public Session(String username, String password, int playerID) {
 		this.username = username;
 		this.password = password;

@@ -18,12 +18,12 @@ import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 
 /**
- * Handles buildRoad requests by communicating with the Server Facade,
+ * Handles Monopoly requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class BuildRoadHandler implements HttpHandler {
+public class MonopolyHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -60,4 +60,5 @@ public class BuildRoadHandler implements HttpHandler {
 			
 		}
 	}
+
 }

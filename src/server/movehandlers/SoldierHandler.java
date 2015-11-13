@@ -14,12 +14,12 @@ import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 
 /**
- * Handles sendChat requests by communicating with the Server Facade,
+ * Handles soldier requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class SendChatHandler implements HttpHandler {
+public class SoldierHandler implements HttpHandler {
 
 	Server server;
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
