@@ -423,4 +423,8 @@ public class Player {
 				resources.count(ResourceType.SHEEP) >= 1;
 	}
 
+	void setHasDiscarded(boolean hasDiscarded) {
+		discarded = hasDiscarded;
+	}
+
 }

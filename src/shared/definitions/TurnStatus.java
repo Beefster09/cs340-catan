@@ -8,7 +8,7 @@ public enum TurnStatus {
 	FirstRound,
 	SecondRound;
 
-	public static TurnStatus getStatusFromString(String input) {
+	public static TurnStatus fromString(String input) {
 		String lowerInput = input.toLowerCase();
 		if (lowerInput.equals("rolling")) return Rolling;
 		else if (lowerInput.equals("robbing")) return Robbing;

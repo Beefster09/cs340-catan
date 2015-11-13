@@ -109,5 +109,13 @@ public class PlayerReference {
 	public UUID getPlayerUUID() {
 		return playerUUID;
 	}
+
+	public String getName() {
+		return getPlayer().getName();
+	}
+
+	public ResourceList getHand() {
+		return getPlayer().getResources();
+	}
 	
 }

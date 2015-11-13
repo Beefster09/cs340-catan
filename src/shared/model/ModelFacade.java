@@ -12,6 +12,7 @@ import shared.definitions.TurnStatus;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
+import shared.exceptions.TradeException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
@@ -92,7 +93,7 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canFinishTurn() {
-		return !getCurrentPlayer().getPlayer().hasRolled();
+		return canFinishTurn(getCurrentPlayer());
 	}
 
 	/**
@@ -101,11 +102,15 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canFinishTurn(PlayerReference player) {
-		return isTurn(player) && !player.getPlayer().hasRolled();
+		return model.getTradeOffer() == null && isTurn(player) && !player.getPlayer().hasRolled();
 	}
 
-	public synchronized boolean doFinishTurn() {
-		return true;
+	public synchronized void finishTurn(PlayerReference player) throws InvalidActionException {
+		if (!canFinishTurn(player)) {
+			throw new InvalidActionException();
+		}
+		
+		model.finishTurn();
 	}
 
 	/**
@@ -114,17 +119,21 @@ public class ModelFacade {
 	 * in their current hand.
 	 * @return false if otherwise
 	 */
-	public synchronized boolean canBuyDevelopmentCard() {
+	public synchronized boolean canBuyDevelopmentCard(PlayerReference player) {
 		// Make sure there are development cards in the bank.
 		if (getCatanModel().getBank().getDevCards().count() <= 0) {
 			return false;
 		}
 		
-		return getCurrentPlayer().getPlayer().canBuyDevCard();
+		return player.getPlayer().canBuyDevCard();
+	}
+	
+	public synchronized boolean canBuyDevelopmentCard() {
+		return canBuyDevelopmentCard(getCurrentPlayer());
 	}
 
-	public synchronized boolean doBuyDevelopmentCard() {
-		return true;
+	public synchronized void buyDevelopmentCard() {
+		
 	}
 
 	/**
@@ -150,17 +159,17 @@ public class ModelFacade {
 
 	public synchronized void buildRoad(PlayerReference player, EdgeLocation loc)
 			throws InvalidActionException {
-				if (!isTurn(player)) {
-					throw new NotYourTurnException();
-				}
-				TurnStatus phase = currentPhase();
-				if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-					model.buildStartingRoad(player, loc);
-				}
-				else {
-					model.buildRoad(player, loc);
-				}
-			}
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
+		TurnStatus phase = currentPhase();
+		if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
+			model.buildStartingRoad(player, loc);
+		}
+		else {
+			model.buildRoad(player, loc);
+		}
+	}
 
 	public synchronized boolean canBuildStartingRoad(EdgeLocation loc) {
 		try {
@@ -182,53 +191,22 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
-		
-		Board map = model.getMap();
-		
-		PlayerReference currentPlayer = getCurrentPlayer();
-		
-		return map.canBuildSettlement(currentPlayer, vertexLoc);
-		
-		
-	
+		return model.getMap().canBuildSettlement(getCurrentPlayer(), vertexLoc);
 	}
 
 	public synchronized void buildSettlement(PlayerReference player, VertexLocation loc)
 			throws InvalidActionException {
-				if (!isTurn(player)) {
-					throw new NotYourTurnException();
-				}
-				TurnStatus phase = currentPhase();
-				if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-					// Give starting resources- Do this before so that it will be in sync
-					// with the model's version.
-					if (phase == TurnStatus.SecondRound) {
-						giveStartingResources(player, loc);
-					}
-					
-					model.buildStartingSettlement(player, loc);
-				}
-				else {
-					model.buildSettlement(player, loc);
-				}
-			}
-
-	private void giveStartingResources(PlayerReference player, VertexLocation loc)
-			throws InsufficientResourcesException {
-				ResourceList bank = model.getBank().getResources();
-				ResourceList hand = player.getPlayer().getResources();
-				for (HexLocation hexLoc : loc.getHexes()) {
-					try {
-						Hex hex = model.getMap().getHexAt(hexLoc);
-						ResourceType resource = hex.getResource();
-						if (resource != null) {
-							bank.transferTo(hand, resource, 1);
-						}
-					} catch (IndexOutOfBoundsException e) {
-						continue;
-					}
-				}
-			}
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
+		TurnStatus phase = currentPhase();
+		if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
+			model.buildStartingSettlement(player, loc);
+		}
+		else {
+			model.buildSettlement(player, loc);
+		}
+	}
 
 	/**
 	 * 
@@ -368,33 +346,35 @@ public class ModelFacade {
 	 * @return true if it is your turn and you have sufficient cards
 	 * @return false otherwise
 	 */
-	public synchronized boolean canOfferTrade() {
-		
-		TradeOffer tradeOffer = model.getTradeOffer();
-		ResourceTradeList tradeList = tradeOffer.getOffer();
-		Map<ResourceType, Integer> offered = tradeList.getOffered();
-		
-		Player offeringPlayer = tradeOffer.getSender().getPlayer();
-		ResourceList list = offeringPlayer.getResources();
-		
-		//iterate through all resources in the offer
-		for(Map.Entry<ResourceType, Integer> entry : offered.entrySet()) {
-			
-			//check to see if there are as many resources in the hand of the offering player as there are in the offer
-			if(!(list.count(entry.getKey()) >= entry.getValue()))
-				return false;
-			
+	public synchronized boolean canOfferTrade(TradeOffer offer) {
+		if (!isTurn(offer.getSender())) {
+			return false;
 		}
-		return true;
 		
+		if (model.getTradeOffer() != null) {
+			return false;
+		}
+		
+		ResourceList hand = offer.getSender().getPlayer().getResources();
+		
+		// Make sure the user has sufficient resources to trade.
+		for (Map.Entry<ResourceType, Integer> offered :
+			offer.getOffer().getOffered().entrySet()) {
+			if (hand.count(offered.getKey()) < offered.getValue()) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**
 	 * 
 	 * @return
+	 * @throws InvalidActionException 
 	 */
-	public synchronized boolean doOfferTrade() {
-		return true;
+	public synchronized void offerTrade(TradeOffer offer) throws InvalidActionException {
+		model.offerTrade(offer);
 	}
 
 	/**
@@ -404,7 +384,7 @@ public class ModelFacade {
 	 */
 	public synchronized boolean canAcceptTrade() {
 		
-		TradeOffer tradeOffer = model.getTradeOffer();
+		/*TradeOffer tradeOffer = model.getTradeOffer();
 		ResourceTradeList tradeList = tradeOffer.getOffer();
 		Map<ResourceType, Integer> wanted = tradeList.getWanted();
 		
@@ -418,17 +398,31 @@ public class ModelFacade {
 			if(!(list.count(entry.getKey()) >= entry.getValue()))
 				return false;
 			
-		}
+		}*/
 		
-		return true;
+		return model.getTradeOffer().isPossible();
 	}
 
 	/**
 	 * 
 	 * @return
+	 * @throws TradeException 
 	 */
-	public synchronized boolean doAcceptTrade() {
-		return true;
+	public synchronized void acceptTrade() throws TradeException {
+		if (!canAcceptTrade()) {
+			throw new TradeException();
+		}
+		
+		model.acceptTrade();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws TradeException 
+	 */
+	public synchronized void declineTrade() {
+		model.declineTrade();
 	}
 
 	/**
@@ -436,7 +430,9 @@ public class ModelFacade {
 	 * @return true if player has a settlement or city on a port.
 	 * @return false otherwise
 	 */
-	public synchronized boolean canMaritimeTrade() {
+	// This isn't useful.
+	@Deprecated
+	public synchronized boolean ownsPort() {
 		
 		Board map = model.getMap();
 		Map<EdgeLocation, Port> ports = map.getPortMap();
@@ -466,12 +462,23 @@ public class ModelFacade {
 		return false;
 	}
 
+	public boolean canMaritimeTrade(PlayerReference player,
+	ResourceType fromResource, ResourceType toResource) {
+		return model.canMaritimeTrade(player, fromResource,	toResource);
+	}
+
 	/**
 	 * 
 	 * @return
+	 * @throws InvalidActionException 
 	 */
-	public synchronized boolean doMaritimeTrade() {
-		return true;
+	public synchronized void maritimeTrade(PlayerReference player,
+			ResourceType fromResource, ResourceType toResource) throws InvalidActionException {
+		if (!canMaritimeTrade(player, fromResource, toResource)) {
+			throw new InvalidActionException("Invalid Maritime Trade");
+		}
+		
+		model.maritimeTrade(player, fromResource, toResource);
 	}
 
 	public synchronized int getVersion() {
