@@ -14,11 +14,14 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.definitions.DevCardType;
+import shared.definitions.ResourceType;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
@@ -30,7 +33,7 @@ import shared.exceptions.UserException;
  */
 public class YearOfPlentyHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IExtendedServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -43,18 +46,11 @@ public class YearOfPlentyHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-//			String name = (String) json.get("name");
-//			boolean randomTiles = (boolean) json.get("randomTiles");
-//			boolean randomNumbers = (boolean) json.get("randomNumbers");
-//			boolean randomPorts = (boolean) json.get("randomPorts");
-//			
-//			GameHeader game = server.createGame(name, randomTiles, randomNumbers, randomPorts);
 			
-			Gson gson = new Gson();
-			/*
-			 * Put necessary information into JSON object to return
-			 */
-//			header.put("game", game);
+			ResourceType type1 = (ResourceType) json.get("resource1");
+			ResourceType type2 = (ResourceType) json.get("resource2");
+			
+			Gson gson = server.yearOfPlenty(null, 0, type1, type2);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
@@ -62,7 +58,14 @@ public class YearOfPlentyHandler implements HttpHandler {
 			output.flush();
 			arg0.getResponseBody().close();
 		} catch (ParseException e) {
-			
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			e.printStackTrace();
+		} catch (ServerException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			e.printStackTrace();
+		} catch (UserException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			e.printStackTrace();
 		}
 	}
 
