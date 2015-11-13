@@ -17,6 +17,7 @@ import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
+import shared.communication.IServer;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
@@ -31,7 +32,7 @@ import shared.model.PlayerReference;
  */
 public class RoadBuildingHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -48,7 +49,7 @@ public class RoadBuildingHandler implements HttpHandler {
 			EdgeLocation firstRoad = (EdgeLocation) json.get("spot1");
 			EdgeLocation secondRoad = (EdgeLocation) json.get("spot2");
 
-			Gson gson = server.roadBuilding(null, 0, firstRoad, secondRoad);
+			String gson = server.roadBuilding(null, 0, firstRoad, secondRoad);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

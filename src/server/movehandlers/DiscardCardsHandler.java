@@ -32,7 +32,7 @@ import shared.model.ResourceList;
  */
 public class DiscardCardsHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -50,7 +50,7 @@ public class DiscardCardsHandler implements HttpHandler {
 			
 			PlayerReference player = null;
 			int gameID = 0;
-			Gson gson = server.discardCards(player, gameID, cards);
+			String gson = server.discardCards(player, gameID, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

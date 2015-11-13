@@ -27,7 +27,7 @@ import shared.exceptions.UserException;
  */
 public class LoginHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })

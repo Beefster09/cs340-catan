@@ -17,6 +17,7 @@ import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
+import shared.communication.IServer;
 import shared.definitions.ResourceType;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
@@ -31,7 +32,7 @@ import shared.model.PlayerReference;
  */
 public class SoldierHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -51,7 +52,7 @@ public class SoldierHandler implements HttpHandler {
 			int playerIndex = (int)json.get("victimIndex");
 			PlayerReference victim = PlayerReference.getDummyPlayerReference(playerIndex);
 			
-			Gson gson = server.soldier(null, 0, hex, victim);
+			String gson = server.soldier(null, 0, hex, victim);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
