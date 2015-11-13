@@ -247,7 +247,7 @@ public class CatanModel {
 		
 		getMap().upgradeSettlementAt(player, loc);
 
-		log.add(player.getName(), "upgraded a settlement into a city.");
+		log.add(player.getName(), player.getName() + " upgraded a settlement into a city.");
 		
 		++version;
 	}
@@ -269,7 +269,7 @@ public class CatanModel {
 		// This movement is free.
 		getMap().buildStartingRoad(player, loc);
 		
-		log.add(player.getName(), "placed a starting road.");
+		log.add(player.getName(), player.getName() + " placed a starting road.");
 		
 		++version;
 	}
@@ -290,7 +290,7 @@ public class CatanModel {
 		hand.transferTo(bank, ResourceType.BRICK, 1);
 		getMap().buildRoad(player, loc);
 		
-		log.add(player.getName(), "built a road.");
+		log.add(player.getName(), player.getName() + " built a road.");
 		
 		++version;
 	}
@@ -319,7 +319,7 @@ public class CatanModel {
 			}
 		}
 		
-		log.add(player.getName(), "placed a starting settlement.");
+		log.add(player.getName(), player.getName() + " placed a starting settlement.");
 		
 		++version;
 	}
@@ -341,7 +341,7 @@ public class CatanModel {
 		hand.transferTo(bank, ResourceType.WHEAT, 1);
 		map.buildSettlement(player, loc);
 		
-		log.add(player.getName(), "built a road.");
+		log.add(player.getName(), player.getName() + " built a road.");
 		
 		++version;
 	}
@@ -375,7 +375,8 @@ public class CatanModel {
 		
 		turnTracker.getCurrentPlayer().getPlayer().setHasRolled(true);
 		
-		log.add(turnTracker.getCurrentPlayer().getName(), "rolled a " + roll);
+		log.add(turnTracker.getCurrentPlayer().getName(),
+				turnTracker.getCurrentPlayer().getName() + " rolled a " + roll);
 		
 		++version;
 	}
@@ -387,7 +388,7 @@ public class CatanModel {
 		
 		turnTracker.passTurn();
 		
-		log.add(curPlayer.getName(), "finished their turn.");
+		log.add(curPlayer.getName(), curPlayer.getName() + " finished their turn.");
 		
 		++version;
 	}
@@ -402,8 +403,8 @@ public class CatanModel {
 		hand.transferTo(bankRes, fromResource, getMaritimeRatios(player).get(fromResource));
 		bankRes.transferTo(hand, toResource, 1);
 		
-		log.add(player.getName(), "traded " + fromResource + " for " +
-					toResource + " with the bank.");
+		log.add(player.getName(), player.getName() + " traded " + fromResource +
+				" for " + toResource + " with the bank.");
 		
 		++version;
 	}
@@ -454,8 +455,8 @@ public class CatanModel {
 	void acceptTrade() throws TradeException {
 		tradeOffer.makeTrade();
 		
-		log.add(tradeOffer.getReceiver().getName(), "accepted " +
-				tradeOffer.getSender().getName() + "'s trade offer.");
+		log.add(tradeOffer.getReceiver().getName(), tradeOffer.getReceiver().getName() +
+				" accepted " +	tradeOffer.getSender().getName() + "'s trade offer.");
 		
 		tradeOffer = null;
 		
@@ -463,8 +464,8 @@ public class CatanModel {
 	}
 
 	void declineTrade() {
-		log.add(tradeOffer.getReceiver().getName(), "declined " +
-				tradeOffer.getSender().getName() + "'s trade offer.");
+		log.add(tradeOffer.getReceiver().getName(), tradeOffer.getReceiver().getName() 
+				+ " declined " + tradeOffer.getSender().getName() + "'s trade offer.");
 		
 		tradeOffer = null;
 		
@@ -477,8 +478,8 @@ public class CatanModel {
 					"there is already a trade waiting to be accepted");
 		}
 		
-		log.add(offer.getSender().getName(), "offered to trade with " + 
-				offer.getReceiver().getName());
+		log.add(offer.getSender().getName(), offer.getSender().getName() +
+				" offered to trade with " +	offer.getReceiver().getName());
 		
 		tradeOffer = offer;
 		

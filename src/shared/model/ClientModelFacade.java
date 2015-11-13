@@ -5,6 +5,8 @@ import java.util.logging.*;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import shared.communication.Session;
 import shared.exceptions.GameInitializationException;
@@ -47,7 +49,14 @@ public class ClientModelFacade extends ModelFacade {
 		 * @return
 		 */
 		@SuppressWarnings("unchecked")
-		public synchronized CatanModel updateFromJSON(JSONObject json) {
+		public synchronized CatanModel updateFromJSON(String jsonString) {
+			JSONObject json;
+			try {
+				json = (JSONObject) new JSONParser().parse(jsonString);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				return null;
+			}
 			int newVersion = (int) (long) json.get("version");
 			//We are still waiting for players.
 			List<JSONObject> listOfPlayers = (List<JSONObject>)json.get("players");
