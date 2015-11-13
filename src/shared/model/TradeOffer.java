@@ -6,7 +6,9 @@ import java.util.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import shared.definitions.ResourceType;
 import shared.exceptions.SchemaMismatchException;
+import shared.exceptions.TradeException;
 
 /**
  * Manages the current trade offer between two players
@@ -54,20 +56,34 @@ public class TradeOffer {
 		return offer;
 	}
 	
+	public boolean isPossible() {
+		ResourceList sendHand = sender.getPlayer().getResources();
+		ResourceList recHand = receiver.getPlayer().getResources();
+		
+		for (Map.Entry<ResourceType, Integer> offered :
+			offer.getOffered().entrySet()) {
+			if (sendHand.count(offered.getKey()) < offered.getValue()) {
+				return false;
+			}
+		}
+		
+		for (Map.Entry<ResourceType, Integer> wanted :
+			offer.getWanted().entrySet()) {
+			if (recHand.count(wanted.getKey()) < wanted.getValue()) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	/** Accepts the offer
+	 * @throws TradeException 
 	 * @pre None
 	 * @post The offer is accepted and will be carried out.
 	 */
-	public void accept() {
-		
-	}
-	
-	/** Declines the offer
-	 * @pre None
-	 * @post The offer is declined and gameplay continues as before.
-	 */
-	public void decline() {
-		
+	public void makeTrade() throws TradeException {
+		offer.makeExchange(sender.getPlayer().getResources(), receiver.getPlayer().getResources());
 	}
 
 	/* (non-Javadoc)
@@ -115,7 +131,5 @@ public class TradeOffer {
 			return false;
 		return true;
 	}
-
-
 	
 }

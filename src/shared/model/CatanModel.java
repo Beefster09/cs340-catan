@@ -10,7 +10,9 @@ import shared.definitions.TurnStatus;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
+import shared.exceptions.TradeException;
 import shared.locations.EdgeLocation;
+import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 
 /**
@@ -244,6 +246,8 @@ public class CatanModel {
 		hand.transferTo(bank, ResourceType.WHEAT, 2);
 		
 		getMap().upgradeSettlementAt(player, loc);
+
+		log.add(player.getName(), "upgraded a settlement into a city.");
 		
 		++version;
 	}
@@ -265,6 +269,8 @@ public class CatanModel {
 		// This movement is free.
 		getMap().buildStartingRoad(player, loc);
 		
+		log.add(player.getName(), "placed a starting road.");
+		
 		++version;
 	}
 
@@ -274,7 +280,7 @@ public class CatanModel {
 			throw new InvalidActionException("Invalid Road Placement");
 		}
 		// Check resource counts
-		ResourceList hand = player.getPlayer().getResources();
+		ResourceList hand = player.getHand();
 		if (player.getPlayer().canBuildRoad()) {
 			throw new InsufficientResourcesException("Insufficient " +
 					"resources for a road.");
@@ -283,6 +289,8 @@ public class CatanModel {
 		hand.transferTo(bank, ResourceType.WOOD, 1);
 		hand.transferTo(bank, ResourceType.BRICK, 1);
 		getMap().buildRoad(player, loc);
+		
+		log.add(player.getName(), "built a road.");
 		
 		++version;
 	}
@@ -293,6 +301,25 @@ public class CatanModel {
 		}
 		// This movement is free.
 		map.buildStartingSettlement(player, loc);
+		
+		// Give starting resources
+		if (turnTracker.getStatus() == TurnStatus.SecondRound) {
+			ResourceList bank = this.bank.getResources();
+			ResourceList hand = player.getPlayer().getResources();
+			for (HexLocation hexLoc : loc.getHexes()) {
+				try {
+					Hex hex = map.getHexAt(hexLoc);
+					ResourceType resource = hex.getResource();
+					if (resource != null) {
+						bank.transferTo(hand, resource, 1);
+					}
+				} catch (IndexOutOfBoundsException e) {
+					continue;
+				}
+			}
+		}
+		
+		log.add(player.getName(), "placed a starting settlement.");
 		
 		++version;
 	}
@@ -306,8 +333,7 @@ public class CatanModel {
 			throw new InsufficientResourcesException("Insufficient resources " +
 					"for a settlement.");
 		}
-		// Check resource counts
-		ResourceList hand = player.getPlayer().getResources();
+		ResourceList hand = player.getHand();
 		ResourceList bank = getBank().getResources();
 		hand.transferTo(bank, ResourceType.WOOD, 1);
 		hand.transferTo(bank, ResourceType.BRICK, 1);
@@ -315,11 +341,20 @@ public class CatanModel {
 		hand.transferTo(bank, ResourceType.WHEAT, 1);
 		map.buildSettlement(player, loc);
 		
+		log.add(player.getName(), "built a road.");
+		
 		++version;
 	}
 
+	/**
+	 * @param roll
+	 * @pre The current phase is the rolling phase and the roll is valid
+	 * @post Appropriate resources will be given, the robber will trigger if a 7 was rolled,
+	 * and players will be required to discard if necessary.
+	 */
 	void roll(int roll) {
 		assert turnTracker.getStatus() == TurnStatus.Rolling;
+		assert roll >= 2 && roll <= 12;
 		
 		// Give resources to the appropriate players
 		ResourceList resBank = bank.getResources();
@@ -330,11 +365,122 @@ public class CatanModel {
 							hex.getResource(), town.getIncome());
 				} catch (InsufficientResourcesException e) {
 					// Sucks to be you. You don't get your resources.
+					// TODO? Give resources one at a time in turn order?
 				}
 			}
 		}
 		
 		// Change the status of the game
+		turnTracker.roll(roll);
+		
+		turnTracker.getCurrentPlayer().getPlayer().setHasRolled(true);
+		
+		log.add(turnTracker.getCurrentPlayer().getName(), "rolled a " + roll);
+		
+		++version;
+	}
+
+	void finishTurn() throws InvalidActionException {
+		assert tradeOffer == null;
+		
+		PlayerReference curPlayer = turnTracker.getCurrentPlayer();
+		
+		turnTracker.passTurn();
+		
+		log.add(curPlayer.getName(), "finished their turn.");
+		
+		++version;
+	}
+
+	void maritimeTrade(PlayerReference player,
+			ResourceType fromResource, ResourceType toResource) throws InsufficientResourcesException {
+		assert canMaritimeTrade(player, fromResource, toResource);
+		
+		ResourceList bankRes = bank.getResources();
+		ResourceList hand = player.getPlayer().getResources();
+		
+		hand.transferTo(bankRes, fromResource, getMaritimeRatios(player).get(fromResource));
+		bankRes.transferTo(hand, toResource, 1);
+		
+		log.add(player.getName(), "traded " + fromResource + " for " +
+					toResource + " with the bank.");
+		
+		++version;
+	}
+
+	public Map<ResourceType, Integer> getMaritimeRatios(PlayerReference player) {
+		Map<ResourceType, Integer> ratios = new HashMap<>();
+		int defaultRatio = 4;
+		
+		Board map = getMap();
+		
+		for (Port port : map.getPorts()) {
+			if (player.equals(map.getOwnerOfPortAt(port.getLocation()))) {
+				if (port.getResource() == null) {
+					defaultRatio = 3;
+				}
+				else {
+					ratios.put(port.getResource(), 2);
+				}
+			}
+		}
+		
+		for (ResourceType resource : ResourceType.values()) {
+			if (!ratios.containsKey(resource)) {
+				ratios.put(resource, defaultRatio);
+			}
+		}
+		
+		return ratios;
+	}
+
+	public boolean canMaritimeTrade(PlayerReference player, ResourceType fromResource, ResourceType toResource) {
+		// It must be your turn to trade
+		if (!isTurn(player)) {
+			return false;
+		}
+		
+		ResourceList bank = getBank().getResources();
+		
+		if (bank.count(toResource) < 1) {
+			return false;
+		}
+		
+		Map<ResourceType, Integer> ratios = getMaritimeRatios(player);
+		
+		return player.getPlayer().getResources().count(fromResource) >= ratios.get(fromResource);
+	}
+
+	void acceptTrade() throws TradeException {
+		tradeOffer.makeTrade();
+		
+		log.add(tradeOffer.getReceiver().getName(), "accepted " +
+				tradeOffer.getSender().getName() + "'s trade offer.");
+		
+		tradeOffer = null;
+		
+		++version;
+	}
+
+	void declineTrade() {
+		log.add(tradeOffer.getReceiver().getName(), "declined " +
+				tradeOffer.getSender().getName() + "'s trade offer.");
+		
+		tradeOffer = null;
+		
+		++version;
+	}
+
+	void offerTrade(TradeOffer offer) throws InvalidActionException {
+		if (tradeOffer != null) {
+			throw new InvalidActionException("You cannot offer a trade while " +
+					"there is already a trade waiting to be accepted");
+		}
+		
+		log.add(offer.getSender().getName(), "offered to trade with " + 
+				offer.getReceiver().getName());
+		
+		tradeOffer = offer;
 		
 		++version;
 	}

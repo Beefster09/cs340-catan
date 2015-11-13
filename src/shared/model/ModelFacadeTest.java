@@ -117,7 +117,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoFinishTurn() {
 		
-		m.doFinishTurn();
+		m.finishTurn();
 	}
 	
 	@Test
@@ -143,7 +143,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoBuyDevelopmentCard() {
 		
-		m.doBuyDevelopmentCard();
+		m.buyDevelopmentCard();
 	}
 	
 	@Test
@@ -380,7 +380,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoOfferTrade() {
 		
-		m.doOfferTrade();
+		m.offerTrade();
 	}
 	
 	@Test
@@ -414,14 +414,14 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoAcceptTrade() {
 		
-		m.doAcceptTrade();
+		m.acceptTrade();
 	}
 	
 	@Test
 	public void testCanMaritimeTrade() {
 		
 		//test without municipality on port
-		boolean can = m.canMaritimeTrade();
+		boolean can = m.ownsPort();
 		assertFalse(can);
 		
 		//test with municipality on port
@@ -432,7 +432,7 @@ public class ModelFacadeTest {
 		Municipality municipality = new Municipality(vertexLoc, MunicipalityType.SETTLEMENT, currentPlayer);
 		municipalities.put(municipality.getLocation(), municipality);
 		m.getCatanModel().getMap().setMunicipalities(municipalities);
-		can = m.canMaritimeTrade();
+		can = m.ownsPort();
 		assertTrue(can);
 		
 	}
@@ -440,7 +440,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoMaritimeTrade() {
 		
-		m.doMaritimeTrade();
+		m.maritimeTrade();
 	}
 	
 

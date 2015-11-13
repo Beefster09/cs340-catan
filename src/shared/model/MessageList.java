@@ -83,4 +83,9 @@ public class MessageList {
 		return true;
 	}
 	
+	void add(String source, String message) {
+		this.source.add(source);
+		this.message.add(message);
+	}
+	
 }

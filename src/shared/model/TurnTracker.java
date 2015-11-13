@@ -1,9 +1,11 @@
 package shared.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
 import shared.definitions.TurnStatus;
+import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
 
 /*Keeps track of whose turn it is, as well what part of their turn it is.*/
@@ -13,25 +15,20 @@ import shared.exceptions.SchemaMismatchException;
  *
  */
 public class TurnTracker {
+	private List<Player> players;
+	
 	private PlayerReference currentPlayer;
 	private TurnStatus status;
-	//private int longestRoad;
-	//private int largestArmy;
 
-	public TurnTracker() {
-		
+	public TurnTracker(List<Player> players) {
+		players = new ArrayList<>(players);
 	}
 	
 	public TurnTracker(List<Player> players, JSONObject json) throws SchemaMismatchException {
-		
+		players = new ArrayList<>(players);
 		try {
 			currentPlayer = new PlayerReference((String) json.get("currentTurn"));
-			status = TurnStatus.getStatusFromString((String) json.get("status"));
-			/*
-			 * MIGHT NEED TO CHANGE THIS IMPLEMENTATION.  WHAT IF NOBODY HAS THESE, SHOULD
-			 * THEY BE SET TO NULL OR INDEXED TO -1???
-			 */
-			
+			status = TurnStatus.fromString((String) json.get("status"));
 		}
 		catch (ClassCastException | IllegalArgumentException | NullPointerException e) {
 			e.printStackTrace();
@@ -46,11 +43,11 @@ public class TurnTracker {
 	public TurnStatus getStatus() {
 		return status;
 	}
-
+	
 	/**
 	 * @param status the status to set
 	 */
-	public void setStatus(TurnStatus status) {
+	void setStatus(TurnStatus status) {
 		this.status = status;
 	}
 
@@ -61,16 +58,41 @@ public class TurnTracker {
 		return currentPlayer;
 	}
 	
-	public void setCurrentPlayer(PlayerReference player) {
-		currentPlayer = player;
-	}
-	
 	/** Passes the turn to the next player
+	 * @throws InvalidActionException if the current player cannot pass their turn
 	 * @pre The current player has finished all mandatory actions
 	 * @post Control is passed onto the next player
 	 */
-	public void passTurn() {
+	public void passTurn() throws InvalidActionException {
+		assert currentPlayer.getPlayer().hasRolled();
+		assert currentPlayer.getPlayer().hasDiscarded();
 		
+		int currentPlayerIndex = currentPlayer.getIndex();
+		switch(status) {
+		case FirstRound:
+			if (currentPlayerIndex == 3) {
+				status = TurnStatus.SecondRound;
+			}
+			else {
+				currentPlayer = players.get(currentPlayerIndex + 1).getReference();
+			}
+			break;
+		case SecondRound:
+			if (currentPlayerIndex == 0) {
+				status = TurnStatus.Rolling;
+			}
+			else {
+				currentPlayer = players.get(currentPlayerIndex - 1).getReference();
+			}
+			break;
+		case Playing:
+			currentPlayer = players.get(currentPlayerIndex + 1).getReference();
+			status = TurnStatus.Rolling;
+			currentPlayer.getPlayer().setHasRolled(false);
+			break;
+		default:
+			throw new InvalidActionException();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -109,6 +131,28 @@ public class TurnTracker {
 		if (status != other.status)
 			return false;
 		return true;
+	}
+
+	void roll(int roll) {
+		if (roll == 7) {
+			boolean discardNeeded = false;
+			for (Player player : players) {
+				if (player.getResources().count() >= 8) {
+					discardNeeded = true;
+					player.setHasDiscarded(false);
+					break;
+				}
+			}
+			if (discardNeeded) {
+				setStatus(TurnStatus.Discarding);
+			}
+			else {
+				setStatus(TurnStatus.Robbing);
+			}
+		}
+		else {
+			setStatus(TurnStatus.Playing);
+		}
 	}	
 	
 }
