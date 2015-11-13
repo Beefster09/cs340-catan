@@ -29,7 +29,7 @@ import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
-public class MockServer implements IExtendedServer {
+public class MockServer implements IServer {
 
 	@Override
 	public Session login(String username, String password)
