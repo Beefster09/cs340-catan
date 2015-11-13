@@ -20,6 +20,9 @@ import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.ServerException;
+import shared.exceptions.UserException;
+import shared.model.PlayerReference;
 
 /**
  * Handles acceptTrade requests by communicating with the Server Facade,
@@ -42,25 +45,19 @@ public class AcceptTradeHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-//			String name = (String) json.get("name");
-//			boolean randomTiles = (boolean) json.get("randomTiles");
-//			boolean randomNumbers = (boolean) json.get("randomNumbers");
-//			boolean randomPorts = (boolean) json.get("randomPorts");
-//			
-//			GameHeader game = server.createGame(name, randomTiles, randomNumbers, randomPorts);
+			boolean willAccept = (boolean)json.get("willAccept");
 			
-			Gson gson = new Gson();
-			/*
-			 * Put necessary information into JSON object to return
-			 */
-//			header.put("game", game);
+			int playerIndex = (int)json.get("playerIndex");
+			PlayerReference player = null;
+			int gameID = 0;
+			Gson gson = server.respondToTrade(player, gameID, willAccept);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException e) {
+		} catch (ParseException | ServerException | UserException e) {
 			
 		}
 	}
