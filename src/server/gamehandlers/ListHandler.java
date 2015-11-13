@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
@@ -35,7 +36,7 @@ import shared.exceptions.UserException;
  */
 public class ListHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IExtendedServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -44,17 +45,12 @@ public class ListHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-//			JSONObject json = ExchangeConverter.toJSON(arg0);
+			JSONObject json = ExchangeConverter.toJSON(arg0);
+			
+			
 			List<GameHeader> headers = server.getGameList();
 			
 			Gson gson = new Gson();
-			
-//			StringBuilder str = new StringBuilder();
-//			str.append("catan.user=");
-//			str.append(URLEncoder.encode(header.toJSONString()));
-//			str.append(";Path=/;");
-//			String cookie = str.toString();
-//			arg0.getResponseHeaders().add("Set-cookie", cookie);
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toJson(headers));
@@ -65,6 +61,9 @@ public class ListHandler implements HttpHandler {
 			
 		} catch (ServerException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

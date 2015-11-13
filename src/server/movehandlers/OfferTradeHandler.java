@@ -12,6 +12,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
@@ -25,7 +26,7 @@ import shared.communication.IServer;
  */
 public class OfferTradeHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IExtendedServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
