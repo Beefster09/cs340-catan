@@ -19,7 +19,7 @@ public class GameHeader {
 	public GameHeader(JSONObject json) throws SchemaMismatchException {
 		try {
 			title = (String) json.get("title");
-			uuid = UUID.fromString( (String) json.get("id"));
+			uuid = UUID.fromString( (String) json.get("uuid"));
 			players = new ArrayList<>();
 			for (JSONObject obj : (List<JSONObject>) json.get("players")) {
 				if(obj.isEmpty()){
