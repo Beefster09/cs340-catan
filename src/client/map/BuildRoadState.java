@@ -25,7 +25,7 @@ public class BuildRoadState extends MapControllerState {
 			protected String doInBackground() throws Exception {
 				MapController controller = getController();
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return controller.getServer().buildRoad(controller.getYourself(), gameID, edge, false);
+				return controller.getServer().buildRoad(controller.getYourself().getIndex(), gameID, edge, false);
 			}
 
 			@Override

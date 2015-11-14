@@ -16,7 +16,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import server.communication.IExtendedServer;
-import server.communication.MockServer;
+import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
@@ -43,7 +43,7 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 
 		try{
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			json.get("player")
+			json.get("player");
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */

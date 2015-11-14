@@ -32,7 +32,7 @@ public class BuildCityState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().buildCity(getYourself(), gameID, vertex);
+				return ClientManager.getServer().buildCity(getYourself().getIndex(), gameID, vertex);
 			}
 
 			@Override

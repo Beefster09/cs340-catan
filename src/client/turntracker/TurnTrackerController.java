@@ -40,7 +40,7 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer(), gameID);
+				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer().getIndex(), gameID);
 			}
 
 			@Override

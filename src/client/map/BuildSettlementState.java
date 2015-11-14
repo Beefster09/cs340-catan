@@ -32,7 +32,7 @@ public class BuildSettlementState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().buildSettlement(getYourself(), gameID,
+				return ClientManager.getServer().buildSettlement(getYourself().getIndex(), gameID,
 						vertex, false);
 			}
 

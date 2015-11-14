@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import server.communication.IExtendedServer;
-import server.communication.MockServer;
+import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
@@ -49,8 +49,7 @@ public class RobPlayerHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject location = (JSONObject) json.get("location");
 			
 			HexLocation hex = new HexLocation((int)location.get("x"), (int)location.get("y"));
-			int victimIndex = (int)json.get("victimIndex");
-			PlayerReference victim = PlayerReference.getDummyPlayerReference(victimIndex);
+			int victim = (int)json.get("victimIndex");
 			
 			String gson = server.robPlayer(index, gameIndex, hex, victim);
 			

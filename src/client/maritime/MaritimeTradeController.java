@@ -137,7 +137,7 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	public void makeTrade() {
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
-			server.maritimeTrade(ClientManager.getLocalPlayer(), gameID, inResource, outResource, ratio);
+			server.maritimeTrade(ClientManager.getLocalPlayer().getIndex(), gameID, inResource, outResource, ratio);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");

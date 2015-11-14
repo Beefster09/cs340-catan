@@ -36,7 +36,7 @@ public class RoadBuildingCardState extends MapControllerState {
 				@Override
 				protected String doInBackground() throws Exception {
 					int gameID = ClientManager.getModel().getGameHeader().getId();
-					return getServer().roadBuilding(getYourself(), gameID, firstRoad, edge);
+					return getServer().roadBuilding(getYourself().getIndex(), gameID, firstRoad, edge);
 				}
 
 				@Override

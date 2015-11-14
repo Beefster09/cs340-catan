@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import server.communication.IExtendedServer;
-import server.communication.MockServer;
+import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
@@ -46,7 +46,7 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 			 */
 			int index = (int)json.get("playerIndex");
 			int gameIndex = this.checkCookies(arg0);
-			PlayerReference receiver = (PlayerReference)json.get("receiver");
+			int receiver = (int)json.get("receiver");
 			ResourceTradeList offer = (ResourceTradeList)json.get("offer");
 			
 			String gson = server.offerTrade(index, gameIndex, offer, receiver);
