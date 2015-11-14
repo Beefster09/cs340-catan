@@ -44,4 +44,35 @@ public abstract class AbstractGameHandler {
 			return false;
 		}
 	}
+	
+	public Session getPlayerSessionFromCookie(HttpExchange arg0) {
+		List<String> cookies = arg0.getRequestHeaders().get("Cookie");
+		if(cookies.size() != 1){
+			return null;
+		}
+		
+		JSONParser parser = new JSONParser();
+		
+		String cookieEncoded = cookies.get(0);
+		String cookieDecoded = URLDecoder.decode(cookieEncoded);
+		cookieDecoded = cookieDecoded.substring(11);
+		
+		try{
+			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
+			Server server = new Server();
+			String username = (String) cookie.get("name");
+			String password = (String) cookie.get("password");
+			int userID = (int)(long)cookie.get("playerID");
+			
+			Session user = server.login(username, password);
+			
+			if(userID != user.getPlayerID()){
+				return null;
+			}
+			return user;
+		}
+		catch(Exception e){
+			return null;
+		}
+	}
 }

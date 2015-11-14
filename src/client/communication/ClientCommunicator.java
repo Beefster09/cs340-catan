@@ -184,7 +184,7 @@ public class ClientCommunicator {
 	 * @post Response from the server will be given
 	 * @return response object from server
 	 * @throws ServerException
-	 * @throws UserException 
+	 * @throws UserExceptiosn 
 	 */
 	public String send(JSONObject o)
 			throws ServerException, UserException {
