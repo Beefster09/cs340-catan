@@ -43,8 +43,9 @@ public class MockServer implements IServer {
 	@Override
 	public Session register(String username, String password)
 			throws UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+
+		Session fakeUser = new Session("Fake", "fake", 1);
+		return fakeUser;
 	}
 
 	@Override
