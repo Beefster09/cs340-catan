@@ -49,7 +49,7 @@ public class ServerProxy implements IServer {
 	public static void main(String args[]) throws ServerException, UserException, JoinGameException {
 		ServerProxy proxy = new ServerProxy("localhost", 8081);
 		Session player = proxy.login("Sam", "sam");
-		proxy.joinGame(player, 0, CatanColor.BLUE);
+		proxy.joinGame(player, 1, CatanColor.BLUE);
 		String returnValue = proxy.yearOfPlenty(0, 0, ResourceType.BRICK, ResourceType.ORE);
 		System.out.println(returnValue);
 		

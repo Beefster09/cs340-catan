@@ -47,21 +47,26 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 
 		try{
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			int gameID = (int)json.get("ïd");
-			int playerUUID = (int)json.get("playerUUID");
-			CatanColor color = (CatanColor)json.get("color");
+			long temp = (long) json.get("id");
+			int gameID = (int) temp;
+			//int playerUUID = (int)json.get("playerUUID");
+			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
 			
 			Session player = this.getPlayerSessionFromCookie(arg0);
-			server.joinGame(player, gameID, color);
-			Gson gson = new Gson();
-			
+			boolean success = server.joinGame(player, gameID, color);
+			String outputMsg = "";
+			if (success)
+				outputMsg = "Success";
+			else
+				outputMsg = "Failed";
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 200);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			//output.write(gson.toJson(headers));
+			output.write(outputMsg);
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | JoinGameException | ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 200);
+		} catch (Exception e) {
+			e.printStackTrace();
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}
 	}
