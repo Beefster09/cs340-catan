@@ -82,10 +82,10 @@ public class DevCardController extends Controller implements IDevCardController 
 		resourceBarView.setElementEnabled(ResourceBarElement.BUY_CARD, false);
 		
 		// Using a SwingWorker to make it feel responsive
-		new SwingWorker<JSONObject, Object> () {
+		new SwingWorker<String, Object> () {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				return server.buyDevCard(ClientManager.getLocalPlayer(), gameID);
 			}

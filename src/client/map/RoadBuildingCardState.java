@@ -31,10 +31,10 @@ public class RoadBuildingCardState extends MapControllerState {
 		else {
 			getView().placeRoad(edge, getYourColor());
 			
-			new SwingWorker<JSONObject, Object> () {
+			new SwingWorker<String, Object> () {
 
 				@Override
-				protected JSONObject doInBackground() throws Exception {
+				protected String doInBackground() throws Exception {
 					int gameID = ClientManager.getModel().getGameHeader().getId();
 					return getServer().roadBuilding(getYourself(), gameID, firstRoad, edge);
 				}

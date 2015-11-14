@@ -32,7 +32,7 @@ import shared.model.PlayerReference;
  */
 public class AcceptTradeHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -50,7 +50,7 @@ public class AcceptTradeHandler implements HttpHandler {
 			int playerIndex = (int)json.get("playerIndex");
 			PlayerReference player = null;
 			int gameID = 0;
-			Gson gson = server.respondToTrade(player, gameID, willAccept);
+			String gson = server.respondToTrade(player, gameID, willAccept);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

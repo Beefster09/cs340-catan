@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.*;
+import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.*;
 import shared.exceptions.ServerException;
@@ -27,7 +27,7 @@ import shared.exceptions.UserException;
  */
 public class LoginHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })

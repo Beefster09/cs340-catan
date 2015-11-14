@@ -17,6 +17,7 @@ import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
+import shared.communication.IServer;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
@@ -28,7 +29,7 @@ import shared.exceptions.UserException;
  */
 public class RollNumberHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -44,7 +45,7 @@ public class RollNumberHandler implements HttpHandler {
 			
 			int number = (int)json.get("number");
 			
-			Gson gson = server.rollDice(null, 0, number);
+			String gson = server.rollDice(null, 0, number);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

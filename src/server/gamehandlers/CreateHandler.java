@@ -9,11 +9,12 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import server.communication.IExtendedServer;
-import server.communication.MockServer;
+import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.GameHeader;
@@ -30,7 +31,7 @@ import shared.exceptions.UserException;
  */
 public class CreateHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -48,12 +49,11 @@ public class CreateHandler implements HttpHandler {
 			
 			GameHeader game = server.createGame(name, randomTiles, randomNumbers, randomPorts);
 			
-			JSONObject header = new JSONObject();
-			header.put("game", game);
+			Gson gson = new Gson();
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(header.toString());
+			output.write(gson.toJson(game));
 			output.flush();
 			arg0.getResponseBody().close();
 			

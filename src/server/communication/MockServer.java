@@ -31,7 +31,7 @@ import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
-public class MockServer implements IExtendedServer {
+public class MockServer implements IServer {
 
 	@Override
 	public Session login(String username, String password)
@@ -45,8 +45,9 @@ public class MockServer implements IExtendedServer {
 	@Override
 	public Session register(String username, String password)
 			throws UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+
+		Session fakeUser = new Session("Fake", "fake", 1);
+		return fakeUser;
 	}
 
 	@Override
@@ -96,13 +97,13 @@ public class MockServer implements IExtendedServer {
 	}
 
 	@Override
-	public Gson getModel(int gameID, int version) throws ServerException, UserException {
+	public String getModel(int gameID, int version) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson resetGame(int gameID) throws ServerException, UserException {
+	public String resetGame(int gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -114,7 +115,7 @@ public class MockServer implements IExtendedServer {
 	}
 
 	@Override
-	public Gson executeCommands(int gameID, List<Command> commands) throws ServerException, UserException {
+	public String executeCommands(int gameID, List<Command> commands) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -132,113 +133,113 @@ public class MockServer implements IExtendedServer {
 	}
 
 	@Override
-	public Gson sendChat(PlayerReference user, int gameID, String message) throws ServerException, UserException {
+	public String sendChat(PlayerReference user, int gameID, String message) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson rollDice(PlayerReference user, int gameID, int number) throws ServerException, UserException {
+	public String rollDice(PlayerReference user, int gameID, int number) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson robPlayer(PlayerReference user, int gameID, HexLocation newRobberLocation, PlayerReference victim)
+	public String robPlayer(PlayerReference user, int gameID, HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson buyDevCard(PlayerReference user, int gameID) throws ServerException, UserException {
+	public String buyDevCard(PlayerReference user, int gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson yearOfPlenty(PlayerReference user, int gameID, ResourceType type1, ResourceType type2)
+	public String yearOfPlenty(PlayerReference user, int gameID, ResourceType type1, ResourceType type2)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson roadBuilding(PlayerReference user, int gameID, EdgeLocation road1, EdgeLocation road2)
+	public String roadBuilding(PlayerReference user, int gameID, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson soldier(PlayerReference user, int gameID, HexLocation newRobberLocation, PlayerReference victim)
+	public String soldier(PlayerReference user, int gameID, HexLocation newRobberLocation, PlayerReference victim)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson monopoly(PlayerReference user, int gameID, ResourceType type) throws ServerException, UserException {
+	public String monopoly(PlayerReference user, int gameID, ResourceType type) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson monument(PlayerReference user, int gameID) throws ServerException, UserException {
+	public String monument(PlayerReference user, int gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson buildRoad(PlayerReference user, int gameID, EdgeLocation location, boolean free)
+	public String buildRoad(PlayerReference user, int gameID, EdgeLocation location, boolean free)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson buildSettlement(PlayerReference user, int gameID, VertexLocation location, boolean free)
+	public String buildSettlement(PlayerReference user, int gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson buildCity(PlayerReference user, int gameID, VertexLocation location)
+	public String buildCity(PlayerReference user, int gameID, VertexLocation location)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson offerTrade(PlayerReference user, int gameID, ResourceTradeList offer, PlayerReference receiver)
+	public String offerTrade(PlayerReference user, int gameID, ResourceTradeList offer, PlayerReference receiver)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson respondToTrade(PlayerReference user, int gameID, boolean accept) throws ServerException, UserException {
+	public String respondToTrade(PlayerReference user, int gameID, boolean accept) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson maritimeTrade(PlayerReference user, int gameID, ResourceType inResource, ResourceType outResource,
+	public String maritimeTrade(PlayerReference user, int gameID, ResourceType inResource, ResourceType outResource,
 			int ratio) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson discardCards(PlayerReference user, int gameID, ResourceList cards)
+	public String discardCards(PlayerReference user, int gameID, ResourceList cards)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Gson finishTurn(PlayerReference user, int gameID) throws ServerException, UserException {
+	public String finishTurn(PlayerReference user, int gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
