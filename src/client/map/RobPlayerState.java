@@ -37,10 +37,10 @@ public class RobPlayerState extends MapControllerState {
 	@Override
 	public MapControllerState robPlayer(final RobPlayerInfo victimInfo)
 			throws InvalidActionException {
-		new SwingWorker<JSONObject, Object>() {
+		new SwingWorker<String, Object>() {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 			
 				PlayerReference victim =  PlayerReference.getDummyPlayerReference(-1);
 				

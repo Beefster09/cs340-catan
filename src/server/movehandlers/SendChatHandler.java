@@ -17,6 +17,7 @@ import server.communication.IExtendedServer;
 import server.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
+import shared.communication.IServer;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.HexLocation;
@@ -30,7 +31,7 @@ import shared.model.PlayerReference;
  */
 public class SendChatHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -46,7 +47,7 @@ public class SendChatHandler implements HttpHandler {
 			
 			String message = (String)json.get("content");
 			
-			Gson gson = server.sendChat(null, 0, message);
+			String gson = server.sendChat(null, 0, message);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

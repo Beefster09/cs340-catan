@@ -33,7 +33,7 @@ import shared.exceptions.UserException;
  */
 public class YearOfPlentyHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -50,7 +50,7 @@ public class YearOfPlentyHandler implements HttpHandler {
 			ResourceType type1 = (ResourceType) json.get("resource1");
 			ResourceType type2 = (ResourceType) json.get("resource2");
 			
-			Gson gson = server.yearOfPlenty(null, 0, type1, type2);
+			String gson = server.yearOfPlenty(null, 0, type1, type2);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

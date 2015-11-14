@@ -31,7 +31,7 @@ import shared.model.ResourceTradeList;
  */
 public class OfferTradeHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -50,7 +50,7 @@ public class OfferTradeHandler implements HttpHandler {
 			
 			PlayerReference player = null;
 			int gameID = 0;
-			Gson gson = server.offerTrade(player, gameID, offer, receiver);
+			String gson = server.offerTrade(player, gameID, offer, receiver);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

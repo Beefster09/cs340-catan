@@ -29,7 +29,7 @@ import shared.communication.IServer;
  */
 public class ModelHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override

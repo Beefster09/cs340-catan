@@ -67,10 +67,10 @@ public class RollController extends Controller implements IRollController {
 		getResultView().setRollValue(result);
 		getResultView().showModal();
 		
-		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object> () {
+		new SwingWorker<String, Object> () {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), gameID, result);
 			}
@@ -93,8 +93,7 @@ public class RollController extends Controller implements IRollController {
 				});
 			}
 			
-		};
-		worker.execute();
+		}.execute();
 	}
 
 }

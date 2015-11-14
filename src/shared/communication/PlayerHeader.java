@@ -18,7 +18,7 @@ public class PlayerHeader {
 		try {
 			color = CatanColor.getColorFromString((String) json.get("color"));
 			name = (String) json.get("name");
-			uuid = UUID.fromString((String) json.get("id"));
+			uuid = UUID.fromString((String) json.get("uuid"));
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();

@@ -35,10 +35,10 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 
 	@Override
 	public void endTurn() {
-		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object> () {
+		new SwingWorker<String, Object> () {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer(), gameID);
 			}
@@ -52,8 +52,7 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 					e.printStackTrace();
 				}
 			}
-		};
-		worker.execute();
+		}.execute();
 	}
 	
 	private void initFromModel() {

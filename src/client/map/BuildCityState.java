@@ -27,10 +27,10 @@ public class BuildCityState extends MapControllerState {
 		
 		getView().placeCity(vertex, getYourColor());
 		
-		new SwingWorker<JSONObject, Object>() {
+		new SwingWorker<String, Object>() {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				return ClientManager.getServer().buildCity(getYourself(), gameID, vertex);
 			}

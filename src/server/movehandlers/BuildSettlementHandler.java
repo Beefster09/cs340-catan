@@ -32,7 +32,7 @@ import shared.model.PlayerReference;
  */
 public class BuildSettlementHandler implements HttpHandler {
 
-	IExtendedServer server = new MockServer();
+	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -51,7 +51,7 @@ public class BuildSettlementHandler implements HttpHandler {
 			
 			PlayerReference player = null;
 			int gameID = 0;
-			Gson gson = server.buildSettlement(player, gameID, location, free);
+			String gson = server.buildSettlement(player, gameID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
