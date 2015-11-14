@@ -156,7 +156,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String sendChat(PlayerReference user, int gameID, String message)
+	public String sendChat(int user, int gameID, String message)
 			throws ServerException, UserException {
 		
 		try {
@@ -170,7 +170,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String rollDice(PlayerReference user, int gameID, int number)
+	public String rollDice(int user, int gameID, int number)
 			throws ServerException, UserException {
 		
 		try {
@@ -183,8 +183,8 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String robPlayer(PlayerReference user, int gameID, 
-			HexLocation newRobberLocation, PlayerReference victim)
+	public String robPlayer(int user, int gameID, 
+			HexLocation newRobberLocation, int victim)
 			throws ServerException, UserException {
 		
 		try {
@@ -198,7 +198,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String buyDevCard(PlayerReference user, int gameID) throws ServerException,
+	public String buyDevCard(int user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
@@ -211,7 +211,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String yearOfPlenty(PlayerReference user, int gameID, ResourceType type1,
+	public String yearOfPlenty(int user, int gameID, ResourceType type1,
 			ResourceType type2) throws ServerException, UserException {
 		
 		try {
@@ -224,7 +224,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String roadBuilding(PlayerReference user, int gameID, EdgeLocation road1,
+	public String roadBuilding(int user, int gameID, EdgeLocation road1,
 			EdgeLocation road2) throws ServerException, UserException {
 		
 		try {
@@ -237,8 +237,8 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String soldier(PlayerReference user, int gameID,
-			HexLocation newRobberLocation, PlayerReference victim)
+	public String soldier(int user, int gameID,
+			HexLocation newRobberLocation, int victim)
 			throws ServerException, UserException {
 		
 		try {
@@ -251,7 +251,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String monopoly(PlayerReference user, int gameID, ResourceType type)
+	public String monopoly(int user, int gameID, ResourceType type)
 			throws ServerException, UserException {
 		
 		try {
@@ -264,7 +264,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String monument(PlayerReference user, int gameID) throws ServerException,
+	public String monument(int user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
@@ -277,7 +277,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String buildRoad(PlayerReference user, int gameID, EdgeLocation location,
+	public String buildRoad(int user, int gameID, EdgeLocation location,
 			boolean free) throws ServerException, UserException {
 		
 		try {
@@ -290,7 +290,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String buildSettlement(PlayerReference user, int gameID,
+	public String buildSettlement(int user, int gameID,
 			VertexLocation location, boolean free) throws ServerException,
 			UserException {
 		
@@ -304,7 +304,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String buildCity(PlayerReference user, int gameID, VertexLocation location)
+	public String buildCity(int user, int gameID, VertexLocation location)
 			throws ServerException, UserException {
 		
 		try {
@@ -317,8 +317,8 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String offerTrade(PlayerReference user, int gameID, ResourceTradeList offer,
-			PlayerReference receiver) throws ServerException,
+	public String offerTrade(int user, int gameID, ResourceTradeList offer,
+			int receiver) throws ServerException,
 			UserException {
 		
 		try {
@@ -331,7 +331,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String respondToTrade(PlayerReference user, int gameID, boolean accept)
+	public String respondToTrade(int user, int gameID, boolean accept)
 			throws ServerException, UserException {
 		
 		try {
@@ -344,7 +344,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String maritimeTrade(PlayerReference user, int gameID,
+	public String maritimeTrade(int user, int gameID,
 			ResourceType inResource, ResourceType outResource, int ratio)
 			throws ServerException, UserException {
 		
@@ -358,7 +358,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String discardCards(PlayerReference user, int gameID, ResourceList cards)
+	public String discardCards(int user, int gameID, ResourceList cards)
 			throws ServerException, UserException {
 		
 		try {
@@ -371,7 +371,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String finishTurn(PlayerReference user, int gameID) throws ServerException,
+	public String finishTurn(int user, int gameID) throws ServerException,
 			UserException {
 		
 		try {

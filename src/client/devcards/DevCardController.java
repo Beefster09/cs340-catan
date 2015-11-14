@@ -87,7 +87,8 @@ public class DevCardController extends Controller implements IDevCardController 
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return server.buyDevCard(ClientManager.getLocalPlayer(), gameID);
+				int index = ClientManager.getLocalPlayer().getIndex();
+				return server.buyDevCard(index, gameID);
 			}
 			
 			@Override
@@ -161,7 +162,8 @@ public class DevCardController extends Controller implements IDevCardController 
 	public void playMonopolyCard(ResourceType resource) {
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
-			server.monopoly(ClientManager.getLocalPlayer(), gameID, resource);
+			int index = ClientManager.getLocalPlayer().getIndex();
+			server.monopoly(index, gameID, resource);
 		}
 		catch (ServerException e){
 			messageView.setTitle("Server Error");
@@ -182,7 +184,8 @@ public class DevCardController extends Controller implements IDevCardController 
 	public void playMonumentCard() {
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
-			server.monument(ClientManager.getLocalPlayer(), gameID);
+			int index = ClientManager.getLocalPlayer().getIndex();
+			server.monument(index, gameID);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");
@@ -217,7 +220,8 @@ public class DevCardController extends Controller implements IDevCardController 
 	public void playYearOfPlentyCard(ResourceType resource1, ResourceType resource2) {
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
-			server.yearOfPlenty(ClientManager.getLocalPlayer(), gameID, resource1, resource2);
+			int index = ClientManager.getLocalPlayer().getIndex();
+			server.yearOfPlenty(index, gameID, resource1, resource2);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");
