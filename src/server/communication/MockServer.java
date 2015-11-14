@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
+import client.data.GameInfo;
+
 import com.google.gson.Gson;
 
 import server.ai.AIType;
@@ -64,8 +66,15 @@ public class MockServer implements IExtendedServer {
 	@Override
 	public GameHeader createGame(String name, boolean randomTiles, boolean randomNumbers, boolean randomPorts)
 			throws GameInitializationException, UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<PlayerHeader> players = new ArrayList<>();
+		players.add(new PlayerHeader(CatanColor.BLUE, "Sam", UUID.randomUUID()));
+		players.add(new PlayerHeader(CatanColor.WHITE, "Brooke", UUID.randomUUID()));
+		players.add(new PlayerHeader(CatanColor.GREEN, "Pete", UUID.randomUUID()));
+		players.add(new PlayerHeader(CatanColor.PUCE, "Mark",UUID.randomUUID()));
+		
+		return new GameHeader(name, UUID.randomUUID(), players);
+		
 	}
 
 	@Override
