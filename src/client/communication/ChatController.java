@@ -40,8 +40,9 @@ public class ChatController extends Controller implements IChatController {
 			
 			
 			PlayerReference localPlayer = ClientManager.getLocalPlayer();
+			int index = localPlayer.getIndex();
 			
-			serverProxy.sendChat(localPlayer, ClientManager.getModel().getGameHeader().getId(), message);
+			serverProxy.sendChat(index, ClientManager.getModel().getGameHeader().getId(), message);
 
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block
