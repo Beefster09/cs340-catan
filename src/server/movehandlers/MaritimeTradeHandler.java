@@ -29,7 +29,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class MaritimeTradeHandler implements HttpHandler {
+public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -44,14 +44,13 @@ public class MaritimeTradeHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int playerIndex = (int)json.get("playerIndex");
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			int ratio = (int)json.get("ratio");
 			ResourceType inputResource = (ResourceType)json.get("inputResource");
 			ResourceType outputResource = (ResourceType)json.get("outputResource");
 			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.maritimeTrade(player, gameID, inputResource, outputResource, ratio);
+			String gson = server.maritimeTrade(index, gameIndex, inputResource, outputResource, ratio);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

@@ -31,7 +31,7 @@ import shared.exceptions.UserException;
  * @author Jordan
  *
  */
-public class YearOfPlentyHandler implements HttpHandler {
+public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -46,11 +46,12 @@ public class YearOfPlentyHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			ResourceType type1 = (ResourceType) json.get("resource1");
 			ResourceType type2 = (ResourceType) json.get("resource2");
 			
-			String gson = server.yearOfPlenty(null, 0, type1, type2);
+			String gson = server.yearOfPlenty(index, gameIndex, type1, type2);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

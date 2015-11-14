@@ -30,7 +30,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class RoadBuildingHandler implements HttpHandler {
+public class RoadBuildingHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -45,11 +45,12 @@ public class RoadBuildingHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			EdgeLocation firstRoad = (EdgeLocation) json.get("spot1");
 			EdgeLocation secondRoad = (EdgeLocation) json.get("spot2");
 
-			String gson = server.roadBuilding(null, 0, firstRoad, secondRoad);
+			String gson = server.roadBuilding(index, gameIndex, firstRoad, secondRoad);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

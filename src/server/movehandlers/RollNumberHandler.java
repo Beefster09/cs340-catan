@@ -27,7 +27,7 @@ import shared.exceptions.UserException;
  * @author Jordan
  *
  */
-public class RollNumberHandler implements HttpHandler {
+public class RollNumberHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -42,10 +42,11 @@ public class RollNumberHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			int number = (int)json.get("number");
 			
-			String gson = server.rollDice(null, 0, number);
+			String gson = server.rollDice(index, gameIndex, number);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

@@ -30,7 +30,7 @@ import shared.model.ResourceList;
  * @author Jordan
  *
  */
-public class DiscardCardsHandler implements HttpHandler {
+public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -47,10 +47,9 @@ public class DiscardCardsHandler implements HttpHandler {
 			 */
 
 			ResourceList cards = (ResourceList)json.get("discardedCards");
-			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.discardCards(player, gameID, cards);
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
+			String gson = server.discardCards(index, gameIndex, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

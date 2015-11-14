@@ -29,7 +29,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class SendChatHandler implements HttpHandler {
+public class SendChatHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -44,10 +44,11 @@ public class SendChatHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			String message = (String)json.get("content");
 			
-			String gson = server.sendChat(null, 0, message);
+			String gson = server.sendChat(index, gameIndex, message);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

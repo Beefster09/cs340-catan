@@ -29,7 +29,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class BuyDevCardHandler implements HttpHandler {
+public class BuyDevCardHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -45,10 +45,9 @@ public class BuyDevCardHandler implements HttpHandler {
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			int playerIndex = (int)json.get("playerIndex");
-			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.buyDevCard(player, gameID);
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
+			String gson = server.buyDevCard(index, gameIndex);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

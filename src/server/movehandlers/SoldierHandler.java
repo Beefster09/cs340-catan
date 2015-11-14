@@ -30,7 +30,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class SoldierHandler implements HttpHandler {
+public class SoldierHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -45,14 +45,15 @@ public class SoldierHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			JSONObject location = (JSONObject) json.get("location");
 			
 			HexLocation hex = new HexLocation((int)location.get("x"), (int)location.get("y"));
-			int playerIndex = (int)json.get("victimIndex");
+			int victimIndex = (int)json.get("victimIndex");
 			PlayerReference victim = PlayerReference.getDummyPlayerReference(playerIndex);
 			
-			String gson = server.soldier(null, 0, hex, victim);
+			String gson = server.soldier(index, gameIndex, hex, victim);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

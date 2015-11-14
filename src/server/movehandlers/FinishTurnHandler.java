@@ -29,7 +29,7 @@ import shared.model.ResourceList;
  * @author Jordan
  *
  */
-public class FinishTurnHandler implements HttpHandler {
+public class FinishTurnHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -44,11 +44,9 @@ public class FinishTurnHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int playerIndex = (int)json.get("playerIndex");
-			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.finishTurn(player, gameID);
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
+			String gson = server.finishTurn(index, gameIndex);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

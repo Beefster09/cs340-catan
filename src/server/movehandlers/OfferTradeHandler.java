@@ -29,7 +29,7 @@ import shared.model.ResourceTradeList;
  * @author Jordan
  *
  */
-public class OfferTradeHandler implements HttpHandler {
+public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -44,13 +44,12 @@ public class OfferTradeHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int playerIndex = (int)json.get("playerIndex");
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			PlayerReference receiver = (PlayerReference)json.get("receiver");
 			ResourceTradeList offer = (ResourceTradeList)json.get("offer");
 			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.offerTrade(player, gameID, offer, receiver);
+			String gson = server.offerTrade(index, gameIndex, offer, receiver);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

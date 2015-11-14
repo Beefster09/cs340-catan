@@ -30,7 +30,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class BuildSettlementHandler implements HttpHandler {
+public class BuildSettlementHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -47,11 +47,9 @@ public class BuildSettlementHandler implements HttpHandler {
 			 */
 			VertexLocation location = (VertexLocation)json.get("vertexLocation");
 			boolean free = (boolean)json.get("free");
-			int playerIndex = (int)json.get("playerIndex");
-			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.buildSettlement(player, gameID, location, free);
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
+			String gson = server.buildSettlement(index, gameIndex, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

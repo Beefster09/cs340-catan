@@ -29,7 +29,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class MonopolyHandler implements HttpHandler {
+public class MonopolyHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -44,12 +44,11 @@ public class MonopolyHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int playerIndex = (int)json.get("playerIndex");
+			int index = (int)json.get("playerIndex");
+			int gameIndex = this.checkCookies(arg0);
 			ResourceType type = (ResourceType)json.get("type");
 			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.monopoly(player, gameID, type);
+			String gson = server.monopoly(index, gameIndex, type);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
