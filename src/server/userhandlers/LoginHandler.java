@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.*;
+import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.*;
 import shared.exceptions.ServerException;
