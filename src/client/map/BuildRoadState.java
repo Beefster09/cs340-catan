@@ -19,10 +19,10 @@ public class BuildRoadState extends MapControllerState {
 	@Override
 	public MapControllerState placeRoad(final EdgeLocation edge)
 			throws InvalidActionException {
-		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object>() {
+		new SwingWorker<String, Object>() {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 				MapController controller = getController();
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				return controller.getServer().buildRoad(controller.getYourself(), gameID, edge, false);
@@ -36,8 +36,7 @@ public class BuildRoadState extends MapControllerState {
 					e.printStackTrace();
 				}
 			}
-		};
-		worker.execute();
+		}.execute();
 		
 		return new YourTurnState(getController());
 	}

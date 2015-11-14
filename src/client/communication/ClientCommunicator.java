@@ -186,7 +186,7 @@ public class ClientCommunicator {
 	 * @throws ServerException
 	 * @throws UserException 
 	 */
-	public JSONObject send(JSONObject o)
+	public String send(JSONObject o)
 			throws ServerException, UserException {
 		if(userCookie == null || gameCookie == null){
 			throw new UserException();
@@ -223,8 +223,7 @@ public class ClientCommunicator {
 				else if(str.charAt(0) != '{'){
 					return null;
 				}
-				JSONOutput = (JSONObject) parser.parse(str.toString());
-				return JSONOutput;
+				return str.toString();
 			}
 			InputStream input = con.getErrorStream();
 			int len = 0;
@@ -241,7 +240,7 @@ public class ClientCommunicator {
 			System.out.println(str.toString());
 			throw new UserException();
 		}
-		catch(IOException | ParseException e){
+		catch(IOException e){
 			throw new ServerException();
 		}
 	}

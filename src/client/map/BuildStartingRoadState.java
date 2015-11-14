@@ -31,10 +31,10 @@ public class BuildStartingRoadState extends MapControllerState {
 		
 		getView().placeRoad(edge, getYourColor());
 		
-		SwingWorker<JSONObject, Object> worker = new SwingWorker<JSONObject, Object> () {
+		new SwingWorker<String, Object> () {
 
 			@Override
-			protected JSONObject doInBackground() throws Exception {
+			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				getServer().buildSettlement(getYourself(), gameID, settlement, true);
 				getServer().buildRoad(getYourself(), gameID, edge, true);
@@ -50,8 +50,7 @@ public class BuildStartingRoadState extends MapControllerState {
 					e.printStackTrace();
 				}
 			}
-		};
-		worker.execute();
+		}.execute();
 		
 		return new NullState(getController());
 	}

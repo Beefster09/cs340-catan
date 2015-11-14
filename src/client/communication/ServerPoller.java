@@ -81,14 +81,14 @@ public class ServerPoller {
 					int version = modelHandler.getVersion();
 					//TODO Test if there is a bug
 					int game = modelHandler.getGameHeader().getId();
-					final JSONObject model = server.getModel(game, version);
-					if (model != null) {
+					final String modelStr = server.getModel(game, version);
+					if (modelStr != null) {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
 							public void run() {
 								log.fine("Sending new information to modelHander");
 								modelHandler = ClientManager.getModel();
-								modelHandler.updateFromJSON(model);
+								modelHandler.updateFromJSON(modelStr);
 							}
 							
 						});
