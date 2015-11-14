@@ -116,14 +116,14 @@ public interface IServer {
 	 * @post message is sent
 	 * @author-Grant
 	 */
-	public String sendChat(PlayerReference user, int gameID, String message)
+	public String sendChat(int user, int gameID, String message)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post dice is rolled
 	 * @author-Grant
 	 */
-	public String rollDice(PlayerReference user, int gameID, int number)
+	public String rollDice(int user, int gameID, int number)
 			throws ServerException, UserException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -131,15 +131,15 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public String robPlayer(PlayerReference user, int gameID,
-			HexLocation newRobberLocation, PlayerReference victim)
+	public String robPlayer(int user, int gameID,
+			HexLocation newRobberLocation, int victim)
 					throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post Development card is bought
 	 * @author-Grant
 	 */
-	public String buyDevCard(PlayerReference user, int gameID)
+	public String buyDevCard(int user, int gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre two types of valid resources are specified
@@ -147,7 +147,7 @@ public interface IServer {
 	 * @post player receives two specified resources
 	 * @author-Grant
 	 */
-	public String yearOfPlenty(PlayerReference user, int gameID, ResourceType type1, ResourceType type2)
+	public String yearOfPlenty(int user, int gameID, ResourceType type1, ResourceType type2)
 			throws ServerException, UserException;
 	/**
 	 * @pre edge locations must be connected to exisiting road that is owned by player
@@ -155,7 +155,7 @@ public interface IServer {
 	 * @post two roads are built at specified edge locations
 	 * @author-Grant
 	 */
-	public String roadBuilding(PlayerReference user, int gameID, EdgeLocation road1, EdgeLocation road2)
+	public String roadBuilding(int user, int gameID, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, UserException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -164,8 +164,8 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public String soldier(PlayerReference user, int gameID,
-			HexLocation newRobberLocation, PlayerReference victim)
+	public String soldier(int user, int gameID,
+			HexLocation newRobberLocation, int victim)
 					throws ServerException, UserException;
 	/**
 	 * @pre one type of valid resource is specified
@@ -173,13 +173,13 @@ public interface IServer {
 	 * @post player receives all cards of specified resource type from all other players
 	 * @author-Grant
 	 */
-	public String monopoly(PlayerReference user, int gameID, ResourceType type)
+	public String monopoly(int user, int gameID, ResourceType type)
 			throws ServerException, UserException;
 	
 	/**
 	 * 
 	 */
-	public String monument(PlayerReference user, int gameID)
+	public String monument(int user, int gameID)
 			throws ServerException, UserException;
 	
 	/**
@@ -187,7 +187,7 @@ public interface IServer {
 	 * @post road is built at specified location
 	 * @author-Grant
 	 */
-	public String buildRoad(PlayerReference user, int gameID, EdgeLocation location, boolean free)
+	public String buildRoad(int user, int gameID, EdgeLocation location, boolean free)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and must be connected to road owned by player.  Must be at least two
@@ -195,29 +195,29 @@ public interface IServer {
 	 * @post settlement is built at existing location
 	 * @author-Grant
 	 */
-	public String buildSettlement(PlayerReference user, int gameID, VertexLocation location, boolean free)
+	public String buildSettlement(int user, int gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and settlement that is owned by the player already exists at vertex location
 	 * @post city replaces settlement
 	 * @author-Grant
 	 */
-	public String buildCity(PlayerReference user, int gameID, VertexLocation location)
+	public String buildCity(int user, int gameID, VertexLocation location)
 			throws ServerException, UserException;
 	/**
 	 * @pre offer is specified and player must have at least as many resources in his hand as his offer does
 	 * @post offer is made to another player
 	 * @author-Grant
 	 */
-	public String offerTrade(PlayerReference user, int gameID, ResourceTradeList offer,
-			PlayerReference receiver)
+	public String offerTrade(int user, int gameID, ResourceTradeList offer,
+			int receiver)
 					throws ServerException, UserException;
 	/**
 	 * @pre user chooses to accept or decline trade
 	 * @post trade is declined or accepted according to user's decision
 	 * @author-Grant
 	 */
-	public String respondToTrade(PlayerReference user, int gameID, boolean accept)
+	public String respondToTrade(int user, int gameID, boolean accept)
 			throws ServerException, UserException;
 	/**
 	 * @pre user must have correct ratio for trade that he wants to do
@@ -226,7 +226,7 @@ public interface IServer {
 	 * @post user trades in specified resources for specified resource
 	 * @author-Grant
 	 */
-	public String maritimeTrade(PlayerReference user, int gameID, 
+	public String maritimeTrade(int user, int gameID, 
 			ResourceType inResource, ResourceType outResource, int ratio)
 					throws ServerException, UserException;
 	/**
@@ -234,14 +234,14 @@ public interface IServer {
 	 * @post player loses half of his cards, rounding down
 	 * @author-Grant
 	 */
-	public String discardCards(PlayerReference user, int gameID, ResourceList cards)
+	public String discardCards(int user, int gameID, ResourceList cards)
 			throws ServerException, UserException;
 	/**
 	 * @pre player must have rolled
 	 * @post player ends turn
 	 * @author-Grant
 	 */
-	public String finishTurn(PlayerReference user, int gameID)
+	public String finishTurn(int user, int gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre
