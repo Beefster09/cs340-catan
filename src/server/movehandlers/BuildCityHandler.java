@@ -43,6 +43,7 @@ public class BuildCityHandler implements HttpHandler {
 
 		try{
 			JSONObject json = ExchangeConverter.toJSON(arg0);
+			json.get("player")
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
