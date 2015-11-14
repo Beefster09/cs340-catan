@@ -46,10 +46,13 @@ public class ServerProxy implements IServer {
 	public static IServer getInstance(){
 		return ClientManager.getServer();
 	}
-	public static void main(String args[]) throws ServerException, UserException {
+	public static void main(String args[]) throws ServerException, UserException, JoinGameException {
 		ServerProxy proxy = new ServerProxy("localhost", 8081);
-		proxy.login("Sam", "sam");
-		proxy.getGameList();
+		Session player = proxy.login("Sam", "sam");
+		proxy.joinGame(player, 0, CatanColor.BLUE);
+		String returnValue = proxy.yearOfPlenty(0, 0, ResourceType.BRICK, ResourceType.ORE);
+		System.out.println(returnValue);
+		
 	}
 	
 
@@ -156,6 +159,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
 		o.put("requestType", "POST");
 		o.put("id", gameID);
+		o.put("playerUUID", player.getPlayerID());
 		o.put("color", (color.toString()).toLowerCase());
 		
 		JSONObject returned = communicator.joinGame(o);

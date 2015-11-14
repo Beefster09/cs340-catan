@@ -22,8 +22,10 @@ import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
+import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
@@ -33,7 +35,7 @@ import shared.exceptions.UserException;
  * @author Jordan
  *
  */
-public class JoinHandler implements HttpHandler {
+public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 	
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -46,24 +48,21 @@ public class JoinHandler implements HttpHandler {
 		try{
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			int gameID = (int)json.get("ïd");
+			int playerUUID = (int)json.get("playerUUID");
 			CatanColor color = (CatanColor)json.get("color");
 			
-			//server.joinGame(player, gameID, color)
+			Session player = this.getPlayerSessionFromCookie(arg0);
+			server.joinGame(player, gameID, color);
 			Gson gson = new Gson();
 			
-//			StringBuilder str = new StringBuilder();
-//			str.append("catan.user=");
-//			str.append(URLEncoder.encode(header.toJSONString()));
-//			str.append(";Path=/;");
-//			String cookie = str.toString();
-//			arg0.getResponseHeaders().add("Set-cookie", cookie);
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 200);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			//output.write(gson.toJson(headers));
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException e) {
-			
+		} catch (ParseException | JoinGameException | ServerException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 200);
+			arg0.getResponseBody().close();
 		}
 	}
 }
