@@ -29,7 +29,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class BuildRoadHandler implements HttpHandler {
+public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -47,9 +47,9 @@ public class BuildRoadHandler implements HttpHandler {
 			EdgeLocation location = (EdgeLocation)json.get("roadLocation");
 			boolean free = (boolean)json.get("free");
 			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.buildRoad(player, gameID, location, free);
+			int playerIndex = (int)json.get("playerIndex");
+			int gameID = checkCookies(arg0);
+			String gson = server.buildRoad(playerIndex, gameID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

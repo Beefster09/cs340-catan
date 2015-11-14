@@ -31,7 +31,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class BuildCityHandler implements HttpHandler {
+public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -48,9 +48,9 @@ public class BuildCityHandler implements HttpHandler {
 			 */
 			VertexLocation vertexLocation = (VertexLocation)json.get("vertexLocation");
 			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.buildCity(player, gameID, vertexLocation);
+			int playerIndex = (int)json.get("playerIndex");
+			int gameID = checkCookies(arg0);
+			String gson = server.buildCity(playerIndex, gameID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

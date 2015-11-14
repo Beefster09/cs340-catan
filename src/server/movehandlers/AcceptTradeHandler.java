@@ -30,7 +30,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class AcceptTradeHandler implements HttpHandler {
+public class AcceptTradeHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -48,9 +48,8 @@ public class AcceptTradeHandler implements HttpHandler {
 			boolean willAccept = (boolean)json.get("willAccept");
 			
 			int playerIndex = (int)json.get("playerIndex");
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.respondToTrade(player, gameID, willAccept);
+			int gameID = checkCookies(arg0);
+			String gson = server.respondToTrade(playerIndex, gameID, willAccept);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
