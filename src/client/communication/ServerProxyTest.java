@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
 import server.ai.AIType;
@@ -22,7 +24,6 @@ import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -110,10 +111,14 @@ public class ServerProxyTest {
 				System.out.println("Grant joined the game");
 			}
 
-			PlayerReference steve = PlayerReference.getDummyPlayerReference(0);
-			PlayerReference justin = PlayerReference.getDummyPlayerReference(1);
-			PlayerReference jordan = PlayerReference.getDummyPlayerReference(2);
-			PlayerReference grant = PlayerReference.getDummyPlayerReference(3);
+			int steve = 0;
+			int justin = 1;
+			int jordan = 2;
+			int grant = 3;
+//			PlayerReference steve = PlayerReference.getDummyPlayerReference(0);
+//			PlayerReference justin = PlayerReference.getDummyPlayerReference(1);
+//			PlayerReference jordan = PlayerReference.getDummyPlayerReference(2);
+//			PlayerReference grant = PlayerReference.getDummyPlayerReference(3);
 			
 			SP.login("Steve", "steve");
 			System.out.println("Steve logged in");
@@ -256,7 +261,7 @@ public class ServerProxyTest {
 			SP.finishTurn(steve, gameID);
 			System.out.println("Steve finished his Turn");
 			
-			JSONObject model = SP.getModel(gameID, 0);
+			String model = SP.getModel(gameID, 0);
 			System.out.println("Obtained Model");
 			
 			assertTrue(checkCards(model, steve,  1, 1, 0, 1, 0));
@@ -881,7 +886,7 @@ public class ServerProxyTest {
 			System.out.println("Steve used Road Builder to build two roads");
 			
 			hexLocation = new HexLocation(-1,-1);
-			PlayerReference nullPlayer = PlayerReference.getDummyPlayerReference(-1);
+			int nullPlayer = -1;
 			
 			SP.soldier(steve, gameID, hexLocation, nullPlayer);
 			System.out.println("Steve used a knight to move the robber to a blank space");
@@ -1004,9 +1009,10 @@ public class ServerProxyTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean checkCards(JSONObject model, PlayerReference player, int brick, int wood, int sheep, int ore, int wheat){
+	public boolean checkCards(String model1, int playerIndex, int brick, int wood, int sheep, int ore, int wheat) throws ParseException{
+		JSONParser parser = new JSONParser();
+		JSONObject model = (JSONObject)parser.parse(model1);
 		List<JSONObject> players = (List<JSONObject>) model.get("players");
-		int playerIndex = player.getIndex();
 		JSONObject currentPlayer = players.get(playerIndex);
 		JSONObject resources = (JSONObject) currentPlayer.get("resources");
 		int actualBrick = ((Long) resources.get("brick")).intValue();
@@ -1016,19 +1022,19 @@ public class ServerProxyTest {
 		int actualWheat = ((Long) resources.get("wheat")).intValue();
 		
 		if(actualBrick != brick){
-			System.out.println(player.getIndex() + " had " + actualBrick + " brick");
+			System.out.println(playerIndex + " had " + actualBrick + " brick");
 		}
 		if(actualWood != wood){
-			System.out.println(player.getIndex() + " had " + actualWood + " wood");
+			System.out.println(playerIndex + " had " + actualWood + " wood");
 		}
 		if(actualSheep != sheep){
-			System.out.println(player.getIndex() + " had " + actualSheep + " sheep");
+			System.out.println(playerIndex + " had " + actualSheep + " sheep");
 		}
 		if(actualOre != ore){
-			System.out.println(player.getIndex() + " had " + actualOre + " ore");
+			System.out.println(playerIndex + " had " + actualOre + " ore");
 		}
 		if(actualWheat != wheat){
-			System.out.println(player.getIndex() + " had " + actualWheat + " wheat");
+			System.out.println(playerIndex + " had " + actualWheat + " wheat");
 		}
 
 		return (actualBrick == brick &&
@@ -1039,7 +1045,9 @@ public class ServerProxyTest {
 		
 	}	
 	
-	public boolean checkLongestRoad(JSONObject model, int playerIndex){
+	public boolean checkLongestRoad(String model1, int playerIndex) throws ParseException{
+		JSONParser parser = new JSONParser();
+		JSONObject model = (JSONObject)parser.parse(model1);
 		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
 		int player = ((Long) turnTracker.get("longestRoad")).intValue();
 		if(player != playerIndex){
@@ -1049,7 +1057,9 @@ public class ServerProxyTest {
 		return true;
 	}
 	
-	public boolean checkLargestArmy(JSONObject model, int playerIndex){
+	public boolean checkLargestArmy(String model1, int playerIndex) throws ParseException{
+		JSONParser parser = new JSONParser();
+		JSONObject model = (JSONObject)parser.parse(model1);
 		JSONObject turnTracker = (JSONObject) model.get("turnTracker");
 		int player = ((Long) turnTracker.get("largestArmy")).intValue();
 		if(player != playerIndex){
@@ -1059,7 +1069,9 @@ public class ServerProxyTest {
 		return true;
 	}
 	
-	public boolean checkWinner(JSONObject model, int playerIndex){
+	public boolean checkWinner(String model1, int playerIndex) throws ParseException{
+		JSONParser parser = new JSONParser();
+		JSONObject model = (JSONObject)parser.parse(model1);
 		int player = ((Long) model.get("winner")).intValue();
 		if(player != playerIndex){
 			System.out.println("player " + player + " won");

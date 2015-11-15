@@ -8,8 +8,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
-
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.communication.Command;
@@ -28,7 +26,6 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import client.misc.ClientManager;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -105,8 +102,8 @@ public class ServerProxy implements IServer {
 			for(JSONObject game : listOfGames){
 				try {
 					returnList.add(new GameHeader(game));
-				} catch (SchemaMismatchException e) {
-					// TODO Auto-generated catch block
+				}
+				catch (SchemaMismatchException e) {
 					e.printStackTrace();
 				}
 			}
@@ -138,8 +135,8 @@ public class ServerProxy implements IServer {
 		}
 		catch(UserException e){
 			System.out.println("There was a typo somewhere in order for me to get here!!!");
-		} catch (SchemaMismatchException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (SchemaMismatchException e) {
 			e.printStackTrace();
 		}
 		return null;

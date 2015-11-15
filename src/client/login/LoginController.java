@@ -9,7 +9,6 @@ import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.model.ModelFacade;
 
 
 /**
@@ -22,7 +21,6 @@ public class LoginController extends Controller implements ILoginController {
 	//private IServer serverProxy = ServerProxy.getInstance();
 	private IServer serverProxy = ClientManager.getServer();
 	//private ModelFacade modelFacade = ModelFacade.getInstance();
-	private ModelFacade modelFacade = ClientManager.getModel();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	/**

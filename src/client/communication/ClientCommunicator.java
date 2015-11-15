@@ -217,8 +217,6 @@ public class ClientCommunicator {
 					str.append(new String(buffer, 0, len));
 				}
 
-				JSONParser parser = new JSONParser();
-				JSONObject JSONOutput;
 				if(str.charAt(0) == '['){
 					str = new StringBuilder("{\"list\":" + str + "}");
 				}

@@ -6,8 +6,6 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
-import org.json.simple.JSONObject;
-
 import client.misc.ClientManager;
 
 import shared.communication.IServer;
@@ -79,7 +77,6 @@ public class ServerPoller {
 				try {
 					//JSONObject modelRequest = new JSONObject();
 					int version = modelHandler.getVersion();
-					//TODO Test if there is a bug
 					int game = modelHandler.getGameHeader().getId();
 					final String modelStr = server.getModel(game, version);
 					if (modelStr != null) {

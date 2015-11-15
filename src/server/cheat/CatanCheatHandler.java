@@ -6,7 +6,6 @@ import server.interpreter.Command;
 import server.interpreter.GenericInterpreter;
 import server.telnet.*;
 import shared.definitions.DevCardType;
-import shared.definitions.ResourceType;
 
 public class CatanCheatHandler extends GenericInterpreter {
 

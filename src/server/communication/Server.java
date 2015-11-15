@@ -2,31 +2,23 @@ package server.communication;
 
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import com.google.gson.Gson;
 
 import server.ai.AIType;
-import server.commands.CatanCommand;
 import server.logging.LogLevel;
 import shared.communication.Command;
 import shared.communication.GameHeader;
-import shared.communication.IServer;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
-import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
 import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.CatanModel;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;

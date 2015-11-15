@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import client.misc.ClientManager;
 import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;

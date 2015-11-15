@@ -5,6 +5,11 @@ public class CommandSerializationException extends Exception {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -6158437401471610413L;
+
+	/**
+	 * 
+	 */
 	CommandSerializationException() {
 		super();
 		// TODO Auto-generated constructor stub
