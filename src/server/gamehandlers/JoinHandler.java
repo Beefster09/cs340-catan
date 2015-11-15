@@ -59,6 +59,13 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 				outputMsg = "Success";
 			else
 				outputMsg = "Failed";
+			
+			StringBuilder str = new StringBuilder();
+			str.append("Catan.game=");
+			str.append(gameID);
+			str.append(";Path=/;");
+			String cookie = str.toString();
+			arg0.getResponseHeaders().add("Set-cookie", cookie);
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(outputMsg);
