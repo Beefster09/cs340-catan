@@ -20,11 +20,16 @@ import client.communication.ServerProxy;
 
 public class Test {
 
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args){
 		String[] arg = new String[1];
 		arg[0] = "8081";
 		ServerCommunicator.main(arg);
-		new Test();
+		try{
+			new Test();
+		}
+		catch(Exception e){
+			System.out.println("Failed");
+		}
 		System.exit(0);
 	}
 	
@@ -125,7 +130,40 @@ public class Test {
 		//YearOfPlenty
 		model = server.yearOfPlenty(0, 0, rType, rType);
 		System.out.println("Year of Plenty:\n" + model.substring(5, 49) + "\n");
+				
+		server = new ServerProxy("localhost", 8081);
+		try{
+			server.buyDevCard(0, 0);
+			System.out.println("Failed!");
+			return;
+		}
+		catch(Exception e){
+			System.out.println("Tried to buy Dev Card\n");
+		}
+		try{
+			server.joinGame(user, 0, CatanColor.BLUE);
+			System.out.println("Failed!");
+			return;
+		}
+		catch(Exception e){
+			System.out.println("Tried to join game\n");
+		}
+		server.login("Sam", "Sam");
+		System.out.println("Logged in\n");
+		try{
+			server.buyDevCard(0, 0);
+			System.out.println("Failed!");
+			return;
+		}
+		catch(Exception e){
+			System.out.println("Tried to buy Dev Card\n");
+		}
+		server.joinGame(user, 0, CatanColor.BLUE);
+		System.out.println("Joined Game\n");
 		
-		System.out.println("Finished");
+		server.buyDevCard(0, 0);
+		System.out.println("Bought Dev Card\n");
+		
+		System.out.println("Finished!");
 	}
 }
