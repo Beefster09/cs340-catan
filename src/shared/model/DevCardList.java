@@ -1,11 +1,16 @@
 package shared.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.simple.JSONObject;
 
 import shared.definitions.DevCardType;
+import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
@@ -109,10 +114,22 @@ public class DevCardList {
 	 * and increased on the destination DevCardList
 	 * @throws InvalidActionException if there isn't a card of the type to transfer
 	 */
+	private void transferCardTo(DevCardList destination, DevCardType type, int amount) throws InvalidActionException {
+		if (count(type) < amount) throw new InsufficientResourcesException();
+		this.cards.put(type, this.cards.get(type) - amount);
+		destination.cards.put(type, destination.cards.get(type) + amount);
+	}
+	
+	/** Transfers a card from this DevCardList to another
+	 * @param destination the DevCardList to transfer to
+	 * @param type the type of card you want to transfer
+	 * @pre count(type) >= 1
+	 * @post the count of the specified type will be decreased on this DevCardList
+	 * and increased on the destination DevCardList
+	 * @throws InvalidActionException if there isn't a card of the type to transfer
+	 */
 	public void transferCardTo(DevCardList destination, DevCardType type) throws InvalidActionException {
-		if (count(type) < 1) throw new InsufficientResourcesException();
-		this.cards.put(type, this.cards.get(type) - 1);
-		destination.cards.put(type, destination.cards.get(type) + 1);
+		transferCardTo(destination, type, 1);
 	}
 	
 
@@ -125,7 +142,33 @@ public class DevCardList {
 	 * @throws InvalidActionException if there are no cards in this DevCardList
 	 */
 	public void transferRandomCardTo(DevCardList destination) throws InvalidActionException {
-		
+		List<DevCardType> choices = new ArrayList<>();
+		for (Map.Entry<DevCardType, Integer> cards : this.cards.entrySet()) {
+			for (int i=0; i<cards.getValue(); ++i) {
+				choices.add(cards.getKey());
+			}
+		}
+		DevCardType card = choices.get(new Random().nextInt(choices.size()));
+		try {
+			transferCardTo(destination, card);
+		} catch (InvalidActionException e) {
+			assert false;
+			// This should NEVER happen.
+		}
+	}
+	
+	/** Transfers a random card from this DevCardList to another, with a uniform
+	 * distribution based on counts
+	 * @param destination the DevCardList to transfer to
+	 * @pre count() >= 1
+	 * @post the count of the randomly determined type will be decreased on this 
+	 * DevCardList and increased on the destination DevCardList
+	 * @throws InvalidActionException if there are no cards in this DevCardList
+	 */
+	public void transferAll(DevCardList destination) throws InvalidActionException {
+		for (Map.Entry<DevCardType, Integer> cards : this.cards.entrySet()) {
+			transferCardTo(destination, cards.getKey(), cards.getValue());
+		}
 	}
 	
 	/** Uses a card of the given type
@@ -135,11 +178,11 @@ public class DevCardList {
 	 * @throws InvalidActionException if this DevCardList does not have at least 1 card of the type
 	 */
 	public void useCard(DevCardType type) throws InvalidActionException {
+		if (count(type) < 1) {
+			throw new InvalidActionException();
+		}
 		
-	}
-	
-	public Map<DevCardType, Integer> getCards() {
-		return cards;
+		this.cards.put(type, this.cards.get(type) - 1);
 	}
 
 	@Override

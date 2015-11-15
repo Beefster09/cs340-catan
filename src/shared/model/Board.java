@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -717,6 +719,137 @@ public class Board {
 				(townBetween == null) || townBetween.getOwner().equals(player);
 	}
 
+	public Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
+		Collection<Municipality> result = new ArrayList<>();
+		for (VertexLocation loc : hex.getVertices()) {
+			Municipality town = getMunicipalityAt(loc);
+			if (town != null) {
+				result.add(town);
+			}
+		}
+		return result;
+	}
+
+	void buildRoad(PlayerReference player, EdgeLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	void buildStartingPieces(PlayerReference player,
+			VertexLocation settlement, EdgeLocation road) throws InvalidActionException {
+		if (!canPlaceStartingPieces(settlement, road)) {
+			throw new InvalidActionException();
+		}
+		
+		
+	}
+
+	void buildSettlement(PlayerReference player, VertexLocation loc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	void upgradeSettlementAt(PlayerReference player, VertexLocation loc) throws InvalidActionException {
+		assert loc.getDistanceFromCenter() <= radius;
+		assert player != null;
+		
+		Municipality town = getMunicipalityAt(loc);
+		
+		if (town == null) {
+			throw new InvalidActionException();
+		}
+		
+		if (town.getOwner().equals(player)) {
+			town.upgrade();
+		}
+		else {
+			throw new InvalidActionException("The settlement at the given location is" +
+					"owned by another player.");
+		}
+	}
+	
+	public int lengthOfLongestRoute(PlayerReference player) {
+		int best = 0;
+		
+		// TODO Optimization!
+		// TODO Roads being cut off by enemies
+		// TODO Testing!
+		
+		// Reduce to a graph problem
+		Set<EdgeLocation> ownedRoads = getRoadsOwnedByPlayer(player);
+		// Used to give priority to nodes that are likely to be endpoints of a path
+		Set<VertexLocation> nodes = new HashSet<>(); // 0, 1, 2, 3
+		@SuppressWarnings("unchecked")
+		Set<VertexLocation>[] nodesByEdgeCounts = new Set[4]; // 0, 1, 2, 3
+		
+		for (int i=0; i<4; ++i) {
+			nodesByEdgeCounts[i] = new HashSet<>();
+		}
+		
+		// Get the nodes of the graph
+		for (EdgeLocation roadLoc : ownedRoads) {
+			for (VertexLocation node : roadLoc.getVertices()) {
+				int count = 0;
+				for (EdgeLocation edge : node.getEdges()) {
+					if (edge.getDistanceFromCenter() > radius) continue;
+					
+					Road road = getRoadAt(edge);
+					if (road == null) continue;
+					
+					if (road.getOwner().equals(player)) {
+						++count;
+					}
+				}
+				nodesByEdgeCounts[count].add(node);
+				nodes.add(node);
+			}
+		}
+		
+		// This will be used later to significantly reduce combinatorial explosion.
+		Set<EdgeLocation> unvisited = new HashSet<>(ownedRoads);
+		
+		for (VertexLocation node : nodes) {
+			List<EdgeLocation> path = dfsPath(node, ownedRoads, new ArrayList<EdgeLocation>());
+			
+			unvisited.removeAll(path);
+			if (path.size() > best) {
+				best = path.size();
+			}
+		}
+		
+		return best;
+	}
+	
+	private List<EdgeLocation> dfsPath(VertexLocation node,
+			Set<EdgeLocation> edges, List<EdgeLocation> visitedEdges) {
+		List<EdgeLocation> best = visitedEdges;
+		for (EdgeLocation edge : node.getEdges()) {
+			if (edges.contains(edge) && !visitedEdges.contains(edge)) {
+				List<EdgeLocation> visited = new ArrayList<>(visitedEdges);
+				visited.add(edge);
+				List<EdgeLocation> path = dfsPath(node.traverse(edge), edges, visited);
+				if (path.size() > best.size()) {
+					best = path;
+				}
+			}
+		}
+		
+		return best;
+	}
+
+	private Set<EdgeLocation> getRoadsOwnedByPlayer(
+			PlayerReference player) {
+		Set<EdgeLocation> result = new HashSet<>();
+		
+		for (Map.Entry<EdgeLocation, Road> roadEntry : roads.entrySet()) {
+			if (roadEntry.getValue().getOwner().equals(player)) {
+				result.add(roadEntry.getKey());
+			}
+		}
+		
+		return result;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -768,70 +901,6 @@ public class Board {
 		} else if (!robber.equals(other.robber))
 			return false;
 		return true;
-	}
-
-	public Collection<Municipality> getMunicipalitiesAround(HexLocation hex) {
-		Collection<Municipality> result = new ArrayList<>();
-		for (VertexLocation loc : hex.getVertices()) {
-			Municipality town = getMunicipalityAt(loc);
-			if (town != null) {
-				result.add(town);
-			}
-		}
-		return result;
-	}
-
-	public void buildRoad(PlayerReference player, EdgeLocation loc) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void buildStartingRoad(PlayerReference player, EdgeLocation loc) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public boolean canBuildStartingRoadAt(PlayerReference player, EdgeLocation loc) {
-		if (loc.getDistanceFromCenter() > radius) {
-			throw new IndexOutOfBoundsException();
-		}
-		for (Municipality town : municipalities.values()) {
-			// Look for the settlement owned by the same player that doesn't have a road
-			// next to it and then check if the given location is next to it.
-			if (town.getOwner().equals(player)) {
-				boolean hasNeighbor = false;
-				for (EdgeLocation edge : town.getLocation().getEdges()) {
-					try {
-						if (getRoadAt(edge) != null) {
-							hasNeighbor = true;
-							break;
-						}
-					} catch (IndexOutOfBoundsException e) {
-						continue;
-					}
-				}
-				if (hasNeighbor) continue;
-				
-				if (town.getLocation().getEdges().contains(loc)) return true;
-			}
-		}
-		return false;
-	}
-
-	public void buildStartingSettlement(PlayerReference player,
-			VertexLocation loc) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void buildSettlement(PlayerReference player, VertexLocation loc) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void upgradeSettlementAt(PlayerReference player, VertexLocation loc) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

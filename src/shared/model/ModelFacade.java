@@ -36,7 +36,9 @@ public class ModelFacade {
 		this.dice = dice;
 	}
 
-	public CatanModel getCatanModel() {
+	// We probably SHOULDN'T have this... but it's kind of too late now.
+	// As of the time of writing this comment, it's used in 57 places in the project.
+	public synchronized CatanModel getCatanModel() {
 		return model;
 	}
 
@@ -56,12 +58,7 @@ public class ModelFacade {
 	public synchronized boolean canRoll(PlayerReference player) {
 		
 		Player currentPlayer = getCurrentPlayer().getPlayer();
-		if(currentPlayer.equals(player.getPlayer()) && !currentPlayer.hasRolled()) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return currentPlayer.equals(player.getPlayer()) && !currentPlayer.hasRolled();
 	}
 
 	public synchronized void rollDice(PlayerReference player) throws NotYourTurnException {
@@ -79,12 +76,26 @@ public class ModelFacade {
 	 * @return true if the hex is not a desert hex.
 	 * @return false otherwise
 	 */
-	public synchronized boolean canRob(HexLocation hexLoc) {		
+	public synchronized boolean canMoveRobberTo(HexLocation hexLoc) {		
 		return model.getMap().canMoveRobberTo(hexLoc);
 	}
 
-	public synchronized void doRob() {
-			
+	public synchronized void rob(PlayerReference player, HexLocation loc, PlayerReference victim)
+			throws InvalidActionException {
+		if (!canMoveRobberTo(loc)) {
+			throw new InvalidActionException("Invalid Robber placement!");
+		}
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
+		if (currentPhase() != TurnStatus.Robbing) {
+			throw new InvalidActionException("You may not rob at this time.");
+		}
+		if (player.equals(victim)) {
+			throw new InvalidActionException("You cannot rob yourself.");
+		}
+		
+		model.rob(player, loc, victim);
 	}
 
 	/**
@@ -171,16 +182,6 @@ public class ModelFacade {
 		}
 	}
 
-	public synchronized boolean canBuildStartingRoad(EdgeLocation loc) {
-		try {
-			Board map = model.getMap();
-			PlayerReference currentPlayer = getCurrentPlayer();
-			return map.canBuildStartingRoadAt(currentPlayer, loc);
-		} catch (IndexOutOfBoundsException e) {
-			return false;
-		}
-	}
-
 	/**
 	 * 
 	 * @param vertexLoc The location (one of the 6 vertices of one hex on the board)
@@ -218,12 +219,21 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildCity(VertexLocation vertexLoc) {
-		
-		Board map = model.getMap();
-		
-		PlayerReference currentPlayer = getCurrentPlayer();
-		
-		return model.canBuildCity(currentPlayer, vertexLoc);
+		return canBuildCity(getCurrentPlayer(), vertexLoc);
+	}
+
+	/**
+	 * 
+	 * @param vertexLoc The location (one of the 6 vertices of one hex on the board)
+	 * where the city is to be placed.
+	 * @return true if the given vertex location is adjacent to at least one road
+	 * that the player owns, the given location is empty, and the player owns a settlement
+	 * at the given location.
+	 * @return false otherwise
+	 */
+	public synchronized boolean canBuildCity(PlayerReference player,
+			VertexLocation vertexLoc) {	
+		return model.canBuildCity(player, vertexLoc);
 	}
 
 	/**
@@ -242,14 +252,9 @@ public class ModelFacade {
 	 * @return true if the player owns at least one year of plenty card
 	 * @return false otherwise
 	 */
-	public synchronized boolean canYearOfPlenty() {
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		DevCardList list = currentPlayer.getOldDevCards();
-		
-		if(list.count(DevCardType.YEAR_OF_PLENTY) > 0)
-			return true;
-		
-		return false;
+	public synchronized boolean canYearOfPlenty(PlayerReference player) {		
+		return isTurn(player) && currentPhase() == TurnStatus.Playing &&
+				player.getPlayer().getOldDevCards().count(DevCardType.YEAR_OF_PLENTY) > 0;
 	}
 
 	public synchronized boolean doYearOfPlenty() {
@@ -327,10 +332,7 @@ public class ModelFacade {
 		Player currentPlayer = getCurrentPlayer().getPlayer();
 		DevCardList list = currentPlayer.getOldDevCards();
 		
-		if(list.count(DevCardType.MONUMENT) > 0)
-			return true;
-		
-		return false;
+		return list.count(DevCardType.MONUMENT) > 0;
 	}
 
 	/**
@@ -382,24 +384,7 @@ public class ModelFacade {
 	 * @return true if player has enough cards
 	 * @return false otherwise
 	 */
-	public synchronized boolean canAcceptTrade() {
-		
-		/*TradeOffer tradeOffer = model.getTradeOffer();
-		ResourceTradeList tradeList = tradeOffer.getOffer();
-		Map<ResourceType, Integer> wanted = tradeList.getWanted();
-		
-		Player receivingPlayer = tradeOffer.getReceiver().getPlayer();
-		ResourceList list = receivingPlayer.getResources();
-		
-		//iterate through all resources in the offer
-		for(Map.Entry<ResourceType, Integer> entry : wanted.entrySet()) {
-			
-			//check to see if there are as many resources in the hand of the receiving player as there are in the offer
-			if(!(list.count(entry.getKey()) >= entry.getValue()))
-				return false;
-			
-		}*/
-		
+	public synchronized boolean canAcceptTrade() {		
 		return model.getTradeOffer().isPossible();
 	}
 
@@ -462,7 +447,7 @@ public class ModelFacade {
 		return false;
 	}
 
-	public boolean canMaritimeTrade(PlayerReference player,
+	public synchronized boolean canMaritimeTrade(PlayerReference player,
 	ResourceType fromResource, ResourceType toResource) {
 		return model.canMaritimeTrade(player, fromResource,	toResource);
 	}

@@ -189,4 +189,20 @@ public class ResourceList {
 			return false;
 		return true;
 	}
+
+	public void transferRandomCard(ResourceList destination) {
+		List<ResourceType> choices = new ArrayList<>();
+		for (Map.Entry<ResourceType, Integer> cards : resources.entrySet()) {
+			for (int i=0; i<cards.getValue(); ++i) {
+				choices.add(cards.getKey());
+			}
+		}
+		ResourceType card = choices.get(new Random().nextInt(choices.size()));
+		try {
+			transferTo(destination, card, 1);
+		} catch (InsufficientResourcesException e) {
+			assert false;
+			// This should NEVER happen.
+		}
+	}
 }
