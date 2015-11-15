@@ -40,7 +40,7 @@ public class CreateHandler extends AbstractGameHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 		
 		try{
-			if(!super.checkCookies(arg0)){
+			if(super.checkCookies(arg0)){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);

@@ -32,7 +32,12 @@ public class Test {
 		System.out.println(user.getUsername());
 		GameHeader game = server.createGame("blah", true, true, true);
 		System.out.println(game.getTitle());
+		List<GameHeader> games = server.getGameList();
+		System.out.println(games);
 		boolean returned = server.joinGame(user, 0, CatanColor.RED);
 		System.out.println(returned);
+		String model = server.getModel(0, 0);
+		System.out.println(model);
+		
 	}
 }
