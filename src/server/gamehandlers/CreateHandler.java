@@ -13,9 +13,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
@@ -40,7 +38,7 @@ public class CreateHandler extends AbstractGameHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 		
 		try{
-			if(super.checkCookies(arg0)){
+			if(!super.checkCookies(arg0, server)){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);

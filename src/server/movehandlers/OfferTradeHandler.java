@@ -9,18 +9,14 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.model.PlayerReference;
 import shared.model.ResourceTradeList;
 
 /**
@@ -40,7 +36,8 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			if(super.checkCookies(arg0) == -1){
+			int gameID = super.checkCookies(arg0, server);
+			if(gameID == -1){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -48,11 +45,10 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			int index = (int)json.get("playerIndex");
-			int gameIndex = this.checkCookies(arg0);
 			int receiver = (int)json.get("receiver");
 			ResourceTradeList offer = (ResourceTradeList)json.get("offer");
 			
-			String gson = server.offerTrade(index, gameIndex, offer, receiver);
+			String gson = server.offerTrade(index, gameID, offer, receiver);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

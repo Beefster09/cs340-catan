@@ -1,28 +1,17 @@
 package server.gamehandlers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
-import server.interpreter.ExchangeConverter;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
@@ -45,11 +34,9 @@ public class ListHandler extends AbstractGameHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			if(!super.checkCookies(arg0)){
+			if(!super.checkCookies(arg0, server)){
 				throw new ServerException();
 			}
-			JSONObject json = ExchangeConverter.toJSON(arg0);
-			
 			
 			List<GameHeader> headers = server.getGameList();
 			
@@ -64,8 +51,6 @@ public class ListHandler extends AbstractGameHandler implements HttpHandler {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		} catch (ServerException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-		} catch (ParseException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
 

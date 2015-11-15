@@ -1,14 +1,8 @@
 package server.userhandlers;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import com.google.gson.Gson;
-
 import server.communication.ServerCommunicator;
 import shared.communication.GameHeader;
-import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import client.communication.ServerProxy;

@@ -1,24 +1,19 @@
 package server.gamehandlers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
 import server.interpreter.ExchangeConverter;
-import shared.communication.GameHeader;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
 
@@ -39,7 +34,7 @@ public class ModelHandler extends AbstractGameHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			if(!super.checkCookies(arg0)){
+			if(!super.checkCookies(arg0, server)){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);

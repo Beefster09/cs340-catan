@@ -9,19 +9,15 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
-import shared.model.PlayerReference;
 
 /**
  * Handles buildRoad requests by communicating with the Server Facade,
@@ -40,7 +36,8 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			if(super.checkCookies(arg0) == -1){
+			int gameID = super.checkCookies(arg0, server);
+			if(gameID == -1){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -51,7 +48,6 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 			boolean free = (boolean)json.get("free");
 			
 			int playerIndex = (int)json.get("playerIndex");
-			int gameID = checkCookies(arg0);
 			String gson = server.buildRoad(playerIndex, gameID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
