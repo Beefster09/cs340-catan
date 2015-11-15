@@ -45,16 +45,16 @@ public class AcceptTradeHandler extends AbstractMoveHandler implements HttpHandl
 			 */
 			boolean willAccept = (boolean)json.get("willAccept");
 			
-			int playerIndex = (int)json.get("playerIndex");
+			int playerIndex = (int)(long)json.get("playerIndex");
 			String gson = server.respondToTrade(playerIndex, gameID, willAccept);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(gson.toString());
+			output.write(gson);
 			output.flush();
 			arg0.getResponseBody().close();
 		} catch (ParseException | ServerException | UserException e) {
-			
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
 
