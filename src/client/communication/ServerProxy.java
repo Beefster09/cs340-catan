@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.Gson;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
 
 import server.ai.AIType;
@@ -45,24 +46,17 @@ public class ServerProxy implements IServer {
 	@Deprecated
 	public static IServer getInstance(){
 		return ClientManager.getServer();
-	}
-	public static void main(String args[]) throws ServerException, UserException, JoinGameException {
-		ServerProxy proxy = new ServerProxy("localhost", 8081);
-		Session player = proxy.login("Sam", "sam");
-		proxy.joinGame(player, 1, CatanColor.BLUE);
-		String returnValue = proxy.yearOfPlenty(0, 0, ResourceType.BRICK, ResourceType.ORE);
-		System.out.println(returnValue);
-		
-	}
-	
+	}	
 
 	private ClientCommunicator communicator = new ClientCommunicator();
 	private String host = null;
 	private int port = -1;
+	private Gson gson;
 
 	public ServerProxy(String host, int port){
 		this.host = host;
 		this.port = port;
+		gson = new Gson();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -453,7 +447,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildCity");
 		o.put("playerIndex", user);
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("vertexLocation", vertexLocation);
+		o.put("vertexLocation", gson.toJson(vertexLocation));
 		
 		return communicator.send(o);
 	}
