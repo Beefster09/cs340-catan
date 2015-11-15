@@ -318,7 +318,7 @@ public class ServerProxy implements IServer {
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
-		o.put("location", location);
+		o.put("location", gson.toJson(location));
 		
 		return communicator.send(o);
 	}
@@ -364,8 +364,8 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user);
 		JSONObject firstRoad = road1.toJSONObject();
 		JSONObject secondRoad = road2.toJSONObject();
-		o.put("spot1", firstRoad);
-		o.put("spot2", secondRoad);
+		o.put("spot1", gson.toJson(firstRoad));
+		o.put("spot2", gson.toJson(secondRoad));
 		
 		return communicator.send(o);
 	}
@@ -384,7 +384,7 @@ public class ServerProxy implements IServer {
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
-		o.put("location", location);
+		o.put("location", gson.toJson(location));
 		
 		return communicator.send(o);
 	}
@@ -414,7 +414,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildRoad");
 		o.put("playerIndex", user);
 		JSONObject roadLocation = location.toJSONObject();		
-		o.put("roadLocation", roadLocation);
+		o.put("roadLocation", gson.toJson(roadLocation));
 		o.put("free", free);
 		
 		return communicator.send(o);
@@ -431,7 +431,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildSettlement");
 		o.put("playerIndex", user);
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("vertexLocation", vertexLocation);
+		o.put("vertexLocation", gson.toJson(vertexLocation));
 		o.put("free", free);
 		
 		return communicator.send(o);
@@ -462,7 +462,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
 		o.put("playerIndex", user);
-		o.put("offer", offer.toJSONObject());
+		o.put("offer", gson.toJson(offer.toJSONObject()));
 		o.put("receiver", receiver);
 		
 		return communicator.send(o);
@@ -508,7 +508,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "discardCards");
 		o.put("playerIndex", user);
-		o.put("discardedCards", cards.toJSONObject());
+		o.put("discardedCards", gson.toJson(cards.toJSONObject()));
 		
 		return communicator.send(o);
 	}
