@@ -47,7 +47,7 @@ public class MonopolyHandler extends AbstractMoveHandler implements HttpHandler 
 			 */
 			int index = (int)(long)json.get("playerIndex");
 			
-			ResourceType type = ResourceType.fromString((String)json.get("type"));
+			ResourceType type = ResourceType.fromString((String)json.get("resource"));
 			
 			String gson = server.monopoly(index, gameID, type);
 			
