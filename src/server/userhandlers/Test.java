@@ -10,6 +10,7 @@ import server.communication.ServerCommunicator;
 import shared.communication.GameHeader;
 import shared.communication.PlayerHeader;
 import shared.communication.Session;
+import shared.definitions.CatanColor;
 import client.communication.ServerProxy;
 
 public class Test {
@@ -31,5 +32,7 @@ public class Test {
 		System.out.println(user.getUsername());
 		GameHeader game = server.createGame("blah", true, true, true);
 		System.out.println(game.getTitle());
+		boolean returned = server.joinGame(user, 0, CatanColor.RED);
+		System.out.println(returned);
 	}
 }
