@@ -7,7 +7,6 @@ import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
 import shared.locations.*;
 import shared.model.ClientModelFacade;
-import shared.model.ModelFacade;
 import shared.model.PlayerReference;
 
 public abstract class MapControllerState {

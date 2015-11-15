@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import client.misc.ClientManager;
 import shared.exceptions.InvalidActionException;
 import shared.locations.VertexLocation;
@@ -32,7 +30,7 @@ public class BuildCityState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().buildCity(getYourself(), gameID, vertex);
+				return ClientManager.getServer().buildCity(getYourself().getIndex(), gameID, vertex);
 			}
 
 			@Override

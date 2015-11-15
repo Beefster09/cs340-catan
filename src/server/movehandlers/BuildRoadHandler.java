@@ -7,21 +7,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
-import server.communication.MockServer;
-import server.communication.Server;
+import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
-import shared.model.PlayerReference;
 
 /**
  * Handles buildRoad requests by communicating with the Server Facade,
@@ -29,7 +27,7 @@ import shared.model.PlayerReference;
  * @author Jordan
  *
  */
-public class BuildRoadHandler implements HttpHandler {
+public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -40,23 +38,27 @@ public class BuildRoadHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			int gameID = super.checkCookies(arg0, server);
+			if(gameID == -1){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			/*
-			 * Extract needed information from JSON, and call the appropriate server method.
-			 */
-			EdgeLocation location = (EdgeLocation)json.get("roadLocation");
+
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("roadLocation"));
+			EdgeLocation location = new EdgeLocation(jsonObject);
+			
 			boolean free = (boolean)json.get("free");
 			
-			PlayerReference player = null;
-			int gameID = 0;
-			String gson = server.buildRoad(player, gameID, location, free);
+			int playerIndex = (int)(long)json.get("playerIndex");
+			String gson = server.buildRoad(playerIndex, gameID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}

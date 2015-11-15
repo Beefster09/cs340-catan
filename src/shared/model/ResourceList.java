@@ -34,6 +34,7 @@ public class ResourceList {
 	 * @throws IllegalArgumentException if count is negative.
 	 */
 	public ResourceList(int count) throws IllegalArgumentException {
+		resources = new HashMap<>();
 		if (count < 0) {
 			throw new IllegalArgumentException("ResourceLists may not have negative counts.");
 		}

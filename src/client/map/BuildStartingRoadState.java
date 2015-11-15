@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import client.misc.ClientManager;
 import shared.definitions.PieceType;
 import shared.exceptions.InvalidActionException;
@@ -36,9 +34,9 @@ public class BuildStartingRoadState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				getServer().buildSettlement(getYourself(), gameID, settlement, true);
-				getServer().buildRoad(getYourself(), gameID, edge, true);
-				return getServer().finishTurn(getYourself(), gameID);
+				getServer().buildSettlement(getYourself().getIndex(), gameID, settlement, true);
+				getServer().buildRoad(getYourself().getIndex(), gameID, edge, true);
+				return getServer().finishTurn(getYourself().getIndex(), gameID);
 			}
 
 			@Override

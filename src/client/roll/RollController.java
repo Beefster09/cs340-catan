@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import shared.definitions.TurnStatus;
 import shared.model.TurnTracker;
 
@@ -72,7 +70,7 @@ public class RollController extends Controller implements IRollController {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer(), gameID, result);
+				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer().getIndex(), gameID, result);
 			}
 			
 			@Override

@@ -5,8 +5,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import shared.definitions.CatanColor;
 import shared.model.Player;
 import shared.model.TurnTracker;
@@ -40,7 +38,7 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer(), gameID);
+				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer().getIndex(), gameID);
 			}
 
 			@Override

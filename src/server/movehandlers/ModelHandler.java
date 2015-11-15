@@ -6,28 +6,21 @@ import java.net.HttpURLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import client.communication.MockServer;
-import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
-import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.locations.VertexLocation;
 
 /**
- * Handles buildCity requests by communicating with the Server Facade,
+ * Handles getModel requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler {
+public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -42,23 +35,19 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			if(gameID == -1){
 				throw new ServerException();
 			}
-			JSONObject json = ExchangeConverter.toJSON(arg0);
-
-			JSONParser parser = new JSONParser();
-			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
-			VertexLocation vertexLocation = new VertexLocation(jsonObject);
+			int versionID = Integer.valueOf(address.substring(20));
 			
-			int playerIndex = (int)(long)json.get("playerIndex");
-			String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			String header = server.getModel(gameID, versionID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(gson.toString());
+			output.write(header);
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			arg0.getResponseBody().close();
+			
+		} catch (ServerException | UserException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
+
 }

@@ -8,7 +8,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import shared.communication.Session;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.SchemaMismatchException;
 import client.communication.ServerPoller;

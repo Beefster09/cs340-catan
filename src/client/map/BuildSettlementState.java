@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import client.misc.ClientManager;
 
 import shared.exceptions.InvalidActionException;
@@ -32,7 +30,7 @@ public class BuildSettlementState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().buildSettlement(getYourself(), gameID,
+				return ClientManager.getServer().buildSettlement(getYourself().getIndex(), gameID,
 						vertex, false);
 			}
 

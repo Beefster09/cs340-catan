@@ -7,8 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
-
+import com.google.gson.Gson;
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.communication.Command;
@@ -27,7 +26,6 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import client.misc.ClientManager;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -45,21 +43,17 @@ public class ServerProxy implements IServer {
 	@Deprecated
 	public static IServer getInstance(){
 		return ClientManager.getServer();
-	}
-	public static void main(String args[]) throws ServerException, UserException {
-		ServerProxy proxy = new ServerProxy("localhost", 8081);
-		proxy.login("Sam", "sam");
-		proxy.getGameList();
-	}
-	
+	}	
 
 	private ClientCommunicator communicator = new ClientCommunicator();
 	private String host = null;
 	private int port = -1;
+	private Gson gson;
 
 	public ServerProxy(String host, int port){
 		this.host = host;
 		this.port = port;
+		gson = new Gson();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -108,8 +102,8 @@ public class ServerProxy implements IServer {
 			for(JSONObject game : listOfGames){
 				try {
 					returnList.add(new GameHeader(game));
-				} catch (SchemaMismatchException e) {
-					// TODO Auto-generated catch block
+				}
+				catch (SchemaMismatchException e) {
 					e.printStackTrace();
 				}
 			}
@@ -141,8 +135,8 @@ public class ServerProxy implements IServer {
 		}
 		catch(UserException e){
 			System.out.println("There was a typo somewhere in order for me to get here!!!");
-		} catch (SchemaMismatchException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (SchemaMismatchException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -156,6 +150,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
 		o.put("requestType", "POST");
 		o.put("id", gameID);
+		o.put("playerUUID", player.getPlayerID());
 		o.put("color", (color.toString()).toLowerCase());
 		
 		JSONObject returned = communicator.joinGame(o);
@@ -280,12 +275,12 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String sendChat(PlayerReference user, int gameID, String message)
+	public String sendChat(int user, int gameID, String message)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/sendChat");
 		o.put("requestType", "POST");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		o.put("type", "sendChat");
 		o.put("content", message);
 		
@@ -294,13 +289,13 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String rollDice(PlayerReference user, int gameID, int number)
+	public String rollDice(int user, int gameID, int number)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/rollNumber");
 		o.put("requestType", "POST");
 		o.put("type", "rollNumber");
-		o.put("playerIndex",user.getIndex());
+		o.put("playerIndex",user);
 		o.put("number", number);
 		
 		return communicator.send(o);
@@ -308,46 +303,46 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String robPlayer(PlayerReference user, int gameID, HexLocation newRobberLocation,
-			PlayerReference victim)
+	public String robPlayer(int user, int gameID, HexLocation newRobberLocation,
+			int victim)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/robPlayer");
 		o.put("requestType", "POST");
 		o.put("type", "robPlayer");
-		o.put("playerIndex", user.getIndex());
-		o.put("victimIndex", victim.getIndex());
+		o.put("playerIndex", user);
+		o.put("victimIndex", victim);
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
-		o.put("location", location);
+		o.put("location", gson.toJson(location));
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buyDevCard(PlayerReference user, int gameID)
+	public String buyDevCard(int user, int gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buyDevCard");
 		o.put("requestType", "POST");
 		o.put("type", "buyDevCard");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String yearOfPlenty(PlayerReference user, int gameID, ResourceType type1,
+	public String yearOfPlenty(int user, int gameID, ResourceType type1,
 			ResourceType type2)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Year_of_Plenty");
 		o.put("requestType", "POST");
 		o.put("type", "Year_of_Plenty");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		o.put("resource1", type1.toString().toLowerCase());
 		o.put("resource2", type2.toString().toLowerCase());
 		
@@ -356,67 +351,67 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String roadBuilding(PlayerReference user, int gameID, EdgeLocation road1,
+	public String roadBuilding(int user, int gameID, EdgeLocation road1,
 			EdgeLocation road2)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Road_Building");
 		o.put("requestType", "POST");
 		o.put("type", "Road_Building");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		JSONObject firstRoad = road1.toJSONObject();
 		JSONObject secondRoad = road2.toJSONObject();
-		o.put("spot1", firstRoad);
-		o.put("spot2", secondRoad);
+		o.put("spot1", gson.toJson(firstRoad));
+		o.put("spot2", gson.toJson(secondRoad));
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String soldier(PlayerReference user, int gameID, HexLocation newRobberLocation,
-			PlayerReference victim)
+	public String soldier(int user, int gameID, HexLocation newRobberLocation,
+			int victim)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Soldier");
 		o.put("requestType", "POST");
 		o.put("type", "Soldier");
-		o.put("playerIndex", user.getIndex());
-		o.put("victimIndex", victim.getIndex());
+		o.put("playerIndex", user);
+		o.put("victimIndex", victim);
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
-		o.put("location", location);
+		o.put("location", gson.toJson(location));
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String monopoly(PlayerReference user, int gameID, ResourceType type)
+	public String monopoly(int user, int gameID, ResourceType type)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monopoly");
 		o.put("requestType", "POST");
 		o.put("type", "Monopoly");
 		o.put("resource", type.toString().toLowerCase());
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildRoad(PlayerReference user, int gameID, EdgeLocation location,
+	public String buildRoad(int user, int gameID, EdgeLocation location,
 			boolean free)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildRoad");
 		o.put("requestType", "POST");
 		o.put("type", "buildRoad");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		JSONObject roadLocation = location.toJSONObject();		
-		o.put("roadLocation", roadLocation);
+		o.put("roadLocation", gson.toJson(roadLocation));
 		o.put("free", free);
 		
 		return communicator.send(o);
@@ -424,16 +419,16 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildSettlement(PlayerReference user, int gameID, VertexLocation location,
+	public String buildSettlement(int user, int gameID, VertexLocation location,
 			boolean free)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildSettlement");
 		o.put("requestType", "POST");
 		o.put("type", "buildSettlement");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("vertexLocation", vertexLocation);
+		o.put("vertexLocation", gson.toJson(vertexLocation));
 		o.put("free", free);
 		
 		return communicator.send(o);
@@ -441,44 +436,44 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildCity(PlayerReference user, int gameID, VertexLocation location)
+	public String buildCity(int user, int gameID, VertexLocation location)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildCity");
 		o.put("requestType", "POST");
 		o.put("type", "buildCity");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("vertexLocation", vertexLocation);
+		o.put("vertexLocation", gson.toJson(vertexLocation));
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String offerTrade(PlayerReference user, int gameID, ResourceTradeList offer,
-			PlayerReference receiver)
+	public String offerTrade(int user, int gameID, ResourceTradeList offer,
+			int receiver)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/offerTrade");
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
-		o.put("playerIndex", user.getIndex());
-		o.put("offer", offer.toJSONObject());
-		o.put("receiver", receiver.getIndex());
+		o.put("playerIndex", user);
+		o.put("offer", gson.toJson(offer.toJSONObject()));
+		o.put("receiver", receiver);
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String respondToTrade(PlayerReference user, int gameID, boolean accept)
+	public String respondToTrade(int user, int gameID, boolean accept)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/acceptTrade");
 		o.put("requestType", "POST");
 		o.put("type", "acceptTrade");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		o.put("willAccept", accept);
 		
 		return communicator.send(o);
@@ -486,14 +481,14 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String maritimeTrade(PlayerReference user, int gameID, ResourceType inResource,
+	public String maritimeTrade(int user, int gameID, ResourceType inResource,
 			ResourceType outResource, int ratio)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/maritimeTrade");
 		o.put("requestType", "POST");
 		o.put("type", "maritimeTrade");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		o.put("ratio", ratio);
 		o.put("inputResource", inResource.toString().toLowerCase());
 		o.put("outputResource", outResource.toString().toLowerCase());
@@ -503,27 +498,27 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String discardCards(PlayerReference user, int gameID, ResourceList cards)
+	public String discardCards(int user, int gameID, ResourceList cards)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/discardCards");
 		o.put("requestType", "POST");
 		o.put("type", "discardCards");
-		o.put("playerIndex", user.getIndex());
-		o.put("discardedCards", cards.toJSONObject());
+		o.put("playerIndex", user);
+		o.put("discardedCards", gson.toJson(cards.toJSONObject()));
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String finishTurn(PlayerReference user, int gameID)
+	public String finishTurn(int user, int gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/finishTurn");
 		o.put("requestType", "POST");
 		o.put("type", "finishTurn");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		return communicator.send(o);
 	}
 
@@ -541,13 +536,13 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String monument(PlayerReference user, int gameID)
+	public String monument(int user, int gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monument");
 		o.put("requestType", "POST");
 		o.put("type", "Monument");
-		o.put("playerIndex", user.getIndex());
+		o.put("playerIndex", user);
 		
 		return communicator.send(o);
 	}}

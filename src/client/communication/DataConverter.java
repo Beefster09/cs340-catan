@@ -3,9 +3,7 @@ package client.communication;
 import java.util.List;
 
 import shared.communication.GameHeader;
-import shared.communication.PlayerHeader;
 import client.data.GameInfo;
-import client.data.PlayerInfo;
 
 public class DataConverter {
 	public static GameInfo[] convertGameHeaderToGameInfo(List<GameHeader> headers) {

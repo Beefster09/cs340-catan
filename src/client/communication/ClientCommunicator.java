@@ -89,6 +89,7 @@ public class ClientCommunicator {
 		try{
 			URL url = new URL((String) o.get("url"));
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			con.setRequestProperty("Cookie", cookies);
 			con.setRequestMethod((String) o.get("requestType"));
 			con.setDoOutput(true);
 			con.connect();
@@ -127,6 +128,7 @@ public class ClientCommunicator {
 			throw new UserException();
 		}
 		catch(IOException | ParseException e){
+			e.printStackTrace();
 			throw new ServerException();
 		}
 	}
@@ -184,7 +186,7 @@ public class ClientCommunicator {
 	 * @post Response from the server will be given
 	 * @return response object from server
 	 * @throws ServerException
-	 * @throws UserException 
+	 * @throws UserExceptiosn 
 	 */
 	public String send(JSONObject o)
 			throws ServerException, UserException {
@@ -215,8 +217,6 @@ public class ClientCommunicator {
 					str.append(new String(buffer, 0, len));
 				}
 
-				JSONParser parser = new JSONParser();
-				JSONObject JSONOutput;
 				if(str.charAt(0) == '['){
 					str = new StringBuilder("{\"list\":" + str + "}");
 				}

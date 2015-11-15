@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
-import shared.communication.GameHeader;
 import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;

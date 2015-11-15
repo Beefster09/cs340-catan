@@ -83,12 +83,12 @@ public class ServerCommunicator {
 		server.createContext("/games/create", createHandler);
 		server.createContext("/games/join", joinHandler);
 		//Correct syntax is /games/model?version=
-		server.createContext("/games/model", modelHandler);
+		server.createContext("/game/model", modelHandler);
 		server.createContext("/moves/sendChat", sendChatHandler);
 		server.createContext("/moves/rollNumber", rollNumberHandler);
 		server.createContext("/moves/robPlayer", robPlayerHandler);
 		server.createContext("/moves/buyDevCard", buyDevCardHandler);
-		server.createContext("/moves/Year_Of_Plenty", yearOfPlentyHandler);
+		server.createContext("/moves/Year_of_Plenty", yearOfPlentyHandler);
 		server.createContext("/moves/Road_Building", roadBuildingHandler);
 		server.createContext("/moves/Soldier", soldierHandler);
 		server.createContext("/moves/Monopoly", monopolyHandler);
@@ -99,8 +99,8 @@ public class ServerCommunicator {
 		server.createContext("/moves/acceptTrade", acceptTradeHandler);
 		server.createContext("/moves/maritimeTrade", maritimeTradeHandler);
 		server.createContext("/moves/discardCards", discardCardsHandler);
-		server.createContext("/moves/finishedTurn", finishTurnHandler);
-		server.createContext("/moves/monument", monumentHandler);
+		server.createContext("/moves/finishTurn", finishTurnHandler);
+		server.createContext("/moves/Monument", monumentHandler);
 		
 		logger.info("Starting HTTP Server");
 

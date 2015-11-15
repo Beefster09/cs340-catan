@@ -1,16 +1,11 @@
 package client.communication;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import server.ai.AIType;
 import server.logging.LogLevel;
@@ -29,7 +24,6 @@ import shared.exceptions.ServerException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -107,9 +101,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -120,9 +112,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -156,13 +146,11 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String sendChat(PlayerReference user, int gameID, String message)
+	public String sendChat(int user, int gameID, String message)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -170,27 +158,23 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String rollDice(PlayerReference user, int gameID, int number)
+	public String rollDice(int user, int gameID, int number)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String robPlayer(PlayerReference user, int gameID, 
-			HexLocation newRobberLocation, PlayerReference victim)
+	public String robPlayer(int user, int gameID, 
+			HexLocation newRobberLocation, int victim)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -198,186 +182,158 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String buyDevCard(PlayerReference user, int gameID) throws ServerException,
+	public String buyDevCard(int user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String yearOfPlenty(PlayerReference user, int gameID, ResourceType type1,
+	public String yearOfPlenty(int user, int gameID, ResourceType type1,
 			ResourceType type2) throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String roadBuilding(PlayerReference user, int gameID, EdgeLocation road1,
+	public String roadBuilding(int user, int gameID, EdgeLocation road1,
 			EdgeLocation road2) throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String soldier(PlayerReference user, int gameID,
-			HexLocation newRobberLocation, PlayerReference victim)
+	public String soldier(int user, int gameID,
+			HexLocation newRobberLocation, int victim)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String monopoly(PlayerReference user, int gameID, ResourceType type)
+	public String monopoly(int user, int gameID, ResourceType type)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String monument(PlayerReference user, int gameID) throws ServerException,
+	public String monument(int user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String buildRoad(PlayerReference user, int gameID, EdgeLocation location,
+	public String buildRoad(int user, int gameID, EdgeLocation location,
 			boolean free) throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String buildSettlement(PlayerReference user, int gameID,
+	public String buildSettlement(int user, int gameID,
 			VertexLocation location, boolean free) throws ServerException,
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String buildCity(PlayerReference user, int gameID, VertexLocation location)
+	public String buildCity(int user, int gameID, VertexLocation location)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String offerTrade(PlayerReference user, int gameID, ResourceTradeList offer,
-			PlayerReference receiver) throws ServerException,
+	public String offerTrade(int user, int gameID, ResourceTradeList offer,
+			int receiver) throws ServerException,
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String respondToTrade(PlayerReference user, int gameID, boolean accept)
+	public String respondToTrade(int user, int gameID, boolean accept)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String maritimeTrade(PlayerReference user, int gameID,
+	public String maritimeTrade(int user, int gameID,
 			ResourceType inResource, ResourceType outResource, int ratio)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String discardCards(PlayerReference user, int gameID, ResourceList cards)
+	public String discardCards(int user, int gameID, ResourceList cards)
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
 	}
 
 	@Override
-	public String finishTurn(PlayerReference user, int gameID) throws ServerException,
+	public String finishTurn(int user, int gameID) throws ServerException,
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -389,4 +345,12 @@ public class MockServer implements IServer {
 		
 	}
 
+	private String readJSON() throws IOException{
+		File input = new File("json_test.json");
+		Scanner myScanner = new Scanner(input);
+		myScanner.useDelimiter("blahsblasdfksldf");
+		String returnThis = myScanner.next();
+		myScanner.close();
+		return returnThis;
+	}
 }
