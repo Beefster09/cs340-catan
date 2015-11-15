@@ -16,6 +16,7 @@ import com.sun.net.httpserver.HttpHandler;
 import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.ResourceList;
@@ -31,7 +32,6 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(HttpExchange arg0) throws IOException {
 		String address = arg0.getRequestURI().toString();
@@ -49,7 +49,7 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("discardedCards"));
-			ResourceList cards = new ResourceList(jsonObject);
+			ResourceList cards = ResourceList.fromJSONObject(jsonObject);
 			int index = (int)(long)json.get("playerIndex");
 			String gson = server.discardCards(index, gameID, cards);
 			
@@ -58,7 +58,7 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}
