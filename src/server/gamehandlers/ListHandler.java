@@ -34,7 +34,7 @@ import shared.exceptions.UserException;
  * @author Jordan
  *
  */
-public class ListHandler implements HttpHandler {
+public class ListHandler extends AbstractGameHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -45,6 +45,9 @@ public class ListHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			if(!super.checkCookies(arg0)){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			
 			
@@ -58,13 +61,11 @@ public class ListHandler implements HttpHandler {
 			arg0.getResponseBody().close();
 			
 		} catch (UserException e) {
-			
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		} catch (ServerException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
 

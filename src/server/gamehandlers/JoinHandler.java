@@ -46,6 +46,9 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			if(!super.checkCookies(arg0)){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			long temp = (long) json.get("id");
 			int gameID = (int) temp;

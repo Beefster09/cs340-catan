@@ -20,6 +20,7 @@ import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.exceptions.ServerException;
 
 /**
  * Handles getModel requests by communicating with the Server Facade,
@@ -27,7 +28,7 @@ import shared.communication.IServer;
  * @author Jordan
  *
  */
-public class ModelHandler implements HttpHandler {
+public class ModelHandler extends AbstractGameHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -38,6 +39,9 @@ public class ModelHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			if(!super.checkCookies(arg0)){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 
 			/*
@@ -62,8 +66,8 @@ public class ModelHandler implements HttpHandler {
 			output.flush();
 			arg0.getResponseBody().close();
 			
-		} catch (ParseException e) {
-			
+		} catch (ParseException | ServerException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
 

@@ -38,6 +38,9 @@ public class RollNumberHandler extends AbstractMoveHandler implements HttpHandle
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			if(super.checkCookies(arg0) == -1){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.

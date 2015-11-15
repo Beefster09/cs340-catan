@@ -29,7 +29,7 @@ import shared.exceptions.UserException;
  * @author Jordan
  *
  */
-public class CreateHandler implements HttpHandler {
+public class CreateHandler extends AbstractGameHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -38,8 +38,11 @@ public class CreateHandler implements HttpHandler {
 	public void handle(HttpExchange arg0) throws IOException {
 		String address = arg0.getRequestURI().toString();
 		logger.log(Level.INFO, "Connection to " + address + " established.");
-
+		
 		try{
+			if(!super.checkCookies(arg0)){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 
 			String name = (String) json.get("name");
