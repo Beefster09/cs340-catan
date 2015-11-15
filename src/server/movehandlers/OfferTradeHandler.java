@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -15,6 +16,7 @@ import com.sun.net.httpserver.HttpHandler;
 import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.model.ResourceTradeList;
@@ -46,7 +48,10 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 			 */
 			int index = (int)(long)json.get("playerIndex");
 			int receiver = (int)(long)json.get("receiver");
-			ResourceTradeList offer = (ResourceTradeList)json.get("offer");
+			
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("offer"));
+			ResourceTradeList offer = new ResourceTradeList(jsonObject);
 			
 			String gson = server.offerTrade(index, gameID, offer, receiver);
 			
@@ -55,7 +60,7 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}

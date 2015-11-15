@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -30,6 +31,7 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(HttpExchange arg0) throws IOException {
 		String address = arg0.getRequestURI().toString();
@@ -45,7 +47,9 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 
-			ResourceList cards = (ResourceList)json.get("discardedCards");
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("discardedCards"));
+			ResourceList cards = new ResourceList(jsonObject);
 			int index = (int)(long)json.get("playerIndex");
 			String gson = server.discardCards(index, gameID, cards);
 			

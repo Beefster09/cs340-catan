@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -45,7 +46,8 @@ public class MonopolyHandler extends AbstractMoveHandler implements HttpHandler 
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			int index = (int)(long)json.get("playerIndex");
-			ResourceType type = (ResourceType)json.get("type");
+			
+			ResourceType type = ResourceType.fromString((String)json.get("type"));
 			
 			String gson = server.monopoly(index, gameID, type);
 			

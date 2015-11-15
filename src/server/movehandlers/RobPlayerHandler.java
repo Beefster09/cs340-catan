@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -15,6 +16,7 @@ import com.sun.net.httpserver.HttpHandler;
 import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.HexLocation;
@@ -45,9 +47,10 @@ public class RobPlayerHandler extends AbstractMoveHandler implements HttpHandler
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			int index = (int)(long)json.get("playerIndex");
-			JSONObject location = (JSONObject) json.get("location");
+			JSONParser parser = new JSONParser();
+			JSONObject location = (JSONObject)parser.parse((String)json.get("location"));
 			
-			HexLocation hex = new HexLocation((int)location.get("x"), (int)location.get("y"));
+			HexLocation hex = new HexLocation(location);
 			int victim = (int)(long)json.get("victimIndex");
 			
 			String gson = server.robPlayer(index, gameID, hex, victim);
@@ -57,13 +60,7 @@ public class RobPlayerHandler extends AbstractMoveHandler implements HttpHandler
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			e.printStackTrace();
 		}

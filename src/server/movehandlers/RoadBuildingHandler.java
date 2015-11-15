@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -15,6 +16,7 @@ import com.sun.net.httpserver.HttpHandler;
 import client.communication.MockServer;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
@@ -45,8 +47,12 @@ public class RoadBuildingHandler extends AbstractMoveHandler implements HttpHand
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			int index = (int)(long)json.get("playerIndex");
-			EdgeLocation firstRoad = (EdgeLocation) json.get("spot1");
-			EdgeLocation secondRoad = (EdgeLocation) json.get("spot2");
+			
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("spot1"));
+			EdgeLocation firstRoad = new EdgeLocation(jsonObject);
+			jsonObject = (JSONObject)parser.parse((String)json.get("spot2"));
+			EdgeLocation secondRoad = new EdgeLocation(jsonObject);
 
 			String gson = server.roadBuilding(index, gameID, firstRoad, secondRoad);
 			
@@ -55,13 +61,7 @@ public class RoadBuildingHandler extends AbstractMoveHandler implements HttpHand
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			e.printStackTrace();
 		}

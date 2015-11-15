@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -46,8 +47,9 @@ public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHan
 			 */
 			int index = (int)(long)json.get("playerIndex");
 			int ratio = (int)(long)json.get("ratio");
-			ResourceType inputResource = (ResourceType)json.get("inputResource");
-			ResourceType outputResource = (ResourceType)json.get("outputResource");
+			
+			ResourceType inputResource = ResourceType.fromString((String)json.get("inputResource"));
+			ResourceType outputResource = ResourceType.fromString((String)json.get("outputResource"));
 			
 			String gson = server.maritimeTrade(index, gameID, inputResource, outputResource, ratio);
 			

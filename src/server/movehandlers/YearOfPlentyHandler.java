@@ -45,8 +45,8 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			int index = (int)(long)json.get("playerIndex");
-			ResourceType type1 = (ResourceType) json.get("resource1");
-			ResourceType type2 = (ResourceType) json.get("resource2");
+			ResourceType type1 = ResourceType.fromString((String)json.get("resource1"));
+			ResourceType type2 = ResourceType.fromString((String)json.get("resource2"));
 			
 			String gson = server.yearOfPlenty(index, gameID, type1, type2);
 			
