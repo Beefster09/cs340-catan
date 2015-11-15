@@ -43,7 +43,7 @@ public class BuyDevCardHandler extends AbstractMoveHandler implements HttpHandle
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
+			int index = (int)(long)json.get("playerIndex");
 			String gson = server.buyDevCard(index, gameID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

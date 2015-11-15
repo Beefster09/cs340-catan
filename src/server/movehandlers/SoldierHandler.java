@@ -44,11 +44,11 @@ public class SoldierHandler extends AbstractMoveHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
+			int index = (int)(long)json.get("playerIndex");
 			JSONObject location = (JSONObject) json.get("location");
 			
 			HexLocation hex = new HexLocation((int)location.get("x"), (int)location.get("y"));
-			int victim = (int)json.get("victimIndex");
+			int victim = (int)(long)json.get("victimIndex");
 			
 			String gson = server.soldier(index, gameID, hex, victim);
 			

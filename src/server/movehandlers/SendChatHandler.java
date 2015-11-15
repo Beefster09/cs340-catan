@@ -43,7 +43,7 @@ public class SendChatHandler extends AbstractMoveHandler implements HttpHandler 
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
+			int index = (int)(long)json.get("playerIndex");
 			String message = (String)json.get("content");
 			
 			String gson = server.sendChat(index, gameID, message);

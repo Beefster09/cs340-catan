@@ -44,7 +44,7 @@ public class RoadBuildingHandler extends AbstractMoveHandler implements HttpHand
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
+			int index = (int)(long)json.get("playerIndex");
 			EdgeLocation firstRoad = (EdgeLocation) json.get("spot1");
 			EdgeLocation secondRoad = (EdgeLocation) json.get("spot2");
 

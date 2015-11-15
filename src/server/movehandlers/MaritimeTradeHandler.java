@@ -44,8 +44,8 @@ public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHan
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
-			int ratio = (int)json.get("ratio");
+			int index = (int)(long)json.get("playerIndex");
+			int ratio = (int)(long)json.get("ratio");
 			ResourceType inputResource = (ResourceType)json.get("inputResource");
 			ResourceType outputResource = (ResourceType)json.get("outputResource");
 			

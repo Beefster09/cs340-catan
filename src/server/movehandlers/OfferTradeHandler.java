@@ -44,8 +44,8 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
-			int receiver = (int)json.get("receiver");
+			int index = (int)(long)json.get("playerIndex");
+			int receiver = (int)(long)json.get("receiver");
 			ResourceTradeList offer = (ResourceTradeList)json.get("offer");
 			
 			String gson = server.offerTrade(index, gameID, offer, receiver);

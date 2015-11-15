@@ -44,7 +44,7 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
+			int index = (int)(long)json.get("playerIndex");
 			ResourceType type1 = (ResourceType) json.get("resource1");
 			ResourceType type2 = (ResourceType) json.get("resource2");
 			

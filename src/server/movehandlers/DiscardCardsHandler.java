@@ -46,7 +46,7 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 			 */
 
 			ResourceList cards = (ResourceList)json.get("discardedCards");
-			int index = (int)json.get("playerIndex");
+			int index = (int)(long)json.get("playerIndex");
 			String gson = server.discardCards(index, gameID, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

@@ -43,8 +43,8 @@ public class RollNumberHandler extends AbstractMoveHandler implements HttpHandle
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
-			int number = (int)json.get("number");
+			int index = (int)(long)json.get("playerIndex");
+			int number = (int)(long)json.get("number");
 			
 			String gson = server.rollDice(index, gameID, number);
 			
