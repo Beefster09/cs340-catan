@@ -59,7 +59,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 				outputMsg = "Success";
 			else
 				outputMsg = "Failed";
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 200);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(outputMsg);
 			output.flush();
