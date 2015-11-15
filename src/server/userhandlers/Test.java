@@ -21,17 +21,17 @@ public class Test {
 		ServerProxy server = new ServerProxy("localhost", 8081);
 				
 		Session user = server.login("Sam", "sam");
-		System.out.println(user.getUsername());
+		System.out.println(user.getUsername() + "\n");
 		user = server.register("Steve", "steve");
-		System.out.println(user.getUsername());
+		System.out.println(user.getUsername() + "\n");
 		GameHeader game = server.createGame("blah", true, true, true);
-		System.out.println(game.getTitle());
+		System.out.println(game.getTitle() + "\n");
 		List<GameHeader> games = server.getGameList();
-		System.out.println(games);
+		System.out.println("Size: " + games.size() + "\n");
 		boolean returned = server.joinGame(user, 0, CatanColor.RED);
-		System.out.println(returned);
+		System.out.println(returned + "\n");
 		String model = server.getModel(0, 0);
-		System.out.println(model);
+		System.out.println(model.substring(5, 49) + "\n");
 		
 	}
 }

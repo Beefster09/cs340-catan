@@ -83,7 +83,7 @@ public class ServerCommunicator {
 		server.createContext("/games/create", createHandler);
 		server.createContext("/games/join", joinHandler);
 		//Correct syntax is /games/model?version=
-		server.createContext("/games/model", modelHandler);
+		server.createContext("/game/model", modelHandler);
 		server.createContext("/moves/sendChat", sendChatHandler);
 		server.createContext("/moves/rollNumber", rollNumberHandler);
 		server.createContext("/moves/robPlayer", robPlayerHandler);
