@@ -2,6 +2,7 @@ package client.communication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -51,10 +52,10 @@ public class ServerProxy implements IServer {
 		ServerProxy test = new ServerProxy("localhost",8081);
 		Session player = test.login("Sam", "sam");
 		//create
-		if (test.joinGame(player, 0, CatanColor.BLUE)) {
-			VertexLocation loc = new VertexLocation(0, 0, VertexDirection.East);
-			test.buildCity(0, 0, loc);
-		}
+//		if (test.joinGame(player, 0, CatanColor.BLUE)) {
+//			VertexLocation loc = new VertexLocation(0, 0, VertexDirection.East);
+//			test.buildCity(0, 0, loc);
+//		}
 	}
 
 	private ClientCommunicator communicator = new ClientCommunicator();
@@ -156,7 +157,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean joinGame(Session player, int gameID, CatanColor color)
+	public boolean joinGame(Session player, UUID gameID, CatanColor color)
 			throws JoinGameException, ServerException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
@@ -175,7 +176,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void saveGame(int gameID, String filename)
+	public void saveGame(UUID gameID, String filename)
 			throws GamePersistenceException, ServerException, UserException{
 		try{
 			JSONObject o = new JSONObject();
@@ -208,7 +209,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String getModel(int gameID, int version)
+	public String getModel(UUID gameID, int version)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/model?version=" + version);
@@ -220,7 +221,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String resetGame(int gameID)
+	public String resetGame(UUID gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/reset");
@@ -231,7 +232,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Command> getCommands(int gameID)
+	public List<Command> getCommands(UUID gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/commands");
@@ -247,7 +248,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String executeCommands(int gameID, List<Command> commands)
+	public String executeCommands(UUID gameID, List<Command> commands)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/commands");
@@ -259,7 +260,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void addAIPlayer(int gameID, AIType type)
+	public void addAIPlayer(UUID gameID, AIType type)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/game/addAI");
@@ -287,7 +288,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String sendChat(int user, int gameID, String message)
+	public String sendChat(UUID user, UUID gameID, String message)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/sendChat");
@@ -301,7 +302,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String rollDice(int user, int gameID, int number)
+	public String rollDice(UUID user, UUID gameID, int number)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/rollNumber");
@@ -315,8 +316,8 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String robPlayer(int user, int gameID, HexLocation newRobberLocation,
-			int victim)
+	public String robPlayer(UUID user, UUID gameID, HexLocation newRobberLocation,
+			UUID victim)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/robPlayer");
@@ -334,7 +335,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buyDevCard(int user, int gameID)
+	public String buyDevCard(UUID user, UUID gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buyDevCard");
@@ -347,7 +348,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String yearOfPlenty(int user, int gameID, ResourceType type1,
+	public String yearOfPlenty(UUID user, UUID gameID, ResourceType type1,
 			ResourceType type2)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
@@ -363,7 +364,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String roadBuilding(int user, int gameID, EdgeLocation road1,
+	public String roadBuilding(UUID user, UUID gameID, EdgeLocation road1,
 			EdgeLocation road2)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
@@ -381,8 +382,8 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String soldier(int user, int gameID, HexLocation newRobberLocation,
-			int victim)
+	public String soldier(UUID user, UUID gameID, HexLocation newRobberLocation,
+			UUID victim)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Soldier");
@@ -400,7 +401,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String monopoly(int user, int gameID, ResourceType type)
+	public String monopoly(UUID user, UUID gameID, ResourceType type)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monopoly");
@@ -414,7 +415,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildRoad(int user, int gameID, EdgeLocation location,
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location,
 			boolean free)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
@@ -431,7 +432,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildSettlement(int user, int gameID, VertexLocation location,
+	public String buildSettlement(UUID user, UUID gameID, VertexLocation location,
 			boolean free)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
@@ -448,7 +449,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildCity(int user, int gameID, VertexLocation location)
+	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildCity");
@@ -463,8 +464,8 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String offerTrade(int user, int gameID, ResourceTradeList offer,
-			int receiver)
+	public String offerTrade(UUID user, UUID gameID, ResourceTradeList offer,
+			UUID receiver)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/offerTrade");
@@ -479,7 +480,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String respondToTrade(int user, int gameID, boolean accept)
+	public String respondToTrade(UUID user, UUID gameID, boolean accept)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/acceptTrade");
@@ -493,7 +494,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String maritimeTrade(int user, int gameID, ResourceType inResource,
+	public String maritimeTrade(UUID user, UUID gameID, ResourceType inResource,
 			ResourceType outResource, int ratio)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
@@ -510,7 +511,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String discardCards(int user, int gameID, ResourceList cards)
+	public String discardCards(UUID user, UUID gameID, ResourceList cards)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/discardCards");
@@ -524,7 +525,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String finishTurn(int user, int gameID)
+	public String finishTurn(UUID user, UUID gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/finishTurn");
@@ -548,7 +549,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String monument(int user, int gameID)
+	public String monument(UUID user, UUID gameID)
 			throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monument");
