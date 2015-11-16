@@ -34,7 +34,7 @@ public abstract class AbstractMoveHandler {
 			JSONObject cookie = (JSONObject) parser.parse(userCookie);
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
-			UUID userID = UUID.fromString((String) cookie.get("playerID"));
+			UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
 			
 			Session user = server.login(username, password);
 			
