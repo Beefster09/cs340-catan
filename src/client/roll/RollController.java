@@ -70,6 +70,11 @@ public class RollController extends Controller implements IRollController {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
+				
+//				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+//				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+//				return ClientManager.getServer().rollDice(playerUUID, gameUUID, result);
+				
 				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer().getIndex(), gameID, result);
 			}
 			

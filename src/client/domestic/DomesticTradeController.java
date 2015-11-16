@@ -3,7 +3,9 @@ package client.domestic;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import shared.communication.IServer;
 import shared.definitions.*;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
@@ -25,6 +27,7 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	private IDomesticTradeOverlay tradeOverlay;
 	private IWaitView waitOverlay;
 	private IAcceptTradeOverlay acceptOverlay;
+	private IServer server = ClientManager.getServer();
 	
 	private Map<ResourceType, Integer> offered = new HashMap<ResourceType, Integer>();
 	private Map<ResourceType, Integer> wanted = new HashMap<ResourceType, Integer>();
@@ -255,6 +258,12 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		
 		try {
 			int gameID = ClientManager.getModel().getGameHeader().getId();
+			
+//			UUID playerUUID = user.getPlayerUUID();
+//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+//			UUID receiverUUID = receiver.getPlayerUUID();
+//			server.offerTrade(playerUUID, gameUUID, offer, receiverUUID);
+			
 			ClientManager.getServer().offerTrade(user.getIndex(), gameID, offer, receiver.getIndex());
 		} catch (ServerException e) {
 			e.printStackTrace();
@@ -340,6 +349,11 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	public void acceptTrade(boolean willAccept) {
 		try {
 			int gameID = ClientManager.getModel().getGameHeader().getId();
+			
+//			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+//			server.respondToTrade(playerUID, gameUUID, willAccept);
+			
 			ClientManager.getServer().respondToTrade(ClientManager.getLocalPlayer().getIndex(), gameID, willAccept);
 			getAcceptOverlay().reset();
 		} catch (ServerException e) {
