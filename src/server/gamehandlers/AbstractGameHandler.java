@@ -36,7 +36,7 @@ public abstract class AbstractGameHandler {
 			
 			Session user = server.login(username, password);
 			
-			if(userID != user.getPlayerUUID()){
+			if(!userID.equals(user.getPlayerUUID())){
 				return false;
 			}
 			return true;

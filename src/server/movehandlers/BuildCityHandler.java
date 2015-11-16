@@ -31,7 +31,7 @@ import shared.locations.VertexLocation;
  */
 public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override

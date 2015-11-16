@@ -200,7 +200,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getId() != ClientManager.getSession().getPlayerID()) {
+			if (player.getUUID() != ClientManager.getSession().getPlayerUUID()) {
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 			else{

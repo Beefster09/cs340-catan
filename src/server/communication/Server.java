@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import client.misc.ClientManager;
+
 import com.google.gson.Gson;
 
 import server.ai.AIType;
@@ -27,6 +29,7 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import shared.model.CatanModel;
+import shared.model.ClientModelFacade;
 import shared.model.ModelFacade;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
@@ -36,19 +39,31 @@ public class Server implements IServer {
 	
 	private static IServer instance = null;
 	public static IServer getSingleton() {
-		if (instance == null)
-			return new Server();
+		if (instance == null) {
+			synchronized (ClientManager.class) {
+				if (instance == null) {
+					instance = new Server();
+				}
+			}
+		}
 		return instance;
 	}
 
-	Map<UUID,ModelFacade> models = new HashMap<UUID,ModelFacade>();
-	Map<UUID,Session> users = new HashMap<UUID,Session>();
+	Map<UUID,ModelFacade> games = new HashMap<UUID,ModelFacade>();
+	Map<String,UUID> users = new HashMap<String,UUID>();
 	
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
 		//VERY TEMPORARY, NEED VALIDATION HERE
-		Session session = new Session(username,password,UUID.randomUUID());
-		return session;
+		if (users.containsKey(username))
+			return new Session(username, password, users.get(username));
+		//This else statement should not exist, should return null if user doesn't exist.
+		else {
+			UUID uuid = UUID.randomUUID();
+			Session session = new Session(username,password,uuid);
+			users.put(username, uuid);
+			return session;
+		}
 	}
 
 	@Override
@@ -66,8 +81,12 @@ public class Server implements IServer {
 	@Override
 	public GameHeader createGame(String name, boolean randomTiles, boolean randomNumbers, boolean randomPorts)
 			throws GameInitializationException, UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
+		UUID gameUUID = UUID.randomUUID();
+		GameHeader header = new GameHeader(name, gameUUID, null);
+		ModelFacade newGame = new ModelFacade();
+		newGame.getCatanModel().setHeader(header);
+		games.put(gameUUID, newGame);
+		return header;
 	}
 
 	@Override
