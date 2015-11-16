@@ -64,7 +64,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 			arg0.getResponseBody().close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			arg0.getResponseBody().close();
 		}
 	}
