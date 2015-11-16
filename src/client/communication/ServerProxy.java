@@ -53,7 +53,6 @@ public class ServerProxy implements IServer {
 		if (test.joinGame(player, 0, CatanColor.BLUE)) {
 			VertexLocation loc = new VertexLocation(0, 0, VertexDirection.East);
 			test.buildCity(0, 0, loc);
-			test.sendChat(0, 0, "test");
 		}
 	}
 

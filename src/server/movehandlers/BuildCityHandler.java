@@ -14,6 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.SchemaMismatchException;
@@ -49,7 +50,8 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
 			int playerIndex = (int)(long)json.get("playerIndex");
-			String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			//String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			String gson = new Server().buildCity(playerIndex, gameID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

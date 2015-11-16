@@ -28,6 +28,7 @@ import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import shared.model.CatanModel;
 import shared.model.ModelFacade;
+import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -197,8 +198,15 @@ public class Server implements IServer {
 	@Override
 	public String buildCity(int user, int gameID, VertexLocation location)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
+			ModelFacade tempModel = new ModelFacade();
+			command.execute(tempModel);
+			return this.getModel(gameID, -1);
+		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
+			e.printStackTrace();
+		}
+		return this.getModel(gameID, -1);
 	}
 
 	@Override

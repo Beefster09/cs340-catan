@@ -1,4 +1,4 @@
-Nov 16, 2015 11:46:31 AM server.communication.ServerCommunicator run
+Nov 16, 2015 11:56:10 AM server.communication.ServerCommunicator run
 INFO: Initializing HTTP Server
-Nov 16, 2015 11:46:31 AM server.communication.ServerCommunicator run
+Nov 16, 2015 11:56:11 AM server.communication.ServerCommunicator run
 INFO: Starting HTTP Server
