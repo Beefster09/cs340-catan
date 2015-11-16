@@ -3,14 +3,11 @@ package server.gamehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URLDecoder;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -43,7 +40,8 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			UUID gameID = this.checkGameCookies(arg0, server);
+			UUID gameID = (UUID) json.get("id");
+			//int playerUUID = (int)json.get("playerUUID");
 			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
 			
 			Session player = this.getPlayerSessionFromCookie(arg0);
@@ -69,38 +67,6 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 			e.printStackTrace();
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			arg0.getResponseBody().close();
-		}
-	}
-	public UUID checkGameCookies(HttpExchange exchange, IServer server){
-		List<String> cookies = exchange.getRequestHeaders().get("Cookie");
-		if(cookies.size() != 1){
-			return null;
-		}
-		
-		JSONParser parser = new JSONParser();
-		
-		String cookieEncoded = cookies.get(0);
-		String cookieDecoded = URLDecoder.decode(cookieEncoded);
-		cookieDecoded = cookieDecoded.substring(11);
-		int locationOfSemicolon = cookieDecoded.indexOf(';');
-		String userCookie = cookieDecoded.substring(0,locationOfSemicolon);
-		String gameCookie = cookieDecoded.substring(locationOfSemicolon);;
-				
-		try{
-			JSONObject cookie = (JSONObject) parser.parse(userCookie);
-			String username = (String) cookie.get("name");
-			String password = (String) cookie.get("password");
-			int userID = (int)(long)cookie.get("playerID");
-			
-			Session user = server.login(username, password);
-			
-			if(userID != user.getPlayerID()){
-				return null;
-			}
-			return UUID.fromString(gameCookie);
-		}
-		catch(Exception e){
-			return null;
 		}
 	}
 }
