@@ -3,10 +3,12 @@ package server.gamehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -38,8 +40,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			long temp = (long) json.get("id");
-			int gameID = (int) temp;
+			UUID gameID = (UUID) json.get("id");
 			//int playerUUID = (int)json.get("playerUUID");
 			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
 			
