@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +50,7 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
 			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
-			int playerIndex = (int)(long)json.get("playerIndex");
+			UUID playerIndex = (UUID)json.get("playerIndex");
 			//String gson = server.buildCity(playerIndex, gameID, vertexLocation);
 			String gson = new Server().buildCity(playerIndex, gameID, vertexLocation);
 			

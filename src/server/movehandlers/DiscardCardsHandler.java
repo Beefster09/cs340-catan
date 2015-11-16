@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +51,7 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("discardedCards"));
 			ResourceList cards = ResourceList.fromJSONObject(jsonObject);
-			int index = (int)(long)json.get("playerIndex");
+			UUID index = (UUID)json.get("playerIndex");
 			String gson = server.discardCards(index, gameID, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
