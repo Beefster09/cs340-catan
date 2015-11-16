@@ -265,10 +265,10 @@ public class ServerProxyTest {
 			String model = SP.getModel(gameID, 0);
 			System.out.println("Obtained Model");
 			
-			assertTrue(checkCards(model, steve,  1, 1, 0, 1, 0));
-			assertTrue(checkCards(model, justin, 0, 1, 1, 1, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 1, 0, 1));
-			assertTrue(checkCards(model, grant, 0, 0, 2, 0, 1));
+			assertTrue(checkCards(model, 0,  1, 1, 0, 1, 0));
+			assertTrue(checkCards(model, 1, 0, 1, 1, 1, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 1, 0, 1));
+			assertTrue(checkCards(model, 3, 0, 0, 2, 0, 1));
 			assertTrue(checkLongestRoad(model, -1));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -369,10 +369,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 1st turn");
 			
-			assertTrue(checkCards(model, steve, 6, 3, 0, 0, 0));
-			assertTrue(checkCards(model, justin, 0, 4, 0, 2, 1));
-			assertTrue(checkCards(model, jordan, 0, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 0, 3, 0, 0));
+			assertTrue(checkCards(model, 0, 6, 3, 0, 0, 0));
+			assertTrue(checkCards(model, 1, 0, 4, 0, 2, 1));
+			assertTrue(checkCards(model, 2, 0, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 0, 3, 0, 0));
 			assertTrue(checkLongestRoad(model, -1));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -451,10 +451,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 2nd turn");
 
-			assertTrue(checkCards(model, steve, 0, 0, 0, 4, 1));
-			assertTrue(checkCards(model, justin, 0, 5, 2, 2, 0));
-			assertTrue(checkCards(model, jordan, 0, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 0, 4, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 0, 4, 1));
+			assertTrue(checkCards(model, 1, 0, 5, 2, 2, 0));
+			assertTrue(checkCards(model, 2, 0, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 0, 4, 0, 0));
 			assertTrue(checkLongestRoad(model, -1));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -481,10 +481,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 3rd turn");
 			
-			assertTrue(checkCards(model, steve, 0, 0, 0, 4, 4));
-			assertTrue(checkCards(model, justin, 0, 5, 3, 2, 0));
-			assertTrue(checkCards(model, jordan, 0, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 0, 5, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 0, 4, 4));
+			assertTrue(checkCards(model, 1, 0, 5, 3, 2, 0));
+			assertTrue(checkCards(model, 2, 0, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 0, 5, 0, 0));
 			assertTrue(checkLongestRoad(model, -1));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -565,10 +565,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 4th turn");
 			
-			assertTrue(checkCards(model, steve, 0, 0, 0, 13, 0));
-			assertTrue(checkCards(model, justin, 3, 0, 2, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 2, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 0, 13, 0));
+			assertTrue(checkCards(model, 1, 3, 0, 2, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 2, 0, 0));
 			assertTrue(checkLongestRoad(model, -1));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -606,10 +606,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 5th turn");
 
-			assertTrue(checkCards(model, steve, 0, 0, 0, 21, 2));
-			assertTrue(checkCards(model, justin, 3, 0, 5, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 5, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 0, 21, 2));
+			assertTrue(checkCards(model, 1, 3, 0, 5, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 5, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -634,10 +634,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 6th turn");
 			
-			assertTrue(checkCards(model, steve, 0, 0, 0, 21, 10));
-			assertTrue(checkCards(model, justin, 3, 0, 5, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 5, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 0, 21, 10));
+			assertTrue(checkCards(model, 1, 3, 0, 5, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 5, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -662,10 +662,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 7th turn");
 
-			assertTrue(checkCards(model, steve, 0, 0, 0, 21, 18));
-			assertTrue(checkCards(model, justin, 3, 0, 5, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 0, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 5, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 0, 21, 18));
+			assertTrue(checkCards(model, 1, 3, 0, 5, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 0, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 5, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -690,10 +690,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 8th turn");
 			
-			assertTrue(checkCards(model, steve, 0, 0, 2, 21, 24));
-			assertTrue(checkCards(model, justin, 3, 0, 5, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 1, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 6, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 2, 21, 24));
+			assertTrue(checkCards(model, 1, 3, 0, 5, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 1, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 6, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -776,10 +776,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 9th turn");
 			
-			assertTrue(checkCards(model, steve, 0, 0, 7, 6, 9));
-			assertTrue(checkCards(model, justin, 3, 0, 0, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 5, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 3, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 7, 6, 9));
+			assertTrue(checkCards(model, 1, 3, 0, 0, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 5, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 3, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -815,10 +815,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 10th turn");
 			
-			assertTrue(checkCards(model, steve, 0, 0, 6, 5, 6));
-			assertTrue(checkCards(model, justin, 3, 0, 1, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 7, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 6, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 6, 5, 6));
+			assertTrue(checkCards(model, 1, 3, 0, 1, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 7, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 6, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -855,10 +855,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 11th turn");
 
-			assertTrue(checkCards(model, steve, 0, 0, 3, 0, 1));
-			assertTrue(checkCards(model, justin, 3, 0, 1, 2, 0));
-			assertTrue(checkCards(model, jordan, 1, 0, 8, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 7, 0, 0));
+			assertTrue(checkCards(model, 0, 0, 0, 3, 0, 1));
+			assertTrue(checkCards(model, 1, 3, 0, 1, 2, 0));
+			assertTrue(checkCards(model, 2, 1, 0, 8, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 7, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -887,7 +887,7 @@ public class ServerProxyTest {
 			System.out.println("Steve used Road Builder to build two roads");
 			
 			hexLocation = new HexLocation(-1,-1);
-			int nullPlayer = -1;
+			UUID nullPlayer = null;
 			
 			SP.soldier(steve, gameID, hexLocation, nullPlayer);
 			System.out.println("Steve used a knight to move the robber to a blank space");
@@ -910,10 +910,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 12th turn");
 
-			assertTrue(checkCards(model, steve, 4, 2, 3, 0, 1));
-			assertTrue(checkCards(model, justin, 0, 0, 1, 2, 0));
-			assertTrue(checkCards(model, jordan, 0, 0, 8, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 7, 0, 0));
+			assertTrue(checkCards(model, 0, 4, 2, 3, 0, 1));
+			assertTrue(checkCards(model, 1, 0, 0, 1, 2, 0));
+			assertTrue(checkCards(model, 2, 0, 0, 8, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 7, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -943,10 +943,10 @@ public class ServerProxyTest {
 			model = SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his 13th turn");
 
-			assertTrue(checkCards(model, steve, 4, 2, 3, 0, 1));
-			assertTrue(checkCards(model, justin, 0, 0, 1, 2, 0));
-			assertTrue(checkCards(model, jordan, 0, 0, 8, 0, 0));
-			assertTrue(checkCards(model, grant, 0, 2, 7, 0, 0));
+			assertTrue(checkCards(model, 0, 4, 2, 3, 0, 1));
+			assertTrue(checkCards(model, 1, 0, 0, 1, 2, 0));
+			assertTrue(checkCards(model, 2, 0, 0, 8, 0, 0));
+			assertTrue(checkCards(model, 3, 0, 2, 7, 0, 0));
 			assertTrue(checkLongestRoad(model, 0));
 			assertTrue(checkLargestArmy(model, -1));
 			assertTrue(checkWinner(model, -1));
@@ -994,18 +994,18 @@ public class ServerProxyTest {
 		
 		GameHeader game = SP.createGame("AI Addition", true, true, true);
 		System.out.println("Game created");
-		SP.joinGame(player1, game.getId(), CatanColor.PURPLE);
+		SP.joinGame(player1, game.getUUID(), CatanColor.PURPLE);
 		System.out.println("Sam joined the game");
 		
 		List<String> AIList = SP.getAITypes();
 		System.out.println("Got AITypes");
 		
 		AIType type = AIType.getTypeFromString(AIList.get(0));
-		SP.addAIPlayer(game.getId(), type);
+		SP.addAIPlayer(game.getUUID(), type);
 		System.out.println("Added AI to game");
-		SP.addAIPlayer(game.getId(), type);
+		SP.addAIPlayer(game.getUUID(), type);
 		System.out.println("Added AI to game");
-		SP.addAIPlayer(game.getId(), type);
+		SP.addAIPlayer(game.getUUID(), type);
 		System.out.println("Added AI to game\nGame is full");		
 	}
 	
