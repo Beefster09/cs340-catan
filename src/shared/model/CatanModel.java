@@ -5,6 +5,7 @@ import java.util.*;
 import client.data.GameInfo;
 import shared.communication.GameHeader;
 import shared.communication.PlayerHeader;
+import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
 import shared.exceptions.InsufficientResourcesException;
@@ -379,6 +380,25 @@ public class CatanModel {
 		++version;
 	}
 
+	void buyDevCard(PlayerReference player) throws InvalidActionException {
+		assert isTurn(player);
+		assert player.getPlayer().canBuyDevCard();
+		assert bank.getDevCards().count() >= 1;
+		
+		ResourceList hand = player.getHand();
+		ResourceList bankRes = bank.getResources();
+
+		hand.transfer(bankRes, ResourceType.ORE, 1);
+		hand.transfer(bankRes, ResourceType.SHEEP, 1);
+		hand.transfer(bankRes, ResourceType.WHEAT, 1);
+		
+		bank.getDevCards().transferRandomCardTo(player.getPlayer().getNewDevCards());
+		
+		log.add(player.getName(), player.getName() + " bought a development card.");
+		
+		++version;
+	}
+
 	/**
 	 * @param roll
 	 * @pre The current phase is the rolling phase and the roll is valid
@@ -458,7 +478,8 @@ public class CatanModel {
 	}
 
 	void maritimeTrade(PlayerReference player,
-			ResourceType fromResource, ResourceType toResource) throws InsufficientResourcesException {
+			ResourceType fromResource, ResourceType toResource)
+					throws InsufficientResourcesException {
 		assert canMaritimeTrade(player, fromResource, toResource);
 		
 		ResourceList bankRes = bank.getResources();
@@ -509,7 +530,7 @@ public class CatanModel {
 
 	void yearOfPlenty(PlayerReference player,
 			ResourceType resource1,	ResourceType resource2)
-					throws InsufficientResourcesException {
+					throws InvalidActionException {
 		ResourceList bankRes = bank.getResources();
 		ResourceList hand = player.getHand();
 		
@@ -518,8 +539,21 @@ public class CatanModel {
 
 		bankRes.transfer(hand, resource1, 1);
 		bankRes.transfer(hand, resource2, 1);
+		player.getPlayer().getOldDevCards().useCard(DevCardType.YEAR_OF_PLENTY);
 		
 		log.add(player.getName(), player.getName() + " played a year of plenty card.");
+		
+		++version;
+	}
+
+	void roadBuilding(PlayerReference player,
+			EdgeLocation road1,	EdgeLocation road2) throws InvalidActionException {
+		player.getPlayer().getOldDevCards().useCard(DevCardType.ROAD_BUILD);
+
+		map.buildRoad(player, road1);
+		map.buildRoad(player, road2);
+		
+		log.add(player.getName(), player.getName() + " played a road building card.");
 		
 		++version;
 	}

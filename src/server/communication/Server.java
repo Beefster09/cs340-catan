@@ -120,7 +120,7 @@ public class Server implements IServer {
 		// TODO Auto-generated method stub
 		try {
 			ICatanCommand command = new CatanCommand("doSendChat",message);
-			ModelFacade tempModel = new ModelFacade();
+			ModelFacade tempModel = models.get(gameID);
 			command.execute(tempModel);
 			return null;
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
@@ -199,8 +199,8 @@ public class Server implements IServer {
 	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
 		try {
-			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
-			ModelFacade tempModel = new ModelFacade();
+			ICatanCommand command = new CatanCommand("buildCity", user, location);
+			ModelFacade tempModel = models.get(gameID);
 			command.execute(tempModel);
 			return this.getModel(gameID, -1);
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
@@ -246,6 +246,10 @@ public class Server implements IServer {
 	public void changeLogLevel(LogLevel level) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void addGame(UUID key, ModelFacade obj) {
+		models.put(key, obj);
 	}
 	
 
