@@ -56,7 +56,9 @@ public class Test {
 		tradeJSON.put(ResourceType.WOOD.toString().toLowerCase(), 0L);
 		ResourceTradeList rtList = new ResourceTradeList(tradeJSON);
 		ResourceType rType = ResourceType.BRICK;
-		
+		UUID userUUID = UUID.randomUUID();
+		UUID gameUUID = UUID.randomUUID();
+		UUID receiverUUID = UUID.randomUUID();
 		//user
 		//login
 		user = server.login("Sam", "sam");
@@ -73,76 +75,79 @@ public class Test {
 		games = server.getGameList();
 		System.out.println("Size: " + games.size() + "\n");
 		//joinGame
-		returned = server.joinGame(user, UUID.randomUUID(), CatanColor.RED);
+		returned = server.joinGame(user, gameUUID, CatanColor.RED);
 		System.out.println(returned + "\n");
 		
 		//moves
 		//AcceptTrade
-		model = server.respondToTrade(UUID.randomUUID(), UUID.randomUUID(), true);
+		model = server.respondToTrade(userUUID, gameUUID, true);
 		System.out.println("Accept Trade:\n" + model.substring(5, 49) + "\n");
 		//BuildCity
-		model = server.buildCity(UUID.randomUUID(), UUID.randomUUID(), vLocation);
+		model = server.buildCity(userUUID, gameUUID, vLocation);
 		System.out.println("Build City:\n" + model.substring(5, 49) + "\n");
 		//BuildRoad
-		model = server.buildRoad(UUID.randomUUID(), UUID.randomUUID(), eLocation, false);
+		model = server.buildRoad(userUUID, gameUUID, eLocation, false);
 		System.out.println("Build Road:\n" + model.substring(5, 49) + "\n");
 		//BuildSettlement
-		model = server.buildSettlement(UUID.randomUUID(), UUID.randomUUID(), vLocation, false);
+		model = server.buildSettlement(userUUID, gameUUID, vLocation, false);
 		System.out.println("Build Settlement:\n" + model.substring(5, 49) + "\n");
 		//BuyDevCard
-		model = server.buyDevCard(UUID.randomUUID(), UUID.randomUUID());
+		model = server.buyDevCard(userUUID, gameUUID);
 		System.out.println("Buy Dev Card:\n" + model.substring(5, 49) + "\n");
 		//DiscardCards
-		model = server.discardCards(UUID.randomUUID(), UUID.randomUUID(), rList);
+		model = server.discardCards(userUUID, gameUUID, rList);
 		System.out.println("Discard Cards:\n" + model.substring(5, 49) + "\n");
 		//FinishTurn
-		model = server.finishTurn(UUID.randomUUID(), UUID.randomUUID());
+		model = server.finishTurn(userUUID, gameUUID);
 		System.out.println("Finish Turn:\n" + model.substring(5, 49) + "\n");
 		//MaritimeTrade
-		model = server.maritimeTrade(UUID.randomUUID(), UUID.randomUUID(), rType, rType, 2);
+		model = server.maritimeTrade(userUUID, gameUUID, rType, rType, 2);
 		System.out.println("Maritime Trade:\n" + model.substring(5, 49) + "\n");
 		//GetModel
-		model = server.getModel(UUID.randomUUID(), -1);
+		model = server.getModel(gameUUID, 0);
 		System.out.println("Get Model:\n" + model.substring(5, 49) + "\n");
 		//Monopoly
-		model = server.monopoly(UUID.randomUUID(), UUID.randomUUID(), rType);
+		model = server.monopoly(userUUID, gameUUID, rType);
 		System.out.println("Monopoly:\n" + model.substring(5, 49) + "\n");
 		//Monument
-		model = server.monument(UUID.randomUUID(), UUID.randomUUID());
+		model = server.monument(userUUID, gameUUID);
 		System.out.println("Monument:\n" + model.substring(5, 49) + "\n");
 		//OfferTrade
-		model = server.offerTrade(UUID.randomUUID(), UUID.randomUUID(), rtList, UUID.randomUUID());
+		model = server.offerTrade(userUUID, gameUUID, rtList, receiverUUID);
 		System.out.println("Offer Trade:\n" + model.substring(5, 49) + "\n");
 		//RoadBuilding
-		model = server.roadBuilding(UUID.randomUUID(), UUID.randomUUID(), eLocation, eLocation);
+		model = server.roadBuilding(userUUID, gameUUID, eLocation, eLocation);
 		System.out.println("Road Building:\n" + model.substring(5, 49) + "\n");
 		//RobPlayer
-		model = server.robPlayer(UUID.randomUUID(), UUID.randomUUID(), hLocation, UUID.randomUUID());
+		model = server.robPlayer(userUUID, gameUUID, hLocation, receiverUUID);
 		System.out.println("Rob Player:\n" + model.substring(5, 49) + "\n");
 		//RollNumber
-		model = server.rollDice(UUID.randomUUID(), UUID.randomUUID(), 3);
+		model = server.rollDice(userUUID, gameUUID, 3);
 		System.out.println("Roll Dice:\n" + model.substring(5, 49) + "\n");
 		//SendChat
-		model = server.sendChat(UUID.randomUUID(), UUID.randomUUID(), "Hey");
+		model = server.sendChat(userUUID, gameUUID, "Hey");
 		System.out.println("Send Chat:\n" + model.substring(5, 49) + "\n");
 		//Solier
-		model = server.soldier(UUID.randomUUID(), UUID.randomUUID(), hLocation, UUID.randomUUID());
+		model = server.soldier(userUUID, gameUUID, hLocation, receiverUUID);
 		System.out.println("Solier:\n" + model.substring(5, 49) + "\n");
 		//YearOfPlenty
-		model = server.yearOfPlenty(UUID.randomUUID(), UUID.randomUUID(), rType, rType);
+		model = server.yearOfPlenty(userUUID, gameUUID, rType, rType);
 		System.out.println("Year of Plenty:\n" + model.substring(5, 49) + "\n");
 				
 		server = new ServerProxy("localhost", 8081);
 		try{
-			server.buyDevCard(UUID.randomUUID(), UUID.randomUUID());
+			server.buyDevCard(userUUID, gameUUID);
 			System.out.println("Failed!");
 			return;
 		}
 		catch(Exception e){
 			System.out.println("Tried to buy Dev Card\n");
 		}
+		
+		
+		
 		try{
-			server.joinGame(user, UUID.randomUUID(), CatanColor.BLUE);
+			server.joinGame(user, gameUUID, CatanColor.BLUE);
 			System.out.println("Failed!");
 			return;
 		}
@@ -152,17 +157,17 @@ public class Test {
 		server.login("Sam", "Sam");
 		System.out.println("Logged in\n");
 		try{
-			server.buyDevCard(UUID.randomUUID(), UUID.randomUUID());
+			server.buyDevCard(userUUID, gameUUID);
 			System.out.println("Failed!");
 			return;
 		}
 		catch(Exception e){
 			System.out.println("Tried to buy Dev Card\n");
 		}
-		server.joinGame(user, UUID.randomUUID(), CatanColor.BLUE);
+		server.joinGame(user, gameUUID, CatanColor.BLUE);
 		System.out.println("Joined Game\n");
 		
-		server.buyDevCard(UUID.randomUUID(), UUID.randomUUID());
+		server.buyDevCard(userUUID, gameUUID);
 		System.out.println("Bought Dev Card\n");
 		
 		System.out.println("Finished!");

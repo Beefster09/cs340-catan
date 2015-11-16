@@ -201,13 +201,13 @@ public class CatanModel {
 		return new GameHeader(title, id, players);
 	}
 
-	void setHeader(GameInfo info) {
+	public void setHeader(GameInfo info) {
 		title  = info.getTitle();
 		id = info.getUUID();
 		
 	}
 
-	void setHeader(GameHeader gameHeader) {
+	public void setHeader(GameHeader gameHeader) {
 		title  = gameHeader.getTitle();
 		id = gameHeader.getUUID();
 	}
