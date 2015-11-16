@@ -103,7 +103,7 @@ public class ResourceTradeList {
 		// Implementation
 		for (Entry<ResourceType, Integer> resource : offered.entrySet()) {
 			try {
-				offerer.transferTo(receiver, resource.getKey(), resource.getValue());
+				offerer.transfer(receiver, resource.getKey(), resource.getValue());
 			} catch (InsufficientResourcesException e) {
 				// This should never happen! This is a critical error.
 				e.printStackTrace();
@@ -112,7 +112,7 @@ public class ResourceTradeList {
 		}
 		for (Entry<ResourceType, Integer> resource : wanted.entrySet()) {
 			try {
-				receiver.transferTo(offerer, resource.getKey(), resource.getValue());
+				receiver.transfer(offerer, resource.getKey(), resource.getValue());
 			} catch (InsufficientResourcesException e) {
 				// This should never happen! This is a critical error.
 				e.printStackTrace();

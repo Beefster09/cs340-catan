@@ -82,7 +82,7 @@ public class CatanModel {
 	/**
 	 * @param tradeOffer the tradeOffer to set
 	 */
-	public void setTradeOffer(TradeOffer tradeOffer) {
+	void setTradeOffer(TradeOffer tradeOffer) {
 		this.tradeOffer = tradeOffer;
 	}
 
@@ -149,7 +149,7 @@ public class CatanModel {
 		return winner;
 	}
 
-	public void setChat(MessageList chat) {
+	void setChat(MessageList chat) {
 		this.chat = chat;
 	}
 
@@ -200,13 +200,13 @@ public class CatanModel {
 		return new GameHeader(title, id, players);
 	}
 
-	public void setHeader(GameInfo info) {
+	void setHeader(GameInfo info) {
 		title  = info.getTitle();
 		id = info.getUUID();
 		
 	}
 
-	public void setHeader(GameHeader gameHeader) {
+	void setHeader(GameHeader gameHeader) {
 		title  = gameHeader.getTitle();
 		id = gameHeader.getUUID();
 	}
@@ -271,23 +271,24 @@ public class CatanModel {
 		return player.getPlayer().getResources().count(fromResource) >= ratios.get(fromResource);
 	}
 
-	void buildStartingSettlement(PlayerReference player, VertexLocation loc) throws InvalidActionException {
-		if (!map.canPlaceStartingSettlement(loc)) {
-			throw new InvalidActionException("Invalid Starting Road Placement");
+	void buildStartingPieces(PlayerReference player, VertexLocation settlement,
+			EdgeLocation road) throws InvalidActionException {
+		if (!map.canPlaceStartingPieces(settlement, road)) {
+			throw new InvalidActionException("Invalid Starting Piece Placement");
 		}
 		// This movement is free.
-		map.buildStartingSettlement(player, loc);
+		map.placeStartingPieces(player, settlement, road);
 		
 		// Give starting resources
 		if (turnTracker.getStatus() == TurnStatus.SecondRound) {
 			ResourceList bank = this.bank.getResources();
 			ResourceList hand = player.getPlayer().getResources();
-			for (HexLocation hexLoc : loc.getHexes()) {
+			for (HexLocation hexLoc : settlement.getHexes()) {
 				try {
 					Hex hex = map.getHexAt(hexLoc);
 					ResourceType resource = hex.getResource();
 					if (resource != null) {
-						bank.transferTo(hand, resource, 1);
+						bank.transfer(hand, resource, 1);
 					}
 				} catch (IndexOutOfBoundsException e) {
 					continue;
@@ -295,20 +296,9 @@ public class CatanModel {
 			}
 		}
 		
-		log.add(player.getName(), player.getName() + " placed a starting settlement.");
+		turnTracker.passTurn();
 		
-		++version;
-	}
-
-	void buildStartingRoad(PlayerReference player, EdgeLocation loc)
-			throws InvalidActionException {
-		if (!map.canBuildStartingRoadAt(player, loc)) {
-			throw new InvalidActionException("Invalid Starting Road Placement");
-		}
-		// This movement is free.
-		getMap().buildStartingRoad(player, loc);
-		
-		log.add(player.getName(), player.getName() + " placed a starting road.");
+		log.add(player.getName(), player.getName() + " placed thier starting pieces.");
 		
 		++version;
 	}
@@ -325,8 +315,8 @@ public class CatanModel {
 					"resources for a road.");
 		}
 		ResourceList bank = getBank().getResources();
-		hand.transferTo(bank, ResourceType.WOOD, 1);
-		hand.transferTo(bank, ResourceType.BRICK, 1);
+		hand.transfer(bank, ResourceType.WOOD, 1);
+		hand.transfer(bank, ResourceType.BRICK, 1);
 		getMap().buildRoad(player, loc);
 		
 		log.add(player.getName(), player.getName() + " built a road.");
@@ -345,10 +335,10 @@ public class CatanModel {
 		}
 		ResourceList hand = player.getHand();
 		ResourceList bank = getBank().getResources();
-		hand.transferTo(bank, ResourceType.WOOD, 1);
-		hand.transferTo(bank, ResourceType.BRICK, 1);
-		hand.transferTo(bank, ResourceType.SHEEP, 1);
-		hand.transferTo(bank, ResourceType.WHEAT, 1);
+		hand.transfer(bank, ResourceType.WOOD, 1);
+		hand.transfer(bank, ResourceType.BRICK, 1);
+		hand.transfer(bank, ResourceType.SHEEP, 1);
+		hand.transfer(bank, ResourceType.WHEAT, 1);
 		map.buildSettlement(player, loc);
 		
 		log.add(player.getName(), player.getName() + " built a road.");
@@ -379,8 +369,8 @@ public class CatanModel {
 		
 		ResourceList hand = player.getPlayer().getResources();
 		ResourceList bank = getBank().getResources();
-		hand.transferTo(bank, ResourceType.ORE, 3);
-		hand.transferTo(bank, ResourceType.WHEAT, 2);
+		hand.transfer(bank, ResourceType.ORE, 3);
+		hand.transfer(bank, ResourceType.WHEAT, 2);
 		
 		getMap().upgradeSettlementAt(player, loc);
 	
@@ -403,13 +393,10 @@ public class CatanModel {
 		ResourceList resBank = bank.getResources();
 		for (Hex hex : map.getHexesByNumber(roll)) {
 			for (Municipality town : map.getMunicipalitiesAround(hex.getLocation())) {
-				try {
-					resBank.transferTo(town.getOwner().getPlayer().getResources(),
-							hex.getResource(), town.getIncome());
-				} catch (InsufficientResourcesException e) {
-					// Sucks to be you. You don't get your resources.
-					// TODO? Give resources one at a time in turn order?
-				}
+				resBank.transferAtMost(town.getOwner().getPlayer().getResources(),
+						hex.getResource(), town.getIncome());
+				// Note that you may not get your full amount, which is expected behavior
+				// Who gets resources first is currently undefined.
 			}
 		}
 		
@@ -475,10 +462,10 @@ public class CatanModel {
 		assert canMaritimeTrade(player, fromResource, toResource);
 		
 		ResourceList bankRes = bank.getResources();
-		ResourceList hand = player.getPlayer().getResources();
+		ResourceList hand = player.getHand();
 		
-		hand.transferTo(bankRes, fromResource, getMaritimeRatios(player).get(fromResource));
-		bankRes.transferTo(hand, toResource, 1);
+		hand.transfer(bankRes, fromResource, getMaritimeRatios(player).get(fromResource));
+		bankRes.transfer(hand, toResource, 1);
 		
 		log.add(player.getName(), player.getName() + " traded " + fromResource +
 				" for " + toResource + " with the bank.");
@@ -516,6 +503,23 @@ public class CatanModel {
 				+ " declined " + tradeOffer.getSender().getName() + "'s trade offer.");
 		
 		tradeOffer = null;
+		
+		++version;
+	}
+
+	void yearOfPlenty(PlayerReference player,
+			ResourceType resource1,	ResourceType resource2)
+					throws InsufficientResourcesException {
+		ResourceList bankRes = bank.getResources();
+		ResourceList hand = player.getHand();
+		
+		assert resource1 == resource2 ?	bankRes.count(resource1) >= 2 :
+				bankRes.count(resource1) >= 1 && bankRes.count(resource2) >= 1;
+
+		bankRes.transfer(hand, resource1, 1);
+		bankRes.transfer(hand, resource2, 1);
+		
+		log.add(player.getName(), player.getName() + " played a year of plenty card.");
 		
 		++version;
 	}

@@ -132,9 +132,9 @@ public class ClientModelFacadeTest {
 		Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
 		ResourceList hand = currentPlayer.getResources();
 		ResourceList bank = model.getBank().getResources();
-		bank.transferTo(hand, ResourceType.WHEAT, 1);
-		bank.transferTo(hand, ResourceType.ORE, 1);
-		bank.transferTo(hand, ResourceType.SHEEP, 1);
+		bank.transfer(hand, ResourceType.WHEAT, 1);
+		bank.transfer(hand, ResourceType.ORE, 1);
+		bank.transfer(hand, ResourceType.SHEEP, 1);
 		can = m.canBuyDevelopmentCard();
 		assertTrue(can);
 		
@@ -368,11 +368,11 @@ public class ClientModelFacadeTest {
 		Player offeringPlayer = tradeOffer.getSender().getPlayer();
 		ResourceList hand = offeringPlayer.getResources();
 		ResourceList bank = m.getCatanModel().getBank().getResources();
-		bank.transferTo(hand, ResourceType.BRICK, 1);
-		bank.transferTo(hand, ResourceType.WHEAT, 1);
-		bank.transferTo(hand, ResourceType.WOOD, 1);
-		bank.transferTo(hand, ResourceType.SHEEP, 1);
-		bank.transferTo(hand, ResourceType.ORE, 1);
+		bank.transfer(hand, ResourceType.BRICK, 1);
+		bank.transfer(hand, ResourceType.WHEAT, 1);
+		bank.transfer(hand, ResourceType.WOOD, 1);
+		bank.transfer(hand, ResourceType.SHEEP, 1);
+		bank.transfer(hand, ResourceType.ORE, 1);
 		//can = m.canOfferTrade();
 		//assertTrue(can);
 	}
@@ -401,11 +401,11 @@ public class ClientModelFacadeTest {
 		
 		ResourceList hand = acceptingPlayer.getResources();
 		ResourceList bank = m.getCatanModel().getBank().getResources();
-		bank.transferTo(hand, ResourceType.BRICK, 1);
-		bank.transferTo(hand, ResourceType.WHEAT, 1);
-		bank.transferTo(hand, ResourceType.WOOD, 1);
-		bank.transferTo(hand, ResourceType.SHEEP, 1);
-		bank.transferTo(hand, ResourceType.ORE, 1);
+		bank.transfer(hand, ResourceType.BRICK, 1);
+		bank.transfer(hand, ResourceType.WHEAT, 1);
+		bank.transfer(hand, ResourceType.WOOD, 1);
+		bank.transfer(hand, ResourceType.SHEEP, 1);
+		bank.transfer(hand, ResourceType.ORE, 1);
 		can = m.canAcceptTrade();
 		assertTrue(can);
 		
