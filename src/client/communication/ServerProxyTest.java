@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,7 +32,7 @@ public class ServerProxyTest {
 	ServerProxy SP;
 	Long start;
 	Long finish;
-	int gameID;
+	UUID gameID;
 	Session player1;
 	Session player2;
 	Session player3;
@@ -66,7 +67,7 @@ public class ServerProxyTest {
 				game = SP.createGame("test", false, false, false);
 				System.out.println("Created game");
 			}
-			gameID = game.getId();
+			gameID = game.getUUID();
 			SP.getGameList();
 			System.out.println("Got the list of games");
 			SP.joinGame(player1, gameID, CatanColor.PURPLE);
@@ -111,10 +112,10 @@ public class ServerProxyTest {
 				System.out.println("Grant joined the game");
 			}
 
-			int steve = 0;
-			int justin = 1;
-			int jordan = 2;
-			int grant = 3;
+			UUID steve = player1.getPlayerUUID();
+			UUID justin = player2.getPlayerUUID();
+			UUID jordan = player3.getPlayerUUID();
+			UUID grant = player4.getPlayerUUID();
 //			PlayerReference steve = PlayerReference.getDummyPlayerReference(0);
 //			PlayerReference justin = PlayerReference.getDummyPlayerReference(1);
 //			PlayerReference jordan = PlayerReference.getDummyPlayerReference(2);
@@ -122,7 +123,7 @@ public class ServerProxyTest {
 			
 			SP.login("Steve", "steve");
 			System.out.println("Steve logged in");
-			SP.joinGame(player1, game.getId(), CatanColor.PURPLE);
+			SP.joinGame(player1, gameID, CatanColor.PURPLE);
 			System.out.println("Steve rejoined the game");
 
 			JSONObject location = new JSONObject();
