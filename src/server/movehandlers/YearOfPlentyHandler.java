@@ -37,8 +37,8 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			UUID gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -49,7 +49,7 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 			ResourceType type1 = ResourceType.fromString((String)json.get("resource1"));
 			ResourceType type2 = ResourceType.fromString((String)json.get("resource2"));
 			
-			String gson = server.yearOfPlenty(index, gameID, type1, type2);
+			String gson = server.yearOfPlenty(index, gameUUID, type1, type2);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
