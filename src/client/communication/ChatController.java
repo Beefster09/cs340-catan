@@ -2,7 +2,6 @@ package client.communication;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import shared.communication.IServer;
 import shared.definitions.CatanColor;
@@ -44,11 +43,11 @@ public class ChatController extends Controller implements IChatController {
 			int index = localPlayer.getIndex();
 			int gameIndex = ClientManager.getModel().getGameHeader().getId();
 			
-//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
-//			UUID playerUUID = localPlayer.getPlayerUUID();
-//			serverProxy.sendChat(playerUUID, gameUUID, message);
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			UUID playerUUID = localPlayer.getPlayerUUID();
+			serverProxy.sendChat(playerUUID, gameUUID, message);
 			
-			serverProxy.sendChat(index, gameIndex, message);
+			//serverProxy.sendChat(index, gameIndex, message);
 
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block

@@ -139,11 +139,11 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			
-//			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
-//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
-//			server.maritimeTrade(playerUUID, gameUUID, inResource, outResource, ratio);
+			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			server.maritimeTrade(playerUUID, gameUUID, inResource, outResource, ratio);
 			
-			server.maritimeTrade(ClientManager.getLocalPlayer().getIndex(), gameID, inResource, outResource, ratio);
+//			server.maritimeTrade(ClientManager.getLocalPlayer().getIndex(), gameID, inResource, outResource, ratio);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");

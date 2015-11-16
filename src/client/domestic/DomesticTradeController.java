@@ -259,12 +259,12 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		try {
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			
-//			UUID playerUUID = user.getPlayerUUID();
-//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
-//			UUID receiverUUID = receiver.getPlayerUUID();
-//			server.offerTrade(playerUUID, gameUUID, offer, receiverUUID);
+			UUID playerUUID = user.getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			UUID receiverUUID = receiver.getPlayerUUID();
+			server.offerTrade(playerUUID, gameUUID, offer, receiverUUID);
 			
-			ClientManager.getServer().offerTrade(user.getIndex(), gameID, offer, receiver.getIndex());
+			//ClientManager.getServer().offerTrade(user.getIndex(), gameID, offer, receiver.getIndex());
 		} catch (ServerException e) {
 			e.printStackTrace();
 		} catch (UserException e) {
@@ -350,11 +350,11 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		try {
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			
-//			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
-//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
-//			server.respondToTrade(playerUID, gameUUID, willAccept);
+			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			server.respondToTrade(playerUUID, gameUUID, willAccept);
 			
-			ClientManager.getServer().respondToTrade(ClientManager.getLocalPlayer().getIndex(), gameID, willAccept);
+			//ClientManager.getServer().respondToTrade(ClientManager.getLocalPlayer().getIndex(), gameID, willAccept);
 			getAcceptOverlay().reset();
 		} catch (ServerException e) {
 			e.printStackTrace();
