@@ -164,7 +164,7 @@ public class ClientCommunicator {
 				String header = con.getHeaderField("Set-cookie");
 				header = header.substring(0, header.length() - 8);
 				gameCookie = header;
-				cookies = userCookie + "; " + gameCookie;
+				cookies = userCookie + ";" + gameCookie;
 				
 				JSONObject JSONOutput = new JSONObject();
 				JSONOutput.put("success", str.toString());

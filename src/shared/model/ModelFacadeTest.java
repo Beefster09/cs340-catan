@@ -23,6 +23,7 @@ import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
+import shared.exceptions.NotYourTurnException;
 import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
@@ -105,7 +106,7 @@ public class ModelFacadeTest {
 	}
 	
 	@Test
-	public void testCanFinishTurn() {
+	public void testCanFinishTurn() throws NotYourTurnException {
 		
 		//test if current player has not rolled
 		boolean can = m.canFinishTurn();
@@ -272,8 +273,6 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanRoadBuildingCard() throws InvalidActionException {
-		
-		//test with empty hand
 		//boolean can = m.canRoadBuildingCard();
 		//assertFalse(can);
 		

@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,8 +39,8 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -50,8 +51,8 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("discardedCards"));
 			ResourceList cards = ResourceList.fromJSONObject(jsonObject);
-			int index = (int)(long)json.get("playerIndex");
-			String gson = server.discardCards(index, gameID, cards);
+			UUID index = (UUID)json.get("playerIndex");
+			String gson = server.discardCards(index, gameUUID, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

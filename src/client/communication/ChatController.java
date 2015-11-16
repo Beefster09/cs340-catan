@@ -2,6 +2,7 @@ package client.communication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import shared.communication.IServer;
 import shared.definitions.CatanColor;

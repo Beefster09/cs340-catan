@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,19 +37,19 @@ public class MonopolyHandler extends AbstractMoveHandler implements HttpHandler 
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)(long)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			
 			ResourceType type = ResourceType.fromString((String)json.get("resource"));
 			
-			String gson = server.monopoly(index, gameID, type);
+			String gson = server.monopoly(index, gameUUID, type);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

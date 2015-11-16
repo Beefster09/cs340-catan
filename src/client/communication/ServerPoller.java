@@ -1,13 +1,13 @@
 package client.communication;
 
 import java.util.Timer;
+import java.util.UUID;
 import java.util.logging.*;
 import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
 import client.misc.ClientManager;
-
 import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.*;
@@ -78,7 +78,9 @@ public class ServerPoller {
 					//JSONObject modelRequest = new JSONObject();
 					int version = modelHandler.getVersion();
 					int game = modelHandler.getGameHeader().getId();
-					final String modelStr = server.getModel(game, version);
+					UUID gameUUID = modelHandler.getGameHeader().getUUID();
+					
+					final String modelStr = server.getModel(gameUUID, version);
 					if (modelStr != null) {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override

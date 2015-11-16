@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,8 +36,8 @@ public class AcceptTradeHandler extends AbstractMoveHandler implements HttpHandl
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -45,8 +46,8 @@ public class AcceptTradeHandler extends AbstractMoveHandler implements HttpHandl
 			 */
 			boolean willAccept = (boolean)json.get("willAccept");
 			
-			int playerIndex = (int)(long)json.get("playerIndex");
-			String gson = server.respondToTrade(playerIndex, gameID, willAccept);
+			UUID playerIndex = (UUID)json.get("playerIndex");
+			String gson = server.respondToTrade(playerIndex, gameUUID, willAccept);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

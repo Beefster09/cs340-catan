@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,8 +40,8 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -49,9 +50,9 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
 			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
-			int playerIndex = (int)(long)json.get("playerIndex");
-			//String gson = server.buildCity(playerIndex, gameID, vertexLocation);
-			String gson = new Server().buildCity(playerIndex, gameID, vertexLocation);
+			UUID playerIndex = (UUID)json.get("playerIndex");
+			//String gson = server.buildCity(playerIndex, gameUUID, vertexLocation);
+			String gson = new Server().buildCity(playerIndex, gameUUID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
