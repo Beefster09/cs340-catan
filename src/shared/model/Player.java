@@ -10,6 +10,7 @@ import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
+import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
 
 /**
@@ -65,6 +66,10 @@ public class Player {
 		}
 		this.uuid = uuid;
 		playerTable.put(uuid, this);
+	}
+	
+	public Player() {
+		
 	}
 	
 	public Player(int index) {
@@ -424,6 +429,18 @@ public class Player {
 
 	void setHasDiscarded(boolean hasDiscarded) {
 		discarded = hasDiscarded;
+	}
+	
+	/** Makes all new dev cards old
+	 * 
+	 */
+	void ageDevCards() {
+		try {
+			newDevCards.transferAll(oldDevCards);
+		} catch (InvalidActionException e) {
+			assert false;
+			// This should never happen.
+		}
 	}
 
 }

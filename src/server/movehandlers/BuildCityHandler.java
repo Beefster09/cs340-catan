@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +15,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.SchemaMismatchException;
@@ -48,8 +50,9 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
 			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
-			int playerIndex = (int)(long)json.get("playerIndex");
-			String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			UUID playerIndex = (UUID)json.get("playerIndex");
+			//String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			String gson = new Server().buildCity(playerIndex, gameID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

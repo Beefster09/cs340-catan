@@ -1,6 +1,7 @@
 package shared.communication;
 
 import java.util.List;
+import java.util.UUID;
 
 import server.ai.AIType;
 import server.logging.LogLevel;
@@ -53,14 +54,14 @@ public interface IServer {
 	 * @post player joins the game
 	 * @author-Grant
 	 */
-	public boolean joinGame(Session player, int gameID, CatanColor color)
+	public boolean joinGame(Session player, UUID gameID, CatanColor color)
 			throws JoinGameException, ServerException;
 	/**
 	 * @pre game filename must not be empty string
 	 * @post a game is saved with a corresponding filename
 	 * @author-Grant
 	 */
-	public void saveGame(int gameID, String filename)
+	public void saveGame(UUID gameID, String filename)
 			throws GamePersistenceException, UserException, ServerException;
 	/**
 	 * @pre a game must exist with a corresponding filename to the filename parameter
@@ -74,35 +75,35 @@ public interface IServer {
 	 * @post corresponding model is returned
 	 * @author-Grant
 	 */
-	public String getModel(int gameID, int version)
+	public String getModel(UUID gameID, int version)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post game is reset
 	 * @author-Grant
 	 */
-	public String resetGame(int gameID)
+	public String resetGame(UUID gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post a list of commands is returned
 	 * @author-Grant
 	 */
-	public List<Command> getCommands(int gameID)
+	public List<Command> getCommands(UUID gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre list of commands must not be empty
 	 * @post commands will be executed
 	 * @author-Grant
 	 */
-	public String executeCommands(int gameID, List<Command> commands)
+	public String executeCommands(UUID gameID, List<Command> commands)
 			throws ServerException, UserException;
 	/**
 	 * @pre AI type must be specified and valid
 	 * @post an AIPlayer must be added
 	 * @author-Grant
 	 */
-	public void addAIPlayer(int gameID, AIType type)
+	public void addAIPlayer(UUID gameID, AIType type)
 			throws ServerException, UserException;
 	/**
 	 * @pre
@@ -116,14 +117,14 @@ public interface IServer {
 	 * @post message is sent
 	 * @author-Grant
 	 */
-	public String sendChat(int user, int gameID, String message)
+	public String sendChat(UUID user, UUID gameID, String message)
 			throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post dice is rolled
 	 * @author-Grant
 	 */
-	public String rollDice(int user, int gameID, int number)
+	public String rollDice(UUID user, UUID gameID, int number)
 			throws ServerException, UserException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -131,15 +132,15 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public String robPlayer(int user, int gameID,
-			HexLocation newRobberLocation, int victim)
+	public String robPlayer(UUID user, UUID gameID,
+			HexLocation newRobberLocation, UUID victim)
 					throws ServerException, UserException;
 	/**
 	 * @pre
 	 * @post Development card is bought
 	 * @author-Grant
 	 */
-	public String buyDevCard(int user, int gameID)
+	public String buyDevCard(UUID user, UUID gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre two types of valid resources are specified
@@ -147,7 +148,7 @@ public interface IServer {
 	 * @post player receives two specified resources
 	 * @author-Grant
 	 */
-	public String yearOfPlenty(int user, int gameID, ResourceType type1, ResourceType type2)
+	public String yearOfPlenty(UUID user, UUID gameID, ResourceType type1, ResourceType type2)
 			throws ServerException, UserException;
 	/**
 	 * @pre edge locations must be connected to exisiting road that is owned by player
@@ -155,7 +156,7 @@ public interface IServer {
 	 * @post two roads are built at specified edge locations
 	 * @author-Grant
 	 */
-	public String roadBuilding(int user, int gameID, EdgeLocation road1, EdgeLocation road2)
+	public String roadBuilding(UUID user, UUID gameID, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, UserException;
 	/**
 	 * @pre a robber cannot be placed on desert tile.  There must be players on chosen HexLocation.
@@ -164,8 +165,8 @@ public interface IServer {
 	 * @post robber is on placed tile and victim loses a card
 	 * @author-Grant
 	 */
-	public String soldier(int user, int gameID,
-			HexLocation newRobberLocation, int victim)
+	public String soldier(UUID user, UUID gameID,
+			HexLocation newRobberLocation, UUID victim)
 					throws ServerException, UserException;
 	/**
 	 * @pre one type of valid resource is specified
@@ -173,13 +174,13 @@ public interface IServer {
 	 * @post player receives all cards of specified resource type from all other players
 	 * @author-Grant
 	 */
-	public String monopoly(int user, int gameID, ResourceType type)
+	public String monopoly(UUID user, UUID gameID, ResourceType type)
 			throws ServerException, UserException;
 	
 	/**
 	 * 
 	 */
-	public String monument(int user, int gameID)
+	public String monument(UUID user, UUID gameID)
 			throws ServerException, UserException;
 	
 	/**
@@ -187,7 +188,7 @@ public interface IServer {
 	 * @post road is built at specified location
 	 * @author-Grant
 	 */
-	public String buildRoad(int user, int gameID, EdgeLocation location, boolean free)
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location, boolean free)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and must be connected to road owned by player.  Must be at least two
@@ -195,29 +196,29 @@ public interface IServer {
 	 * @post settlement is built at existing location
 	 * @author-Grant
 	 */
-	public String buildSettlement(int user, int gameID, VertexLocation location, boolean free)
+	public String buildSettlement(UUID user, UUID gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and settlement that is owned by the player already exists at vertex location
 	 * @post city replaces settlement
 	 * @author-Grant
 	 */
-	public String buildCity(int user, int gameID, VertexLocation location)
+	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException;
 	/**
 	 * @pre offer is specified and player must have at least as many resources in his hand as his offer does
 	 * @post offer is made to another player
 	 * @author-Grant
 	 */
-	public String offerTrade(int user, int gameID, ResourceTradeList offer,
-			int receiver)
+	public String offerTrade(UUID user, UUID gameID, ResourceTradeList offer,
+			UUID receiver)
 					throws ServerException, UserException;
 	/**
 	 * @pre user chooses to accept or decline trade
 	 * @post trade is declined or accepted according to user's decision
 	 * @author-Grant
 	 */
-	public String respondToTrade(int user, int gameID, boolean accept)
+	public String respondToTrade(UUID user, UUID gameID, boolean accept)
 			throws ServerException, UserException;
 	/**
 	 * @pre user must have correct ratio for trade that he wants to do
@@ -226,7 +227,7 @@ public interface IServer {
 	 * @post user trades in specified resources for specified resource
 	 * @author-Grant
 	 */
-	public String maritimeTrade(int user, int gameID, 
+	public String maritimeTrade(UUID user, UUID gameID, 
 			ResourceType inResource, ResourceType outResource, int ratio)
 					throws ServerException, UserException;
 	/**
@@ -234,14 +235,14 @@ public interface IServer {
 	 * @post player loses half of his cards, rounding down
 	 * @author-Grant
 	 */
-	public String discardCards(int user, int gameID, ResourceList cards)
+	public String discardCards(UUID user, UUID gameID, ResourceList cards)
 			throws ServerException, UserException;
 	/**
 	 * @pre player must have rolled
 	 * @post player ends turn
 	 * @author-Grant
 	 */
-	public String finishTurn(int user, int gameID)
+	public String finishTurn(UUID user, UUID gameID)
 			throws ServerException, UserException;
 	/**
 	 * @pre

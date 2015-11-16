@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 Nov 15, 2015 11:26:30 AM server.communication.ServerCommunicator run
 INFO: Initializing HTTP Server
 Nov 15, 2015 11:26:30 AM server.communication.ServerCommunicator run
 INFO: Starting HTTP Server
+=======
+Nov 16, 2015 11:56:10 AM server.communication.ServerCommunicator run
+INFO: Initializing HTTP Server
+Nov 16, 2015 11:56:11 AM server.communication.ServerCommunicator run
+INFO: Starting HTTP Server
+>>>>>>> origin/master

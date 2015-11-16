@@ -12,11 +12,13 @@ import shared.definitions.CatanColor;
 public class PlayerReference {
 	private static final int INVALID_INDEX = -1337;
 	//private CatanModel game;
-	private int playerIndex; // Old compatibility
+	private transient int playerIndex; // Cached
 	private UUID playerUUID;
 	
-	// This is intentionally package-private (i.e. no modifier). Really, only Players
-	// should ever create PlayerReferences
+	public PlayerReference() {
+		
+	}
+	
 	/** Old server compatible constructor
 	 * @param game
 	 * @param playerIndex

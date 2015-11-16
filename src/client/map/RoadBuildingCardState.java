@@ -1,5 +1,6 @@
 package client.map;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -33,8 +34,8 @@ public class RoadBuildingCardState extends MapControllerState {
 
 				@Override
 				protected String doInBackground() throws Exception {
-					int gameID = ClientManager.getModel().getGameHeader().getId();
-					return getServer().roadBuilding(getYourself().getIndex(), gameID, firstRoad, edge);
+					UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+					return getServer().roadBuilding(getYourself().getPlayerUUID(), gameUUID, firstRoad, edge);
 				}
 
 				@Override

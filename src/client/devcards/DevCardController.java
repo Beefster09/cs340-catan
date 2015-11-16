@@ -2,6 +2,7 @@ package client.devcards;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -86,7 +87,12 @@ public class DevCardController extends Controller implements IDevCardController 
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				int index = ClientManager.getLocalPlayer().getIndex();
-				return server.buyDevCard(index, gameID);
+				
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+				return server.buyDevCard(playerUUID, gameUUID);
+				
+				//return server.buyDevCard(index, gameID);
 			}
 			
 			@Override
@@ -161,7 +167,12 @@ public class DevCardController extends Controller implements IDevCardController 
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			int index = ClientManager.getLocalPlayer().getIndex();
-			server.monopoly(index, gameID, resource);
+			
+			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			server.monopoly(playerUUID, gameUUID, resource);
+			
+			//server.monopoly(index, gameID, resource);
 		}
 		catch (ServerException e){
 			messageView.setTitle("Server Error");
@@ -183,7 +194,12 @@ public class DevCardController extends Controller implements IDevCardController 
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			int index = ClientManager.getLocalPlayer().getIndex();
-			server.monument(index, gameID);
+			
+			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			server.monument(playerUUID, gameUUID);
+			
+			//server.monument(index, gameID);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");
@@ -219,7 +235,12 @@ public class DevCardController extends Controller implements IDevCardController 
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			int index = ClientManager.getLocalPlayer().getIndex();
-			server.yearOfPlenty(index, gameID, resource1, resource2);
+			
+			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			server.yearOfPlenty(playerUUID, gameUUID, resource1, resource2);
+			
+			//server.yearOfPlenty(index, gameID, resource1, resource2);
 		}
 		catch(ServerException e){
 			messageView.setTitle("Server Error");

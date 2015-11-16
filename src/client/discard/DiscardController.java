@@ -231,7 +231,12 @@ public class DiscardController extends Controller implements IDiscardController 
 			
 			int gameID = ClientManager.getModel().getGameHeader().getId();
 			int index = localPlayer.getIndex();
-			serverProxy.discardCards(index, gameID, cards);
+			
+			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			serverProxy.discardCards(playerUUID, gameUUID, cards);
+			
+			//serverProxy.discardCards(index, gameID, cards);
 			
 			setResourcesInViewToZero();
 			

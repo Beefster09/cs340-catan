@@ -1,6 +1,7 @@
 package client.roll;
 
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingUtilities;
@@ -8,7 +9,6 @@ import javax.swing.SwingWorker;
 
 import shared.definitions.TurnStatus;
 import shared.model.TurnTracker;
-
 import client.base.*;
 import client.misc.ClientManager;
 
@@ -70,7 +70,12 @@ public class RollController extends Controller implements IRollController {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer().getIndex(), gameID, result);
+				
+				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				return ClientManager.getServer().rollDice(playerUUID, gameUUID, result);
+				
+//				return ClientManager.getServer().rollDice(ClientManager.getLocalPlayer().getIndex(), gameID, result);
 			}
 			
 			@Override

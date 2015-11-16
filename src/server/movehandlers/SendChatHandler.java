@@ -13,6 +13,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
@@ -47,6 +48,7 @@ public class SendChatHandler extends AbstractMoveHandler implements HttpHandler 
 			String message = (String)json.get("content");
 			
 			String gson = server.sendChat(index, gameID, message);
+			//String gson = new Server().sendChat(index, gameID, message);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

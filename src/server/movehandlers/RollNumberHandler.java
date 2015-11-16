@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +44,7 @@ public class RollNumberHandler extends AbstractMoveHandler implements HttpHandle
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)(long)json.get("playerIndex");
+			UUID index = (UUID)json.get("playerIndex");
 			int number = (int)(long)json.get("number");
 			
 			String gson = server.rollDice(index, gameID, number);

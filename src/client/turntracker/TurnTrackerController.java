@@ -1,6 +1,7 @@
 package client.turntracker;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -38,7 +39,12 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer().getIndex(), gameID);
+				
+				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				return ClientManager.getServer().finishTurn(playerUUID, gameUUID);
+				
+//				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer().getIndex(), gameID);
 			}
 
 			@Override

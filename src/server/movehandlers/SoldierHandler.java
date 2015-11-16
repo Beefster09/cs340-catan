@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,12 +47,12 @@ public class SoldierHandler extends AbstractMoveHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)(long)json.get("playerIndex");
+			UUID index = (UUID)json.get("playerIndex");
 			JSONParser parser = new JSONParser();
 			JSONObject location = (JSONObject)parser.parse((String)json.get("location"));
 			
 			HexLocation hex = new HexLocation(location);
-			int victim = (int)(long)json.get("victimIndex");
+			UUID victim = (UUID)json.get("victimIndex");
 			
 			String gson = server.soldier(index, gameID, hex, victim);
 			

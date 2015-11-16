@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +37,7 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
+			UUID gameID = super.checkCookies(arg0, server);
 			if(gameID == -1){
 				throw new ServerException();
 			}
@@ -44,7 +45,7 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)(long)json.get("playerIndex");
+			UUID index = (UUID)json.get("playerIndex");
 			ResourceType type1 = ResourceType.fromString((String)json.get("resource1"));
 			ResourceType type2 = ResourceType.fromString((String)json.get("resource2"));
 			
@@ -56,13 +57,13 @@ public class YearOfPlentyHandler extends AbstractMoveHandler implements HttpHand
 			output.flush();
 			arg0.getResponseBody().close();
 		} catch (ParseException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
 			e.printStackTrace();
 		} catch (ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
 			e.printStackTrace();
 		} catch (UserException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 0);
 			e.printStackTrace();
 		}
 	}

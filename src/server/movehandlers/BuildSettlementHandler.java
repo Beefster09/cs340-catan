@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,7 +50,7 @@ public class BuildSettlementHandler extends AbstractMoveHandler implements HttpH
 			
 			VertexLocation location = new VertexLocation(jsonObject);
 			boolean free = (boolean)json.get("free");
-			int index = (int)(long)json.get("playerIndex");
+			UUID index = (UUID)json.get("playerIndex");
 			String gson = server.buildSettlement(index, gameID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

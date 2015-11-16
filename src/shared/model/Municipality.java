@@ -19,6 +19,10 @@ public class Municipality {
 	private PlayerReference owner;
 	private VertexLocation location;
 	private MunicipalityType type;
+	
+	public Municipality() {
+		
+	}
 
 	public Municipality(List<Player> players, JSONObject json, MunicipalityType type) throws SchemaMismatchException {
 		try {

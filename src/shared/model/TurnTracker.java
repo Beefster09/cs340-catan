@@ -15,10 +15,14 @@ import shared.exceptions.SchemaMismatchException;
  *
  */
 public class TurnTracker {
-	private List<Player> players;
+	private transient List<Player> players;
 	
 	private PlayerReference currentPlayer;
 	private TurnStatus status;
+	
+	public TurnTracker() {
+		
+	}
 
 	public TurnTracker(List<Player> players) {
 		players = new ArrayList<>(players);
@@ -49,6 +53,28 @@ public class TurnTracker {
 	 */
 	void setStatus(TurnStatus status) {
 		this.status = status;
+	}
+
+	void roll(int roll) {
+		if (roll == 7) {
+			boolean discardNeeded = false;
+			for (Player player : players) {
+				if (player.getResources().count() >= 8) {
+					discardNeeded = true;
+					player.setHasDiscarded(false);
+					break;
+				}
+			}
+			if (discardNeeded) {
+				setStatus(TurnStatus.Discarding);
+			}
+			else {
+				setStatus(TurnStatus.Robbing);
+			}
+		}
+		else {
+			setStatus(TurnStatus.Playing);
+		}
 	}
 
 	/**
@@ -86,6 +112,7 @@ public class TurnTracker {
 			}
 			break;
 		case Playing:
+			currentPlayer.getPlayer().ageDevCards();
 			currentPlayer = players.get(currentPlayerIndex + 1).getReference();
 			status = TurnStatus.Rolling;
 			currentPlayer.getPlayer().setHasRolled(false);
@@ -131,28 +158,6 @@ public class TurnTracker {
 		if (status != other.status)
 			return false;
 		return true;
-	}
-
-	void roll(int roll) {
-		if (roll == 7) {
-			boolean discardNeeded = false;
-			for (Player player : players) {
-				if (player.getResources().count() >= 8) {
-					discardNeeded = true;
-					player.setHasDiscarded(false);
-					break;
-				}
-			}
-			if (discardNeeded) {
-				setStatus(TurnStatus.Discarding);
-			}
-			else {
-				setStatus(TurnStatus.Robbing);
-			}
-		}
-		else {
-			setStatus(TurnStatus.Playing);
-		}
 	}	
 	
 }

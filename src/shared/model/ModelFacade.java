@@ -1,7 +1,15 @@
 package shared.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import client.misc.ClientManager;
 
 import shared.IDice;
 import shared.NormalDice;
@@ -9,8 +17,10 @@ import shared.communication.GameHeader;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.TradeException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
@@ -20,6 +30,7 @@ public class ModelFacade {
 
 	protected CatanModel model;
 	private IDice dice;
+	protected List<IModelListener> listeners;
 
 	public ModelFacade() {
 		this(new CatanModel(), new NormalDice());
@@ -35,7 +46,9 @@ public class ModelFacade {
 		this.dice = dice;
 	}
 
-	public CatanModel getCatanModel() {
+	// We probably SHOULDN'T have this... but it's kind of too late now.
+	// As of the time of writing this comment, it's used in 57 places in the project.
+	public synchronized CatanModel getCatanModel() {
 		return model;
 	}
 
@@ -55,12 +68,7 @@ public class ModelFacade {
 	public synchronized boolean canRoll(PlayerReference player) {
 		
 		Player currentPlayer = getCurrentPlayer().getPlayer();
-		if(currentPlayer.equals(player.getPlayer()) && !currentPlayer.hasRolled()) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return currentPlayer.equals(player.getPlayer()) && !currentPlayer.hasRolled();
 	}
 
 	public synchronized void rollDice(PlayerReference player) throws NotYourTurnException {
@@ -78,12 +86,26 @@ public class ModelFacade {
 	 * @return true if the hex is not a desert hex.
 	 * @return false otherwise
 	 */
-	public synchronized boolean canRob(HexLocation hexLoc) {		
+	public synchronized boolean canMoveRobberTo(HexLocation hexLoc) {		
 		return model.getMap().canMoveRobberTo(hexLoc);
 	}
 
-	public synchronized void doRob() {
-			
+	public synchronized void rob(PlayerReference player, HexLocation loc, PlayerReference victim)
+			throws InvalidActionException {
+		if (!canMoveRobberTo(loc)) {
+			throw new InvalidActionException("Invalid Robber placement!");
+		}
+		if (!isTurn(player)) {
+			throw new NotYourTurnException();
+		}
+		if (currentPhase() != TurnStatus.Robbing) {
+			throw new InvalidActionException("You may not rob at this time.");
+		}
+		if (player.equals(victim)) {
+			throw new InvalidActionException("You cannot rob yourself.");
+		}
+		
+		model.rob(player, loc, victim);
 	}
 
 	/**
@@ -131,8 +153,9 @@ public class ModelFacade {
 		return canBuyDevelopmentCard(getCurrentPlayer());
 	}
 
-	public synchronized void buyDevelopmentCard() {
-		
+	public synchronized void buyDevelopmentCard(PlayerReference player)
+			throws InvalidActionException {
+		model.buyDevCard(player);
 	}
 
 	/**
@@ -163,20 +186,11 @@ public class ModelFacade {
 		}
 		TurnStatus phase = currentPhase();
 		if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-			model.buildStartingRoad(player, loc);
+			throw new InvalidActionException("You cannot build a road during setup; " +
+					"Use the buildStartingPieces method instead.");
 		}
 		else {
 			model.buildRoad(player, loc);
-		}
-	}
-
-	public synchronized boolean canBuildStartingRoad(EdgeLocation loc) {
-		try {
-			Board map = model.getMap();
-			PlayerReference currentPlayer = getCurrentPlayer();
-			return map.canBuildStartingRoadAt(currentPlayer, loc);
-		} catch (IndexOutOfBoundsException e) {
-			return false;
 		}
 	}
 
@@ -200,7 +214,8 @@ public class ModelFacade {
 		}
 		TurnStatus phase = currentPhase();
 		if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-			model.buildStartingSettlement(player, loc);
+			throw new InvalidActionException("You cannot build a settlement during setup; " +
+					"Use the buildStartingPieces method instead.");
 		}
 		else {
 			model.buildSettlement(player, loc);
@@ -217,12 +232,21 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildCity(VertexLocation vertexLoc) {
-		
-		Board map = model.getMap();
-		
-		PlayerReference currentPlayer = getCurrentPlayer();
-		
-		return model.canBuildCity(currentPlayer, vertexLoc);
+		return canBuildCity(getCurrentPlayer(), vertexLoc);
+	}
+
+	/**
+	 * 
+	 * @param vertexLoc The location (one of the 6 vertices of one hex on the board)
+	 * where the city is to be placed.
+	 * @return true if the given vertex location is adjacent to at least one road
+	 * that the player owns, the given location is empty, and the player owns a settlement
+	 * at the given location.
+	 * @return false otherwise
+	 */
+	public synchronized boolean canBuildCity(PlayerReference player,
+			VertexLocation vertexLoc) {	
+		return model.canBuildCity(player, vertexLoc);
 	}
 
 	/**
@@ -233,26 +257,44 @@ public class ModelFacade {
 	 */
 	public synchronized void buildCity(PlayerReference player, VertexLocation loc)
 			throws InvalidActionException {
-				model.buildCity(player, loc);
-			}
+		model.buildCity(player, loc);
+	}
+
+	public synchronized boolean canBuildStartingSettlement(VertexLocation loc) {
+		return model.getMap().canPlaceStartingSettlement(loc);
+	}
+
+	public synchronized boolean canBuildStartingPieces(VertexLocation settlement, EdgeLocation road) {
+		return model.getMap().canPlaceStartingPieces(settlement, road);
+	}
+
+	public synchronized void buildStartingPieces(PlayerReference player, 
+			VertexLocation settlement, EdgeLocation road) throws InvalidActionException {
+		model.buildStartingPieces(player, settlement, road);
+	}
 
 	/**
 	 * 
 	 * @return true if the player owns at least one year of plenty card
 	 * @return false otherwise
 	 */
-	public synchronized boolean canYearOfPlenty() {
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		DevCardList list = currentPlayer.getOldDevCards();
-		
-		if(list.count(DevCardType.YEAR_OF_PLENTY) > 0)
-			return true;
-		
-		return false;
+	public synchronized boolean canYearOfPlenty(PlayerReference player,
+			ResourceType resource1, ResourceType resource2) {	
+		ResourceList bank = model.getBank().getResources();
+		return isTurn(player) && currentPhase() == TurnStatus.Playing &&
+				player.getPlayer().getOldDevCards().count(DevCardType.YEAR_OF_PLENTY) > 0 &&
+				(resource1 == resource2 ? bank.count(resource1) >= 2 :
+				bank.count(resource1) >= 1 && bank.count(resource2) >= 1);
 	}
 
-	public synchronized boolean doYearOfPlenty() {
-		return true;
+	public synchronized void yearOfPlenty(PlayerReference player,
+			ResourceType resource1, ResourceType resource2)
+					throws InvalidActionException {
+		if (!canYearOfPlenty(player, resource1, resource2)) {
+			throw new InvalidActionException();
+		}
+		
+		model.yearOfPlenty(player, resource1, resource2);
 	}
 
 	/**
@@ -261,18 +303,20 @@ public class ModelFacade {
 	 * and has at least one unplaced road.
 	 * @return false otherwise
 	 */
-	public synchronized boolean canRoadBuildingCard() {
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		DevCardList list = currentPlayer.getOldDevCards();
-		
-		if(list.count(DevCardType.ROAD_BUILD) > 0)
-			return true;
-		
-		return false;
+	public synchronized boolean canRoadBuildingCard(PlayerReference player,
+			EdgeLocation road1, EdgeLocation road2) {	
+		return isTurn(player) &&
+				player.getPlayer().getOldDevCards().count(DevCardType.ROAD_BUILD) > 0 &&
+				model.getMap().canBuild2Roads(player, road1, road2);
 	}
 
-	public synchronized boolean doRoadBuildCard() {
-		return true;
+	public synchronized void roadBuildingCard(PlayerReference player,
+			EdgeLocation road1, EdgeLocation road2) throws InvalidActionException {
+		if (!canRoadBuildingCard(player, road1, road2)) {
+			throw new InvalidActionException();
+		}
+		
+		model.roadBuilding(player, road1, road2);
 	}
 
 	/**
@@ -326,10 +370,7 @@ public class ModelFacade {
 		Player currentPlayer = getCurrentPlayer().getPlayer();
 		DevCardList list = currentPlayer.getOldDevCards();
 		
-		if(list.count(DevCardType.MONUMENT) > 0)
-			return true;
-		
-		return false;
+		return list.count(DevCardType.MONUMENT) > 0;
 	}
 
 	/**
@@ -381,24 +422,7 @@ public class ModelFacade {
 	 * @return true if player has enough cards
 	 * @return false otherwise
 	 */
-	public synchronized boolean canAcceptTrade() {
-		
-		/*TradeOffer tradeOffer = model.getTradeOffer();
-		ResourceTradeList tradeList = tradeOffer.getOffer();
-		Map<ResourceType, Integer> wanted = tradeList.getWanted();
-		
-		Player receivingPlayer = tradeOffer.getReceiver().getPlayer();
-		ResourceList list = receivingPlayer.getResources();
-		
-		//iterate through all resources in the offer
-		for(Map.Entry<ResourceType, Integer> entry : wanted.entrySet()) {
-			
-			//check to see if there are as many resources in the hand of the receiving player as there are in the offer
-			if(!(list.count(entry.getKey()) >= entry.getValue()))
-				return false;
-			
-		}*/
-		
+	public synchronized boolean canAcceptTrade() {		
 		return model.getTradeOffer().isPossible();
 	}
 
@@ -461,7 +485,7 @@ public class ModelFacade {
 		return false;
 	}
 
-	public boolean canMaritimeTrade(PlayerReference player,
+	public synchronized boolean canMaritimeTrade(PlayerReference player,
 	ResourceType fromResource, ResourceType toResource) {
 		return model.canMaritimeTrade(player, fromResource,	toResource);
 	}
@@ -474,7 +498,7 @@ public class ModelFacade {
 	public synchronized void maritimeTrade(PlayerReference player,
 			ResourceType fromResource, ResourceType toResource) throws InvalidActionException {
 		if (!canMaritimeTrade(player, fromResource, toResource)) {
-			throw new InvalidActionException("Invalid Maritime Trade");
+			throw new InvalidActionException("Impossible Maritime Trade");
 		}
 		
 		model.maritimeTrade(player, fromResource, toResource);
@@ -482,14 +506,6 @@ public class ModelFacade {
 
 	public synchronized int getVersion() {
 		return model.getVersion();
-	}
-
-	public synchronized boolean canBuildStartingSettlement(VertexLocation loc) {
-		return model.getMap().canPlaceStartingSettlement(loc);
-	}
-
-	public synchronized boolean canBuildStartingPieces(VertexLocation settlement, EdgeLocation road) {
-		return model.getMap().canPlaceStartingPieces(settlement, road);
 	}
 
 	public synchronized boolean canBuild2Roads(EdgeLocation first, EdgeLocation second) {
@@ -508,6 +524,325 @@ public class ModelFacade {
 
 	protected boolean isTurn(PlayerReference player) {
 		return model.isTurn(player);
+	}
+
+	public synchronized void registerListener(IModelListener listener) {
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	public synchronized void unregisterListener(IModelListener listener) {
+		listeners.remove(listener);
+	}
+
+	/** Updates the model from json
+	 * THIS is a CLIENT-ONLY method!
+	 * @param json
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized CatanModel updateFromJSON(String jsonString) {
+		JSONObject json;
+		try {
+			json = (JSONObject) new JSONParser().parse(jsonString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		int newVersion = (int) (long) json.get("version");
+		//We are still waiting for players.
+		List<JSONObject> listOfPlayers = (List<JSONObject>)json.get("players");
+		int currentPlayerCount = 4;
+		for(JSONObject play : listOfPlayers){
+			if(play == null){
+				--currentPlayerCount;
+			}
+		}
+		if (newVersion == 0 &&
+			currentPlayerCount < 4) {
+			updatePlayersFromJSON(json);
+			return model;
+		}
+		if (getVersion() == newVersion) {
+			return null;
+		}
+		model.setVersion(newVersion);
+		
+		//BANK
+		updateBankFromJSON(json);
+		
+		//PLAYERS
+		List<Player> players = updatePlayersFromJSON(json);
+		
+		//BOARD
+		updateMapFromJSON(json, players);
+		
+		//TURNTRACKER
+		updateTurnTrackerFromJSON(json,players);
+		
+		//TRADEOFFER
+		updateTradeOfferFromJSON(json,players);
+		
+		//CHAT
+		updateChatFromJSON(json);
+		
+		//LOG
+		updateLogFromJSON(json);
+		
+		//WINNER
+		updateWinnerFromJSON(json);
+		
+		return model;
+		
+	}
+
+	private void updateBankFromJSON(JSONObject json) {
+		//JSONObject object = (JSONObject) json.get("bank");
+		try {
+			Bank otherBank = new Bank(json);
+			if (model.getBank() == null || !model.getBank().equals(otherBank)) {
+				model.setBank(otherBank);
+				for (IModelListener listener : listeners) {
+					listener.bankChanged(otherBank);
+				}
+			}
+		} catch (SchemaMismatchException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void updateMapFromJSON(JSONObject json, List<Player> players) {
+		JSONObject object = (JSONObject) json.get("map");
+		try {
+			Board otherBoard = new Board(players, object);
+			if (model.getMap() == null) 
+			{ 
+				model.setMap(otherBoard);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.mapInitialized();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			else if (!model.getMap().equals(otherBoard)) {
+				model.setMap(otherBoard);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.mapChanged(otherBoard);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (SchemaMismatchException e) {
+			e.printStackTrace();
+		} catch (GameInitializationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Player> updatePlayersFromJSON(JSONObject json) {
+		List<Player> players = new ArrayList<Player>();
+		int i = 0;
+		for (Object obj : (List) json.get("players")) {
+			JSONObject player = (JSONObject) obj;
+			if (player != null) {
+				try {
+					Player newPlayer = new Player(player);
+					if (ClientManager.getSession() != null && newPlayer.getPlayerID() == ClientManager.getSession().getPlayerID()) {
+						ClientManager.setLocalPlayer(new PlayerReference(model, i));
+					}
+					players.add(newPlayer);
+				} catch (SchemaMismatchException e) {
+					e.printStackTrace();
+				}
+			}
+			i++;
+		}
+		if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
+			model.setPlayers(players);
+			for (IModelListener listener : listeners) {
+				try {
+					listener.playersChanged(players);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return players;
+		}
+		else
+			return model.getPlayers();
+	}
+
+	private void updateTurnTrackerFromJSON(JSONObject json, List<Player> players) {
+		
+		if (json.containsKey("turnTracker")) {
+			
+			JSONObject object = (JSONObject) json.get("turnTracker");
+			try {
+				TurnTracker otherTurnTracker = new TurnTracker(players,object);
+				if (model.getTurnTracker() == null || 
+					!model.getTurnTracker().equals(otherTurnTracker)) {
+					model.setTurnTracker(otherTurnTracker);
+					for (IModelListener listener : listeners) {
+						try {
+							listener.turnTrackerChanged(otherTurnTracker);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				
+				//LARGEST ARMY
+				updateLargestArmyFromJSON(object);
+				
+				//LONGEST ROAD
+				updateLongestRoadFromJSON(object);
+				
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void updateLargestArmyFromJSON(JSONObject json) {
+		if (json.containsKey("largestArmy")) {
+			int largestArmyPlayer = (int) (long) json.get("largestArmy");
+			PlayerReference otherPlayer = new PlayerReference(model, largestArmyPlayer);
+			if (model.getLargestArmy() == null || 
+				!model.getLargestArmy().equals(otherPlayer)) {
+				model.setLongestRoad(otherPlayer);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.largestArmyChanged(otherPlayer);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void updateLongestRoadFromJSON(JSONObject json) {
+		if (json.containsKey("longestRoad")) {
+			int longestRoadPlayer = (int) (long) json.get("longestRoad");
+			PlayerReference otherPlayer = new PlayerReference(model, longestRoadPlayer);
+			if (model.getLongestRoad() == null ||
+				!model.getLongestRoad().equals(otherPlayer)) {
+				model.setLongestRoad(otherPlayer);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.longestRoadChanged(otherPlayer);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	private void updateTradeOfferFromJSON(JSONObject json, List<Player> players) {
+		if (json.containsKey("tradeOffer")) {
+			JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
+			TradeOffer otherOffer;
+			try {
+				otherOffer = new TradeOffer(players,tradeOffer);
+				if (model.getTradeOffer() == null || !model.getTradeOffer().equals(otherOffer)) {
+					model.setTradeOffer(otherOffer);
+					for (IModelListener listener : listeners) {
+						try {
+							listener.tradeOfferChanged(otherOffer);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+		else{// if (model.getTradeOffer() != null) {
+			model.setTradeOffer(null);
+			for (IModelListener listener : listeners) {
+				try {
+					listener.tradeOfferChanged(null);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void updateChatFromJSON(JSONObject json) {
+		if (json.containsKey("chat")) {
+			JSONObject object = (JSONObject) json.get("chat");
+			MessageList otherChat;
+			try {
+				otherChat = new MessageList(object);
+				if (model.getChat() == null || !model.getChat().equals(otherChat)) {
+					model.setChat(otherChat);
+					for (IModelListener listener : listeners) {
+						try {
+							listener.chatChanged(otherChat);
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void updateLogFromJSON(JSONObject json) {
+		if (json.containsKey("log")) {
+			JSONObject object = (JSONObject) json.get("log");
+			try {
+				MessageList otherLog = new MessageList(object);
+				if (!otherLog.equals(model.getLog())) {
+					model.setLog(otherLog);
+					for (IModelListener listener : listeners) {
+						try {
+							listener.logChanged(otherLog);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} catch (SchemaMismatchException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void updateWinnerFromJSON(JSONObject json) {
+		if (!json.containsKey("winner")) {
+			return;
+		}
+		PlayerReference winner = new PlayerReference((String) json.get("winner"));
+		//PlayerReference otherPlayer = new PlayerReference(model, winner);
+		if (model.getWinner() != null || !model.getWinner().equals(winner)) {
+			model.setWinner(winner);
+			for (IModelListener listener : listeners) {
+				try {
+					listener.winnerChanged(winner);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }

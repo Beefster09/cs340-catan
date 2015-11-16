@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +51,7 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 			
 			boolean free = (boolean)json.get("free");
 			
-			int playerIndex = (int)(long)json.get("playerIndex");
+			UUID playerIndex = (UUID)json.get("playerIndex");
 			String gson = server.buildRoad(playerIndex, gameID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
