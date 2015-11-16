@@ -1,5 +1,7 @@
 package shared.communication;
 
+import java.util.UUID;
+
 /** This class represents a user session, stores session info, and converts to and from session cookies.
  *
  */
@@ -7,6 +9,7 @@ public class Session {
 	private String username;
 	private String password;
 	private int playerID;
+	private UUID playerUUID;
 	
 	/**
 	 * @param username The player's username
@@ -17,6 +20,17 @@ public class Session {
 		this.username = username;
 		this.password = password;
 		this.playerID = playerID;
+	}
+	
+	/**
+	 * @param username The player's username
+	 * @param password The player's password
+	 * @param playerUUID Their unique player UUID
+	 */
+	public Session(String username, String password, UUID playerUUID) {
+		this.username = username;
+		this.password = password;
+		this.playerUUID = playerUUID;
 	}
 	
 	/** Creates a session from a cookie
@@ -45,6 +59,10 @@ public class Session {
 	 */
 	public int getPlayerID() {
 		return playerID;
+	}
+	
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 	
 	/**

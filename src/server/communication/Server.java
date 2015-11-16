@@ -37,11 +37,14 @@ import shared.model.ResourceTradeList;
 public class Server implements IServer {
 
 	Map<UUID,ModelFacade> models = new HashMap<UUID,ModelFacade>();
+	Map<UUID,Session> users = new HashMap<UUID,Session>();
 	
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
 		// TODO Auto-generated method stub
-		return null;
+		//VERY TEMPORARY, NEED VALIDATION HERE
+		Session session = new Session(username,password,1);
+		return session;
 	}
 
 	@Override

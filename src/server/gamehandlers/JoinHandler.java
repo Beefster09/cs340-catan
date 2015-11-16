@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -40,7 +41,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			UUID gameID = (UUID) json.get("id");
+			UUID gameID = UUID.fromString( (String) json.get("id"));
 			//int playerUUID = (int)json.get("playerUUID");
 			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
 			

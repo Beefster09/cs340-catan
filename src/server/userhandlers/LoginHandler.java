@@ -14,6 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.*;
 import shared.exceptions.ServerException;
@@ -27,7 +28,7 @@ import shared.exceptions.UserException;
  */
 public class LoginHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = new Server();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -48,7 +49,7 @@ public class LoginHandler implements HttpHandler {
 			JSONObject header = new JSONObject();
 			header.put("name", user.getUsername());
 			header.put("password", user.getPassword());
-			header.put("playerID", user.getPlayerID());
+			header.put("playerID", user.getPlayerUUID().toString());
 			StringBuilder str = new StringBuilder();
 			str.append("catan.user=");
 			str.append(URLEncoder.encode(header.toJSONString()));
