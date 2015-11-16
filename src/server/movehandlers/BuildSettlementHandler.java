@@ -50,7 +50,7 @@ public class BuildSettlementHandler extends AbstractMoveHandler implements HttpH
 			
 			VertexLocation location = new VertexLocation(jsonObject);
 			boolean free = (boolean)json.get("free");
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String gson = server.buildSettlement(index, gameUUID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
