@@ -231,5 +231,18 @@ public class VertexLocation
 				return null;
 		}
 	}
+
+	public VertexLocation traverse(EdgeLocation edge) {
+		Collection<VertexLocation> vertices = edge.getVertices();
+		if (vertices.contains(this)) {
+			for (VertexLocation vertex : vertices) {
+				if (!vertex.equals(this)) return vertex;
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Expected adjacent edge.");
+		}
+		return null;
+	}
 }
 

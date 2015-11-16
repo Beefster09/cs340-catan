@@ -7,21 +7,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.locations.VertexLocation;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 
 /**
@@ -41,22 +38,27 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			int gameID = super.checkCookies(arg0, server);
+			if(gameID == -1){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 
-			ResourceList cards = (ResourceList)json.get("discardedCards");
-			int index = (int)json.get("playerIndex");
-			int gameIndex = this.checkCookies(arg0);
-			String gson = server.discardCards(index, gameIndex, cards);
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("discardedCards"));
+			ResourceList cards = ResourceList.fromJSONObject(jsonObject);
+			int index = (int)(long)json.get("playerIndex");
+			String gson = server.discardCards(index, gameID, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}

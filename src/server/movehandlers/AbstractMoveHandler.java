@@ -6,7 +6,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import server.communication.Server;
+import shared.communication.IServer;
 import shared.communication.Session;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -14,7 +14,7 @@ import com.sun.net.httpserver.HttpExchange;
 public abstract class AbstractMoveHandler {
 
 	@SuppressWarnings("deprecation")
-	public int checkCookies(HttpExchange exchange){
+	public int checkCookies(HttpExchange exchange, IServer server){
 		List<String> cookies = exchange.getRequestHeaders().get("Cookie");
 		if(cookies.size() != 1){
 			return -1;
@@ -35,7 +35,6 @@ public abstract class AbstractMoveHandler {
 		
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
-			Server server = new Server();
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
 			int userID = (int)(long)cookie.get("playerID");

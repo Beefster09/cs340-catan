@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import shared.exceptions.InvalidActionException;
 import shared.locations.HexLocation;
 import shared.model.PlayerReference;

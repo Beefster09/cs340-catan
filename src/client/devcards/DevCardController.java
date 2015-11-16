@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import shared.communication.IServer;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;

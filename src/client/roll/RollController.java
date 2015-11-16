@@ -6,8 +6,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import shared.definitions.TurnStatus;
 import shared.model.TurnTracker;
 
