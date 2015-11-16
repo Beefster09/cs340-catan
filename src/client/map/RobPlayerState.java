@@ -49,8 +49,6 @@ public class RobPlayerState extends MapControllerState {
 						victimInfo.getPlayerIndex());
 				}
 
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				if (previous instanceof SoldierMoveState) {
 					return ClientManager.getServer().soldier(getYourself().getPlayerUUID(), gameUUID,

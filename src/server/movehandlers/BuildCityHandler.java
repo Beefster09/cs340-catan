@@ -50,7 +50,7 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
 			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
-			UUID playerIndex = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			//String gson = server.buildCity(playerIndex, gameUUID, vertexLocation);
 			String gson = new Server().buildCity(playerIndex, gameUUID, vertexLocation);
 			

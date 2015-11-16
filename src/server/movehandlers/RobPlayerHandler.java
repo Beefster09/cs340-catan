@@ -47,7 +47,7 @@ public class RobPlayerHandler extends AbstractMoveHandler implements HttpHandler
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			JSONParser parser = new JSONParser();
 			JSONObject location = (JSONObject)parser.parse((String)json.get("location"));
 			
