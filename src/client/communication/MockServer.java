@@ -39,14 +39,14 @@ public class MockServer implements IServer {
 	public Session login(String username, String password)
 			throws UserException, ServerException {
 		
-		return new Session("SAM", "sam", 1);
+		return new Session("SAM", "sam", UUID.randomUUID());
 	}
 
 	@Override
 	public Session register(String username, String password)
 			throws UserException, ServerException {
 		
-		return new Session("JOE", "joe", 1);
+		return new Session("JOE", "joe", UUID.randomUUID());
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public class LoginHandler implements HttpHandler {
 			JSONObject header = new JSONObject();
 			header.put("name", user.getUsername());
 			header.put("password", user.getPassword());
-			header.put("playerID", user.getPlayerID());
+			header.put("playerUUID", user.getPlayerUUID().toString());
 			StringBuilder str = new StringBuilder();
 			str.append("catan.user=");
 			str.append(URLEncoder.encode(header.toJSONString()));

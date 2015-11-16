@@ -64,6 +64,7 @@ public class ClientCommunicator {
 				String header = con.getHeaderField("Set-cookie");
 				header = header.substring(0, header.length() - 8);
 				String cutHeader = header.substring(11);
+				String decoded = URLDecoder.decode(cutHeader);
 				JSONOutput = (JSONObject) parser.parse(URLDecoder.decode(cutHeader));
 				userCookie = header;
 				gameCookie = null;

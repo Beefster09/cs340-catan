@@ -81,8 +81,8 @@ public class ServerProxy implements IServer {
 		JSONObject returned = communicator.login(o);
 		String returnedName = (String) returned.get("name");
 		String returnedPassword = (String) returned.get("password");
-		int playerID = ((Long)returned.get("playerID")).intValue();
-		return new Session(returnedName, returnedPassword, playerID);
+		UUID playerUUID = UUID.fromString((String)returned.get("playerUUID"));
+		return new Session(returnedName, returnedPassword, playerUUID);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,8 +97,8 @@ public class ServerProxy implements IServer {
 		JSONObject returned = communicator.login(o);
 		String returnedName = (String) returned.get("name");
 		String returnedPassword = (String) returned.get("password");
-		int playerID = ((Long)returned.get("playerID")).intValue();
-		return new Session(returnedName, returnedPassword, playerID);
+		UUID playerUUID = UUID.fromString((String)returned.get("playerUUID"));
+		return new Session(returnedName, returnedPassword, playerUUID);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -163,7 +163,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
 		o.put("requestType", "POST");
 		o.put("id", gameID);
-		o.put("playerUUID", player.getPlayerID());
+		o.put("playerUUID", player.getPlayerUUID().toString());
 		o.put("color", (color.toString()).toLowerCase());
 		
 		JSONObject returned = communicator.joinGame(o);
