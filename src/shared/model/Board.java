@@ -730,22 +730,33 @@ public class Board {
 		return result;
 	}
 
-	void buildRoad(PlayerReference player, EdgeLocation loc) {
-		// TODO Auto-generated method stub
-		
+	void buildRoad(PlayerReference player, EdgeLocation loc) throws InvalidActionException {
+		if (!canBuildRoadAt(player, loc)) {
+			throw new InvalidActionException();
+		}
+
+		roads.put(loc, new Road(loc, player));
 	}
 
-	void buildStartingPieces(PlayerReference player,
+	void placeStartingPieces(PlayerReference player,
 			VertexLocation settlement, EdgeLocation road) throws InvalidActionException {
 		if (!canPlaceStartingPieces(settlement, road)) {
 			throw new InvalidActionException();
 		}
-		
+
+		municipalities.put(settlement, 
+				new Municipality(settlement, MunicipalityType.SETTLEMENT, player));
+		roads.put(road, new Road(road, player));
 		
 	}
 
-	void buildSettlement(PlayerReference player, VertexLocation loc) {
-		// TODO Auto-generated method stub
+	void buildSettlement(PlayerReference player, VertexLocation loc) throws InvalidActionException {
+		if (!canBuildSettlement(player, loc)) {
+			throw new InvalidActionException();
+		}
+
+		municipalities.put(loc, 
+				new Municipality(loc, MunicipalityType.SETTLEMENT, player));
 		
 	}
 

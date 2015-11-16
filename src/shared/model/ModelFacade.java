@@ -174,7 +174,8 @@ public class ModelFacade {
 		}
 		TurnStatus phase = currentPhase();
 		if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-			model.buildStartingRoad(player, loc);
+			throw new InvalidActionException("You cannot build a road during setup; " +
+					"Use the buildStartingPieces method instead.");
 		}
 		else {
 			model.buildRoad(player, loc);
@@ -201,7 +202,8 @@ public class ModelFacade {
 		}
 		TurnStatus phase = currentPhase();
 		if (phase == TurnStatus.FirstRound || phase == TurnStatus.SecondRound) {
-			model.buildStartingSettlement(player, loc);
+			throw new InvalidActionException("You cannot build a settlement during setup; " +
+					"Use the buildStartingPieces method instead.");
 		}
 		else {
 			model.buildSettlement(player, loc);
@@ -243,21 +245,44 @@ public class ModelFacade {
 	 */
 	public synchronized void buildCity(PlayerReference player, VertexLocation loc)
 			throws InvalidActionException {
-				model.buildCity(player, loc);
-			}
+		model.buildCity(player, loc);
+	}
+
+	public synchronized boolean canBuildStartingSettlement(VertexLocation loc) {
+		return model.getMap().canPlaceStartingSettlement(loc);
+	}
+
+	public synchronized boolean canBuildStartingPieces(VertexLocation settlement, EdgeLocation road) {
+		return model.getMap().canPlaceStartingPieces(settlement, road);
+	}
+
+	public synchronized void buildStartingPieces(PlayerReference player, 
+			VertexLocation settlement, EdgeLocation road) throws InvalidActionException {
+		model.buildStartingPieces(player, settlement, road);
+	}
 
 	/**
 	 * 
 	 * @return true if the player owns at least one year of plenty card
 	 * @return false otherwise
 	 */
-	public synchronized boolean canYearOfPlenty(PlayerReference player) {		
+	public synchronized boolean canYearOfPlenty(PlayerReference player,
+			ResourceType resource1, ResourceType resource2) {	
+		ResourceList bank = model.getBank().getResources();
 		return isTurn(player) && currentPhase() == TurnStatus.Playing &&
-				player.getPlayer().getOldDevCards().count(DevCardType.YEAR_OF_PLENTY) > 0;
+				player.getPlayer().getOldDevCards().count(DevCardType.YEAR_OF_PLENTY) > 0 &&
+				(resource1 == resource2 ? bank.count(resource1) >= 2 :
+				bank.count(resource1) >= 1 && bank.count(resource2) >= 1);
 	}
 
-	public synchronized boolean doYearOfPlenty() {
-		return true;
+	public synchronized void yearOfPlenty(PlayerReference player,
+			ResourceType resource1, ResourceType resource2)
+					throws InvalidActionException {
+		if (!canYearOfPlenty(player, resource1, resource2)) {
+			throw new InvalidActionException();
+		}
+		
+		model.yearOfPlenty(player, resource1, resource2);
 	}
 
 	/**
@@ -459,7 +484,7 @@ public class ModelFacade {
 	public synchronized void maritimeTrade(PlayerReference player,
 			ResourceType fromResource, ResourceType toResource) throws InvalidActionException {
 		if (!canMaritimeTrade(player, fromResource, toResource)) {
-			throw new InvalidActionException("Invalid Maritime Trade");
+			throw new InvalidActionException("Impossible Maritime Trade");
 		}
 		
 		model.maritimeTrade(player, fromResource, toResource);
@@ -467,14 +492,6 @@ public class ModelFacade {
 
 	public synchronized int getVersion() {
 		return model.getVersion();
-	}
-
-	public synchronized boolean canBuildStartingSettlement(VertexLocation loc) {
-		return model.getMap().canPlaceStartingSettlement(loc);
-	}
-
-	public synchronized boolean canBuildStartingPieces(VertexLocation settlement, EdgeLocation road) {
-		return model.getMap().canPlaceStartingPieces(settlement, road);
 	}
 
 	public synchronized boolean canBuild2Roads(EdgeLocation first, EdgeLocation second) {

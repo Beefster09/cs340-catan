@@ -114,9 +114,24 @@ public class ResourceList {
 	 * list will increase by amount
 	 * @throws InsufficientResourcesException if the precondition is not met.
 	 */
-	public void transferTo(ResourceList destination, ResourceType type, int amount)
+	public void transfer(ResourceList destination, ResourceType type, int amount)
 			throws InsufficientResourcesException {
 		if (count(type) < amount) throw new InsufficientResourcesException();
+		this.resources.put(type, this.resources.get(type) - amount);
+		destination.resources.put(type, destination.resources.get(type) + amount);
+	}
+
+	/** Transfers cards from one ResourceList to another, but not more than is possible.
+	 * @param destination the ResourceList to transfer to
+	 * @param type the Type of resource to transfer
+	 * @param amount the maximum number of cards to transfer
+	 * @post This list's number of cards will decrease by amount and the destination
+	 * list will increase by amount
+	 */
+	public void transferAtMost(ResourceList destination, ResourceType type, int amount) {
+		if (count(type) < amount) {
+			amount = count(type);
+		}
 		this.resources.put(type, this.resources.get(type) - amount);
 		destination.resources.put(type, destination.resources.get(type) + amount);
 	}
@@ -200,7 +215,7 @@ public class ResourceList {
 		}
 		ResourceType card = choices.get(new Random().nextInt(choices.size()));
 		try {
-			transferTo(destination, card, 1);
+			transfer(destination, card, 1);
 		} catch (InsufficientResourcesException e) {
 			assert false;
 			// This should NEVER happen.
