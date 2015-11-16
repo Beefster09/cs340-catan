@@ -29,26 +29,31 @@ import shared.locations.HexLocation;
 import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
 
-public class ClientModelFacadeTest {
+public class ModelFacadeTest {
 
 	private CatanModel model;
-	private ClientModelFacade m;
+	private ModelFacade m;
 
 	
 	@Before
 	public void setup() throws IOException, ParseException {
 		
 		JSONParser parser = new JSONParser();
-		Reader r = new BufferedReader(new FileReader("json_test.json"));
-		Object parseResult = parser.parse(r);
-		JSONObject json = ((JSONObject) parseResult);
+		BufferedReader r = new BufferedReader(new FileReader("json_test.json"));
+		StringBuilder json = new StringBuilder();
+		while(true) {
+			String line = r.readLine();
+			if (line == null) break;
+			json.append(line);
+			json.append('\n');
+		}
 		
 		model = new CatanModel();
+		m = new ModelFacade(model);
+		m.updateFromJSON(json.toString());
 		model.setHeader(new GameHeader("Dummy Game", 
 				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),
 				new ArrayList<PlayerHeader>()));
-		m = new ClientModelFacade(model);
-		m.updateFromJSON(json.toJSONString());
 	}
 	
 	

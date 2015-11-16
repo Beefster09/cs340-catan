@@ -12,8 +12,12 @@ import shared.definitions.CatanColor;
 public class PlayerReference {
 	private static final int INVALID_INDEX = -1337;
 	//private CatanModel game;
-	private int playerIndex; // Cached
+	private transient int playerIndex; // Cached
 	private UUID playerUUID;
+	
+	public PlayerReference() {
+		
+	}
 	
 	/** Old server compatible constructor
 	 * @param game

@@ -11,7 +11,7 @@ import client.misc.ClientManager;
 import shared.communication.IServer;
 import shared.communication.Session;
 import shared.exceptions.*;
-import shared.model.ClientModelFacade;
+import shared.model.ModelFacade;
 
 
 
@@ -34,7 +34,7 @@ public class ServerPoller {
 	private Timer poller = null;
 	ClientCommunicator comm;
 	Session user;
-	ClientModelFacade modelHandler = ClientManager.getModel();
+	ModelFacade modelHandler = ClientManager.getModel();
 	
 	public static void main() {
 		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));

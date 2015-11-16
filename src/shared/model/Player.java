@@ -68,6 +68,10 @@ public class Player {
 		playerTable.put(uuid, this);
 	}
 	
+	public Player() {
+		
+	}
+	
 	public Player(int index) {
 		playerIndex = index;
 		

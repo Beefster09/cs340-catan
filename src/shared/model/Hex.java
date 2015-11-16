@@ -18,6 +18,10 @@ public class Hex {
 	private ResourceType resource;
 	private int number;
 	
+	public Hex() {
+		this(null, null, EMPTY_NUMBER);
+	}
+	
 	public Hex(HexLocation location, ResourceType resource) {
 		this(location, resource, EMPTY_NUMBER);
 	}

@@ -15,10 +15,14 @@ import shared.exceptions.SchemaMismatchException;
  *
  */
 public class TurnTracker {
-	private List<Player> players;
+	private transient List<Player> players;
 	
 	private PlayerReference currentPlayer;
 	private TurnStatus status;
+	
+	public TurnTracker() {
+		
+	}
 
 	public TurnTracker(List<Player> players) {
 		players = new ArrayList<>(players);
