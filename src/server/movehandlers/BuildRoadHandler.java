@@ -52,7 +52,7 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 			boolean free = (boolean)json.get("free");
 			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
-			String gson = server.buildRoad(playerIndex, gameUUID, location, free);
+			String gson = server.buildRoad(index, gameUUID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

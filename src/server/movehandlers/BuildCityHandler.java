@@ -52,7 +52,7 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			//String gson = server.buildCity(playerIndex, gameUUID, vertexLocation);
-			String gson = new Server().buildCity(playerIndex, gameUUID, vertexLocation);
+			String gson = new Server().buildCity(index, gameUUID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

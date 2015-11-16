@@ -47,7 +47,7 @@ public class AcceptTradeHandler extends AbstractMoveHandler implements HttpHandl
 			boolean willAccept = (boolean)json.get("willAccept");
 			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
-			String gson = server.respondToTrade(playerIndex, gameUUID, willAccept);
+			String gson = server.respondToTrade(index, gameUUID, willAccept);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
