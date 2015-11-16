@@ -39,8 +39,8 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -52,7 +52,7 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 			boolean free = (boolean)json.get("free");
 			
 			UUID playerIndex = (UUID)json.get("playerIndex");
-			String gson = server.buildRoad(playerIndex, gameID, location, free);
+			String gson = server.buildRoad(playerIndex, gameUUID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
