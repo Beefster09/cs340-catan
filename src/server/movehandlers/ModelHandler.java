@@ -6,26 +6,21 @@ import java.net.HttpURLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import client.communication.MockServer;
-import server.communication.Server;
-import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
 /**
- * Handles sendChat requests by communicating with the Server Facade,
+ * Handles getModel requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class SendChatHandler extends AbstractMoveHandler implements HttpHandler {
+public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -40,30 +35,19 @@ public class SendChatHandler extends AbstractMoveHandler implements HttpHandler 
 			if(gameID == -1){
 				throw new ServerException();
 			}
-			JSONObject json = ExchangeConverter.toJSON(arg0);
-			/*
-			 * Extract needed information from JSON, and call the appropriate server method.
-			 */
-			int index = (int)(long)json.get("playerIndex");
-			String message = (String)json.get("content");
+			int versionID = Integer.valueOf(address.substring(20));
 			
-			String gson = server.sendChat(index, gameID, message);
-			//String gson = new Server().sendChat(index, gameID, message);
+			String header = server.getModel(gameID, versionID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(gson.toString());
+			output.write(header);
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (UserException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
+			
+		} catch (ServerException | UserException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
+
 }

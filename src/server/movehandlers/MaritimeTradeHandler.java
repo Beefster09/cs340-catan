@@ -9,19 +9,15 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
-import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.definitions.ResourceType;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
-import shared.model.PlayerReference;
 
 /**
  * Handles maritimeTrade requests by communicating with the Server Facade,
@@ -40,17 +36,21 @@ public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHan
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			int gameID = super.checkCookies(arg0, server);
+			if(gameID == -1){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			int index = (int)json.get("playerIndex");
-			int gameIndex = this.checkCookies(arg0);
-			int ratio = (int)json.get("ratio");
-			ResourceType inputResource = (ResourceType)json.get("inputResource");
-			ResourceType outputResource = (ResourceType)json.get("outputResource");
+			int index = (int)(long)json.get("playerIndex");
+			int ratio = (int)(long)json.get("ratio");
 			
-			String gson = server.maritimeTrade(index, gameIndex, inputResource, outputResource, ratio);
+			ResourceType inputResource = ResourceType.fromString((String)json.get("inputResource"));
+			ResourceType outputResource = ResourceType.fromString((String)json.get("outputResource"));
+			
+			String gson = server.maritimeTrade(index, gameID, inputResource, outputResource, ratio);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

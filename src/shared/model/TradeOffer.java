@@ -1,11 +1,8 @@
 package shared.model;
 
-import java.io.*;
 import java.util.*;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import shared.definitions.ResourceType;
 import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.TradeException;

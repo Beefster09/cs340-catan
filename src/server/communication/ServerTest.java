@@ -1,41 +1,5 @@
 package server.communication;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import client.communication.ServerProxy;
-import server.ai.AIType;
-import shared.communication.Command;
-import shared.communication.GameHeader;
-import shared.communication.IServer;
-import shared.communication.Session;
-import shared.definitions.CatanColor;
-import shared.definitions.ResourceType;
-import shared.exceptions.GameInitializationException;
-import shared.exceptions.GamePersistenceException;
-import shared.exceptions.InvalidActionException;
-import shared.exceptions.JoinGameException;
-import shared.exceptions.NotYourTurnException;
-import shared.exceptions.SchemaMismatchException;
-import shared.exceptions.ServerException;
-import shared.exceptions.TradeException;
-import shared.exceptions.UserException;
-import shared.locations.EdgeDirection;
-import shared.locations.EdgeLocation;
-import shared.locations.HexLocation;
-import shared.locations.VertexDirection;
-import shared.locations.VertexLocation;
-import shared.model.CatanModel;
-import shared.model.ClientModelFacade;
-import shared.model.PlayerReference;
-import shared.model.ResourceList;
-import shared.model.ResourceTradeList;
-
 public class ServerTest {
 
 	/*

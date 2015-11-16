@@ -5,8 +5,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import org.json.simple.JSONObject;
-
 import shared.definitions.CatanColor;
 import shared.model.Player;
 import shared.model.TurnTracker;

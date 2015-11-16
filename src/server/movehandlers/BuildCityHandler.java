@@ -1,7 +1,6 @@
 package server.movehandlers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.util.logging.Level;
@@ -11,19 +10,17 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import server.communication.IExtendedServer;
 import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.VertexLocation;
-import shared.model.PlayerReference;
 
 /**
  * Handles buildCity requests by communicating with the Server Facade,
@@ -42,23 +39,26 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
+			int gameID = super.checkCookies(arg0, server);
+			if(gameID == -1){
+				throw new ServerException();
+			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			json.get("player");
-			/*
-			 * Extract needed information from JSON, and call the appropriate server method.
-			 */
-			VertexLocation vertexLocation = (VertexLocation)json.get("vertexLocation");
+
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
+			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
-			int playerIndex = (int)json.get("playerIndex");
-			int gameID = checkCookies(arg0);
-			String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			int playerIndex = (int)(long)json.get("playerIndex");
+			//String gson = server.buildCity(playerIndex, gameID, vertexLocation);
+			String gson = new Server().buildCity(playerIndex, gameID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}

@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
+import com.google.gson.Gson;
 
 import server.ai.AIType;
 import server.logging.LogLevel;
@@ -25,9 +25,9 @@ import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
+import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
 import client.misc.ClientManager;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -46,23 +46,25 @@ public class ServerProxy implements IServer {
 	public static IServer getInstance(){
 		return ClientManager.getServer();
 	}
-	public static void main(String args[]) throws ServerException, UserException, JoinGameException {
-		ServerProxy proxy = new ServerProxy("localhost", 8081);
-		Session player = proxy.login("Sam", "sam");
-		proxy.joinGame(player, 1, CatanColor.BLUE);
-		String returnValue = proxy.yearOfPlenty(0, 0, ResourceType.BRICK, ResourceType.ORE);
-		System.out.println(returnValue);
-		
-	}
 	
+	public static void main(String[] args) throws JoinGameException, ServerException, UserException {
+		ServerProxy test = new ServerProxy("localhost",8081);
+		Session player = test.login("Sam", "sam");
+		if (test.joinGame(player, 0, CatanColor.BLUE)) {
+			VertexLocation loc = new VertexLocation(0, 0, VertexDirection.East);
+			test.buildCity(0, 0, loc);
+		}
+	}
 
 	private ClientCommunicator communicator = new ClientCommunicator();
 	private String host = null;
 	private int port = -1;
+	private Gson gson;
 
 	public ServerProxy(String host, int port){
 		this.host = host;
 		this.port = port;
+		gson = new Gson();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -111,8 +113,8 @@ public class ServerProxy implements IServer {
 			for(JSONObject game : listOfGames){
 				try {
 					returnList.add(new GameHeader(game));
-				} catch (SchemaMismatchException e) {
-					// TODO Auto-generated catch block
+				}
+				catch (SchemaMismatchException e) {
 					e.printStackTrace();
 				}
 			}
@@ -144,8 +146,8 @@ public class ServerProxy implements IServer {
 		}
 		catch(UserException e){
 			System.out.println("There was a typo somewhere in order for me to get here!!!");
-		} catch (SchemaMismatchException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (SchemaMismatchException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -324,7 +326,7 @@ public class ServerProxy implements IServer {
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
-		o.put("location", location);
+		o.put("location", gson.toJson(location));
 		
 		return communicator.send(o);
 	}
@@ -370,8 +372,8 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user);
 		JSONObject firstRoad = road1.toJSONObject();
 		JSONObject secondRoad = road2.toJSONObject();
-		o.put("spot1", firstRoad);
-		o.put("spot2", secondRoad);
+		o.put("spot1", gson.toJson(firstRoad));
+		o.put("spot2", gson.toJson(secondRoad));
 		
 		return communicator.send(o);
 	}
@@ -390,7 +392,7 @@ public class ServerProxy implements IServer {
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
-		o.put("location", location);
+		o.put("location", gson.toJson(location));
 		
 		return communicator.send(o);
 	}
@@ -420,7 +422,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildRoad");
 		o.put("playerIndex", user);
 		JSONObject roadLocation = location.toJSONObject();		
-		o.put("roadLocation", roadLocation);
+		o.put("roadLocation", gson.toJson(roadLocation));
 		o.put("free", free);
 		
 		return communicator.send(o);
@@ -437,7 +439,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildSettlement");
 		o.put("playerIndex", user);
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("vertexLocation", vertexLocation);
+		o.put("vertexLocation", gson.toJson(vertexLocation));
 		o.put("free", free);
 		
 		return communicator.send(o);
@@ -453,7 +455,7 @@ public class ServerProxy implements IServer {
 		o.put("type", "buildCity");
 		o.put("playerIndex", user);
 		JSONObject vertexLocation = location.toJSONObject();
-		o.put("vertexLocation", vertexLocation);
+		o.put("vertexLocation", gson.toJson(vertexLocation));
 		
 		return communicator.send(o);
 	}
@@ -468,7 +470,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
 		o.put("playerIndex", user);
-		o.put("offer", offer.toJSONObject());
+		o.put("offer", gson.toJson(offer.toJSONObject()));
 		o.put("receiver", receiver);
 		
 		return communicator.send(o);
@@ -514,7 +516,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "discardCards");
 		o.put("playerIndex", user);
-		o.put("discardedCards", cards.toJSONObject());
+		o.put("discardedCards", gson.toJson(cards.toJSONObject()));
 		
 		return communicator.send(o);
 	}

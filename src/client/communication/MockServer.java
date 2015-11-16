@@ -1,16 +1,11 @@
 package client.communication;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.UUID;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import server.ai.AIType;
 import server.logging.LogLevel;
@@ -29,7 +24,6 @@ import shared.exceptions.ServerException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
-import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
@@ -107,9 +101,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -120,9 +112,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -160,9 +150,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -174,9 +162,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -188,9 +174,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -202,9 +186,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -215,9 +197,7 @@ public class MockServer implements IServer {
 			ResourceType type2) throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -228,9 +208,7 @@ public class MockServer implements IServer {
 			EdgeLocation road2) throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -242,9 +220,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -255,9 +231,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -268,9 +242,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -281,9 +253,7 @@ public class MockServer implements IServer {
 			boolean free) throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -295,9 +265,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -308,9 +276,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -322,9 +288,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -335,9 +299,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -349,9 +311,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -362,9 +322,7 @@ public class MockServer implements IServer {
 			throws ServerException, UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -375,9 +333,7 @@ public class MockServer implements IServer {
 			UserException {
 		
 		try {
-			JSONParser parser = new JSONParser();
-			Reader r = new BufferedReader(new FileReader("json_test.json"));
-			return r.toString();
+			return readJSON();
 		} catch (IOException e) {
 		}
 		return null;
@@ -389,4 +345,12 @@ public class MockServer implements IServer {
 		
 	}
 
+	private String readJSON() throws IOException{
+		File input = new File("json_test.json");
+		Scanner myScanner = new Scanner(input);
+		myScanner.useDelimiter("blahsblasdfksldf");
+		String returnThis = myScanner.next();
+		myScanner.close();
+		return returnThis;
+	}
 }

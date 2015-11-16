@@ -19,7 +19,7 @@ public class SoldierMoveState extends MapControllerState {
 
 	@Override
 	public boolean canMoveRobber(HexLocation loc) {
-		return ClientManager.getModel().canRob(loc);
+		return ClientManager.getModel().canMoveRobberTo(loc);
 	}
 
 	@Override
