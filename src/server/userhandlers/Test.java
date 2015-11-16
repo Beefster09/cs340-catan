@@ -80,7 +80,6 @@ public class Test {
 		
 		//moves
 		//AcceptTrade
-
 		model = server.respondToTrade(userUUID, gameUUID, true);
 		System.out.println("Accept Trade:\n" + model.substring(5, 49) + "\n");
 		//BuildCity

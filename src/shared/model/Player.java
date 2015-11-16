@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import shared.communication.PlayerHeader;
 import shared.definitions.CatanColor;
+import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
@@ -441,6 +442,12 @@ public class Player {
 			assert false;
 			// This should never happen.
 		}
+	}
+
+	public void playMonument() throws InvalidActionException {
+		oldDevCards.useCard(DevCardType.MONUMENT);
+		
+		++monuments;
 	}
 
 }

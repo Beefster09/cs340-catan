@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -41,12 +40,11 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			UUID gameID = UUID.fromString( (String) json.get("id"));
-			//int playerUUID = (int)json.get("playerUUID");
+			UUID gameUUID = UUID.fromString((String)json.get("id"));
 			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
 			
 			Session player = this.getPlayerSessionFromCookie(arg0);
-			boolean success = server.joinGame(player, gameID, color);
+			boolean success = server.joinGame(player, gameUUID, color);
 			String outputMsg = "";
 			if (success)
 				outputMsg = "Success";
@@ -55,7 +53,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 			
 			StringBuilder str = new StringBuilder();
 			str.append("Catan.game=");
-			str.append(gameID);
+			str.append(gameUUID);
 			str.append(";Path=/;");
 			String cookie = str.toString();
 			arg0.getResponseHeaders().add("Set-cookie", cookie);

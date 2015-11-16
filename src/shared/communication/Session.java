@@ -8,24 +8,12 @@ import java.util.UUID;
 public class Session {
 	private String username;
 	private String password;
-	private int playerID;
 	private UUID playerUUID;
 	
 	/**
 	 * @param username The player's username
 	 * @param password The player's password
 	 * @param playerID Their unique player ID
-	 */
-	public Session(String username, String password, int playerID) {
-		this.username = username;
-		this.password = password;
-		this.playerID = playerID;
-	}
-	
-	/**
-	 * @param username The player's username
-	 * @param password The player's password
-	 * @param playerUUID Their unique player UUID
 	 */
 	public Session(String username, String password, UUID playerUUID) {
 		this.username = username;
@@ -57,10 +45,6 @@ public class Session {
 	/**
 	 * @return the playerID
 	 */
-	public int getPlayerID() {
-		return playerID;
-	}
-	
 	public UUID getPlayerUUID() {
 		return playerUUID;
 	}
@@ -81,7 +65,7 @@ public class Session {
 		int result = 1;
 		result = prime * result
 				+ ((password == null) ? 0 : password.hashCode());
-		result = prime * result + playerID;
+		result = prime * result + playerUUID.hashCode();
 		result = prime * result
 				+ ((username == null) ? 0 : username.hashCode());
 		return result;
@@ -104,7 +88,7 @@ public class Session {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
-		if (playerID != other.playerID)
+		if (playerUUID != other.playerUUID)
 			return false;
 		if (username == null) {
 			if (other.username != null)

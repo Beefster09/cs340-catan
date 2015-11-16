@@ -207,6 +207,7 @@ public class ResourceList {
 	}
 
 	public void transferRandomCard(ResourceList destination) {
+		if (destination.count() == 0) return; // Nothing to steal.
 		List<ResourceType> choices = new ArrayList<>();
 		for (Map.Entry<ResourceType, Integer> cards : resources.entrySet()) {
 			for (int i=0; i<cards.getValue(); ++i) {
