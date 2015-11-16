@@ -50,6 +50,7 @@ public class ServerProxy implements IServer {
 	public static void main(String[] args) throws JoinGameException, ServerException, UserException {
 		ServerProxy test = new ServerProxy("localhost",8081);
 		Session player = test.login("Sam", "sam");
+		//create
 		if (test.joinGame(player, 0, CatanColor.BLUE)) {
 			VertexLocation loc = new VertexLocation(0, 0, VertexDirection.East);
 			test.buildCity(0, 0, loc);
