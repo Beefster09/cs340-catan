@@ -44,6 +44,8 @@ public class ModelFacade {
 		model = startingModel;
 		
 		this.dice = dice;
+		
+		listeners = new ArrayList<>();
 	}
 
 	// We probably SHOULDN'T have this... but it's kind of too late now.
@@ -105,7 +107,7 @@ public class ModelFacade {
 			throw new InvalidActionException("You cannot rob yourself.");
 		}
 		
-		model.rob(player, loc, victim);
+		model.rob(player, loc, victim, false);
 	}
 
 	/**
@@ -282,6 +284,7 @@ public class ModelFacade {
 			ResourceType resource1, ResourceType resource2) {	
 		ResourceList bank = model.getBank().getResources();
 		return isTurn(player) && currentPhase() == TurnStatus.Playing &&
+				!player.getPlayer().hasPlayedDevCard() &&
 				player.getPlayer().getOldDevCards().count(DevCardType.YEAR_OF_PLENTY) > 0 &&
 				(resource1 == resource2 ? bank.count(resource1) >= 2 :
 				bank.count(resource1) >= 1 && bank.count(resource2) >= 1);
@@ -305,7 +308,8 @@ public class ModelFacade {
 	 */
 	public synchronized boolean canRoadBuildingCard(PlayerReference player,
 			EdgeLocation road1, EdgeLocation road2) {	
-		return isTurn(player) &&
+		return isTurn(player) && currentPhase() == TurnStatus.Playing &&
+				!player.getPlayer().hasPlayedDevCard() &&
 				player.getPlayer().getOldDevCards().count(DevCardType.ROAD_BUILD) > 0 &&
 				model.getMap().canBuild2Roads(player, road1, road2);
 	}
@@ -324,18 +328,15 @@ public class ModelFacade {
 	 * @return true if the players owns at least one soldier card
 	 * @return false otherwise
 	 */
-	public synchronized boolean canSoldier() {
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		DevCardList list = currentPlayer.getOldDevCards();
-		
-		if(list.count(DevCardType.SOLDIER) > 0)
-			return true;
-		
-		return false;
+	public synchronized boolean canSoldier(PlayerReference playerRef) {
+		Player player = playerRef.getPlayer();
+		return isTurn(playerRef) && !player.hasPlayedDevCard() &&
+				player.getOldDevCards().count(DevCardType.SOLDIER) > 0;
 	}
 
-	public synchronized boolean doSoldier() {
-		return true;
+	public synchronized void soldier(PlayerReference player, HexLocation robberLoc,
+			PlayerReference victim) throws InvalidActionException {
+		model.rob(player, robberLoc, victim, true);
 	}
 
 	/**
@@ -343,22 +344,24 @@ public class ModelFacade {
 	 * @return true if the player owns at least one monopoly card
 	 * @return false if player owns zero monopoly cards
 	 */
-	public synchronized boolean canMonopoly() {
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		DevCardList list = currentPlayer.getOldDevCards();
+	public synchronized boolean canMonopoly(PlayerReference playerRef) {
+		Player player = playerRef.getPlayer();
 		
-		if(list.count(DevCardType.MONOPOLY) > 0)
-			return true;
-		
-		return false;
+		return isTurn(playerRef) && currentPhase() == TurnStatus.Playing &&
+				player.getOldDevCards().count(DevCardType.MONOPOLY) > 0;
 	}
 
 	/**
 	 * 
 	 * @return
+	 * @throws InvalidActionException 
 	 */
-	public synchronized boolean doMonopoly() {
-		return true;
+	public synchronized void monopoly(PlayerReference player, ResourceType resource) throws InvalidActionException {
+		if (!canMonopoly(player)) {
+			throw new InvalidActionException();
+		}
+		
+		model.monopoly(player, resource);
 	}
 
 	/**
@@ -366,19 +369,25 @@ public class ModelFacade {
 	 * @return true if the player owns at least one monument card
 	 * @return false otherwise
 	 */
-	public synchronized boolean canMonument() {
+	public synchronized boolean canMonument(PlayerReference player) {
 		Player currentPlayer = getCurrentPlayer().getPlayer();
 		DevCardList list = currentPlayer.getOldDevCards();
 		
-		return list.count(DevCardType.MONUMENT) > 0;
+		return isTurn(player) && !player.getPlayer().hasPlayedDevCard() &&
+				player.getPlayer().getOldDevCards().count(DevCardType.MONUMENT) > 0;
 	}
 
 	/**
 	 * 
 	 * @return
+	 * @throws InvalidActionException 
 	 */
-	public synchronized boolean doMonument() {
-		return true;
+	public synchronized void monument(PlayerReference player) throws InvalidActionException {
+		if (!canMonument(player)) {
+			throw new InvalidActionException();
+		}
+		
+		model.monument(player);
 	}
 
 	/**
