@@ -37,7 +37,7 @@ public class ServerPoller {
 	ModelFacade modelHandler = ClientManager.getModel();
 	
 	public static void main() {
-		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",1));
+		ServerPoller poller = new ServerPoller(new MockServer(), new Session("SAM","sam",UUID.randomUUID()));
 		poller.start();
 	}
 

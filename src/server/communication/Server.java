@@ -33,13 +33,19 @@ import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
 
 public class Server implements IServer {
+	
+	private static IServer instance = null;
+	public static IServer getSingleton() {
+		if (instance == null)
+			return new Server();
+		return instance;
+	}
 
 	Map<UUID,ModelFacade> models = new HashMap<UUID,ModelFacade>();
 	Map<UUID,Session> users = new HashMap<UUID,Session>();
 	
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
-		// TODO Auto-generated method stub
 		//VERY TEMPORARY, NEED VALIDATION HERE
 		Session session = new Session(username,password,UUID.randomUUID());
 		return session;

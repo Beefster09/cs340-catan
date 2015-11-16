@@ -99,6 +99,8 @@ public class ClientCommunicator {
 			output.write(o.toString());
 			output.flush();
 			
+			System.out.println(con.getResponseCode());
+			
 			if (con.getResponseCode() == HttpURLConnection.HTTP_OK){
 				
 				InputStream input = con.getInputStream();

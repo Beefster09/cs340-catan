@@ -28,7 +28,7 @@ import shared.exceptions.UserException;
  */
 public class LoginHandler implements HttpHandler {
 
-	IServer server = new Server();
+	IServer server = Server.getSingleton();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
