@@ -62,13 +62,13 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public boolean joinGame(Session player, int gameID, CatanColor color) throws JoinGameException, ServerException {
+	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void saveGame(int gameID, String filename) throws GamePersistenceException, UserException, ServerException {
+	public void saveGame(UUID gameID, String filename) throws GamePersistenceException, UserException, ServerException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -80,31 +80,31 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String getModel(int gameID, int version) throws ServerException, UserException {
+	public String getModel(UUID gameID, int version) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String resetGame(int gameID) throws ServerException, UserException {
+	public String resetGame(UUID gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Command> getCommands(int gameID) throws ServerException, UserException {
+	public List<Command> getCommands(UUID gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String executeCommands(int gameID, List<Command> commands) throws ServerException, UserException {
+	public String executeCommands(UUID gameID, List<Command> commands) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void addAIPlayer(int gameID, AIType type) throws ServerException, UserException {
+	public void addAIPlayer(UUID gameID, AIType type) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -116,7 +116,7 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String sendChat(int user, int gameID, String message) throws ServerException, UserException {
+	public String sendChat(UUID user, UUID gameID, String message) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		try {
 			ICatanCommand command = new CatanCommand("doSendChat",message);
@@ -130,73 +130,73 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String rollDice(int user, int gameID, int number) throws ServerException, UserException {
+	public String rollDice(UUID user, UUID gameID, int number) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String robPlayer(int user, int gameID, HexLocation newRobberLocation, int victim)
+	public String robPlayer(UUID user, UUID gameID, HexLocation newRobberLocation, UUID victim)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String buyDevCard(int user, int gameID) throws ServerException, UserException {
+	public String buyDevCard(UUID user, UUID gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String yearOfPlenty(int user, int gameID, ResourceType type1, ResourceType type2)
+	public String yearOfPlenty(UUID user, UUID gameID, ResourceType type1, ResourceType type2)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String roadBuilding(int user, int gameID, EdgeLocation road1, EdgeLocation road2)
+	public String roadBuilding(UUID user, UUID gameID, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String soldier(int user, int gameID, HexLocation newRobberLocation, int victim)
+	public String soldier(UUID user, UUID gameID, HexLocation newRobberLocation, UUID victim)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String monopoly(int user, int gameID, ResourceType type) throws ServerException, UserException {
+	public String monopoly(UUID user, UUID gameID, ResourceType type) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String monument(int user, int gameID) throws ServerException, UserException {
+	public String monument(UUID user, UUID gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String buildRoad(int user, int gameID, EdgeLocation location, boolean free)
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location, boolean free)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String buildSettlement(int user, int gameID, VertexLocation location, boolean free)
+	public String buildSettlement(UUID user, UUID gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String buildCity(int user, int gameID, VertexLocation location)
+	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
 		try {
 			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
@@ -210,34 +210,34 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String offerTrade(int user, int gameID, ResourceTradeList offer, int receiver)
+	public String offerTrade(UUID user, UUID gameID, ResourceTradeList offer, UUID receiver)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String respondToTrade(int user, int gameID, boolean accept) throws ServerException, UserException {
+	public String respondToTrade(UUID user, UUID gameID, boolean accept) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String maritimeTrade(int user, int gameID, ResourceType inResource, ResourceType outResource,
+	public String maritimeTrade(UUID user, UUID gameID, ResourceType inResource, ResourceType outResource,
 			int ratio) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String discardCards(int user, int gameID, ResourceList cards)
+	public String discardCards(UUID user, UUID gameID, ResourceList cards)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String finishTurn(int user, int gameID) throws ServerException, UserException {
+	public String finishTurn(UUID user, UUID gameID) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}

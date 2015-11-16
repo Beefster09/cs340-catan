@@ -30,13 +30,8 @@ public class BuildCityState extends MapControllerState {
 
 			@Override
 			protected String doInBackground() throws Exception {
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-				
-				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
-				return ClientManager.getServer().buildCity(playerUUID, gameUUID, vertex);
-				
-				//return ClientManager.getServer().buildCity(getYourself().getIndex(), gameID, vertex);
+				return ClientManager.getServer().buildCity(getYourself().getPlayerUUID(), gameUUID, vertex);
 			}
 
 			@Override

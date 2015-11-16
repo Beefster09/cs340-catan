@@ -2,6 +2,7 @@ package client.join;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.swing.SwingWorker;
 
@@ -102,8 +103,9 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 
 			@Override
 			protected Object doInBackground() throws Exception {
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-				serverProxy.addAIPlayer(gameID, aitype);
+				
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				serverProxy.addAIPlayer(gameUUID, aitype);
 				return null;
 			}
 			

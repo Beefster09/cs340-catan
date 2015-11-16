@@ -1,6 +1,7 @@
 package client.join;
 
 import java.util.List;
+import java.util.UUID;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
@@ -226,7 +227,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	public void joinGame(CatanColor color) {
 		try{
 			Session user = ClientManager.getSession();
-			if (serverProxy.joinGame(user, modelFacade.getGameInfo().getId(), color)) {
+			if (serverProxy.joinGame(user, modelFacade.getGameInfo().getUUID(), color)) {
 				if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
 				if (getSelectColorView().isModalShowing()) {
 					getSelectColorView().closeModal();
@@ -234,8 +235,11 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				List<GameHeader> gameHeaders = serverProxy.getGameList();
 				GameHeader thisHeader = gameHeaders.get(modelFacade.getGameInfo().getId());
 				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-				modelFacade.updateFromJSON(ClientManager.getServer().getModel(gameID, -1));
+				
+				
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				
+				modelFacade.updateFromJSON(ClientManager.getServer().getModel(gameUUID, -1));
 			}
 			if (ClientManager.getSession() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,ClientManager.getSession());

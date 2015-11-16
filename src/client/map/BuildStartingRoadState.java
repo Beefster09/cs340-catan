@@ -1,5 +1,6 @@
 package client.map;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -33,10 +34,10 @@ public class BuildStartingRoadState extends MapControllerState {
 
 			@Override
 			protected String doInBackground() throws Exception {
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-				getServer().buildSettlement(getYourself().getIndex(), gameID, settlement, true);
-				getServer().buildRoad(getYourself().getIndex(), gameID, edge, true);
-				return getServer().finishTurn(getYourself().getIndex(), gameID);
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				getServer().buildSettlement(getYourself().getPlayerUUID(), gameUUID, settlement, true);
+				getServer().buildRoad(getYourself().getPlayerUUID(), gameUUID, edge, true);
+				return getServer().finishTurn(getYourself().getPlayerUUID(), gameUUID);
 			}
 
 			@Override

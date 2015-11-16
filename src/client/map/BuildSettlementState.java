@@ -1,11 +1,11 @@
 package client.map;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
 import client.misc.ClientManager;
-
 import shared.exceptions.InvalidActionException;
 import shared.locations.VertexLocation;
 
@@ -29,8 +29,8 @@ public class BuildSettlementState extends MapControllerState {
 
 			@Override
 			protected String doInBackground() throws Exception {
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().buildSettlement(getYourself().getIndex(), gameID,
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				return ClientManager.getServer().buildSettlement(getYourself().getPlayerUUID(), gameUUID,
 						vertex, false);
 			}
 

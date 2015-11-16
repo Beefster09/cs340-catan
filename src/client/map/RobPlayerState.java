@@ -1,5 +1,6 @@
 package client.map;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -49,12 +50,14 @@ public class RobPlayerState extends MapControllerState {
 				}
 
 				int gameID = ClientManager.getModel().getGameHeader().getId();
+
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				if (previous instanceof SoldierMoveState) {
-					return ClientManager.getServer().soldier(getYourself().getIndex(), gameID,
-							newRobberLoc, victim.getIndex());
+					return ClientManager.getServer().soldier(getYourself().getPlayerUUID(), gameUUID,
+							newRobberLoc, victim.getPlayerUUID());
 				} else if (previous instanceof MoveRobberState) {
-					return ClientManager.getServer().robPlayer(getYourself().getIndex(), gameID,
-							newRobberLoc, victim.getIndex());
+					return ClientManager.getServer().robPlayer(getYourself().getPlayerUUID(), gameUUID,
+							newRobberLoc, victim.getPlayerUUID());
 				} else return null;
 			}
 
