@@ -36,8 +36,8 @@ public class RollNumberHandler extends AbstractMoveHandler implements HttpHandle
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -47,7 +47,7 @@ public class RollNumberHandler extends AbstractMoveHandler implements HttpHandle
 			UUID index = (UUID)json.get("playerIndex");
 			int number = (int)(long)json.get("number");
 			
-			String gson = server.rollDice(index, gameID, number);
+			String gson = server.rollDice(index, gameUUID, number);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
