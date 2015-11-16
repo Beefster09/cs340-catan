@@ -51,7 +51,7 @@ public class DiscardCardsHandler extends AbstractMoveHandler implements HttpHand
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("discardedCards"));
 			ResourceList cards = ResourceList.fromJSONObject(jsonObject);
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String gson = server.discardCards(index, gameUUID, cards);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

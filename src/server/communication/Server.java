@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import client.data.GameInfo;
-
 import com.google.gson.Gson;
 
 import server.ai.AIType;
@@ -37,11 +35,14 @@ import shared.model.ResourceTradeList;
 public class Server implements IServer {
 
 	Map<UUID,ModelFacade> models = new HashMap<UUID,ModelFacade>();
+	Map<UUID,Session> users = new HashMap<UUID,Session>();
 	
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
 		// TODO Auto-generated method stub
-		return null;
+		//VERY TEMPORARY, NEED VALIDATION HERE
+		Session session = new Session(username,password,1);
+		return session;
 	}
 
 	@Override
@@ -60,11 +61,7 @@ public class Server implements IServer {
 	public GameHeader createGame(String name, boolean randomTiles, boolean randomNumbers, boolean randomPorts)
 			throws GameInitializationException, UserException, ServerException {
 		// TODO Auto-generated method stub
-		ModelFacade newGame = new ModelFacade();
-		GameHeader header = new GameHeader(name,UUID.randomUUID(),null);
-		newGame.getCatanModel().setHeader(header);
-		models.put(header.getUUID(), newGame);
-		return header;
+		return null;
 	}
 
 	@Override
@@ -87,13 +84,7 @@ public class Server implements IServer {
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		
-		ModelFacade game = models.get(gameID);
-		if (game.getVersion() != version) {
-			CatanModel model = game.getCatanModel();
-			Gson gson = new Gson();
-			return gson.toJson(model);
-		}
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -131,8 +122,8 @@ public class Server implements IServer {
 	public String sendChat(UUID user, UUID gameID, String message) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		try {
-			ICatanCommand command = new CatanCommand("sendChat",message);
-			ModelFacade tempModel = models.get(gameID);
+			ICatanCommand command = new CatanCommand("doSendChat",message);
+			ModelFacade tempModel = new ModelFacade();
 			command.execute(tempModel);
 			return null;
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
@@ -211,8 +202,8 @@ public class Server implements IServer {
 	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
 		try {
-			ICatanCommand command = new CatanCommand("buildCity", user, location);
-			ModelFacade tempModel = models.get(gameID);
+			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
+			ModelFacade tempModel = new ModelFacade();
 			command.execute(tempModel);
 			return this.getModel(gameID, -1);
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
@@ -258,10 +249,6 @@ public class Server implements IServer {
 	public void changeLogLevel(LogLevel level) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void addGame(UUID key, ModelFacade obj) {
-		models.put(key, obj);
 	}
 	
 

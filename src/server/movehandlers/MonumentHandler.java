@@ -44,7 +44,7 @@ public class MonumentHandler extends AbstractMoveHandler implements HttpHandler 
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String gson = server.monument(index, gameUUID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
