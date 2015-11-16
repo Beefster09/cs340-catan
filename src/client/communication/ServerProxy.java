@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
+
 import server.ai.AIType;
 import server.logging.LogLevel;
 import shared.communication.Command;
@@ -24,6 +25,7 @@ import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
+import shared.locations.VertexDirection;
 import shared.locations.VertexLocation;
 import client.misc.ClientManager;
 import shared.model.ResourceList;
@@ -43,7 +45,17 @@ public class ServerProxy implements IServer {
 	@Deprecated
 	public static IServer getInstance(){
 		return ClientManager.getServer();
-	}	
+	}
+	
+	public static void main(String[] args) throws JoinGameException, ServerException, UserException {
+		ServerProxy test = new ServerProxy("localhost",8081);
+		Session player = test.login("Sam", "sam");
+		if (test.joinGame(player, 0, CatanColor.BLUE)) {
+			VertexLocation loc = new VertexLocation(0, 0, VertexDirection.East);
+			test.buildCity(0, 0, loc);
+			test.sendChat(0, 0, "test");
+		}
+	}
 
 	private ClientCommunicator communicator = new ClientCommunicator();
 	private String host = null;
