@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import shared.communication.IServer;
 import shared.definitions.*;
@@ -137,6 +138,11 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	public void makeTrade() {
 		try{
 			int gameID = ClientManager.getModel().getGameHeader().getId();
+			
+//			UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+//			server.maritimeTrade(playerUUID, gameUUID, inResource, outResource, ratio);
+			
 			server.maritimeTrade(ClientManager.getLocalPlayer().getIndex(), gameID, inResource, outResource, ratio);
 		}
 		catch(ServerException e){

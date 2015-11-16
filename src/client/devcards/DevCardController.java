@@ -86,6 +86,11 @@ public class DevCardController extends Controller implements IDevCardController 
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
 				int index = ClientManager.getLocalPlayer().getIndex();
+				
+//				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+//				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+//				return server.buyDevCard(playerUUID, gameUUID);
+				
 				return server.buyDevCard(index, gameID);
 			}
 			

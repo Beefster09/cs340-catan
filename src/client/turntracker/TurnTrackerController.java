@@ -38,6 +38,11 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
+				
+//				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+//				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+//				return ClientManager.getServer().finishTurn(playerUUID, gameUUID);
+				
 				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer().getIndex(), gameID);
 			}
 
