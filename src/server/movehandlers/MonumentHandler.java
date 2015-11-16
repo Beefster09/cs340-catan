@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,8 +36,8 @@ public class MonumentHandler extends AbstractMoveHandler implements HttpHandler 
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			int gameID = super.checkCookies(arg0, server);
-			if(gameID == -1){
+			UUID gameUUID = super.checkCookies(arg0, server);
+			if(gameUUID == null){
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
@@ -44,7 +45,7 @@ public class MonumentHandler extends AbstractMoveHandler implements HttpHandler 
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
 			UUID index = (UUID)json.get("playerIndex");
-			String gson = server.monument(index, gameID);
+			String gson = server.monument(index, gameUUID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
