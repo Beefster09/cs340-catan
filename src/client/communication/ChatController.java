@@ -44,11 +44,11 @@ public class ChatController extends Controller implements IChatController {
 			int index = localPlayer.getIndex();
 			int gameIndex = ClientManager.getModel().getGameHeader().getId();
 			
-//			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
-//			UUID playerUUID = localPlayer.getPlayerUUID();
-//			serverProxy.sendChat(playerUUID, gameUUID, message);
+			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+			UUID playerUUID = localPlayer.getPlayerUUID();
+			serverProxy.sendChat(playerUUID, gameUUID, message);
 			
-			serverProxy.sendChat(index, gameIndex, message);
+			//serverProxy.sendChat(index, gameIndex, message);
 
 		} catch (ServerException | UserException e) {
 			// TODO Auto-generated catch block

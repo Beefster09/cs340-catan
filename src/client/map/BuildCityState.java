@@ -1,5 +1,6 @@
 package client.map;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -30,7 +31,12 @@ public class BuildCityState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 				int gameID = ClientManager.getModel().getGameHeader().getId();
-				return ClientManager.getServer().buildCity(getYourself().getIndex(), gameID, vertex);
+				
+				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
+				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				return ClientManager.getServer().buildCity(playerUUID, gameUUID, vertex);
+				
+				//return ClientManager.getServer().buildCity(getYourself().getIndex(), gameID, vertex);
 			}
 
 			@Override
