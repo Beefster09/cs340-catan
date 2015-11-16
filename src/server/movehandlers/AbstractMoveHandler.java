@@ -2,6 +2,7 @@ package server.movehandlers;
 
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,10 +15,10 @@ import com.sun.net.httpserver.HttpExchange;
 public abstract class AbstractMoveHandler {
 
 	@SuppressWarnings("deprecation")
-	public int checkCookies(HttpExchange exchange, IServer server){
+	public UUID checkCookies(HttpExchange exchange, IServer server){
 		List<String> cookies = exchange.getRequestHeaders().get("Cookie");
 		if(cookies.size() != 1){
-			return -1;
+			return null;
 		}
 		
 		JSONParser parser = new JSONParser();
@@ -25,16 +26,12 @@ public abstract class AbstractMoveHandler {
 		String cookieEncoded = cookies.get(0);
 		String cookieDecoded = URLDecoder.decode(cookieEncoded);
 		cookieDecoded = cookieDecoded.substring(11);
-		int difference = 14;
-		if(cookieDecoded.charAt(cookieDecoded.length() -2) != '='){
-			++difference;
-		}
-		
-		String gameID = cookieDecoded.substring(cookieDecoded.length() - difference + 13);
-		cookieDecoded = cookieDecoded.substring(0, cookieDecoded.length()-difference);
-		
+		int locationOfSemicolon = cookieDecoded.indexOf(';');
+		String userCookie = cookieDecoded.substring(0,locationOfSemicolon);
+		String gameCookie = cookieDecoded.substring(locationOfSemicolon);;
+				
 		try{
-			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
+			JSONObject cookie = (JSONObject) parser.parse(userCookie);
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
 			int userID = (int)(long)cookie.get("playerID");
@@ -42,12 +39,12 @@ public abstract class AbstractMoveHandler {
 			Session user = server.login(username, password);
 			
 			if(userID != user.getPlayerID()){
-				return -1;
+				return null;
 			}
-			return Integer.valueOf(gameID);
+			return UUID.fromString(gameCookie);
 		}
 		catch(Exception e){
-			return -1;
+			return null;
 		}
 	}
 }
