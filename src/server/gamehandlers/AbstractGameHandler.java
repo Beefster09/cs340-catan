@@ -2,6 +2,7 @@ package server.gamehandlers;
 
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,11 +32,11 @@ public abstract class AbstractGameHandler {
 			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
-			int userID = (int)(long)cookie.get("playerID");
+			UUID userID = UUID.fromString((String) cookie.get("playerID"));
 			
 			Session user = server.login(username, password);
 			
-			if(userID != user.getPlayerID()){
+			if(userID != user.getPlayerUUID()){
 				return false;
 			}
 			return true;
@@ -63,11 +64,11 @@ public abstract class AbstractGameHandler {
 			Server server = new Server();
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
-			int userID = (int)(long)cookie.get("playerID");
+			UUID userID = UUID.fromString((String) cookie.get("playerID"));
 			
 			Session user = server.login(username, password);
 			
-			if(userID != user.getPlayerID()){
+			if(userID != user.getPlayerUUID()){
 				return null;
 			}
 			return user;

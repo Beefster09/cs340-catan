@@ -41,7 +41,7 @@ public class Server implements IServer {
 	public Session login(String username, String password) throws UserException, ServerException {
 		// TODO Auto-generated method stub
 		//VERY TEMPORARY, NEED VALIDATION HERE
-		Session session = new Session(username,password,1);
+		Session session = new Session(username,password,UUID.randomUUID());
 		return session;
 	}
 
@@ -201,15 +201,16 @@ public class Server implements IServer {
 	@Override
 	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
-		try {
-			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
-			ModelFacade tempModel = new ModelFacade();
-			command.execute(tempModel);
-			return this.getModel(gameID, -1);
-		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
-			e.printStackTrace();
-		}
-		return this.getModel(gameID, -1);
+//		try {
+//			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
+//			ModelFacade tempModel = new ModelFacade();
+//			command.execute(tempModel);
+//			return this.getModel(gameID, -1);
+//		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
+//			e.printStackTrace();
+//		}
+//		return this.getModel(gameID, -1);
+		return null;
 	}
 
 	@Override
