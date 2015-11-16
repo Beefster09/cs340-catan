@@ -662,7 +662,7 @@ public class ModelFacade {
 			if (player != null) {
 				try {
 					Player newPlayer = new Player(player);
-					if (ClientManager.getSession() != null && newPlayer.getPlayerID() == ClientManager.getSession().getPlayerID()) {
+					if (ClientManager.getSession() != null && newPlayer.getUUID() == ClientManager.getSession().getPlayerUUID()) {
 						ClientManager.setLocalPlayer(new PlayerReference(model, i));
 					}
 					players.add(newPlayer);
