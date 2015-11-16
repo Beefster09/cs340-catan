@@ -432,7 +432,7 @@ public class CatanModel {
 	}
 
 	void rob(PlayerReference player, HexLocation loc,
-			PlayerReference victim) throws InvalidActionException {
+			PlayerReference victim, boolean isSoldierCard) throws InvalidActionException {
 		assert player != null;
 		assert isTurn(player);
 		assert map.canMoveRobberTo(loc);
@@ -453,16 +453,33 @@ public class CatanModel {
 			}
 			
 			victim.getHand().transferRandomCard(player.getHand());
+			
+			if (isSoldierCard) {
+				useSoldierCard(player);
+			}
 		
 			log.add(player.getName(), player.getName() + " robbed " + victim.getName());
 		}
 		else {
+			if (isSoldierCard) {
+				useSoldierCard(player);
+			}
+			
 			log.add(player.getName(), player.getName() + " moved the robber.");
 		}
 		
 		map.moveRobber(loc);
 		
 		++version;
+	}
+
+	private void useSoldierCard(PlayerReference player)
+			throws InvalidActionException {
+		assert player.getPlayer().getOldDevCards().count(DevCardType.SOLDIER) >= 1;
+		
+		player.getPlayer().getOldDevCards().useCard(DevCardType.SOLDIER);
+		
+		log.add(player.getName(), player.getName() + " played a soldier card.");
 	}
 
 	void finishTurn() throws InvalidActionException {
@@ -554,6 +571,34 @@ public class CatanModel {
 		map.buildRoad(player, road2);
 		
 		log.add(player.getName(), player.getName() + " played a road building card.");
+		
+		++version;
+	}
+
+	void monopoly(PlayerReference player, ResourceType resource) {
+		assert player.getPlayer().getOldDevCards().count(DevCardType.MONOPOLY) >= 1;
+		
+		ResourceList hand = player.getHand();
+		
+		for (Player opponent : players) {
+			// It makes no sense to take from yourself...
+			if (player.equals(opponent.getReference())) {
+				continue;
+			}
+			
+			// Transfer ALL the resources
+			opponent.getResources().transferAtMost(hand, resource, Integer.MAX_VALUE);
+		}
+		
+		log.add(player.getName(), player.getName() + " monopolized all of the " + resource);
+		
+		++version;
+	}
+
+	void monument(PlayerReference player) throws InvalidActionException {
+		player.getPlayer().playMonument();
+		
+		log.add(player.getName(), player.getName() + " played a monument.");
 		
 		++version;
 	}

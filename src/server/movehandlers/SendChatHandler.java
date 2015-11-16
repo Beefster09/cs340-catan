@@ -44,11 +44,11 @@ public class SendChatHandler extends AbstractMoveHandler implements HttpHandler 
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String message = (String)json.get("content");
 			
 			String gson = server.sendChat(index, gameUUID, message);
-			//String gson = new Server().sendChat(index, gameID, message);
+			//String gson = new Server().sendChat(index, gameUUID, message);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

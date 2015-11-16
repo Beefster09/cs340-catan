@@ -114,7 +114,7 @@ public class ModelFacadeTest {
 		
 		//test if current player has rolled
 		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
-		m.rollDice(currentPlayer);
+		//m.rollDice(currentPlayer);
 		can = m.canFinishTurn();
 		assertFalse(can);
 		
@@ -273,19 +273,17 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanRoadBuildingCard() throws InvalidActionException {
+		//boolean can = m.canRoadBuildingCard();
+		//assertFalse(can);
 		
-		//test with empty hand
-//		boolean can = m.canRoadBuildingCard();
-//		assertFalse(can);
-//		
-//		//test with roadBuilding card in hand
-//		Player currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer().getPlayer();
-//		DevCardList hand = currentPlayer.getOldDevCards();
-//		DevCardList bank = m.getCatanModel().getBank().getDevCards();
-//		bank = new DevCardList(1,1,1);
-//		bank.transferCardTo(hand, DevCardType.ROAD_BUILD);
-//		can = m.canRoadBuildingCard();
-//		assertTrue(can);
+		//test with roadBuilding card in hand
+		Player currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer().getPlayer();
+		DevCardList hand = currentPlayer.getOldDevCards();
+		DevCardList bank = m.getCatanModel().getBank().getDevCards();
+		bank = new DevCardList(1,1,1);
+		bank.transferCardTo(hand, DevCardType.ROAD_BUILD);
+		//can = m.canRoadBuildingCard();
+		//assertTrue(can);
 	}
 	
 	@Test
@@ -314,7 +312,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoSoldier() {
 		
-		m.doSoldier();
+		m.soldier();
 	}
 	
 	@Test
@@ -360,7 +358,7 @@ public class ModelFacadeTest {
 	@Test
 	public void testDoMonument() {
 		
-		m.doMonument();
+		m.monument();
 	}
 	
 	@Test
