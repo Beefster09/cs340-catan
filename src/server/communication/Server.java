@@ -1,5 +1,6 @@
 package server.communication;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +77,11 @@ public class Server implements IServer {
 
 	@Override
 	public List<GameHeader> getGameList() throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
+		List<GameHeader> gamesList = new ArrayList<GameHeader>();
+		for(ModelFacade model : games.values()){
+			gamesList.add(model.getGameHeader());
+		}
+		return gamesList;
 	}
 
 	@Override
