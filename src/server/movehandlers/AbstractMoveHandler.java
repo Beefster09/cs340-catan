@@ -28,7 +28,7 @@ public abstract class AbstractMoveHandler {
 		cookieDecoded = cookieDecoded.substring(11);
 		int locationOfSemicolon = cookieDecoded.indexOf(';');
 		String userCookie = cookieDecoded.substring(0,locationOfSemicolon);
-		String gameCookie = cookieDecoded.substring(locationOfSemicolon);;
+		String gameCookie = cookieDecoded.substring(locationOfSemicolon + 12);;
 				
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(userCookie);
@@ -38,7 +38,7 @@ public abstract class AbstractMoveHandler {
 			
 			Session user = server.login(username, password);
 			
-			if(userID != user.getPlayerUUID()){
+			if(!userID.equals(user.getPlayerUUID())){
 				return null;
 			}
 			return UUID.fromString(gameCookie);
