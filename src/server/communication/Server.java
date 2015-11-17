@@ -58,19 +58,20 @@ public class Server implements IServer {
 		//VERY TEMPORARY, NEED VALIDATION HERE
 		if (users.containsKey(username))
 			return new Session(username, password, users.get(username));
-		//This else statement should not exist, should return null if user doesn't exist.
+		throw new UserException();
+	}
+
+	@Override
+	public Session register(String username, String password) throws UserException, ServerException {
+		if (users.containsKey(username)) {
+			throw new UserException();
+		}
 		else {
 			UUID uuid = UUID.randomUUID();
 			Session session = new Session(username,password,uuid);
 			users.put(username, uuid);
 			return session;
 		}
-	}
-
-	@Override
-	public Session register(String username, String password) throws UserException, ServerException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

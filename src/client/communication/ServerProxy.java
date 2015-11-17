@@ -50,7 +50,7 @@ public class ServerProxy implements IServer {
 	
 	public static void main(String[] args) throws JoinGameException, ServerException, UserException, GameInitializationException {
 		ServerProxy test = new ServerProxy("localhost",8081);
-		Session player = test.login("Sam", "sam");
+		Session player = test.register("Sam", "sam");
 		GameHeader header = test.createGame("test", false, false, false);
 		if (test.joinGame(player, header.getUUID(), CatanColor.BLUE)) {
 			System.out.println("Sweet!");
