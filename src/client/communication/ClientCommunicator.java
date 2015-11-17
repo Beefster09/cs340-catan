@@ -48,16 +48,6 @@ public class ClientCommunicator {
 			output.flush();
 
 			if (con.getResponseCode() == HttpURLConnection.HTTP_OK){
-				
-				InputStream input = con.getInputStream();
-				int len = 0;
-				
-				byte[] buffer = new byte[1024];
-				StringBuilder str = new StringBuilder();
-				while(-1 != (len = input.read(buffer))){
-					str.append(new String(buffer, 0, len));
-				}
-
 				JSONParser parser = new JSONParser();
 				JSONObject JSONOutput;
 				
@@ -65,7 +55,7 @@ public class ClientCommunicator {
 				header = header.substring(0, header.length() - 8);
 				String cutHeader = header.substring(11);
 				String decoded = URLDecoder.decode(cutHeader);
-				JSONOutput = (JSONObject) parser.parse(URLDecoder.decode(cutHeader));
+				JSONOutput = (JSONObject) parser.parse(decoded);
 				userCookie = header;
 				gameCookie = null;
 				cookies = userCookie;
