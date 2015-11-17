@@ -122,11 +122,6 @@ public class Server implements IServer {
 		CatanModel model = modelFacade.getCatanModel();
 		Gson gson = new Gson();
 		return gson.toJson(model);
-		
-//		System.out.println("Model: " + model.toString());
-//		System.out.println("Catan: " + model.getCatanModel().toString());
-////		model.getCatanModel().
-//		return null;
 	}
 
 	@Override

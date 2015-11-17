@@ -32,6 +32,7 @@ public abstract class AbstractMoveHandler {
 				
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(userCookie);
+			JSONObject game = (JSONObject) parser.parse(gameCookie);
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
 			UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
@@ -41,9 +42,7 @@ public abstract class AbstractMoveHandler {
 			if(!userID.equals(user.getPlayerUUID())){
 				return null;
 			}
-			cookie = (JSONObject) parser.parse(gameCookie);
-			UUID gameUUID = UUID.fromString((String) cookie.get("gameUUID"));
-			return gameUUID;
+			return UUID.fromString((String)game.get("gameUUID"));
 		}
 		catch(Exception e){
 			return null;
