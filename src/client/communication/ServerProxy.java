@@ -52,8 +52,9 @@ public class ServerProxy implements IServer {
 		ServerProxy test = new ServerProxy("localhost",8081);
 		Session player = test.register("Sam", "sam");
 		GameHeader header = test.createGame("test", false, false, false);
+		UUID gameID = header.getUUID();
 		if (test.joinGame(player, header.getUUID(), CatanColor.BLUE)) {
-			System.out.println("Sweet!");
+			test.getModel(gameID, -1);
 		}
 	}
 

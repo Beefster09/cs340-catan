@@ -3,6 +3,7 @@ package server.gamehandlers;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -28,6 +29,17 @@ public abstract class AbstractGameHandler {
 		String cookieDecoded = URLDecoder.decode(cookieEncoded);
 		cookieDecoded = cookieDecoded.substring(11);
 		
+		//These lines are necessary due to the game header containing Catan.game= sequence,
+		//which will break when trying to cast it cast a JSON object.  If you have a better
+		//way, please apply.
+		int indexOfGameCookie = cookieDecoded.indexOf("};Catan.game={");
+		if (indexOfGameCookie != -1) {
+			String gameCookie = cookieDecoded.substring(indexOfGameCookie+14);
+			cookieDecoded = cookieDecoded.substring(0,indexOfGameCookie).concat(",").concat(gameCookie);
+		}
+		//cookieDecoded = cookieDecoded.replaceAll("};Catan.game={", ",");
+		System.out.println(cookieDecoded);
+		
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
 			String username = (String) cookie.get("name");
@@ -42,6 +54,7 @@ public abstract class AbstractGameHandler {
 			return true;
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			return false;
 		}
 	}

@@ -1,5 +1,6 @@
 package server.communication;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +77,11 @@ public class Server implements IServer {
 
 	@Override
 	public List<GameHeader> getGameList() throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
+		List<GameHeader> headers = new ArrayList<GameHeader>();
+		for (Map.Entry<UUID, ModelFacade> entry : games.entrySet()) {
+			headers.add(entry.getValue().getGameHeader());
+		}
+		return headers;
 	}
 
 	@Override
@@ -101,20 +105,21 @@ public class Server implements IServer {
 
 	@Override
 	public void saveGame(UUID gameID, String filename) throws GamePersistenceException, UserException, ServerException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		
 	}
 
 	@Override
 	public void loadGame(String filename) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		
 	}
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		// TODO Auto-generated method stub
-		return null;
+		ModelFacade model = games.get(gameID);
+		Gson gson = new Gson();
+		return gson.toJson(model);
 	}
 
 	@Override
