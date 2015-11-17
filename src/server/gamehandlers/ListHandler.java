@@ -27,6 +27,7 @@ import shared.exceptions.UserException;
 public class ListHandler extends AbstractGameHandler implements HttpHandler {
 
 	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
