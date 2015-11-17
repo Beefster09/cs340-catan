@@ -27,9 +27,15 @@ public class DevCardList {
 	 */
 	public DevCardList() {
 		cards = new HashMap<DevCardType, Integer>();
+		for (DevCardType type : DevCardType.values()) {
+			cards.put(type, 0);
+		}
 	}
 	
 	public static DevCardList fromJSONObject(JSONObject json) throws SchemaMismatchException {
+		if (json.containsKey("cards")) {
+			json = (JSONObject) json.get("cards");
+		}
 		DevCardList self = new DevCardList();
 		self.cards = new HashMap<>();
 		try {

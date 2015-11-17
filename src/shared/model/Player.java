@@ -87,12 +87,6 @@ public class Player {
 		resources = new ResourceList(0);
 		newDevCards = new DevCardList();
 		oldDevCards = new DevCardList();
-		settlements = 5;
-		cities = 4;
-		roads = 15;
-		soldiers = 0;
-		monuments = 0;
-		victoryPoints = 0;
 	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {

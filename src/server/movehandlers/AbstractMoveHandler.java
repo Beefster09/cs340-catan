@@ -41,7 +41,9 @@ public abstract class AbstractMoveHandler {
 			if(!userID.equals(user.getPlayerUUID())){
 				return null;
 			}
-			return UUID.fromString(gameCookie);
+			cookie = (JSONObject) parser.parse(gameCookie);
+			UUID gameUUID = UUID.fromString((String) cookie.get("gameUUID"));
+			return gameUUID;
 		}
 		catch(Exception e){
 			return null;
