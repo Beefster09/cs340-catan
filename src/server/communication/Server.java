@@ -117,7 +117,10 @@ public class Server implements IServer {
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		ModelFacade model = games.get(gameID);
+		System.out.println("Model: " + model.toString());
+		System.out.println("Catan: " + model.getCatanModel().toString());
+//		model.getCatanModel().
 		return null;
 	}
 
