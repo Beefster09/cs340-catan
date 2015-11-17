@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
@@ -29,6 +28,7 @@ import shared.exceptions.ServerException;
 public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 	
 	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override

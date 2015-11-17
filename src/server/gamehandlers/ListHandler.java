@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
 import server.communication.Server;
 import shared.communication.GameHeader;
 import shared.communication.IServer;

@@ -13,7 +13,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.communication.Session;
@@ -28,7 +28,8 @@ import shared.exceptions.UserException;
  */
 public class RegisterHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@SuppressWarnings({ "deprecation", "unchecked" })

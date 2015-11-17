@@ -292,7 +292,7 @@ public class ServerProxy implements IServer {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/sendChat");
 		o.put("requestType", "POST");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		o.put("type", "sendChat");
 		o.put("content", message);
 		
@@ -307,7 +307,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/rollNumber");
 		o.put("requestType", "POST");
 		o.put("type", "rollNumber");
-		o.put("playerIndex",user);
+		o.put("playerIndex",user.toString());
 		o.put("number", number);
 		
 		return communicator.send(o);
@@ -322,8 +322,8 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/robPlayer");
 		o.put("requestType", "POST");
 		o.put("type", "robPlayer");
-		o.put("playerIndex", user);
-		o.put("victimIndex", victim);
+		o.put("playerIndex", user.toString());
+		o.put("victimIndex", victim.toString());
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
@@ -340,7 +340,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buyDevCard");
 		o.put("requestType", "POST");
 		o.put("type", "buyDevCard");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		
 		return communicator.send(o);
 	}
@@ -354,7 +354,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Year_of_Plenty");
 		o.put("requestType", "POST");
 		o.put("type", "Year_of_Plenty");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		o.put("resource1", type1.toString().toLowerCase());
 		o.put("resource2", type2.toString().toLowerCase());
 		
@@ -370,7 +370,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Road_Building");
 		o.put("requestType", "POST");
 		o.put("type", "Road_Building");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		JSONObject firstRoad = road1.toJSONObject();
 		JSONObject secondRoad = road2.toJSONObject();
 		o.put("spot1", gson.toJson(firstRoad));
@@ -388,8 +388,8 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Soldier");
 		o.put("requestType", "POST");
 		o.put("type", "Soldier");
-		o.put("playerIndex", user);
-		o.put("victimIndex", victim);
+		o.put("playerIndex", user.toString());
+		o.put("victimIndex", victim.toString());
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
@@ -407,7 +407,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "Monopoly");
 		o.put("resource", type.toString().toLowerCase());
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		
 		return communicator.send(o);
 	}
@@ -421,7 +421,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildRoad");
 		o.put("requestType", "POST");
 		o.put("type", "buildRoad");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		JSONObject roadLocation = location.toJSONObject();		
 		o.put("roadLocation", gson.toJson(roadLocation));
 		o.put("free", free);
@@ -438,7 +438,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildSettlement");
 		o.put("requestType", "POST");
 		o.put("type", "buildSettlement");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		JSONObject vertexLocation = location.toJSONObject();
 		o.put("vertexLocation", gson.toJson(vertexLocation));
 		o.put("free", free);
@@ -454,7 +454,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildCity");
 		o.put("requestType", "POST");
 		o.put("type", "buildCity");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		JSONObject vertexLocation = location.toJSONObject();
 		o.put("vertexLocation", gson.toJson(vertexLocation));
 		
@@ -470,9 +470,9 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/offerTrade");
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		o.put("offer", gson.toJson(offer.toJSONObject()));
-		o.put("receiver", receiver);
+		o.put("receiver", receiver.toString());
 		
 		return communicator.send(o);
 	}
@@ -485,7 +485,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/acceptTrade");
 		o.put("requestType", "POST");
 		o.put("type", "acceptTrade");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		o.put("willAccept", accept);
 		
 		return communicator.send(o);
@@ -500,7 +500,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/maritimeTrade");
 		o.put("requestType", "POST");
 		o.put("type", "maritimeTrade");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		o.put("ratio", ratio);
 		o.put("inputResource", inResource.toString().toLowerCase());
 		o.put("outputResource", outResource.toString().toLowerCase());
@@ -516,7 +516,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/discardCards");
 		o.put("requestType", "POST");
 		o.put("type", "discardCards");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		o.put("discardedCards", gson.toJson(cards.toJSONObject()));
 		
 		return communicator.send(o);
@@ -530,7 +530,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/finishTurn");
 		o.put("requestType", "POST");
 		o.put("type", "finishTurn");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		return communicator.send(o);
 	}
 
@@ -554,7 +554,7 @@ public class ServerProxy implements IServer {
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/Monument");
 		o.put("requestType", "POST");
 		o.put("type", "Monument");
-		o.put("playerIndex", user);
+		o.put("playerIndex", user.toString());
 		
 		return communicator.send(o);
 	}}

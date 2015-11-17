@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
 import server.communication.Server;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
@@ -25,6 +24,7 @@ import shared.exceptions.UserException;
 public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
