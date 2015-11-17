@@ -77,11 +77,11 @@ public class Server implements IServer {
 
 	@Override
 	public List<GameHeader> getGameList() throws ServerException, UserException {
-		List<GameHeader> headers = new ArrayList<GameHeader>();
-		for (Map.Entry<UUID, ModelFacade> entry : games.entrySet()) {
-			headers.add(entry.getValue().getGameHeader());
+		List<GameHeader> gamesList = new ArrayList<GameHeader>();
+		for(ModelFacade model : games.values()){
+			gamesList.add(model.getGameHeader());
 		}
-		return headers;
+		return gamesList;
 	}
 
 	@Override

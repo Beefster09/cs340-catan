@@ -112,12 +112,14 @@ public class ServerProxy implements IServer {
 				
 			List<GameHeader> returnList = new ArrayList<GameHeader>();
 			List<JSONObject> listOfGames = (List<JSONObject>) returned.get("games");
-			for(JSONObject game : listOfGames){
-				try {
-					returnList.add(new GameHeader(game));
-				}
-				catch (SchemaMismatchException e) {
-					e.printStackTrace();
+			if(listOfGames != null){
+				for(JSONObject game : listOfGames){
+					try {
+						returnList.add(new GameHeader(game));
+					}
+					catch (SchemaMismatchException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			return returnList;

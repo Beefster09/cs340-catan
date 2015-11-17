@@ -5,7 +5,6 @@ import java.util.UUID;
 import shared.communication.PlayerHeader;
 import shared.definitions.*;
 import shared.model.Player;
-import shared.model.PlayerReference;
 
 /**
  * Used to pass player information into views<br>
@@ -37,7 +36,7 @@ public class PlayerInfo
 	
 	public PlayerInfo(PlayerHeader player) {
 		setUUID(player.getUUID());
-		setPlayerIndex(new PlayerReference(player.getUUID()).getIndex());
+		setPlayerIndex(player.getIndex());
 		setName(player.getName());
 		setColor(player.getColor());
 	}

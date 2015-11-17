@@ -117,7 +117,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			GameInfo[] games = DataConverter.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
 			//localPlayer.setUUID(modelFacade.getLocalPlayer().getPlayerID());
-			localPlayer.setUUID(null);
+			localPlayer.setUUID(ClientManager.getSession().getPlayerUUID());
 			localPlayer.setName(ClientManager.getSession().getUsername());
 			
 			getJoinGameView().closeModal();
@@ -233,12 +233,22 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 					getSelectColorView().closeModal();
 				}
 				List<GameHeader> gameHeaders = serverProxy.getGameList();
-				for (GameHeader head : gameHeaders) {
-					if (head.getUUID() == modelFacade.getGameInfo().getUUID())
-						modelFacade.setGameInfo(new GameInfo(head));
+//<<<<<<< HEAD
+//				for (GameHeader head : gameHeaders) {
+//					if (head.getUUID() == modelFacade.getGameInfo().getUUID())
+//						modelFacade.setGameInfo(new GameInfo(head));
+//				}
+////				GameHeader thisHeader = gameHeaders.get(modelFacade.getGameInfo().getUUID());
+////				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
+//=======
+				GameHeader thisHeader = null;
+				for(GameHeader game : gameHeaders){
+					if(game.getUUID().equals(modelFacade.getGameInfo().getUUID())){
+						thisHeader = game;
+						break;
+					}
 				}
-//				GameHeader thisHeader = gameHeaders.get(modelFacade.getGameInfo().getUUID());
-//				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
+				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
 				
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				

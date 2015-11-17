@@ -132,7 +132,7 @@ public class Player {
 	}
 	
 	public PlayerHeader getHeader() {
-		return new PlayerHeader(color, name, uuid);
+		return new PlayerHeader(color, name, uuid, playerIndex);
 	}
 	
 	/** Gives a PlayerReference that refers to this player. 

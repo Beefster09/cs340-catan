@@ -63,7 +63,7 @@ public class MockServer implements IServer {
 		
 		List<GameHeader> returnList = new ArrayList<GameHeader>();
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", userUUID));
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", userUUID, 0));
 		GameHeader returnGame = new GameHeader("GameTest", gameUUID, players);
 		returnList.add(returnGame);
 		return returnList;
@@ -76,7 +76,7 @@ public class MockServer implements IServer {
 			ServerException {
 		
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", userUUID));
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", userUUID, 0));
 		GameHeader returnGame = new GameHeader("GameTest", gameUUID, players);
 		
 		return returnGame;
