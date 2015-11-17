@@ -50,10 +50,59 @@ public class Server implements IServer {
 		}
 		return instance;
 	}
-
+	
 	Map<UUID,ModelFacade> games = new HashMap<UUID,ModelFacade>();
 	Map<String,UUID> users = new HashMap<String,UUID>();
 	
+	private Server(){
+		users.put("Sam", UUID.randomUUID());
+		users.put("Brooke", UUID.randomUUID());
+		users.put("Pete", UUID.randomUUID());
+		users.put("Mark", UUID.randomUUID());
+
+		ModelFacade model = new ModelFacade();
+		UUID gameUUID = model.getGameHeader().getUUID();
+		games.put(gameUUID, model);
+		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+		games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
+		System.out.println(gameUUID.toString());
+
+		model = new ModelFacade();
+		gameUUID = model.getGameHeader().getUUID();
+		games.put(gameUUID, model);
+		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+		System.out.println(gameUUID.toString());
+
+		model = new ModelFacade();
+		gameUUID = model.getGameHeader().getUUID();
+		games.put(gameUUID, model);
+		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+		System.out.println(gameUUID.toString());
+
+		model = new ModelFacade();
+		gameUUID = model.getGameHeader().getUUID();
+		games.put(gameUUID, model);
+		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+		System.out.println(gameUUID.toString());
+
+		model = new ModelFacade();
+		gameUUID = model.getGameHeader().getUUID();
+		games.put(gameUUID, model);
+		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+		System.out.println(gameUUID.toString());
+		
+	}
+
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
 		//VERY TEMPORARY, NEED VALIDATION HERE
@@ -99,6 +148,9 @@ public class Server implements IServer {
 	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		ModelFacade game = games.get(gameID);
 		Player newPlayer = new Player(player, color);
+		if(game.getCatanModel().getPlayers().contains(newPlayer)){
+			return true;
+		}
 		game.getCatanModel().getPlayers().add(newPlayer);
 		return true;
 	}
@@ -129,31 +181,31 @@ public class Server implements IServer {
 
 	@Override
 	public String resetGame(UUID gameID) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		return null;
 	}
 
 	@Override
 	public List<Command> getCommands(UUID gameID) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		return null;
 	}
 
 	@Override
 	public String executeCommands(UUID gameID, List<Command> commands) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		return null;
 	}
 
 	@Override
 	public void addAIPlayer(UUID gameID, AIType type) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		
 	}
 
 	@Override
 	public List<String> getAITypes() throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		return null;
 	}
 
@@ -287,7 +339,7 @@ public class Server implements IServer {
 
 	@Override
 	public void changeLogLevel(LogLevel level) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		// NOT NEEDED IN PHASE 3
 		
 	}
 	
