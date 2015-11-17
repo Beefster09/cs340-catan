@@ -233,7 +233,13 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 					getSelectColorView().closeModal();
 				}
 				List<GameHeader> gameHeaders = serverProxy.getGameList();
-				GameHeader thisHeader = gameHeaders.get(modelFacade.getGameInfo().getId());
+				GameHeader thisHeader = null;
+				for(GameHeader game : gameHeaders){
+					if(game.getUUID().equals(modelFacade.getGameInfo().getUUID())){
+						thisHeader = game;
+						break;
+					}
+				}
 				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
 				
 				

@@ -80,7 +80,7 @@ public class ClientCommunicator {
 		try{
 			URL url = new URL((String) o.get("url"));
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestProperty("Cookie", cookies);
+			con.setRequestProperty("Cookie", userCookie);
 			con.setRequestMethod((String) o.get("requestType"));
 			con.setDoOutput(true);
 			con.connect();

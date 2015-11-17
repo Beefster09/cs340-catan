@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-Nov 17, 2015 9:38:33 AM server.communication.ServerCommunicator run
+Nov 17, 2015 9:57:08 AM server.communication.ServerCommunicator run
 INFO: Initializing HTTP Server
-Nov 17, 2015 9:38:33 AM server.communication.ServerCommunicator run
-=======
-Nov 17, 2015 9:27:37 AM server.communication.ServerCommunicator run
-INFO: Initializing HTTP Server
-Nov 17, 2015 9:27:37 AM server.communication.ServerCommunicator run
->>>>>>> origin/master
+Nov 17, 2015 9:57:08 AM server.communication.ServerCommunicator run
 INFO: Starting HTTP Server
