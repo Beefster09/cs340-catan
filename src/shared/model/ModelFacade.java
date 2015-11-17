@@ -9,6 +9,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import client.misc.ClientManager;
 import shared.IDice;
 import shared.NormalDice;
@@ -860,4 +863,22 @@ public class ModelFacade {
 		this.getCatanModel().getPlayers().add(newPlayer);
 	}
 
+	@Override
+	public String toString(){
+		Gson gson = new Gson();
+		JsonObject json = new JsonObject();
+		json.add("id", gson.toJsonTree(model.getHeader().getUUID()));
+		json.add("deck", gson.toJsonTree(model.getBank().deckToJsonObject()));
+		json.add("map", gson.toJsonTree(model.getMap()));
+		json.add("players", gson.toJsonTree(model.getPlayers()));
+		json.add("log", gson.toJsonTree(model.getLog()));
+		json.add("chat", gson.toJsonTree(model.getChat()));
+		json.add("bank", gson.toJsonTree(model.getBank().toJsonObject()));
+		if(model.getTradeOffer() != null){
+			json.add("tradeOffer", gson.toJsonTree(model.getTradeOffer()));
+		}
+		json.add("turnTracker", gson.toJsonTree(model.getTurnTracker()));
+		json.add("version", gson.toJsonTree(model.getVersion()));
+		return "";
+	}
 }
