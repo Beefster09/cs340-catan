@@ -44,11 +44,14 @@ public class ResourceList {
 	}
 	
 	public static ResourceList fromJSONObject(JSONObject json) throws SchemaMismatchException {
+		if (json.containsKey("resources")) {
+			json = (JSONObject) json.get("resources");
+		}
 		ResourceList self = new ResourceList();
 		self.resources = new HashMap<>();
 		try {
 			for (ResourceType type : ResourceType.values()) {
-				String key = type.toString().toLowerCase();
+				String key = type.toString();
 				if (json.containsKey(key)) {
 					self.resources.put(type, (int) (long) json.get(key));
 				}

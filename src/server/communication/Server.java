@@ -140,6 +140,7 @@ public class Server implements IServer {
 		GameHeader header = new GameHeader(name, gameUUID, null);
 		ModelFacade newGame = new ModelFacade();
 		newGame.getCatanModel().setHeader(header);
+		newGame.getCatanModel().setVersion(0);
 		games.put(gameUUID, newGame);
 		return header;
 	}
@@ -169,14 +170,10 @@ public class Server implements IServer {
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		ModelFacade model = games.get(gameID);
-//		Gson gson = new Gson();
-//		return gson.toJson(model);
-		
-//		System.out.println("Model: " + model.toString());
-//		System.out.println("Catan: " + model.getCatanModel().toString());
-		return model.toString();
-//		return null;
+		ModelFacade modelFacade = games.get(gameID);
+		CatanModel model = modelFacade.getCatanModel();
+		Gson gson = new Gson();
+		return gson.toJson(model);
 	}
 
 	@Override
@@ -205,8 +202,14 @@ public class Server implements IServer {
 
 	@Override
 	public List<String> getAITypes() throws ServerException, UserException {
+<<<<<<< HEAD
 		// NOT NEEDED IN PHASE 3
 		return null;
+=======
+		List<String> types = new ArrayList<String>();
+		types.add("aitype");
+		return types;
+>>>>>>> origin/master
 	}
 
 	@Override

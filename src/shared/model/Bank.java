@@ -56,8 +56,19 @@ public class Bank {
 	
 	public Bank(JSONObject json) throws SchemaMismatchException {
 		try {
-			resources = ResourceList.fromJSONObject((JSONObject) json.get("bank"));
-			devCards = DevCardList.fromJSONObject((JSONObject) json.get("deck"));
+			JSONObject bank = (JSONObject) json.get("bank");
+			JSONObject JSONResources = bank;
+			while (JSONResources.containsKey("resources")) {
+				JSONResources = (JSONObject) JSONResources.get("resources");
+			}
+			resources = ResourceList.fromJSONObject(JSONResources);
+			
+			JSONObject JSONDevCards = bank;
+			JSONDevCards = (JSONObject) JSONDevCards.get("devCards");
+			while (JSONDevCards.containsKey("cards")) {
+				JSONDevCards = (JSONObject) JSONDevCards.get("cards");
+			}
+			devCards = DevCardList.fromJSONObject(JSONDevCards);
 		} catch (ClassCastException | IllegalArgumentException e) {
 			throw new SchemaMismatchException("The JSON does not match the expected schema" +
 					"for the Bank:\n" + json.toJSONString());
