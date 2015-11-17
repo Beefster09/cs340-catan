@@ -879,6 +879,6 @@ public class ModelFacade {
 		}
 		json.add("turnTracker", gson.toJsonTree(model.getTurnTracker()));
 		json.add("version", gson.toJsonTree(model.getVersion()));
-		return "";
+		return gson.toJson(json);
 	}
 }

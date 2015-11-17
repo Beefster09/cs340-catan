@@ -1,16 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-Nov 17, 2015 10:57:29 AM server.communication.ServerCommunicator run
+Nov 17, 2015 1:04:47 PM server.communication.ServerCommunicator run
 INFO: Initializing HTTP Server
-Nov 17, 2015 10:57:29 AM server.communication.ServerCommunicator run
-=======
-Nov 17, 2015 10:35:45 AM server.communication.ServerCommunicator run
-INFO: Initializing HTTP Server
-Nov 17, 2015 10:35:45 AM server.communication.ServerCommunicator run
->>>>>>> 60815a96d388e30fe651102b13a4ebf7c41b0e56
-=======
-Nov 17, 2015 10:39:36 AM server.communication.ServerCommunicator run
-INFO: Initializing HTTP Server
-Nov 17, 2015 10:39:36 AM server.communication.ServerCommunicator run
->>>>>>> 7067c0e6da716d01b0fd40763f61c791559ab781
+Nov 17, 2015 1:04:47 PM server.communication.ServerCommunicator run
 INFO: Starting HTTP Server

@@ -118,12 +118,12 @@ public class Server implements IServer {
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
 		ModelFacade model = games.get(gameID);
-		Gson gson = new Gson();
-		return gson.toJson(model);
+//		Gson gson = new Gson();
+//		return gson.toJson(model);
 		
 //		System.out.println("Model: " + model.toString());
 //		System.out.println("Catan: " + model.getCatanModel().toString());
-////		model.getCatanModel().
+		return model.toString();
 //		return null;
 	}
 
