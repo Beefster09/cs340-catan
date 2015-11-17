@@ -161,7 +161,7 @@ public class ServerProxy implements IServer {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
 		o.put("requestType", "POST");
-		o.put("id", gameID);
+		o.put("id", gameID.toString());
 		o.put("playerUUID", player.getPlayerUUID().toString());
 		o.put("color", (color.toString()).toLowerCase());
 		

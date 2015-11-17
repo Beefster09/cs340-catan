@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.json.simple.JSONObject;
 
 import shared.communication.PlayerHeader;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -77,6 +78,21 @@ public class Player {
 		playerIndex = index;
 		
 		setUUID(uuid);
+	}
+	
+	public Player(Session player, CatanColor color) {
+		uuid = player.getPlayerUUID();
+		name = player.getUsername();
+		this.color = color;
+		resources = new ResourceList(0);
+		newDevCards = new DevCardList();
+		oldDevCards = new DevCardList();
+		settlements = 5;
+		cities = 4;
+		roads = 15;
+		soldiers = 0;
+		monuments = 0;
+		victoryPoints = 0;
 	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {

@@ -10,10 +10,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import client.misc.ClientManager;
-
 import shared.IDice;
 import shared.NormalDice;
 import shared.communication.GameHeader;
+import shared.communication.Session;
+import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
@@ -852,6 +853,11 @@ public class ModelFacade {
 				}
 			}
 		}
+	}
+	
+	public void addPlayer(Session player, CatanColor color) {
+		Player newPlayer = new Player(player, color);
+		this.getCatanModel().getPlayers().add(newPlayer);
 	}
 
 }

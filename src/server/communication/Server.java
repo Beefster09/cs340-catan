@@ -31,6 +31,7 @@ import shared.locations.VertexLocation;
 import shared.model.CatanModel;
 import shared.model.ClientModelFacade;
 import shared.model.ModelFacade;
+import shared.model.Player;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
@@ -91,8 +92,10 @@ public class Server implements IServer {
 
 	@Override
 	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
-		// TODO Auto-generated method stub
-		return false;
+		ModelFacade game = games.get(gameID);
+		Player newPlayer = new Player(player, color);
+		game.getCatanModel().getPlayers().add(newPlayer);
+		return true;
 	}
 
 	@Override

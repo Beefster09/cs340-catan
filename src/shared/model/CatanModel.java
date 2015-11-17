@@ -49,6 +49,11 @@ public class CatanModel {
 		winner = null;
 		
 		id = UUID.randomUUID();
+		players = new ArrayList<Player>();
+		turnTracker = new TurnTracker();
+		bank = new Bank();
+		chat = new MessageList();
+		log = new MessageList();
 	}
 	
 	public UUID getID() {
