@@ -868,19 +868,17 @@ public class ModelFacade {
 		Gson gson = new Gson();
 		JsonObject json = new JsonObject();
 		json.add("id", gson.toJsonTree(model.getHeader().getUUID()));
-		json.add("deck", gson.toJsonTree());
-		json.add("map");
-		json.add("players");
-		json.add("log");
-		json.add("chat");
-		json.add("bank");
-		json.add("tradeOffer");
-		json.add("turnTracker");
-		json.add("version");
+		json.add("deck", gson.toJsonTree(model.getBank().deckToJsonObject()));
+		json.add("map", gson.toJsonTree(model.getMap()));
+		json.add("players", gson.toJsonTree(model.getPlayers()));
+		json.add("log", gson.toJsonTree(model.getLog()));
+		json.add("chat", gson.toJsonTree(model.getChat()));
+		json.add("bank", gson.toJsonTree(model.getBank().toJsonObject()));
+		if(model.getTradeOffer() != null){
+			json.add("tradeOffer", gson.toJsonTree(model.getTradeOffer()));
+		}
+		json.add("turnTracker", gson.toJsonTree(model.getTurnTracker()));
+		json.add("version", gson.toJsonTree(model.getVersion()));
 		return "";
-	}
-	
-	private JsonObject getDeck(){
-		
 	}
 }
