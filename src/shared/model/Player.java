@@ -298,6 +298,10 @@ public class Player {
 	public int getPlayerIndex() {
 		return playerIndex;
 	}
+	
+	public void setPlayerIndex(int i) {
+		playerIndex = i;
+	}
 
 	public boolean hasRolled() {
 		return hasRolled;

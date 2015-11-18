@@ -208,6 +208,8 @@ public class ClientCommunicator {
 					str.append(new String(buffer, 0, len));
 				}
 
+				if (str.length() == 0)
+					return null;
 				if(str.charAt(0) == '['){
 					str = new StringBuilder("{\"list\":" + str + "}");
 				}
