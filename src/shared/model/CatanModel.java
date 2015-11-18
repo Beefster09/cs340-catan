@@ -178,7 +178,7 @@ public class CatanModel {
 		this.map = map;
 	}
 
-	void setTurnTracker(TurnTracker turnTracker) {
+	public void setTurnTracker(TurnTracker turnTracker) {
 		this.turnTracker = turnTracker;
 	}
 

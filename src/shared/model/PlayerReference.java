@@ -70,7 +70,9 @@ public class PlayerReference {
 	 * @return the player 'pointed' to by this PlayerReference
 	 */
 	public Player getPlayer() {
-		return Player.getPlayerByUUID(playerUUID);
+		Player returnPlayer = Player.getPlayerByUUID(playerUUID);
+		playerIndex = returnPlayer.getPlayerIndex();
+		return returnPlayer;
 	}
 	
 	/** Gets the turn index of the player this reference is pointing to

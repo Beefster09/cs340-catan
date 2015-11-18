@@ -35,6 +35,7 @@ import shared.model.Player;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
+import shared.model.TurnTracker;
 
 public class Server implements IServer {
 	
@@ -170,9 +171,9 @@ public class Server implements IServer {
 			throw new ServerException();
 		}
 		//Might want to randomize this, possibly for later.
-		Player firstPlayer = game.getPlayers().get(0);
-		PlayerReference player = new PlayerReference(firstPlayer.getUUID(),0);
-		game.getTurnTracker().setCurrentPlayer(player);
+//		Player firstPlayer = game.getPlayers().get(0);
+//		PlayerReference player = new PlayerReference(firstPlayer.getUUID(),0);
+		game.setTurnTracker(new TurnTracker(game.getPlayers()));
 		int i = 0;
 		for (Player curPlay : game.getPlayers()) {
 			curPlay.setPlayerIndex(i);

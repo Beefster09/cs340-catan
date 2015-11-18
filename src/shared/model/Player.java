@@ -135,7 +135,7 @@ public class Player {
 	 * @return a corresponding PlayerReference
 	 */
 	public PlayerReference getReference() {
-		return new PlayerReference(uuid);
+		return new PlayerReference(uuid,playerIndex);
 	}
 	
 	public static Player getPlayerByUUID(UUID uuid) {

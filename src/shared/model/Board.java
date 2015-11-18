@@ -240,7 +240,7 @@ public class Board {
 //			}
 			Map<Object, Object> obj = (Map<Object, Object>)json.get("ports");
 			for (Object value : obj.values()) {
-				portData.add(new Port((JSONObject) obj));
+				portData.add(new Port((JSONObject) value));
 			}
 			initializePortsFromList(portData);
 			
@@ -250,7 +250,7 @@ public class Board {
 //			}
 			obj = (Map<Object, Object>)json.get("roads");
 			for (Object value : obj.values()) {
-				roadData.add(new Road(players, (JSONObject) obj));
+				roadData.add(new Road(players, (JSONObject) value));
 			}
 			initializeRoadsFromList(roadData);
 			

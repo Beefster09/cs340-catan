@@ -27,7 +27,8 @@ public class TurnTracker {
 	}
 
 	public TurnTracker(List<Player> players) {
-		players = new ArrayList<>(players);
+		this.players = new ArrayList<Player>();
+		this.players.addAll(players);
 		
 		currentPlayer = players.get(0).getReference();
 		status = TurnStatus.FirstRound;
