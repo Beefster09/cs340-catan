@@ -21,6 +21,7 @@ import org.junit.Test;
 import server.cheat.CheatEnabledDice;
 import shared.IDice;
 import shared.communication.*;
+import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
@@ -40,8 +41,10 @@ public class ModelFacadeTest {
 	private ModelFacade m;
 	private CheatEnabledDice dice;
 	
+	private PlayerReference justin, steve, jordan, grant;
+	
 	@Before
-	public void setup() throws IOException, ParseException, GameInitializationException {
+	public void setup() throws Exception {
 		
 		dice = new CheatEnabledDice();
 		model = new CatanModel();
@@ -51,11 +54,48 @@ public class ModelFacadeTest {
 				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),
 				new ArrayList<PlayerHeader>()));
 		
-		
+		// Put in some players
+		m.addPlayer("Justin", CatanColor.GREEN);
+		m.addPlayer("Steve", CatanColor.BLUE);
+		m.addPlayer("Jordan", CatanColor.ORANGE);
+		m.addPlayer("Grant", CatanColor.RED);
 		
 		List<Player> players = model.getPlayers();
+		justin = players.get(0).getReference();
+		steve = players.get(1).getReference();
+		jordan = players.get(2).getReference();
+		grant = players.get(3).getReference();
+		
+		//System.out.println(model.getTurnTracker());
 		
 		// Place some starting crap
+		m.buildStartingPieces(justin,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthEast));
+		m.buildStartingPieces(steve,
+				new VertexLocation(1, -1, VertexDirection.NorthEast),
+				new EdgeLocation(1, -1, EdgeDirection.North));
+		m.buildStartingPieces(jordan,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+		m.buildStartingPieces(grant,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+		
+		m.buildStartingPieces(grant,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+		m.buildStartingPieces(jordan,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+		m.buildStartingPieces(steve,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+		m.buildStartingPieces(justin,
+				new VertexLocation(0, 2, VertexDirection.NorthEast),
+				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+		
+		System.out.println(model.getTurnTracker());
 	}
 	
 	
