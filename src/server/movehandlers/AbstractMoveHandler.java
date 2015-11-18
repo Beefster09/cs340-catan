@@ -38,7 +38,7 @@ public abstract class AbstractMoveHandler {
 			
 			Session user = server.login(username, password);
 			
-			if(userID != user.getPlayerID()){
+			if(userID != user.getPlayerUUID()){
 				return null;
 			}
 			return UUID.fromString(gameCookie);
