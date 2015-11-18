@@ -571,6 +571,8 @@ public class ModelFacade {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized CatanModel updateFromJSON(String jsonString) {
+		if(jsonString==null)
+			return getCatanModel();
 		JSONObject json;
 		try {
 			json = (JSONObject) new JSONParser().parse(jsonString);
