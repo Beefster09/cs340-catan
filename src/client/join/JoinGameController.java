@@ -12,6 +12,7 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
+import shared.model.CatanModel;
 import shared.model.ClientModelFacade;
 import client.base.*;
 import client.communication.DataConverter;
@@ -251,6 +252,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
 				
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
+				
+				String model = ClientManager.getServer().getModel(gameUUID, -1);
 				
 				modelFacade.updateFromJSON(ClientManager.getServer().getModel(gameUUID, -1));
 			}

@@ -173,6 +173,11 @@ public class Server implements IServer {
 		Player firstPlayer = game.getPlayers().get(0);
 		PlayerReference player = new PlayerReference(firstPlayer.getUUID(),0);
 		game.getTurnTracker().setCurrentPlayer(player);
+		int i = 0;
+		for (Player curPlay : game.getPlayers()) {
+			curPlay.setPlayerIndex(i);
+			i++;
+		}
 		game.incrementVersion();
 	}
 
@@ -235,13 +240,8 @@ public class Server implements IServer {
 		try {
 			ICatanCommand command = new CatanCommand("doSendChat",message);
 			ModelFacade tempModel;
-			try {
-				tempModel = new ModelFacade();
-				command.execute(tempModel);
-			} catch (GameInitializationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			tempModel = games.get(gameID);
+			command.execute(tempModel);
 			return null;
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
 			e.printStackTrace();
@@ -256,9 +256,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -279,9 +279,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -301,9 +301,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buyDevelopmentCard", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -324,9 +324,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("yearOfPlenty", new PlayerReference(user), type1, type2);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -347,9 +347,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("roadBuildingCard", new PlayerReference(user), road1, road2);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -370,9 +370,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("soldier", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -392,9 +392,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("monopoly", new PlayerReference(user), type);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -414,9 +414,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("monument", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -437,9 +437,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildRoad", new PlayerReference(user), location);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -483,9 +483,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildStartingPieces", new PlayerReference(user), settlementLoc, roadLoc);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -506,9 +506,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildCity", new PlayerReference(user), location);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -529,9 +529,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildCity", offer);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -557,9 +557,9 @@ public class Server implements IServer {
 			}
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -580,9 +580,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("maritimeTrade", new PlayerReference(user), inResource, outResource);
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -603,9 +603,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("discard", new PlayerReference(user), cards.getResources());
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -625,9 +625,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("finishTurn", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = new ModelFacade();
+				tempModel = games.get(gameID);
 				command.execute(tempModel);
-			} catch (GameInitializationException | InvalidActionException e) {
+			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

@@ -51,11 +51,9 @@ public class BuildStartingPiecesHandler extends AbstractMoveHandler implements H
 			
 			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("settlementLocation"));
 			VertexLocation settlementLocation = new VertexLocation(jsonObject);
-			boolean settlementFree = (boolean)json.get("settlementFree");
 			
 			jsonObject = (JSONObject)parser.parse((String)json.get("roadLocation"));
 			EdgeLocation roadLocation = new EdgeLocation(jsonObject);
-			boolean roadFree = (boolean)json.get("roadFree");
 			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			

@@ -47,7 +47,7 @@ public class CatanModel {
 	 * 
 	 */
 	public CatanModel() throws GameInitializationException {
-		version = -1;
+		version = 0;
 		winner = null;
 		
 		id = UUID.randomUUID();
