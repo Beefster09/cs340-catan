@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.ServerException;
@@ -27,7 +27,8 @@ import shared.exceptions.UserException;
  */
 public class MonumentHandler extends AbstractMoveHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -44,7 +45,7 @@ public class MonumentHandler extends AbstractMoveHandler implements HttpHandler 
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String gson = server.monument(index, gameUUID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

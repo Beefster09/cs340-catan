@@ -3,7 +3,7 @@ package shared.model;
 import java.util.ArrayList;
 import java.util.logging.*;
 
-
+import shared.exceptions.GameInitializationException;
 import client.communication.ServerPoller;
 import client.data.GameInfo;
 
@@ -13,7 +13,7 @@ public class ClientModelFacade extends ModelFacade {
 		
 		private ServerPoller poller;
 		
-		public ClientModelFacade() {
+		public ClientModelFacade() throws GameInitializationException {
 			//when does any of this get initialized?
 			this(new CatanModel());
 		}
@@ -44,7 +44,12 @@ public class ClientModelFacade extends ModelFacade {
 			if (poller.isRunning()) {
 				poller.stop();
 			}
-			this.model = new CatanModel();
+			try {
+				this.model = new CatanModel();
+			} catch (GameInitializationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			for (IModelListener listener : listeners) {
 				try {
 					listener.gameFinished();

@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.SchemaMismatchException;
@@ -30,7 +30,8 @@ import shared.locations.VertexLocation;
  */
 public class BuildSettlementHandler extends AbstractMoveHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -50,7 +51,7 @@ public class BuildSettlementHandler extends AbstractMoveHandler implements HttpH
 			
 			VertexLocation location = new VertexLocation(jsonObject);
 			boolean free = (boolean)json.get("free");
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String gson = server.buildSettlement(index, gameUUID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

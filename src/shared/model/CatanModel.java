@@ -8,6 +8,7 @@ import shared.communication.PlayerHeader;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
@@ -42,13 +43,21 @@ public class CatanModel {
 	private int version;
 
 	/** Makes a brand spanking new Model
+	 * @throws GameInitializationException 
 	 * 
 	 */
-	public CatanModel() {
+	public CatanModel() throws GameInitializationException {
 		version = -1;
 		winner = null;
 		
 		id = UUID.randomUUID();
+		players = new ArrayList<Player>();
+		turnTracker = new TurnTracker();
+		bank = new Bank();
+		chat = new MessageList();
+		log = new MessageList();
+		
+		map = new Board();
 	}
 	
 	public UUID getID() {
@@ -178,7 +187,7 @@ public class CatanModel {
 		this.winner = winner;
 	}
 
-	void setVersion(int version) {
+	public void setVersion(int version) {
 		this.version = version;
 	}
 

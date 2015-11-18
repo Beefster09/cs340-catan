@@ -9,11 +9,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import client.misc.ClientManager;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import client.misc.ClientManager;
 import shared.IDice;
 import shared.NormalDice;
 import shared.communication.GameHeader;
+import shared.communication.Session;
+import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
@@ -33,7 +37,7 @@ public class ModelFacade {
 	private IDice dice;
 	protected List<IModelListener> listeners;
 
-	public ModelFacade() {
+	public ModelFacade() throws GameInitializationException {
 		this(new CatanModel(), new NormalDice());
 	}
 
@@ -675,8 +679,8 @@ public class ModelFacade {
 			if (player != null) {
 				try {
 					Player newPlayer = new Player(player);
-					if (ClientManager.getSession() != null && newPlayer.getPlayerID() == ClientManager.getSession().getPlayerID()) {
-						ClientManager.setLocalPlayer(new PlayerReference(model, i));
+					if (ClientManager.getSession() != null && newPlayer.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
+						ClientManager.setLocalPlayer(new PlayerReference(model, i, newPlayer.getUUID()));
 					}
 					players.add(newPlayer);
 				} catch (SchemaMismatchException e) {
@@ -866,5 +870,28 @@ public class ModelFacade {
 			}
 		}
 	}
+	
+	public void addPlayer(Session player, CatanColor color) {
+		Player newPlayer = new Player(player, color);
+		this.getCatanModel().getPlayers().add(newPlayer);
+	}
 
+	@Override
+	public String toString(){
+		Gson gson = new Gson();
+		JsonObject json = new JsonObject();
+		json.add("id", gson.toJsonTree(model.getHeader().getUUID()));
+		json.add("deck", gson.toJsonTree(model.getBank().deckToJsonObject()));
+		json.add("map", gson.toJsonTree(model.getMap()));
+		json.add("players", gson.toJsonTree(model.getPlayers()));
+		json.add("log", gson.toJsonTree(model.getLog()));
+		json.add("chat", gson.toJsonTree(model.getChat()));
+		json.add("bank", gson.toJsonTree(model.getBank().toJsonObject()));
+		if(model.getTradeOffer() != null){
+			json.add("tradeOffer", gson.toJsonTree(model.getTradeOffer()));
+		}
+		json.add("turnTracker", gson.toJsonTree(model.getTurnTracker()));
+		json.add("version", gson.toJsonTree(model.getVersion()));
+		return gson.toJson(json);
+	}
 }

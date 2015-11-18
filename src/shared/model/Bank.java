@@ -5,7 +5,11 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import shared.definitions.DevCardType;
+import shared.definitions.ResourceType;
 import shared.exceptions.SchemaMismatchException;
 
 /**
@@ -52,8 +56,19 @@ public class Bank {
 	
 	public Bank(JSONObject json) throws SchemaMismatchException {
 		try {
-			resources = ResourceList.fromJSONObject((JSONObject) json.get("bank"));
-			devCards = DevCardList.fromJSONObject((JSONObject) json.get("deck"));
+			JSONObject bank = (JSONObject) json.get("bank");
+			JSONObject JSONResources = bank;
+			while (JSONResources.containsKey("resources")) {
+				JSONResources = (JSONObject) JSONResources.get("resources");
+			}
+			resources = ResourceList.fromJSONObject(JSONResources);
+			
+			JSONObject JSONDevCards = bank;
+			JSONDevCards = (JSONObject) JSONDevCards.get("devCards");
+			while (JSONDevCards.containsKey("cards")) {
+				JSONDevCards = (JSONObject) JSONDevCards.get("cards");
+			}
+			devCards = DevCardList.fromJSONObject(JSONDevCards);
 		} catch (ClassCastException | IllegalArgumentException e) {
 			throw new SchemaMismatchException("The JSON does not match the expected schema" +
 					"for the Bank:\n" + json.toJSONString());
@@ -112,6 +127,26 @@ public class Bank {
 		return "Bank [resources=" + resources + ", devCards=" + devCards + "]";
 	}
 	
+	public JsonObject toJsonObject(){
+		Gson gson = new Gson();
+		JsonObject json = new JsonObject();
+		json.add("brick", gson.toJsonTree(resources.count(ResourceType.BRICK)));
+		json.add("wood", gson.toJsonTree(resources.count(ResourceType.WOOD)));
+		json.add("sheep", gson.toJsonTree(resources.count(ResourceType.SHEEP)));
+		json.add("wheat", gson.toJsonTree(resources.count(ResourceType.WHEAT)));
+		json.add("ore", gson.toJsonTree(resources.count(ResourceType.ORE)));
+		return json;		
+	}
 	
+	public JsonObject deckToJsonObject(){
+		Gson gson = new Gson();
+		JsonObject json = new JsonObject();
+		json.add("yearOfPlenty", gson.toJsonTree(devCards.count(DevCardType.YEAR_OF_PLENTY)));
+		json.add("monopoly", gson.toJsonTree(devCards.count(DevCardType.MONOPOLY)));
+		json.add("soldier", gson.toJsonTree(devCards.count(DevCardType.SOLDIER)));
+		json.add("roadBuilding", gson.toJsonTree(devCards.count(DevCardType.ROAD_BUILD)));
+		json.add("monument", gson.toJsonTree(devCards.count(DevCardType.MONUMENT)));
+		return json;
+	}
 	
 }

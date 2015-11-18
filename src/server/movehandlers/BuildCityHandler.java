@@ -14,7 +14,6 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
@@ -31,7 +30,8 @@ import shared.locations.VertexLocation;
  */
 public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -50,9 +50,9 @@ public class BuildCityHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject jsonObject = (JSONObject) parser.parse((String)json.get("vertexLocation"));
 			VertexLocation vertexLocation = new VertexLocation(jsonObject);
 			
-			UUID playerIndex = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			//String gson = server.buildCity(playerIndex, gameUUID, vertexLocation);
-			String gson = new Server().buildCity(playerIndex, gameUUID, vertexLocation);
+			String gson = server.buildCity(index, gameUUID, vertexLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

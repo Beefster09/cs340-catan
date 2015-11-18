@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.SchemaMismatchException;
@@ -30,7 +30,8 @@ import shared.locations.HexLocation;
  */
 public class SoldierHandler extends AbstractMoveHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -47,12 +48,12 @@ public class SoldierHandler extends AbstractMoveHandler implements HttpHandler {
 			/*
 			 * Extract needed information from JSON, and call the appropriate server method.
 			 */
-			UUID index = (UUID)json.get("playerIndex");
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			JSONParser parser = new JSONParser();
 			JSONObject location = (JSONObject)parser.parse((String)json.get("location"));
 			
 			HexLocation hex = new HexLocation(location);
-			UUID victim = (UUID)json.get("victimIndex");
+			UUID victim = UUID.fromString((String)json.get("victimIndex"));
 			
 			String gson = server.soldier(index, gameUUID, hex, victim);
 			

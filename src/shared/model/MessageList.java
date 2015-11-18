@@ -16,7 +16,8 @@ public class MessageList {
 	private List<String> source;
 
 	public MessageList() {
-		
+		message = new ArrayList<String>();
+		source = new ArrayList<String>();
 	}
 	
 	@SuppressWarnings("unchecked")

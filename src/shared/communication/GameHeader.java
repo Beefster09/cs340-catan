@@ -21,6 +21,8 @@ public class GameHeader {
 			title = (String) json.get("title");
 			uuid = UUID.fromString( (String) json.get("uuid"));
 			players = new ArrayList<>();
+			if (!json.containsKey("players"))
+				return;
 			for (JSONObject obj : (List<JSONObject>) json.get("players")) {
 				if(obj.isEmpty()){
 					players.add(null);

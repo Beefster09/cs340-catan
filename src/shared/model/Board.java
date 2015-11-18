@@ -71,6 +71,9 @@ public class Board {
 		else {
 			initRandomPorts();
 		}
+		ports = new HashMap<EdgeLocation, Port>();
+		roads = new HashMap<EdgeLocation, Road>();
+		municipalities = new HashMap<VertexLocation, Municipality>();
 	}
 
 	private static final List<ResourceType> defaultHexTypes = Arrays.asList(
@@ -131,6 +134,7 @@ public class Board {
 			else {
 				// Desert
 				hexes.add(new Hex(hexLoc, resource));
+				robber = hexLoc;
 			}
 		}
 		return hexes;
@@ -208,11 +212,20 @@ public class Board {
 	public Board(List<Player> players, JSONObject json)
 			throws SchemaMismatchException, GameInitializationException {
 		try {
-			radius = (int) (long) json.get("radius") - 1; // Remove center from radius
+			/*
+			 * PLEASE NOTE: REMOVED RADIUS - 1, MIGHT CAUSE
+			 * PROBLEMS LATER ON.
+			 */
+			radius = (int) (long) json.get("radius"); // Remove center from radius
 			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
-				for (Object obj : (List<Object>) json.get("hexes")) {
-					hexData.add(new Hex((JSONObject) obj));
+				//TODO: Fix this line, can't can't lists from JSON!
+				Map<Object, Object> obj = (Map<Object, Object>)json.get("hexes");
+//				for (Object obj : (List<Object>) json.get("hexes")) {
+//					hexData.add(new Hex((JSONObject) obj));
+//				}
+				for (Object value : obj.values()) {
+					hexData.add(new Hex((JSONObject) value));
 				}
 				initializeHexesFromList(hexData);
 			}
@@ -222,24 +235,40 @@ public class Board {
 			robber = new HexLocation((JSONObject) json.get("robber"));
 			
 			List<Port> portData = new ArrayList<>();
-			for (Object obj : (List<Object>) json.get("ports")) {
+//			for (Object obj : (List<Object>) json.get("ports")) {
+//				portData.add(new Port((JSONObject) obj));
+//			}
+			Map<Object, Object> obj = (Map<Object, Object>)json.get("ports");
+			for (Object value : obj.values()) {
 				portData.add(new Port((JSONObject) obj));
 			}
 			initializePortsFromList(portData);
 			
 			List<Road> roadData = new ArrayList<>();
-			for (Object obj : (List<Object>) json.get("roads")) {
+//			for (Object obj : (List<Object>) json.get("roads")) {
+//				roadData.add(new Road(players, (JSONObject) obj));
+//			}
+			obj = (Map<Object, Object>)json.get("roads");
+			for (Object value : obj.values()) {
 				roadData.add(new Road(players, (JSONObject) obj));
 			}
 			initializeRoadsFromList(roadData);
 			
 			List<Municipality> towns = new ArrayList<>();
-			for (Object obj : (List<Object>) json.get("settlements")) {
-				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.SETTLEMENT));
+//			for (Object obj : (List<Object>) json.get("settlements")) {
+//				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.SETTLEMENT));
+//			}
+//			for (Object obj : (List<Object>) json.get("cities")) {
+//				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.CITY));
+//			}
+			obj = (Map<Object, Object>)json.get("municipalities");
+			for (Object value : obj.values()) {
+				towns.add(new Municipality(players, (JSONObject) value));
 			}
-			for (Object obj : (List<Object>) json.get("cities")) {
-				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.CITY));
-			}
+//			obj = (Map<Object, Object>)json.get("cities");
+//			for (Object value : obj.values()) {
+//				towns.add(new Municipality(players, (JSONObject) obj, MunicipalityType.CITY));
+//			}
 			initializeMunicipalitiesFromList(towns);
 		}
 		catch (ClassCastException | IllegalArgumentException e) {

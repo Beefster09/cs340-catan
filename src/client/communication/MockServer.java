@@ -35,18 +35,26 @@ import shared.model.ResourceTradeList;
  */
 public class MockServer implements IServer {
 
+	UUID userUUID;
+	UUID gameUUID;
+	
+	public MockServer(){
+		userUUID = UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92");
+		gameUUID = UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79");
+	}
+	
 	@Override
 	public Session login(String username, String password)
 			throws UserException, ServerException {
 		
-		return new Session("SAM", "sam", 1);
+		return new Session("SAM", "sam", userUUID);
 	}
 
 	@Override
 	public Session register(String username, String password)
 			throws UserException, ServerException {
 		
-		return new Session("JOE", "joe", 1);
+		return new Session("JOE", "joe", userUUID);
 	}
 
 	@Override
@@ -55,10 +63,8 @@ public class MockServer implements IServer {
 		
 		List<GameHeader> returnList = new ArrayList<GameHeader>();
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim",
-				UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92")));
-		GameHeader returnGame = new GameHeader("GameTest", 
-				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"), players);
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", userUUID, 0));
+		GameHeader returnGame = new GameHeader("GameTest", gameUUID, players);
 		returnList.add(returnGame);
 		return returnList;
 	}
@@ -70,10 +76,8 @@ public class MockServer implements IServer {
 			ServerException {
 		
 		List<PlayerHeader> players = new ArrayList<PlayerHeader>();
-		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", 
-				UUID.fromString("f46d143e-f332-4da0-8b8f-d9c76bda4d92")));
-		GameHeader returnGame = new GameHeader("GameTest", 
-				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"), players);
+		players.add(new PlayerHeader(CatanColor.BLUE, "Jim", userUUID, 0));
+		GameHeader returnGame = new GameHeader("GameTest", gameUUID, players);
 		
 		return returnGame;
 	}

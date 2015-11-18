@@ -35,6 +35,12 @@ public class PlayerReference {
 		playerUUID = game.getPlayers().get(playerIndex).getUUID();
 	}
 	
+	public PlayerReference(CatanModel game, int playerIndex, UUID playerUUID) {
+		assert game != null;
+		this.playerIndex = playerIndex;
+		this.playerUUID = playerUUID;
+	}
+	
 	// This is for debugging with the old server.
 	public static PlayerReference getDummyPlayerReference(int playerIndex) {
 		return new PlayerReference(playerIndex);
