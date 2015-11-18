@@ -818,8 +818,9 @@ public class Board {
 		// Reduce to a graph problem
 		Set<EdgeLocation> ownedRoads = getRoadsOwnedByPlayer(player);
 		// Used to give priority to nodes that are likely to be endpoints of a path
-		Set<VertexLocation> nodes = new HashSet<>(); // 0, 1, 2, 3
-		@SuppressWarnings("unchecked")
+		//Set<VertexLocation> nodes = new HashSet<>(); // 0, 1, 2, 3
+		@SuppressWarnings("unchecked") // I can't figure out another way
+		// to initialize this without errors.
 		Set<VertexLocation>[] nodesByEdgeCounts = new Set[4]; // 0, 1, 2, 3
 		
 		for (int i=0; i<4; ++i) {
@@ -841,19 +842,21 @@ public class Board {
 					}
 				}
 				nodesByEdgeCounts[count].add(node);
-				nodes.add(node);
+				//nodes.add(node);
 			}
 		}
 		
 		// This will be used later to significantly reduce combinatorial explosion.
 		Set<EdgeLocation> unvisited = new HashSet<>(ownedRoads);
 		
-		for (VertexLocation node : nodes) {
-			List<EdgeLocation> path = dfsPath(node, ownedRoads, new ArrayList<EdgeLocation>());
-			
-			unvisited.removeAll(path);
-			if (path.size() > best) {
-				best = path.size();
+		for (Set<VertexLocation> nodes : nodesByEdgeCounts) {
+			for (VertexLocation node : nodes) {
+				List<EdgeLocation> path = dfsPath(node, ownedRoads, new ArrayList<EdgeLocation>(), player);
+				
+				if (path.size() > best) {
+					best = path.size();
+				}
+				unvisited.removeAll(path);
 			}
 		}
 		
@@ -861,13 +864,20 @@ public class Board {
 	}
 	
 	private List<EdgeLocation> dfsPath(VertexLocation node,
-			Set<EdgeLocation> edges, List<EdgeLocation> visitedEdges) {
+			Set<EdgeLocation> edges, List<EdgeLocation> visitedEdges,
+			PlayerReference player) {
+		Municipality town = getMunicipalityAt(node);
+		if (town != null &&
+			town.getOwner().equals(player)) {
+			return visitedEdges; // you can't go farther
+		}
+		
 		List<EdgeLocation> best = visitedEdges;
 		for (EdgeLocation edge : node.getEdges()) {
 			if (edges.contains(edge) && !visitedEdges.contains(edge)) {
 				List<EdgeLocation> visited = new ArrayList<>(visitedEdges);
 				visited.add(edge);
-				List<EdgeLocation> path = dfsPath(node.traverse(edge), edges, visited);
+				List<EdgeLocation> path = dfsPath(node.traverse(edge), edges, visited, player);
 				if (path.size() > best.size()) {
 					best = path;
 				}
