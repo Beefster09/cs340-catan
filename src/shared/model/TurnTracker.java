@@ -28,10 +28,13 @@ public class TurnTracker {
 
 	public TurnTracker(List<Player> players) {
 		players = new ArrayList<>(players);
+		
+		currentPlayer = players.get(0).getReference();
+		status = TurnStatus.FirstRound;
 	}
 	
 	public TurnTracker(List<Player> players, JSONObject json) throws SchemaMismatchException {
-		players = new ArrayList<>(players);
+		this.players = new ArrayList<>(players);
 		try {
 			JSONObject curPlayer = (JSONObject) json.get("currentPlayer");
 			
@@ -102,8 +105,8 @@ public class TurnTracker {
 	 * @post Control is passed onto the next player
 	 */
 	public void passTurn() throws InvalidActionException {
+		assert players != null;
 		assert currentPlayer.getPlayer().hasRolled();
-		assert currentPlayer.getPlayer().hasDiscarded();
 		
 		int currentPlayerIndex = currentPlayer.getIndex();
 		switch(status) {
@@ -112,7 +115,7 @@ public class TurnTracker {
 				status = TurnStatus.SecondRound;
 			}
 			else {
-				currentPlayer = players.get(currentPlayerIndex + 1).getReference();
+				currentPlayer = players.get((currentPlayerIndex + 1) % 4).getReference();
 			}
 			break;
 		case SecondRound:
@@ -120,12 +123,12 @@ public class TurnTracker {
 				status = TurnStatus.Rolling;
 			}
 			else {
-				currentPlayer = players.get(currentPlayerIndex - 1).getReference();
+				currentPlayer = players.get((currentPlayerIndex + 3) % 4).getReference();
 			}
 			break;
 		case Playing:
 			currentPlayer.getPlayer().ageDevCards();
-			currentPlayer = players.get(currentPlayerIndex + 1).getReference();
+			currentPlayer = players.get((currentPlayerIndex + 1) % 4).getReference();
 			status = TurnStatus.Rolling;
 			currentPlayer.getPlayer().setHasRolled(false);
 			break;

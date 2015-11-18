@@ -22,6 +22,7 @@ import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
 import shared.exceptions.GameInitializationException;
+import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
 import shared.exceptions.SchemaMismatchException;
@@ -115,7 +116,19 @@ public class ModelFacade {
 		
 		model.rob(player, loc, victim, false);
 	}
-
+	
+	public synchronized boolean canDiscard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		return model.canDiscard(player, toDiscard);		
+	}
+	
+	public synchronized void discard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		if (!canDiscard(player, toDiscard)) {
+			throw new InsufficientResourcesException();
+		}
+		model.discard(player, toDiscard);		
+	}
 	/**
 	 * 
 	 * @return true if the player has already rolled the die
@@ -131,7 +144,7 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canFinishTurn(PlayerReference player) {
-		return model.getTradeOffer() == null && isTurn(player) && !player.getPlayer().hasRolled();
+		return model.getTradeOffer() == null && isTurn(player) && player.getPlayer().hasRolled();
 	}
 
 	public synchronized void finishTurn(PlayerReference player) throws InvalidActionException {
@@ -670,7 +683,7 @@ public class ModelFacade {
 				try {
 					Player newPlayer = new Player(player);
 					if (ClientManager.getSession() != null && newPlayer.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
-						ClientManager.setLocalPlayer(new PlayerReference(model, i, newPlayer.getUUID()));
+						ClientManager.setLocalPlayer(newPlayer.getReference());
 					}
 					players.add(newPlayer);
 				} catch (SchemaMismatchException e) {
@@ -861,7 +874,7 @@ public class ModelFacade {
 		}
 	}
 	
-	public void addPlayer(Session player, CatanColor color) {
+	public synchronized void addPlayer(Session player, CatanColor color) {
 		Player newPlayer = new Player(player, color);
 		this.getCatanModel().getPlayers().add(newPlayer);
 	}
