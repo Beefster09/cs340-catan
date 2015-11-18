@@ -36,6 +36,12 @@ public class Municipality {
 					"for an EdgeObject:\n" + json.toJSONString());
 		}
 	}
+	
+	public Municipality(List<Player> players, JSONObject json) throws SchemaMismatchException {
+			int playerOwner = (int) (long) json.get("owner");
+			location = new VertexLocation((JSONObject)(json.get("location")));
+			this.type = (MunicipalityType) json.get("type");
+	}
 
 	/**
 	 * @param owner
