@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -16,17 +17,19 @@ import com.sun.net.httpserver.HttpHandler;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
-import shared.definitions.ResourceType;
+import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
+import shared.locations.EdgeLocation;
+import shared.locations.VertexLocation;
 
 /**
- * Handles maritimeTrade requests by communicating with the Server Facade,
+ * Handles buyDevCard requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHandler {
+public class BuildStartingPiecesHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = Server.getSingleton();
 //	IServer server = new MockServer();
@@ -43,25 +46,32 @@ public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHan
 				throw new ServerException();
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
-			/*
-			 * Extract needed information from JSON, and call the appropriate server method.
-			 */
+			
+			JSONParser parser = new JSONParser();
+			
+			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("settlementLocation"));
+			VertexLocation settlementLocation = new VertexLocation(jsonObject);
+			boolean settlementFree = (boolean)json.get("settlementFree");
+			
+			jsonObject = (JSONObject)parser.parse((String)json.get("roadLocation"));
+			EdgeLocation roadLocation = new EdgeLocation(jsonObject);
+			boolean roadFree = (boolean)json.get("roadFree");
+			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
-			int ratio = (int)(long)json.get("ratio");
 			
-			ResourceType inputResource = ResourceType.fromString((String)json.get("inputResource"));
-			ResourceType outputResource = ResourceType.fromString((String)json.get("outputResource"));
-			
-			String gson = server.maritimeTrade(index, gameUUID, inputResource, outputResource, ratio);
+			String gson = server.buildStartingPieces(index, gameUUID, settlementLocation, settlementFree,
+												roadLocation, roadFree);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 			output.write(gson.toString());
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
+			e.printStackTrace();
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();
 		}
 	}
+
 }

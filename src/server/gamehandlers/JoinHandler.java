@@ -3,6 +3,7 @@ package server.gamehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +13,7 @@ import org.json.simple.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.communication.Session;
@@ -27,7 +28,8 @@ import shared.exceptions.ServerException;
  */
 public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 	
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -51,9 +53,11 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 			else
 				outputMsg = "Failed";
 			
+			JSONObject header = new JSONObject();
+			header.put("gameUUID", gameUUID.toString());
 			StringBuilder str = new StringBuilder();
 			str.append("Catan.game=");
-			str.append(gameUUID);
+			str.append(URLEncoder.encode(header.toJSONString()));
 			str.append(";Path=/;");
 			String cookie = str.toString();
 			arg0.getResponseHeaders().add("Set-cookie", cookie);

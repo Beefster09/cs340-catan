@@ -28,20 +28,21 @@ public abstract class AbstractMoveHandler {
 		cookieDecoded = cookieDecoded.substring(11);
 		int locationOfSemicolon = cookieDecoded.indexOf(';');
 		String userCookie = cookieDecoded.substring(0,locationOfSemicolon);
-		String gameCookie = cookieDecoded.substring(locationOfSemicolon);;
+		String gameCookie = cookieDecoded.substring(locationOfSemicolon + 12);;
 				
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(userCookie);
+			JSONObject game = (JSONObject) parser.parse(gameCookie);
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
-			int userID = (int)(long)cookie.get("playerID");
+			UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
 			
 			Session user = server.login(username, password);
 			
-			if(userID != user.getPlayerUUID()){
+			if(!userID.equals(user.getPlayerUUID())){
 				return null;
 			}
-			return UUID.fromString(gameCookie);
+			return UUID.fromString((String)game.get("gameUUID"));
 		}
 		catch(Exception e){
 			return null;

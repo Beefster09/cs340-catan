@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.json.simple.JSONObject;
 
 import shared.communication.PlayerHeader;
+import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
@@ -78,6 +79,15 @@ public class Player {
 		
 		setUUID(uuid);
 	}
+	
+	public Player(Session player, CatanColor color) {
+		setUUID(player.getPlayerUUID());
+		name = player.getUsername();
+		this.color = color;
+		resources = new ResourceList(0);
+		newDevCards = new DevCardList();
+		oldDevCards = new DevCardList();
+	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {
 		
@@ -116,7 +126,7 @@ public class Player {
 	}
 	
 	public PlayerHeader getHeader() {
-		return new PlayerHeader(color, name, uuid);
+		return new PlayerHeader(color, name, uuid, playerIndex);
 	}
 	
 	/** Gives a PlayerReference that refers to this player. 
@@ -276,6 +286,13 @@ public class Player {
 	}
 
 	/**
+	 * @return the victoryPoints
+	 */
+	void setVictoryPoints(int points) {
+		victoryPoints = points;
+	}
+
+	/**
 	 * @return the playerIndex
 	 */
 	public int getPlayerIndex() {
@@ -353,8 +370,8 @@ public class Player {
 		Player other = (Player) obj;
 		if (cities != other.cities)
 			return false;
-		if (color != other.color)
-			return false;
+//		if (color != other.color)
+//			return false;
 		if (discarded != other.discarded)
 			return false;
 		if (hasRolled != other.hasRolled)

@@ -9,15 +9,20 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import client.misc.ClientManager;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import client.misc.ClientManager;
 import shared.IDice;
 import shared.NormalDice;
 import shared.communication.GameHeader;
+import shared.communication.Session;
+import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
 import shared.exceptions.GameInitializationException;
+import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
 import shared.exceptions.SchemaMismatchException;
@@ -27,12 +32,14 @@ import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 
 public class ModelFacade {
+	
+	private final int NUMPLAYERS = 4;
 
 	protected CatanModel model;
 	private IDice dice;
 	protected List<IModelListener> listeners;
 
-	public ModelFacade() {
+	public ModelFacade() throws GameInitializationException {
 		this(new CatanModel(), new NormalDice());
 	}
 
@@ -109,7 +116,19 @@ public class ModelFacade {
 		
 		model.rob(player, loc, victim, false);
 	}
-
+	
+	public synchronized boolean canDiscard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		return model.canDiscard(player, toDiscard);		
+	}
+	
+	public synchronized void discard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		if (!canDiscard(player, toDiscard)) {
+			throw new InsufficientResourcesException();
+		}
+		model.discard(player, toDiscard);		
+	}
 	/**
 	 * 
 	 * @return true if the player has already rolled the die
@@ -125,7 +144,7 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canFinishTurn(PlayerReference player) {
-		return model.getTradeOffer() == null && isTurn(player) && !player.getPlayer().hasRolled();
+		return model.getTradeOffer() == null && isTurn(player) && player.getPlayer().hasRolled();
 	}
 
 	public synchronized void finishTurn(PlayerReference player) throws InvalidActionException {
@@ -569,7 +588,8 @@ public class ModelFacade {
 			}
 		}
 		if (newVersion == 0 &&
-			currentPlayerCount < 4) {
+			(currentPlayerCount < NUMPLAYERS ||
+					listOfPlayers.size() < NUMPLAYERS)) {
 			updatePlayersFromJSON(json);
 			return model;
 		}
@@ -662,8 +682,8 @@ public class ModelFacade {
 			if (player != null) {
 				try {
 					Player newPlayer = new Player(player);
-					if (ClientManager.getSession() != null && newPlayer.getPlayerID() == ClientManager.getSession().getPlayerID()) {
-						ClientManager.setLocalPlayer(new PlayerReference(model, i));
+					if (ClientManager.getSession() != null && newPlayer.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
+						ClientManager.setLocalPlayer(newPlayer.getReference());
 					}
 					players.add(newPlayer);
 				} catch (SchemaMismatchException e) {
@@ -853,5 +873,28 @@ public class ModelFacade {
 			}
 		}
 	}
+	
+	public synchronized void addPlayer(Session player, CatanColor color) {
+		Player newPlayer = new Player(player, color);
+		this.getCatanModel().getPlayers().add(newPlayer);
+	}
 
+	@Override
+	public String toString(){
+		Gson gson = new Gson();
+		JsonObject json = new JsonObject();
+		json.add("id", gson.toJsonTree(model.getHeader().getUUID()));
+		json.add("deck", gson.toJsonTree(model.getBank().deckToJsonObject()));
+		json.add("map", gson.toJsonTree(model.getMap()));
+		json.add("players", gson.toJsonTree(model.getPlayers()));
+		json.add("log", gson.toJsonTree(model.getLog()));
+		json.add("chat", gson.toJsonTree(model.getChat()));
+		json.add("bank", gson.toJsonTree(model.getBank().toJsonObject()));
+		if(model.getTradeOffer() != null){
+			json.add("tradeOffer", gson.toJsonTree(model.getTradeOffer()));
+		}
+		json.add("turnTracker", gson.toJsonTree(model.getTurnTracker()));
+		json.add("version", gson.toJsonTree(model.getVersion()));
+		return gson.toJson(json);
+	}
 }

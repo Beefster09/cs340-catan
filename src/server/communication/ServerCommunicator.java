@@ -84,6 +84,7 @@ public class ServerCommunicator {
 		server.createContext("/games/join", joinHandler);
 		//Correct syntax is /games/model?version=
 		server.createContext("/game/model", modelHandler);
+		server.createContext("/game/listAI", getAITypeHandler);
 		server.createContext("/moves/sendChat", sendChatHandler);
 		server.createContext("/moves/rollNumber", rollNumberHandler);
 		server.createContext("/moves/robPlayer", robPlayerHandler);
@@ -101,6 +102,7 @@ public class ServerCommunicator {
 		server.createContext("/moves/discardCards", discardCardsHandler);
 		server.createContext("/moves/finishTurn", finishTurnHandler);
 		server.createContext("/moves/Monument", monumentHandler);
+		server.createContext("/moves/buildStartingPieces", buildStartingPiecesHandler);
 		
 		logger.info("Starting HTTP Server");
 
@@ -112,10 +114,12 @@ public class ServerCommunicator {
 	private HttpHandler joinHandler = new JoinHandler();
 	private HttpHandler listHandler = new ListHandler();
 	private HttpHandler modelHandler = new ModelHandler();
+	private HttpHandler getAITypeHandler = new GetAITypeHandler();
 	private HttpHandler acceptTradeHandler = new AcceptTradeHandler();
 	private HttpHandler buildCityHandler = new BuildCityHandler();
 	private HttpHandler buildRoadHandler = new BuildRoadHandler();
 	private HttpHandler buildSettlementHandler = new BuildSettlementHandler();
+	private HttpHandler buildStartingPiecesHandler = new BuildStartingPiecesHandler();
 	private HttpHandler buyDevCardHandler = new BuyDevCardHandler();
 	private HttpHandler discardCardsHandler = new DiscardCardsHandler();
 	private HttpHandler finishTurnHandler = new FinishTurnHandler();

@@ -1,32 +1,29 @@
-package server.movehandlers;
+package server.gamehandlers;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.util.UUID;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import server.communication.Server;
-import server.interpreter.ExchangeConverter;
+import shared.communication.GameHeader;
 import shared.communication.IServer;
-import shared.definitions.ResourceType;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
 /**
- * Handles maritimeTrade requests by communicating with the Server Facade,
+ * Handles list requests by communicating with the Server Facade,
  * and sends the response back through the httpExchange.
  * @author Jordan
  *
  */
-public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHandler {
+public class GetAITypeHandler extends AbstractGameHandler implements HttpHandler {
 
 	IServer server = Server.getSingleton();
 //	IServer server = new MockServer();
@@ -38,30 +35,24 @@ public class MaritimeTradeHandler extends AbstractMoveHandler implements HttpHan
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			UUID gameUUID = super.checkCookies(arg0, server);
-			if(gameUUID == null){
+			if(!super.checkCookies(arg0, server)){
 				throw new ServerException();
 			}
-			JSONObject json = ExchangeConverter.toJSON(arg0);
-			/*
-			 * Extract needed information from JSON, and call the appropriate server method.
-			 */
-			UUID index = UUID.fromString((String)json.get("playerIndex"));
-			int ratio = (int)(long)json.get("ratio");
 			
-			ResourceType inputResource = ResourceType.fromString((String)json.get("inputResource"));
-			ResourceType outputResource = ResourceType.fromString((String)json.get("outputResource"));
+			List<String> aitypes = server.getAITypes();
 			
-			String gson = server.maritimeTrade(index, gameUUID, inputResource, outputResource, ratio);
-			
+			Gson gson = new Gson();
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(gson.toString());
+			output.write(gson.toJson(aitypes));
 			output.flush();
 			arg0.getResponseBody().close();
-		} catch (ParseException | ServerException | UserException e) {
+			
+		} catch (UserException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
+		} catch (ServerException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			arg0.getResponseBody().close();
 		}
 	}
+
 }

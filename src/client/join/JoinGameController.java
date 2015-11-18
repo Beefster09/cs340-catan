@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
@@ -117,7 +118,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			GameInfo[] games = DataConverter.convertGameHeaderToGameInfo(headers);
 			PlayerInfo localPlayer = new PlayerInfo();
 			//localPlayer.setUUID(modelFacade.getLocalPlayer().getPlayerID());
-			localPlayer.setUUID(null);
+			localPlayer.setUUID(ClientManager.getSession().getPlayerUUID());
 			localPlayer.setName(ClientManager.getSession().getUsername());
 			
 			getJoinGameView().closeModal();
@@ -166,6 +167,13 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisGame));
 			getNewGameView().closeModal();
 			if (getJoinGameView().isModalShowing())  getJoinGameView().closeModal();
+			List<PlayerHeader> players = thisGame.getPlayers();
+			for (PlayerHeader player : players) {
+				if (player.getUUID() == ClientManager.getLocalPlayer().getPlayerUUID()) {
+					joinAction.execute();
+					return;
+				}
+			}
 			getSelectColorView().showModal();
 		}
 		catch (GameInitializationException e) {
@@ -200,7 +208,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getId() != ClientManager.getSession().getPlayerID()) {
+			if (!player.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 			else{
@@ -233,9 +241,14 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 					getSelectColorView().closeModal();
 				}
 				List<GameHeader> gameHeaders = serverProxy.getGameList();
-				GameHeader thisHeader = gameHeaders.get(modelFacade.getGameInfo().getId());
+				GameHeader thisHeader = null;
+				for(GameHeader game : gameHeaders){
+					if(game.getUUID().equals(modelFacade.getGameInfo().getUUID())){
+						thisHeader = game;
+						break;
+					}
+				}
 				modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisHeader));
-				
 				
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				

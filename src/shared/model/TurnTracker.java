@@ -2,8 +2,10 @@ package shared.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
+
 import shared.definitions.TurnStatus;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.SchemaMismatchException;
@@ -21,17 +23,26 @@ public class TurnTracker {
 	private TurnStatus status;
 	
 	public TurnTracker() {
-		
+		status = TurnStatus.FirstRound;
 	}
 
 	public TurnTracker(List<Player> players) {
 		players = new ArrayList<>(players);
+		
+		currentPlayer = players.get(0).getReference();
+		status = TurnStatus.FirstRound;
 	}
 	
 	public TurnTracker(List<Player> players, JSONObject json) throws SchemaMismatchException {
-		players = new ArrayList<>(players);
+		this.players = new ArrayList<>(players);
 		try {
-			currentPlayer = new PlayerReference((String) json.get("currentTurn"));
+			JSONObject curPlayer = (JSONObject) json.get("currentPlayer");
+			
+			if (curPlayer != null) {
+				String temp = (String) curPlayer.get("playerUUID");
+				UUID temp2 = UUID.fromString(temp);
+				currentPlayer = new PlayerReference(temp2);
+			}
 			status = TurnStatus.fromString((String) json.get("status"));
 		}
 		catch (ClassCastException | IllegalArgumentException | NullPointerException e) {
@@ -84,14 +95,18 @@ public class TurnTracker {
 		return currentPlayer;
 	}
 	
+	public void setCurrentPlayer(PlayerReference currentPlayer) {
+		this.currentPlayer = currentPlayer;
+	}
+	
 	/** Passes the turn to the next player
 	 * @throws InvalidActionException if the current player cannot pass their turn
 	 * @pre The current player has finished all mandatory actions
 	 * @post Control is passed onto the next player
 	 */
 	public void passTurn() throws InvalidActionException {
+		assert players != null;
 		assert currentPlayer.getPlayer().hasRolled();
-		assert currentPlayer.getPlayer().hasDiscarded();
 		
 		int currentPlayerIndex = currentPlayer.getIndex();
 		switch(status) {
@@ -100,7 +115,7 @@ public class TurnTracker {
 				status = TurnStatus.SecondRound;
 			}
 			else {
-				currentPlayer = players.get(currentPlayerIndex + 1).getReference();
+				currentPlayer = players.get((currentPlayerIndex + 1) % 4).getReference();
 			}
 			break;
 		case SecondRound:
@@ -108,12 +123,12 @@ public class TurnTracker {
 				status = TurnStatus.Rolling;
 			}
 			else {
-				currentPlayer = players.get(currentPlayerIndex - 1).getReference();
+				currentPlayer = players.get((currentPlayerIndex + 3) % 4).getReference();
 			}
 			break;
 		case Playing:
 			currentPlayer.getPlayer().ageDevCards();
-			currentPlayer = players.get(currentPlayerIndex + 1).getReference();
+			currentPlayer = players.get((currentPlayerIndex + 1) % 4).getReference();
 			status = TurnStatus.Rolling;
 			currentPlayer.getPlayer().setHasRolled(false);
 			break;

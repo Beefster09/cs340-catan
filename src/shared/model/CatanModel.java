@@ -8,6 +8,7 @@ import shared.communication.PlayerHeader;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
@@ -42,13 +43,24 @@ public class CatanModel {
 	private int version;
 
 	/** Makes a brand spanking new Model
+	 * @throws GameInitializationException 
 	 * 
 	 */
-	public CatanModel() {
+	public CatanModel() throws GameInitializationException {
 		version = -1;
 		winner = null;
 		
 		id = UUID.randomUUID();
+		players = new ArrayList<Player>();
+		turnTracker = new TurnTracker();
+		bank = new Bank();
+		chat = new MessageList();
+		chat.add("", "First Round");
+		log = new MessageList();
+		
+		map = new Board();
+		longestRoad = new PlayerReference(UUID.randomUUID(),-1);
+		largestArmy = new PlayerReference(UUID.randomUUID(),-1);
 	}
 	
 	public UUID getID() {
@@ -99,6 +111,8 @@ public class CatanModel {
 	 */
 	void setLongestRoad(PlayerReference longestRoad) {
 		this.longestRoad = longestRoad;
+		
+		updateScores();
 	}
 
 	/**
@@ -113,6 +127,8 @@ public class CatanModel {
 	 */
 	void setLargestArmy(PlayerReference largestArmy) {
 		this.largestArmy = largestArmy;
+		
+		updateScores();
 	}
 
 	/**
@@ -178,8 +194,11 @@ public class CatanModel {
 		this.winner = winner;
 	}
 
-	void setVersion(int version) {
+	public void setVersion(int version) {
 		this.version = version;
+	}
+	public void incrementVersion() {
+		version = version++;
 	}
 
 	/**
@@ -320,6 +339,8 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.BRICK, 1);
 		getMap().buildRoad(player, loc);
 		
+		checkLongestRoad(player);
+		
 		log.add(player.getName(), player.getName() + " built a road.");
 		
 		++version;
@@ -341,6 +362,8 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.SHEEP, 1);
 		hand.transfer(bank, ResourceType.WHEAT, 1);
 		map.buildSettlement(player, loc);
+		
+		updateScores();
 		
 		log.add(player.getName(), player.getName() + " built a road.");
 		
@@ -374,6 +397,8 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.WHEAT, 2);
 		
 		getMap().upgradeSettlementAt(player, loc);
+		
+		updateScores();
 	
 		log.add(player.getName(), player.getName() + " upgraded a settlement into a city.");
 		
@@ -473,13 +498,23 @@ public class CatanModel {
 		++version;
 	}
 
-	private void useSoldierCard(PlayerReference player)
+	private void useSoldierCard(PlayerReference playerRef)
 			throws InvalidActionException {
-		assert player.getPlayer().getOldDevCards().count(DevCardType.SOLDIER) >= 1;
+		assert playerRef.getPlayer().getOldDevCards().count(DevCardType.SOLDIER) >= 1;
 		
-		player.getPlayer().getOldDevCards().useCard(DevCardType.SOLDIER);
+		Player player = playerRef.getPlayer();
 		
-		log.add(player.getName(), player.getName() + " played a soldier card.");
+		player.getOldDevCards().useCard(DevCardType.SOLDIER);
+		player.setSoldiers(player.getSoldiers() + 1);
+		
+		if (player.getSoldiers() >= 3) {
+			if (getLargestArmy() == null ||
+				player.getSoldiers() > getLargestArmy().getPlayer().getSoldiers()) {
+				setLargestArmy(playerRef);
+			}
+		}
+		
+		log.add(playerRef.getName(), playerRef.getName() + " played a soldier card.");
 	}
 
 	void finishTurn() throws InvalidActionException {
@@ -570,9 +605,32 @@ public class CatanModel {
 		map.buildRoad(player, road1);
 		map.buildRoad(player, road2);
 		
+		checkLongestRoad(player);
+		
 		log.add(player.getName(), player.getName() + " played a road building card.");
 		
 		++version;
+	}
+
+	/**
+	 * 
+	 */
+	private void checkLongestRoad(PlayerReference player) {
+		// The player already has the longest road.
+		if (player.equals(getLongestRoad())) {
+			return; // Move along. Nothing to do here.
+		}
+		
+		int currentBest = 4;
+		if (getLongestRoad() != null) {
+			currentBest = map.lengthOfLongestRoute(getLongestRoad());
+		}
+		
+		int length = map.lengthOfLongestRoute(player);
+		if (length > currentBest) {
+			currentBest = length;
+			setLongestRoad(player);
+		}
 	}
 
 	void monopoly(PlayerReference player, ResourceType resource) {
@@ -598,9 +656,67 @@ public class CatanModel {
 	void monument(PlayerReference player) throws InvalidActionException {
 		player.getPlayer().playMonument();
 		
+		updateScores();
+		
 		log.add(player.getName(), player.getName() + " played a monument.");
 		
 		++version;
+	}
+
+	public boolean canDiscard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) {
+		// You can't discard if you have already discarded.
+		if (player.getPlayer().hasDiscarded()) {
+			return false;
+		}
+		
+		ResourceList hand = player.getHand();
+	
+		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
+			if (hand.count(card.getKey()) < card.getValue()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void discard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		assert canDiscard(player, toDiscard);
+		
+		ResourceList hand = player.getHand();
+		ResourceList bankRes = bank.getResources();
+		
+		int numDiscarded = 0;
+		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
+			hand.transfer(bankRes, card.getKey(), card.getValue());
+			++numDiscarded;
+		}
+		
+		player.getPlayer().setHasDiscarded(true);
+		
+		log.add(player.getName(), player.getName() + " discarded " +
+				numDiscarded + " cards.");
+		
+		++version;
+	}
+
+	private void updateScores() {
+		for (Player player : players) {
+			int score = 0;
+			for (Municipality town : map.getMunicipalitiesOwnedBy(player.getReference())) {
+				score += town.getPointValue();
+			}
+			if (player.getReference().equals(getLongestRoad())) {
+				score += 2;
+			}
+			if (player.getReference().equals(getLargestArmy())) {
+				score += 2;
+			}
+			score += player.getMonuments();
+			
+			player.setVictoryPoints(score);
+		}
 	}
 	
 	

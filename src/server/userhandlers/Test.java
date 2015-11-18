@@ -144,8 +144,6 @@ public class Test {
 			System.out.println("Tried to buy Dev Card\n");
 		}
 		
-		
-		
 		try{
 			server.joinGame(user, gameUUID, CatanColor.BLUE);
 			System.out.println("Failed!");
@@ -154,7 +152,7 @@ public class Test {
 		catch(Exception e){
 			System.out.println("Tried to join game\n");
 		}
-		server.login("Sam", "Sam");
+		server.register("Sam", "Sam");
 		System.out.println("Logged in\n");
 		try{
 			server.buyDevCard(userUUID, gameUUID);
@@ -164,7 +162,7 @@ public class Test {
 		catch(Exception e){
 			System.out.println("Tried to buy Dev Card\n");
 		}
-		server.joinGame(user, gameUUID, CatanColor.BLUE);
+		server.joinGame(user, gameUUID, CatanColor.RED);
 		System.out.println("Joined Game\n");
 		
 		server.buyDevCard(userUUID, gameUUID);

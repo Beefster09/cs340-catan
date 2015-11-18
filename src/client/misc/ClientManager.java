@@ -4,6 +4,7 @@ import client.communication.MockServer;
 import client.communication.ServerProxy;
 import shared.communication.IServer;
 import shared.communication.Session;
+import shared.exceptions.GameInitializationException;
 import shared.model.ClientModelFacade;
 import shared.model.PlayerReference;
 
@@ -33,7 +34,12 @@ public class ClientManager {
 		if (model == null) {
 			synchronized (ClientManager.class) {
 				if (model == null) {
-					model = new ClientModelFacade();
+					try {
+						model = new ClientModelFacade();
+					} catch (GameInitializationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}

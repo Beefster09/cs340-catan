@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import client.communication.MockServer;
+import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
 import shared.exceptions.SchemaMismatchException;
@@ -30,7 +30,8 @@ import shared.locations.EdgeLocation;
  */
 public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler {
 
-	IServer server = new MockServer();
+	IServer server = Server.getSingleton();
+//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
@@ -51,8 +52,8 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 			
 			boolean free = (boolean)json.get("free");
 			
-			UUID playerIndex = UUID.fromString((String)json.get("playerIndex"));
-			String gson = server.buildRoad(playerIndex, gameUUID, location, free);
+			UUID index = UUID.fromString((String)json.get("playerIndex"));
+			String gson = server.buildRoad(index, gameUUID, location, free);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

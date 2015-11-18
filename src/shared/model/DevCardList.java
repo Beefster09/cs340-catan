@@ -27,9 +27,15 @@ public class DevCardList {
 	 */
 	public DevCardList() {
 		cards = new HashMap<DevCardType, Integer>();
+		for (DevCardType type : DevCardType.values()) {
+			cards.put(type, 0);
+		}
 	}
 	
 	public static DevCardList fromJSONObject(JSONObject json) throws SchemaMismatchException {
+		if (json.containsKey("cards")) {
+			json = (JSONObject) json.get("cards");
+		}
 		DevCardList self = new DevCardList();
 		self.cards = new HashMap<>();
 		try {
@@ -102,8 +108,12 @@ public class DevCardList {
 	 * @post none
 	 */
 	public int count(DevCardType type) {
-		
-		return cards.get(type);
+		if (cards.containsKey(type)) {
+			return cards.get(type);
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	/** Transfers a card from this DevCardList to another
@@ -117,7 +127,7 @@ public class DevCardList {
 	private void transferCardTo(DevCardList destination, DevCardType type, int amount) throws InvalidActionException {
 		if (count(type) < amount) throw new InsufficientResourcesException();
 		this.cards.put(type, this.cards.get(type) - amount);
-		destination.cards.put(type, destination.cards.get(type) + amount);
+		destination.cards.put(type, destination.count(type) + amount);
 	}
 	
 	/** Transfers a card from this DevCardList to another

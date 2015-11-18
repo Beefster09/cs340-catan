@@ -77,16 +77,18 @@ public class GameHistoryController extends Controller implements IGameHistoryCon
 		List<String> names = messageList.getSource();
 		List<String> messages = messageList.getMessage();
 		
-		for(int i = 0; i < names.size(); i++) {
-			
-			String name = names.get(i);
-			String message = messages.get(i);
+		if(names != null){
+			for(int i = 0; i < names.size(); i++) {
 				
-			CatanColor color = nameToCatanColor(name);
-			
-			LogEntry entry = new LogEntry(color, message);
-			
-			entries.add(entry);
+				String name = names.get(i);
+				String message = messages.get(i);
+					
+				CatanColor color = nameToCatanColor(name);
+				
+				LogEntry entry = new LogEntry(color, message);
+				
+				entries.add(entry);
+			}
 		}
 		
 		return entries;

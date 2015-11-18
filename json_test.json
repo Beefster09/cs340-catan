@@ -397,25 +397,14 @@
     "lines": []
   },
   "bank": {
-    "brick": 24,
-    "wood": 24,
-    "sheep": 24,
-    "wheat": 24,
-    "ore": 24
+    "brick": 19,
+    "wood": 19,
+    "sheep": 19,
+    "wheat": 19,
+    "ore": 19
   },
-  "tradeOffer": {
- "sender": "f94a8341-d7b4-457e-a3a1-5761e2c3d5b8",
- "receiver": "8ea41db5-0a7a-46aa-a644-e5376dd8a1a3",
- "offer": {
- "brick": 1,
- "ore": 1,
- "sheep": 1,
- "wheat": 1,
- "wood": 1
- }
-},
   "turnTracker": {
-    "status": "FirstRound",
+    "status": "Rolling",
     "currentTurn": "8ea41db5-0a7a-46aa-a644-e5376dd8a1a3"
   },
   "version": 0

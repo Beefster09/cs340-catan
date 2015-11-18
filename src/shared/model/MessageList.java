@@ -16,7 +16,8 @@ public class MessageList {
 	private List<String> source;
 
 	public MessageList() {
-		
+		message = new ArrayList<String>();
+		source = new ArrayList<String>();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -29,6 +30,16 @@ public class MessageList {
 				for (Object obj : (List<Object>) json.get("lines")) {
 					message.add((String) ((JSONObject)obj).get("message"));
 					source.add((String) ((JSONObject)obj).get("source"));
+				}
+			}
+			else {
+				message = new ArrayList<String>();
+				source = new ArrayList<String>();
+				for (Object obj : (List<Object>)json.get("source")) {
+					source.add((String)obj);
+				}
+				for (Object obj : (List<Object>)json.get("message")) {
+					message.add((String)obj);
 				}
 			}
 		} catch (ClassCastException | IllegalArgumentException e) {
@@ -83,7 +94,7 @@ public class MessageList {
 		return true;
 	}
 	
-	void add(String source, String message) {
+	public void add(String source, String message) {
 		this.source.add(source);
 		this.message.add(message);
 	}

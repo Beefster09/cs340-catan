@@ -31,7 +31,10 @@ public class ResourceBarController extends Controller implements
 	}
 	
 	private boolean isYourTurn() {
-		return ClientManager.getModel().getCurrentPlayer().equals(ClientManager.getLocalPlayer());
+		PlayerReference currentPlayer = ClientManager.getModel().getCurrentPlayer();
+		if (currentPlayer == null)
+			return false;
+		return currentPlayer.equals(ClientManager.getLocalPlayer());
 	}
 	
 	@Override
