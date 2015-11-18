@@ -192,6 +192,8 @@ public class Server implements IServer {
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
 		ModelFacade modelFacade = games.get(gameID);
 		CatanModel model = modelFacade.getCatanModel();
+		if (version == model.getVersion())
+			return null;
 		Gson gson = new Gson();
 		return gson.toJson(model);
 	}
