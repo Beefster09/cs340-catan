@@ -215,8 +215,12 @@ public class Board {
 			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
 				//TODO: Fix this line, can't can't lists from JSON!
-				for (Object obj : (List<Object>) json.get("hexes")) {
-					hexData.add(new Hex((JSONObject) obj));
+				Map<Object, Object> obj = (Map<Object, Object>)json.get("hexes");
+//				for (Object obj : (List<Object>) json.get("hexes")) {
+//					hexData.add(new Hex((JSONObject) obj));
+//				}
+				for (Object value : obj.values()) {
+					hexData.add(new Hex((JSONObject) value));
 				}
 				initializeHexesFromList(hexData);
 			}
