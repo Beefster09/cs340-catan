@@ -250,7 +250,9 @@ public class Server implements IServer {
 
 	@Override
 	public String rollDice(UUID user, UUID gameID, int number) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+
+		
+		
 		return null;
 	}
 
