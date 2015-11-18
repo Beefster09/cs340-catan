@@ -47,12 +47,12 @@ public class CatanModel {
 	 * 
 	 */
 	public CatanModel() throws GameInitializationException {
-		version = -1;
+		version = 0;
 		winner = null;
 		
 		id = UUID.randomUUID();
 		players = new ArrayList<Player>();
-		turnTracker = new TurnTracker();
+		turnTracker = null; //new TurnTracker();
 		bank = new Bank();
 		chat = new MessageList();
 		chat.add("", "First Round");
@@ -720,6 +720,23 @@ public class CatanModel {
 			player.setVictoryPoints(score);
 		}
 	}
+
+	public void addPlayer(Player newPlayer) {
+		players.add(newPlayer);
+		
+		if (players.size() == 4) {
+			turnTracker = new TurnTracker(players);
+		}
+	}
+
+	public boolean hasStarted() {
+		return turnTracker != null;
+	}
 	
-	
+	/** Tells you if the game is ready to play
+	 * @return
+	 */
+	public boolean ready() {
+		return turnTracker != null && players.size() == 4;
+	}
 }

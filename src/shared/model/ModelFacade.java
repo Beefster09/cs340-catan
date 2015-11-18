@@ -571,6 +571,8 @@ public class ModelFacade {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized CatanModel updateFromJSON(String jsonString) {
+		if(jsonString==null)
+			return getCatanModel();
 		JSONObject json;
 		try {
 			json = (JSONObject) new JSONParser().parse(jsonString);
@@ -874,9 +876,22 @@ public class ModelFacade {
 		}
 	}
 	
-	public synchronized void addPlayer(Session player, CatanColor color) {
+	public synchronized void addPlayer(Session player, CatanColor color) throws GameInitializationException {
+		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
+			throw new GameInitializationException();
+		}
+		
 		Player newPlayer = new Player(player, color);
-		this.getCatanModel().getPlayers().add(newPlayer);
+		model.addPlayer(newPlayer);
+	}
+
+	public synchronized void addPlayer(String name, CatanColor color) throws GameInitializationException {
+		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
+			throw new GameInitializationException();
+		}
+		
+		Player newPlayer = new Player(model.getPlayers().size(), name, color);
+		model.addPlayer(newPlayer);
 	}
 
 	@Override

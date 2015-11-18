@@ -965,4 +965,28 @@ public class Board {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Board [hexes=");
+		builder.append(getHexes());
+		builder.append(", radius=");
+		builder.append(radius);
+		builder.append(", ports=");
+		builder.append(getPorts());
+		builder.append(", roads=");
+		builder.append(getRoads());
+		builder.append(", municipalities=");
+		builder.append(getMunicipalities());
+		builder.append(", robber=");
+		builder.append(robber);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
+
 }

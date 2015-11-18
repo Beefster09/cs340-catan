@@ -70,8 +70,11 @@ public class Player {
 		playerTable.put(uuid, this);
 	}
 	
-	public Player() {
+	public Player(int index, String name, CatanColor color) {
+		this(index);
 		
+		this.name = name;
+		this.color = color;
 	}
 	
 	public Player(int index) {
