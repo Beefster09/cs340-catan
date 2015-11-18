@@ -32,6 +32,8 @@ import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 
 public class ModelFacade {
+	
+	private final int NUMPLAYERS = 4;
 
 	protected CatanModel model;
 	private IDice dice;
@@ -586,7 +588,8 @@ public class ModelFacade {
 			}
 		}
 		if (newVersion == 0 &&
-			currentPlayerCount < 4) {
+			(currentPlayerCount < NUMPLAYERS ||
+					listOfPlayers.size() < NUMPLAYERS)) {
 			updatePlayersFromJSON(json);
 			return model;
 		}
