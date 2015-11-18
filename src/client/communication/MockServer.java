@@ -253,8 +253,7 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public String buildRoad(UUID user, UUID gameID, EdgeLocation location,
-			boolean free) throws ServerException, UserException {
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location) throws ServerException, UserException {
 		
 		try {
 			return readJSON();
@@ -265,7 +264,7 @@ public class MockServer implements IServer {
 
 	@Override
 	public String buildSettlement(UUID user, UUID gameID,
-			VertexLocation location, boolean free) throws ServerException,
+			VertexLocation location) throws ServerException,
 			UserException {
 		
 		try {
@@ -356,5 +355,13 @@ public class MockServer implements IServer {
 		String returnThis = myScanner.next();
 		myScanner.close();
 		return returnThis;
+	}
+
+	@Override
+	public String buildStartingPieces(UUID user, UUID gameID,
+			VertexLocation settlementLoc, EdgeLocation roadLoc)
+			throws ServerException, UserException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

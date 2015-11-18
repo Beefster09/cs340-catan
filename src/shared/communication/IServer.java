@@ -188,7 +188,7 @@ public interface IServer {
 	 * @post road is built at specified location
 	 * @author-Grant
 	 */
-	public String buildRoad(UUID user, UUID gameID, EdgeLocation location, boolean free)
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location)
 			throws ServerException, UserException;
 	/**
 	 * @pre vertex location is specified and must be connected to road owned by player.  Must be at least two
@@ -196,12 +196,12 @@ public interface IServer {
 	 * @post settlement is built at existing location
 	 * @author-Grant
 	 */
-	public String buildSettlement(UUID user, UUID gameID, VertexLocation location, boolean free)
+	public String buildSettlement(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException;
 	
 
 	public String buildStartingPieces(UUID user, UUID gameID, VertexLocation settlementLoc,
-									boolean settlementFree, EdgeLocation roadLoc, boolean roadFree)
+									EdgeLocation roadLoc)
 			throws ServerException, UserException;
 	
 	/**

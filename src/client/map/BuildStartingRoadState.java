@@ -37,7 +37,7 @@ public class BuildStartingRoadState extends MapControllerState {
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				//getServer().buildSettlement(getYourself().getPlayerUUID(), gameUUID, settlement, true);
 				//getServer().buildRoad(getYourself().getPlayerUUID(), gameUUID, edge, true);
-				return getServer().placeStartingPieces(getYourself().getPlayerUUID(), gameUUID);
+				return getServer().buildStartingPieces(getYourself().getPlayerUUID(), gameUUID, settlement, edge);
 			}
 
 			@Override

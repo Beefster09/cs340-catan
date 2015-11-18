@@ -301,14 +301,14 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String buildRoad(UUID user, UUID gameID, EdgeLocation location, boolean free)
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location)
 			throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String buildSettlement(UUID user, UUID gameID, VertexLocation location, boolean free)
+	public String buildSettlement(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
 		try {
 			ICatanCommand command = new CatanCommand("buildSettlement", new PlayerReference(user), location);
@@ -331,8 +331,7 @@ public class Server implements IServer {
 
 	@Override
 	public String buildStartingPieces(UUID user, UUID gameID,
-			VertexLocation settlementLoc, boolean settlementFree,
-			EdgeLocation roadLoc, boolean roadFree) throws ServerException,
+			VertexLocation settlementLoc, EdgeLocation roadLoc) throws ServerException,
 			UserException {
 		// TODO Auto-generated method stub
 		return null;

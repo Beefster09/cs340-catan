@@ -86,10 +86,10 @@ public class Test {
 		model = server.buildCity(userUUID, gameUUID, vLocation);
 		System.out.println("Build City:\n" + model.substring(5, 49) + "\n");
 		//BuildRoad
-		model = server.buildRoad(userUUID, gameUUID, eLocation, false);
+		model = server.buildRoad(userUUID, gameUUID, eLocation);
 		System.out.println("Build Road:\n" + model.substring(5, 49) + "\n");
 		//BuildSettlement
-		model = server.buildSettlement(userUUID, gameUUID, vLocation, false);
+		model = server.buildSettlement(userUUID, gameUUID, vLocation);
 		System.out.println("Build Settlement:\n" + model.substring(5, 49) + "\n");
 		//BuyDevCard
 		model = server.buyDevCard(userUUID, gameUUID);

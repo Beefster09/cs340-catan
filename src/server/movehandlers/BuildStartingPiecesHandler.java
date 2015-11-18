@@ -59,8 +59,7 @@ public class BuildStartingPiecesHandler extends AbstractMoveHandler implements H
 			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			
-			String gson = server.buildStartingPieces(index, gameUUID, settlementLocation, settlementFree,
-												roadLocation, roadFree);
+			String gson = server.buildStartingPieces(index, gameUUID, settlementLocation, roadLocation);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

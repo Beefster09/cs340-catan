@@ -136,9 +136,9 @@ public class ServerProxyTest {
 			location.put("y", 1L);
 			location.put("direction", "NW");
 			VertexLocation vertexLocation = new VertexLocation(location);
-			SP.buildRoad(steve, gameID, edgeLocation, true);
+			SP.buildRoad(steve, gameID, edgeLocation);
 			System.out.println("Steve Built a Road");
-			SP.buildSettlement(steve, gameID, vertexLocation, true);
+			SP.buildSettlement(steve, gameID, vertexLocation);
 			System.out.println("Steve Built a Settlement");
 			SP.finishTurn(steve, gameID);
 			System.out.println("Steve finished his Turn");
@@ -153,9 +153,9 @@ public class ServerProxyTest {
 			location.put("y", 2L);
 			location.put("direction", "W");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(justin, gameID, edgeLocation, true);
+			SP.buildRoad(justin, gameID, edgeLocation);
 			System.out.println("Justin Built a Road");
-			SP.buildSettlement(justin, gameID, vertexLocation, true);
+			SP.buildSettlement(justin, gameID, vertexLocation);
 			System.out.println("Justin Built a Settlement");
 			SP.finishTurn(justin, gameID);
 			System.out.println("Justin finished his Turn");
@@ -170,9 +170,9 @@ public class ServerProxyTest {
 			location.put("y", 1L);
 			location.put("direction", "E");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(jordan, gameID, edgeLocation, true);
+			SP.buildRoad(jordan, gameID, edgeLocation);
 			System.out.println("Jordan Built a Road");
-			SP.buildSettlement(jordan, gameID, vertexLocation, true);
+			SP.buildSettlement(jordan, gameID, vertexLocation);
 			System.out.println("Jordan Built a Settlement");
 			SP.finishTurn(jordan, gameID);
 			System.out.println("Jordan finished his Turn");
@@ -187,9 +187,9 @@ public class ServerProxyTest {
 			location.put("y", 2L);
 			location.put("direction", "NW");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(grant, gameID, edgeLocation, true);
+			SP.buildRoad(grant, gameID, edgeLocation);
 			System.out.println("Grant Built a Road");
-			SP.buildSettlement(grant, gameID, vertexLocation, true);
+			SP.buildSettlement(grant, gameID, vertexLocation);
 			System.out.println("Grant Built a Settlement");
 			SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his Turn");
@@ -204,9 +204,9 @@ public class ServerProxyTest {
 			location.put("y", 1L);
 			location.put("direction", "NW");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(grant, gameID, edgeLocation, true);
+			SP.buildRoad(grant, gameID, edgeLocation);
 			System.out.println("Grant Built 2nd Road");
-			SP.buildSettlement(grant, gameID, vertexLocation, true);
+			SP.buildSettlement(grant, gameID, vertexLocation);
 			System.out.println("Grant Built 2nd Settlement");
 			SP.finishTurn(grant, gameID);
 			System.out.println("Grant finished his Turn");
@@ -221,9 +221,9 @@ public class ServerProxyTest {
 			location.put("y", 0L);
 			location.put("direction", "NW");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(jordan, gameID, edgeLocation, true);
+			SP.buildRoad(jordan, gameID, edgeLocation);
 			System.out.println("Jordan Built 2nd Road");
-			SP.buildSettlement(jordan, gameID, vertexLocation, true);
+			SP.buildSettlement(jordan, gameID, vertexLocation);
 			System.out.println("Jordan Built 2nd Settlement");
 			SP.finishTurn(jordan, gameID);
 			System.out.println("Jordan finished his Turn");
@@ -238,9 +238,9 @@ public class ServerProxyTest {
 			location.put("y", 2L);
 			location.put("direction", "NE");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(justin, gameID, edgeLocation, true);
+			SP.buildRoad(justin, gameID, edgeLocation);
 			System.out.println("Justin Built 2nd Road");
-			SP.buildSettlement(justin, gameID, vertexLocation, true);
+			SP.buildSettlement(justin, gameID, vertexLocation);
 			System.out.println("Justin Built 2nd Settlement");
 			SP.finishTurn(justin, gameID);
 			System.out.println("Justin finished his Turn");
@@ -255,9 +255,9 @@ public class ServerProxyTest {
 			location.put("y", -1L);
 			location.put("direction", "NW");
 			vertexLocation = new VertexLocation(location);
-			SP.buildRoad(steve, gameID, edgeLocation, true);
+			SP.buildRoad(steve, gameID, edgeLocation);
 			System.out.println("Steve Built 2nd Road");
-			SP.buildSettlement(steve, gameID, vertexLocation, true);
+			SP.buildSettlement(steve, gameID, vertexLocation);
 			System.out.println("Steve Built 2nd Settlement");
 			SP.finishTurn(steve, gameID);
 			System.out.println("Steve finished his Turn");
@@ -280,7 +280,7 @@ public class ServerProxyTest {
 			location.put("y", -1L);
 			location.put("direction", "NE");
 			edgeLocation = new EdgeLocation(location);
-			SP.buildRoad(steve, gameID, edgeLocation, false);
+			SP.buildRoad(steve, gameID, edgeLocation);
 			System.out.println("Steve built 3rd road");
 			
 			location = new JSONObject();
@@ -288,7 +288,7 @@ public class ServerProxyTest {
 			location.put("y", -2L);
 			location.put("direction", "NW");
 			edgeLocation = new EdgeLocation(location);
-			SP.buildRoad(steve, gameID, edgeLocation, false);
+			SP.buildRoad(steve, gameID, edgeLocation);
 			System.out.println("Steve built 4th road");
 			
 			JSONObject tradeJSON = new JSONObject();
@@ -336,7 +336,7 @@ public class ServerProxyTest {
 			location.put("direction", "NW");
 			vertexLocation = new VertexLocation(location);
 			
-			SP.buildSettlement(steve, gameID, vertexLocation, false);
+			SP.buildSettlement(steve, gameID, vertexLocation);
 			System.out.println("Steve built 3rd settlement");
 			SP.finishTurn(steve, gameID);
 			System.out.println("Steve finished his 1st turn");
@@ -400,7 +400,7 @@ public class ServerProxyTest {
 			location.put("y", 0L);
 			location.put("direction", "NE");
 			edgeLocation = new EdgeLocation(location);
-			SP.buildRoad(steve, gameID, edgeLocation, false);
+			SP.buildRoad(steve, gameID, edgeLocation);
 			System.out.println("Steve built 5th road");
 
 			SP.sendChat(steve, gameID, "Why did nobody do anything last round?");
@@ -427,7 +427,7 @@ public class ServerProxyTest {
 			location.put("direction", "E");
 			vertexLocation = new VertexLocation(location);
 
-			SP.buildSettlement(steve, gameID, vertexLocation, false);
+			SP.buildSettlement(steve, gameID, vertexLocation);
 			System.out.println("Steve built a 4th settlement");
 
 			SP.finishTurn(steve, gameID);
@@ -586,7 +586,7 @@ public class ServerProxyTest {
 			location.put("direction", "NW");
 			edgeLocation = new EdgeLocation(location);
 			
-			SP.buildRoad(steve, gameID, edgeLocation, false);
+			SP.buildRoad(steve, gameID, edgeLocation);
 			System.out.println("Steve built 6th road\nSteve has longest road");
 			SP.finishTurn(steve, gameID);
 			System.out.println("Steve finished his 5th turn");
