@@ -57,7 +57,7 @@ public class ServerProxy implements IServer {
 		if (test.joinGame(player, header.getUUID(), CatanColor.BLUE)) {
 			test.getModel(gameID, -1);
 			test.buildStartingPieces(player.getPlayerUUID(), header.getUUID(), new VertexLocation(0,0,VertexDirection.East),
-										true, new EdgeLocation(new HexLocation(0,0),EdgeDirection.North), true);
+										new EdgeLocation(new HexLocation(0,0),EdgeDirection.North));
 		}
 	}
 
@@ -420,8 +420,7 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildRoad(UUID user, UUID gameID, EdgeLocation location,
-			boolean free)
+	public String buildRoad(UUID user, UUID gameID, EdgeLocation location)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildRoad");
@@ -430,15 +429,13 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.toString());
 		JSONObject roadLocation = location.toJSONObject();		
 		o.put("roadLocation", gson.toJson(roadLocation));
-		o.put("free", free);
 		
 		return communicator.send(o);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String buildSettlement(UUID user, UUID gameID, VertexLocation location,
-			boolean free)
+	public String buildSettlement(UUID user, UUID gameID, VertexLocation location)
 					throws ServerException, UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildSettlement");
@@ -447,7 +444,6 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.toString());
 		JSONObject vertexLocation = location.toJSONObject();
 		o.put("vertexLocation", gson.toJson(vertexLocation));
-		o.put("free", free);
 		
 		return communicator.send(o);
 	}
@@ -455,8 +451,7 @@ public class ServerProxy implements IServer {
 	@SuppressWarnings("unchecked")
 	@Override
 	public String buildStartingPieces(UUID user, UUID gameID,
-			VertexLocation settlementLoc, boolean settlementFree,
-			EdgeLocation roadLoc, boolean roadFree) throws ServerException,
+			VertexLocation settlementLoc, EdgeLocation roadLoc) throws ServerException,
 			UserException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildStartingPieces");
@@ -465,10 +460,8 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.toString());
 		JSONObject vertexLocation = settlementLoc.toJSONObject();
 		o.put("settlementLocation", gson.toJson(vertexLocation));
-		o.put("settlementFree", settlementFree);
 		JSONObject roadLocation = roadLoc.toJSONObject();		
 		o.put("roadLocation", gson.toJson(roadLocation));
-		o.put("roadFree", roadFree);
 		
 		return communicator.send(o);
 	}

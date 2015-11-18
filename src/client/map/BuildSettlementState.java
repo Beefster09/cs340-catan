@@ -31,7 +31,7 @@ public class BuildSettlementState extends MapControllerState {
 			protected String doInBackground() throws Exception {
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				return ClientManager.getServer().buildSettlement(getYourself().getPlayerUUID(), gameUUID,
-						vertex, false);
+						vertex);
 			}
 
 			@Override

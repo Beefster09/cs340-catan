@@ -23,6 +23,7 @@ import shared.communication.*;
 import shared.definitions.DevCardType;
 import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
@@ -39,7 +40,7 @@ public class ModelFacadeTest {
 	private CheatEnabledDice dice;
 	
 	@Before
-	public void setup() throws IOException, ParseException {
+	public void setup() throws IOException, ParseException, GameInitializationException {
 		
 		JSONParser parser = new JSONParser();
 		BufferedReader r = new BufferedReader(new FileReader("json_test.json"));
