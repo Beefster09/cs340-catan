@@ -602,6 +602,44 @@ public class CatanModel {
 		
 		++version;
 	}
+
+	void discard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		assert canDiscard(player, toDiscard);
+		
+		ResourceList hand = player.getHand();
+		ResourceList bankRes = bank.getResources();
+		
+		int numDiscarded = 0;
+		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
+			hand.transfer(bankRes, card.getKey(), card.getValue());
+			++numDiscarded;
+		}
+		
+		player.getPlayer().setHasDiscarded(true);
+		
+		log.add(player.getName(), player.getName() + " discarded " +
+				numDiscarded + " cards.");
+		
+		++version;
+	}
+
+	public boolean canDiscard(PlayerReference player,
+			Map<ResourceType, Integer> toDiscard) {
+		// You can't discard if you have already discarded.
+		if (player.getPlayer().hasDiscarded()) {
+			return false;
+		}
+		
+		ResourceList hand = player.getHand();
+
+		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
+			if (hand.count(card.getKey()) < card.getValue()) {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	
 }

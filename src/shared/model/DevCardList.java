@@ -102,8 +102,12 @@ public class DevCardList {
 	 * @post none
 	 */
 	public int count(DevCardType type) {
-		
-		return cards.get(type);
+		if (cards.containsKey(type)) {
+			return cards.get(type);
+		}
+		else {
+			return 0;
+		}
 	}
 	
 	/** Transfers a card from this DevCardList to another
@@ -117,7 +121,7 @@ public class DevCardList {
 	private void transferCardTo(DevCardList destination, DevCardType type, int amount) throws InvalidActionException {
 		if (count(type) < amount) throw new InsufficientResourcesException();
 		this.cards.put(type, this.cards.get(type) - amount);
-		destination.cards.put(type, destination.cards.get(type) + amount);
+		destination.cards.put(type, destination.count(type) + amount);
 	}
 	
 	/** Transfers a card from this DevCardList to another
