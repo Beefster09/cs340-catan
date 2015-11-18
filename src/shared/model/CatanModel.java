@@ -8,6 +8,7 @@ import shared.communication.PlayerHeader;
 import shared.definitions.DevCardType;
 import shared.definitions.ResourceType;
 import shared.definitions.TurnStatus;
+import shared.exceptions.GameInitializationException;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.NotYourTurnException;
@@ -42,9 +43,10 @@ public class CatanModel {
 	private int version;
 
 	/** Makes a brand spanking new Model
+	 * @throws GameInitializationException 
 	 * 
 	 */
-	public CatanModel() {
+	public CatanModel() throws GameInitializationException {
 		version = -1;
 		winner = null;
 		
@@ -54,6 +56,8 @@ public class CatanModel {
 		bank = new Bank();
 		chat = new MessageList();
 		log = new MessageList();
+		
+		map = new Board();
 	}
 	
 	public UUID getID() {

@@ -81,7 +81,7 @@ public class Player {
 	}
 	
 	public Player(Session player, CatanColor color) {
-		uuid = player.getPlayerUUID();
+		setUUID(player.getPlayerUUID());
 		name = player.getUsername();
 		this.color = color;
 		resources = new ResourceList(0);
@@ -363,8 +363,8 @@ public class Player {
 		Player other = (Player) obj;
 		if (cities != other.cities)
 			return false;
-		if (color != other.color)
-			return false;
+//		if (color != other.color)
+//			return false;
 		if (discarded != other.discarded)
 			return false;
 		if (hasRolled != other.hasRolled)

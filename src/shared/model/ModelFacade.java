@@ -36,7 +36,7 @@ public class ModelFacade {
 	private IDice dice;
 	protected List<IModelListener> listeners;
 
-	public ModelFacade() {
+	public ModelFacade() throws GameInitializationException {
 		this(new CatanModel(), new NormalDice());
 	}
 
@@ -666,8 +666,8 @@ public class ModelFacade {
 			if (player != null) {
 				try {
 					Player newPlayer = new Player(player);
-					if (ClientManager.getSession() != null && newPlayer.getUUID() == ClientManager.getSession().getPlayerUUID()) {
-						ClientManager.setLocalPlayer(new PlayerReference(model, i));
+					if (ClientManager.getSession() != null && newPlayer.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
+						ClientManager.setLocalPlayer(new PlayerReference(model, i, newPlayer.getUUID()));
 					}
 					players.add(newPlayer);
 				} catch (SchemaMismatchException e) {

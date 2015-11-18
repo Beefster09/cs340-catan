@@ -71,6 +71,9 @@ public class Board {
 		else {
 			initRandomPorts();
 		}
+		ports = new HashMap<EdgeLocation, Port>();
+		roads = new HashMap<EdgeLocation, Road>();
+		municipalities = new HashMap<VertexLocation, Municipality>();
 	}
 
 	private static final List<ResourceType> defaultHexTypes = Arrays.asList(
@@ -211,6 +214,7 @@ public class Board {
 			radius = (int) (long) json.get("radius") - 1; // Remove center from radius
 			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
+				//TODO: Fix this line, can't can't lists from JSON!
 				for (Object obj : (List<Object>) json.get("hexes")) {
 					hexData.add(new Hex((JSONObject) obj));
 				}

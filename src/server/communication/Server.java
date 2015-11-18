@@ -60,46 +60,50 @@ public class Server implements IServer {
 		users.put("Pete", UUID.randomUUID());
 		users.put("Mark", UUID.randomUUID());
 
-		ModelFacade model = new ModelFacade();
-		UUID gameUUID = model.getGameHeader().getUUID();
-		games.put(gameUUID, model);
-		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-		games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
-		System.out.println(gameUUID.toString());
-
-		model = new ModelFacade();
-		gameUUID = model.getGameHeader().getUUID();
-		games.put(gameUUID, model);
-		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-		System.out.println(gameUUID.toString());
-
-		model = new ModelFacade();
-		gameUUID = model.getGameHeader().getUUID();
-		games.put(gameUUID, model);
-		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-		System.out.println(gameUUID.toString());
-
-		model = new ModelFacade();
-		gameUUID = model.getGameHeader().getUUID();
-		games.put(gameUUID, model);
-		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-		System.out.println(gameUUID.toString());
-
-		model = new ModelFacade();
-		gameUUID = model.getGameHeader().getUUID();
-		games.put(gameUUID, model);
-		games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-		games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-		games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-		System.out.println(gameUUID.toString());
+		try {
+			ModelFacade model = new ModelFacade();
+			UUID gameUUID = model.getGameHeader().getUUID();
+			games.put(gameUUID, model);
+			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+			games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
+			System.out.println(gameUUID.toString());
+	
+			model = new ModelFacade();
+			gameUUID = model.getGameHeader().getUUID();
+			games.put(gameUUID, model);
+			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+			System.out.println(gameUUID.toString());
+	
+			model = new ModelFacade();
+			gameUUID = model.getGameHeader().getUUID();
+			games.put(gameUUID, model);
+			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+			System.out.println(gameUUID.toString());
+	
+			model = new ModelFacade();
+			gameUUID = model.getGameHeader().getUUID();
+			games.put(gameUUID, model);
+			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+			System.out.println(gameUUID.toString());
+	
+			model = new ModelFacade();
+			gameUUID = model.getGameHeader().getUUID();
+			games.put(gameUUID, model);
+			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+			System.out.println(gameUUID.toString());
+		} catch (GameInitializationException e) {
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -202,14 +206,9 @@ public class Server implements IServer {
 
 	@Override
 	public List<String> getAITypes() throws ServerException, UserException {
-<<<<<<< HEAD
-		// NOT NEEDED IN PHASE 3
-		return null;
-=======
 		List<String> types = new ArrayList<String>();
 		types.add("aitype");
 		return types;
->>>>>>> origin/master
 	}
 
 	@Override
@@ -217,8 +216,14 @@ public class Server implements IServer {
 		// TODO Auto-generated method stub
 		try {
 			ICatanCommand command = new CatanCommand("doSendChat",message);
-			ModelFacade tempModel = new ModelFacade();
-			command.execute(tempModel);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return null;
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
 			e.printStackTrace();
