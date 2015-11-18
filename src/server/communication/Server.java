@@ -30,7 +30,6 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 import shared.model.CatanModel;
-import shared.model.ClientModelFacade;
 import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.PlayerReference;
@@ -251,7 +250,22 @@ public class Server implements IServer {
 	@Override
 	public String rollDice(UUID user, UUID gameID, int number) throws ServerException, UserException {
 
-		
+		try {
+			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user));
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return null;
 	}
@@ -259,53 +273,181 @@ public class Server implements IServer {
 	@Override
 	public String robPlayer(UUID user, UUID gameID, HexLocation newRobberLocation, UUID victim)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String buyDevCard(UUID user, UUID gameID) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("buyDevelopmentCard", new PlayerReference(user));
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String yearOfPlenty(UUID user, UUID gameID, ResourceType type1, ResourceType type2)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("yearOfPlenty", new PlayerReference(user), type1, type2);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String roadBuilding(UUID user, UUID gameID, EdgeLocation road1, EdgeLocation road2)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("roadBuildingCard", new PlayerReference(user), road1, road2);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String soldier(UUID user, UUID gameID, HexLocation newRobberLocation, UUID victim)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("soldier", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String monopoly(UUID user, UUID gameID, ResourceType type) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("monopoly", new PlayerReference(user), type);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String monument(UUID user, UUID gameID) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("monument", new PlayerReference(user));
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String buildRoad(UUID user, UUID gameID, EdgeLocation location)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("buildRoad", new PlayerReference(user), location);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
@@ -335,58 +477,169 @@ public class Server implements IServer {
 	public String buildStartingPieces(UUID user, UUID gameID,
 			VertexLocation settlementLoc, EdgeLocation roadLoc) throws ServerException,
 			UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("buildStartingPieces", new PlayerReference(user), settlementLoc, roadLoc);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String buildCity(UUID user, UUID gameID, VertexLocation location)
 			throws ServerException, UserException {
-//		try {
-//			ICatanCommand command = new CatanCommand("buildCity", PlayerReference.getDummyPlayerReference(user),location);
-//			ModelFacade tempModel = new ModelFacade();
-//			command.execute(tempModel);
-//			return this.getModel(gameID, -1);
-//		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
-//			e.printStackTrace();
-//		}
-//		return this.getModel(gameID, -1);
+		try {
+			ICatanCommand command = new CatanCommand("buildCity", new PlayerReference(user), location);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String offerTrade(UUID user, UUID gameID, ResourceTradeList offer, UUID receiver)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("buildCity", offer);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String respondToTrade(UUID user, UUID gameID, boolean accept) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = null;
+			if(accept) {
+				command = new CatanCommand("acceptTrade");
+			}
+			else{
+				command = new CatanCommand("declineTrade");
+			}
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String maritimeTrade(UUID user, UUID gameID, ResourceType inResource, ResourceType outResource,
 			int ratio) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("maritimeTrade", new PlayerReference(user), inResource, outResource);
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String discardCards(UUID user, UUID gameID, ResourceList cards)
 			throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("discard", new PlayerReference(user), cards.getResources());
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
 	@Override
 	public String finishTurn(UUID user, UUID gameID) throws ServerException, UserException {
-		// TODO Auto-generated method stub
+		try {
+			ICatanCommand command = new CatanCommand("finishTurn", new PlayerReference(user));
+			ModelFacade tempModel;
+			try {
+				tempModel = new ModelFacade();
+				command.execute(tempModel);
+			} catch (GameInitializationException | InvalidActionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+			
+		} catch (NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
+	
 	@Override
 	public void changeLogLevel(LogLevel level) throws ServerException, UserException {
 		// NOT NEEDED IN PHASE 3
