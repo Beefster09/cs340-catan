@@ -943,4 +943,16 @@ public class Board {
 		return true;
 	}
 
+	public Collection<Municipality> getMunicipalitiesOwnedBy(PlayerReference player) {
+		Collection<Municipality> result = new ArrayList<>();
+		
+		for (Municipality town : municipalities.values()) {
+			if (player.equals(town.getOwner())) {
+				result.add(town);
+			}
+		}
+		
+		return result;
+	}
+
 }

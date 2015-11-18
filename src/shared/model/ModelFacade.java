@@ -680,7 +680,7 @@ public class ModelFacade {
 				try {
 					Player newPlayer = new Player(player);
 					if (ClientManager.getSession() != null && newPlayer.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
-						ClientManager.setLocalPlayer(new PlayerReference(model, i, newPlayer.getUUID()));
+						ClientManager.setLocalPlayer(newPlayer.getReference());
 					}
 					players.add(newPlayer);
 				} catch (SchemaMismatchException e) {
@@ -871,7 +871,7 @@ public class ModelFacade {
 		}
 	}
 	
-	public void addPlayer(Session player, CatanColor color) {
+	public synchronized void addPlayer(Session player, CatanColor color) {
 		Player newPlayer = new Player(player, color);
 		this.getCatanModel().getPlayers().add(newPlayer);
 	}

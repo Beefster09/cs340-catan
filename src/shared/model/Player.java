@@ -286,6 +286,13 @@ public class Player {
 	}
 
 	/**
+	 * @return the victoryPoints
+	 */
+	void setVictoryPoints(int points) {
+		victoryPoints = points;
+	}
+
+	/**
 	 * @return the playerIndex
 	 */
 	public int getPlayerIndex() {
