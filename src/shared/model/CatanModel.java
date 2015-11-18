@@ -318,6 +318,8 @@ public class CatanModel {
 		
 		turnTracker.passTurn();
 		
+		updateScores();
+		
 		log.add(player.getName(), player.getName() + " placed thier starting pieces.");
 		
 		++version;
