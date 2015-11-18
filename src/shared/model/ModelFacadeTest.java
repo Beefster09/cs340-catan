@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,23 +43,19 @@ public class ModelFacadeTest {
 	@Before
 	public void setup() throws IOException, ParseException, GameInitializationException {
 		
-		JSONParser parser = new JSONParser();
-		BufferedReader r = new BufferedReader(new FileReader("json_test.json"));
-		StringBuilder json = new StringBuilder();
-		while(true) {
-			String line = r.readLine();
-			if (line == null) break;
-			json.append(line);
-			json.append('\n');
-		}
-		
 		dice = new CheatEnabledDice();
 		model = new CatanModel();
 		m = new ModelFacade(model, dice);
-		m.updateFromJSON(json.toString());
+		//m.updateFromJSON(json.toString());
 		model.setHeader(new GameHeader("Dummy Game", 
 				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),
 				new ArrayList<PlayerHeader>()));
+		
+		
+		
+		List<Player> players = model.getPlayers();
+		
+		// Place some starting crap
 	}
 	
 	
