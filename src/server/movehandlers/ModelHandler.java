@@ -42,9 +42,11 @@ public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 			String header = server.getModel(gameUUID, versionID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(header);
-			output.flush();
+			if (header != null) {
+				OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
+				output.write(header);
+				output.flush();
+			}
 			arg0.getResponseBody().close();
 			
 		} catch (ServerException | UserException e) {
