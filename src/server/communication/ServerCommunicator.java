@@ -102,6 +102,7 @@ public class ServerCommunicator {
 		server.createContext("/moves/discardCards", discardCardsHandler);
 		server.createContext("/moves/finishTurn", finishTurnHandler);
 		server.createContext("/moves/Monument", monumentHandler);
+		server.createContext("/moves/buildStartingPieces", buildStartingPiecesHandler);
 		
 		logger.info("Starting HTTP Server");
 
@@ -118,6 +119,7 @@ public class ServerCommunicator {
 	private HttpHandler buildCityHandler = new BuildCityHandler();
 	private HttpHandler buildRoadHandler = new BuildRoadHandler();
 	private HttpHandler buildSettlementHandler = new BuildSettlementHandler();
+	private HttpHandler buildStartingPiecesHandler = new BuildStartingPiecesHandler();
 	private HttpHandler buyDevCardHandler = new BuyDevCardHandler();
 	private HttpHandler discardCardsHandler = new DiscardCardsHandler();
 	private HttpHandler finishTurnHandler = new FinishTurnHandler();

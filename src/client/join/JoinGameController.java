@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.exceptions.GameInitializationException;
@@ -166,6 +167,13 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			modelFacade.setGameInfo(DataConverter.convertHeaderToInfo(thisGame));
 			getNewGameView().closeModal();
 			if (getJoinGameView().isModalShowing())  getJoinGameView().closeModal();
+			List<PlayerHeader> players = thisGame.getPlayers();
+			for (PlayerHeader player : players) {
+				if (player.getUUID() == ClientManager.getLocalPlayer().getPlayerUUID()) {
+					joinAction.execute();
+					return;
+				}
+			}
 			getSelectColorView().showModal();
 		}
 		catch (GameInitializationException e) {
@@ -200,7 +208,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (player.getUUID() != ClientManager.getSession().getPlayerUUID()) {
+			if (!player.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 			else{

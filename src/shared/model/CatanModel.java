@@ -55,9 +55,12 @@ public class CatanModel {
 		turnTracker = new TurnTracker();
 		bank = new Bank();
 		chat = new MessageList();
+		chat.add("", "First Round");
 		log = new MessageList();
 		
 		map = new Board();
+		longestRoad = new PlayerReference(UUID.randomUUID(),-1);
+		largestArmy = new PlayerReference(UUID.randomUUID(),-1);
 	}
 	
 	public UUID getID() {
@@ -189,6 +192,9 @@ public class CatanModel {
 
 	public void setVersion(int version) {
 		this.version = version;
+	}
+	public void incrementVersion() {
+		version = version++;
 	}
 
 	/**

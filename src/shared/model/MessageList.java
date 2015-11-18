@@ -32,6 +32,16 @@ public class MessageList {
 					source.add((String) ((JSONObject)obj).get("source"));
 				}
 			}
+			else {
+				message = new ArrayList<String>();
+				source = new ArrayList<String>();
+				for (Object obj : (List<Object>)json.get("source")) {
+					source.add((String)obj);
+				}
+				for (Object obj : (List<Object>)json.get("message")) {
+					message.add((String)obj);
+				}
+			}
 		} catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
 			throw new SchemaMismatchException("The JSON does not follow the expected schema " +
@@ -84,7 +94,7 @@ public class MessageList {
 		return true;
 	}
 	
-	void add(String source, String message) {
+	public void add(String source, String message) {
 		this.source.add(source);
 		this.message.add(message);
 	}

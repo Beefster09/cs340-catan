@@ -14,6 +14,7 @@ public class PlayerReference {
 	//private CatanModel game;
 	private transient int playerIndex; // Cached
 	private UUID playerUUID;
+	private String playerUUIDString;
 	
 	public PlayerReference() {
 		
@@ -58,6 +59,11 @@ public class PlayerReference {
 	
 	public PlayerReference(String string) {
 		playerUUID = UUID.fromString(string);
+	}
+	
+	public PlayerReference(String playerUUIDString, int index) {
+		this.playerUUIDString = playerUUIDString;
+		this.playerIndex = index;
 	}
 
 	/** Gets the player that this object references.

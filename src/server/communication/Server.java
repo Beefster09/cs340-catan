@@ -39,6 +39,8 @@ import shared.model.ResourceTradeList;
 
 public class Server implements IServer {
 	
+	private final int NUMPLAYERS = 4;
+	
 	private static IServer instance = null;
 	public static IServer getSingleton() {
 		if (instance == null) {
@@ -151,13 +153,28 @@ public class Server implements IServer {
 
 	@Override
 	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
-		ModelFacade game = games.get(gameID);
+		CatanModel game = games.get(gameID).getCatanModel();
 		Player newPlayer = new Player(player, color);
-		if(game.getCatanModel().getPlayers().contains(newPlayer)){
+		if(game.getPlayers().contains(newPlayer)){
 			return true;
 		}
-		game.getCatanModel().getPlayers().add(newPlayer);
+		game.getPlayers().add(newPlayer);
+		if (game.getPlayers().size() == NUMPLAYERS) {
+			this.beginGame(game);
+		}
 		return true;
+	}
+	
+	private void beginGame(CatanModel game) throws ServerException {
+		if (game.getPlayers().size() == 0) {
+			//Never should occur, but in case
+			throw new ServerException();
+		}
+		//Might want to randomize this, possibly for later.
+		Player firstPlayer = game.getPlayers().get(0);
+		PlayerReference player = new PlayerReference(firstPlayer.getUUID(),0);
+		game.getTurnTracker().setCurrentPlayer(player);
+		game.incrementVersion();
 	}
 
 	@Override
@@ -293,6 +310,30 @@ public class Server implements IServer {
 	@Override
 	public String buildSettlement(UUID user, UUID gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException {
+		try {
+			ICatanCommand command = new CatanCommand("buildSettlement", new PlayerReference(user), location);
+			ModelFacade game = games.get(gameID);
+			command.execute(game);
+			return this.getModel(gameID, -1);
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return this.getModel(gameID, -1);
+	}
+	
+
+	@Override
+	public String buildStartingPieces(UUID user, UUID gameID,
+			VertexLocation settlementLoc, boolean settlementFree,
+			EdgeLocation roadLoc, boolean roadFree) throws ServerException,
+			UserException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -24,6 +24,7 @@ import shared.exceptions.SchemaMismatchException;
 import shared.exceptions.UserException;
 import shared.exceptions.JoinGameException;
 import shared.exceptions.ServerException;
+import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexDirection;
@@ -50,11 +51,13 @@ public class ServerProxy implements IServer {
 	
 	public static void main(String[] args) throws JoinGameException, ServerException, UserException, GameInitializationException {
 		ServerProxy test = new ServerProxy("localhost",8081);
-		Session player = test.register("Sam", "sam");
+		Session player = test.login("Sam", "sam");
 		GameHeader header = test.createGame("test", false, false, false);
 		UUID gameID = header.getUUID();
 		if (test.joinGame(player, header.getUUID(), CatanColor.BLUE)) {
 			test.getModel(gameID, -1);
+			test.buildStartingPieces(player.getPlayerUUID(), header.getUUID(), new VertexLocation(0,0,VertexDirection.East),
+										true, new EdgeLocation(new HexLocation(0,0),EdgeDirection.North), true);
 		}
 	}
 
@@ -448,6 +451,27 @@ public class ServerProxy implements IServer {
 		
 		return communicator.send(o);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public String buildStartingPieces(UUID user, UUID gameID,
+			VertexLocation settlementLoc, boolean settlementFree,
+			EdgeLocation roadLoc, boolean roadFree) throws ServerException,
+			UserException {
+		JSONObject o = new JSONObject();
+		o.put("url","http://" + host + ":" + Integer.toString(port) + "/moves/buildStartingPieces");
+		o.put("requestType", "POST");
+		o.put("type", "buildStartingPieces");
+		o.put("playerIndex", user.toString());
+		JSONObject vertexLocation = settlementLoc.toJSONObject();
+		o.put("settlementLocation", gson.toJson(vertexLocation));
+		o.put("settlementFree", settlementFree);
+		JSONObject roadLocation = roadLoc.toJSONObject();		
+		o.put("roadLocation", gson.toJson(roadLocation));
+		o.put("roadFree", roadFree);
+		
+		return communicator.send(o);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -560,4 +584,6 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.toString());
 		
 		return communicator.send(o);
-	}}
+	}
+
+}

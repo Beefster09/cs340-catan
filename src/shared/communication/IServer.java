@@ -198,6 +198,12 @@ public interface IServer {
 	 */
 	public String buildSettlement(UUID user, UUID gameID, VertexLocation location, boolean free)
 			throws ServerException, UserException;
+	
+
+	public String buildStartingPieces(UUID user, UUID gameID, VertexLocation settlementLoc,
+									boolean settlementFree, EdgeLocation roadLoc, boolean roadFree)
+			throws ServerException, UserException;
+	
 	/**
 	 * @pre vertex location is specified and settlement that is owned by the player already exists at vertex location
 	 * @post city replaces settlement
@@ -251,4 +257,5 @@ public interface IServer {
 	 */
 	public void changeLogLevel(LogLevel level)
 			throws ServerException, UserException;
+	
 }
