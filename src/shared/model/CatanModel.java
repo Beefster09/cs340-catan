@@ -59,8 +59,8 @@ public class CatanModel {
 		log = new MessageList();
 		
 		map = new Board();
-		longestRoad = new PlayerReference(UUID.randomUUID(),-1);
-		largestArmy = new PlayerReference(UUID.randomUUID(),-1);
+		longestRoad = null; //new PlayerReference(UUID.randomUUID(),-1);
+		largestArmy = null; //new PlayerReference(UUID.randomUUID(),-1);
 	}
 	
 	public UUID getID() {
@@ -332,7 +332,7 @@ public class CatanModel {
 		}
 		// Check resource counts
 		ResourceList hand = player.getHand();
-		if (player.getPlayer().canBuildRoad()) {
+		if (!player.getPlayer().canBuildRoad()) {
 			throw new InsufficientResourcesException("Insufficient " +
 					"resources for a road.");
 		}
@@ -632,6 +632,10 @@ public class CatanModel {
 		if (length > currentBest) {
 			currentBest = length;
 			setLongestRoad(player);
+		}
+		
+		if (currentBest == 4) {
+			setLongestRoad(null);
 		}
 	}
 

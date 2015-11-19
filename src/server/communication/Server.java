@@ -161,6 +161,10 @@ public class Server implements IServer {
 			if (currentPlayer.getUUID().equals(newPlayer.getUUID()))
 				return true;
 		}
+//		Player newPlayer = new Player(0, player, color);
+//		if(game.getPlayers().contains(newPlayer)){
+//			return true;
+//		}
 		game.getPlayers().add(newPlayer);
 		if (game.getPlayers().size() == NUMPLAYERS) {
 			this.beginGame(game);

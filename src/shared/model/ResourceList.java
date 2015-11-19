@@ -120,8 +120,8 @@ public class ResourceList {
 	public void transfer(ResourceList destination, ResourceType type, int amount)
 			throws InsufficientResourcesException {
 		if (count(type) < amount) throw new InsufficientResourcesException();
-		this.resources.put(type, this.resources.get(type) - amount);
-		destination.resources.put(type, destination.resources.get(type) + amount);
+		this.resources.put(type, count(type) - amount);
+		destination.resources.put(type, destination.count(type) + amount);
 	}
 
 	/** Transfers cards from one ResourceList to another, but not more than is possible.
@@ -135,8 +135,8 @@ public class ResourceList {
 		if (count(type) < amount) {
 			amount = count(type);
 		}
-		this.resources.put(type, this.resources.get(type) - amount);
-		destination.resources.put(type, destination.resources.get(type) + amount);
+		this.resources.put(type, count(type) - amount);
+		destination.resources.put(type, destination.count(type) + amount);
 	}
 
 	/* (non-Javadoc)

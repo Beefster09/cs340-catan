@@ -49,7 +49,6 @@ public class ModelFacadeTest {
 		dice = new CheatEnabledDice();
 		model = new CatanModel();
 		m = new ModelFacade(model, dice);
-		//m.updateFromJSON(json.toString());
 		model.setHeader(new GameHeader("Dummy Game", 
 				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),
 				new ArrayList<PlayerHeader>()));
@@ -76,26 +75,26 @@ public class ModelFacadeTest {
 				new VertexLocation(1, -1, VertexDirection.NorthEast),
 				new EdgeLocation(1, -1, EdgeDirection.North));
 		m.buildStartingPieces(jordan,
-				new VertexLocation(0, 2, VertexDirection.NorthEast),
-				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+				new VertexLocation(-1, 1, VertexDirection.SouthWest),
+				new EdgeLocation(-1, 1, EdgeDirection.SouthWest));
 		m.buildStartingPieces(grant,
-				new VertexLocation(0, 2, VertexDirection.NorthEast),
-				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+				new VertexLocation(0, -1, VertexDirection.West),
+				new EdgeLocation(0, -1, EdgeDirection.NorthWest));
 		
 		m.buildStartingPieces(grant,
-				new VertexLocation(0, 2, VertexDirection.NorthEast),
-				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+				new VertexLocation(-2, 1, VertexDirection.NorthEast),
+				new EdgeLocation(-2, 1, EdgeDirection.NorthEast));
 		m.buildStartingPieces(jordan,
-				new VertexLocation(0, 2, VertexDirection.NorthEast),
-				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+				new VertexLocation(1, 1, VertexDirection.NorthEast),
+				new EdgeLocation(2, 0, EdgeDirection.NorthWest));
 		m.buildStartingPieces(steve,
-				new VertexLocation(0, 2, VertexDirection.NorthEast),
-				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+				new VertexLocation(1, 0, VertexDirection.NorthEast),
+				new EdgeLocation(1, 0, EdgeDirection.North));
 		m.buildStartingPieces(justin,
-				new VertexLocation(0, 2, VertexDirection.NorthEast),
-				new EdgeLocation(0, 1, EdgeDirection.SouthWest));
+				new VertexLocation(0, 0, VertexDirection.West),
+				new EdgeLocation(0, 0, EdgeDirection.SouthWest));
 		
-		System.out.println(model.getTurnTracker());
+		//System.out.println(model.getTurnTracker());
 	}
 	
 	
@@ -177,27 +176,27 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanBuyDevelopmentCard() throws InvalidActionException {
-		
+		dice.enqueueRoll(4);
+		m.rollDice(justin);
 		
 		//test insufficient resources
-		assertFalse(m.canBuyDevelopmentCard());
+		assertFalse(m.canBuyDevelopmentCard(justin));
 		
 		//test hand with sufficient resources
-		Player currentPlayer = m.getCurrentPlayer().getPlayer();
-		ResourceList hand = currentPlayer.getResources();
+		ResourceList hand = justin.getHand();
 		ResourceList bank = model.getBank().getResources();
 		bank.transfer(hand, ResourceType.WHEAT, 1);
 		bank.transfer(hand, ResourceType.ORE, 1);
 		bank.transfer(hand, ResourceType.SHEEP, 1);
-		assertTrue(m.canBuyDevelopmentCard());
+		assertTrue(m.canBuyDevelopmentCard(justin));
+		
+		// Not your turn, but correct number of resources
+		assertFalse(m.canBuyDevelopmentCard(steve));
 		
 		// Test with empty devcard deck
 		DevCardList dump = new DevCardList();
 		model.getBank().getDevCards().transferAll(dump);
-		assertFalse(m.canBuyDevelopmentCard());
-		
-		// Not your turn
-		assertFalse(m.canBuyDevelopmentCard(new PlayerReference(model, 3)));
+		assertFalse(m.canBuyDevelopmentCard(justin));
 	}
 	
 	@Test
@@ -230,73 +229,106 @@ public class ModelFacadeTest {
 	}
 	
 	@Test
-	public void testCanBuildRoad() {
+	public void testCanBuildRoad() throws Exception {
+		dice.enqueueRoll(5);
+		m.rollDice(justin);
+		// Justin has 2 ore, 1 wheat, 1 wood
 		
-		//test no connecting municipality or road
-		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
+		// Placement has been tested thoroughly in Board, so I only test resources / turns
+		
+		// Insufficient resources
 		Map<EdgeLocation, Road> roads = m.getCatanModel().getMap().getRoadMap();
-		HexLocation hexLoc = new HexLocation(0, 0);
-		EdgeLocation edgeLoc = new EdgeLocation(hexLoc, EdgeDirection.North);
-		assertFalse(m.canBuildRoad(edgeLoc));
+		assertFalse(m.canBuildRoad(justin, new EdgeLocation(0, 0, EdgeDirection.South)));
 		
-		//test connecting road
-		Road road = new Road(edgeLoc, currentPlayer);
-		roads.put(road.getLocation(), road);
-		m.getCatanModel().getMap().setRoads(roads);
-		edgeLoc = new EdgeLocation(hexLoc, EdgeDirection.NorthEast);
-		assertTrue(m.canBuildRoad(edgeLoc));
+		// Sufficient resources
+		model.getBank().getResources().transfer(
+				justin.getHand(), ResourceType.BRICK, 1);
+		assertTrue(m.canBuildRoad(justin, new EdgeLocation(0, 0, EdgeDirection.South)));
 		
-		//test connecting municipality
-		Map<VertexLocation, Municipality> municipalities = m.getCatanModel().getMap().getMunicipalityMap();
-		hexLoc = new HexLocation(1, 1);
-		VertexLocation vertLoc = new VertexLocation(hexLoc, VertexDirection.East);
-		Municipality municipality = new Municipality(vertLoc, MunicipalityType.SETTLEMENT, currentPlayer);
-		municipalities.put(municipality.getLocation(), municipality);
-		m.getCatanModel().getMap().setMunicipalities(municipalities);
-		edgeLoc = new EdgeLocation(hexLoc, EdgeDirection.NorthEast);
-		assertTrue(m.canBuildRoad(edgeLoc));
+		// Not enough road pieces
+		justin.getPlayer().setRoads(0);
+		assertTrue(m.canBuildRoad(justin, new EdgeLocation(0, 0, EdgeDirection.South)));
+		
+		// Sufficient resources, not your turn
+		model.getBank().getResources().transfer(
+				steve.getHand(), ResourceType.WOOD, 1);
+		assertFalse(m.canBuildRoad(steve, new EdgeLocation(1, -1, EdgeDirection.NorthWest)));
 		
 	}
 
 	@Test
 	public void testDoBuildRoad() throws Exception {
+		dice.enqueueRoll(10);
+		m.rollDice(justin);
 		
-		m.buildRoad(null, null);
+		ResourceList bank = model.getBank().getResources();
+
+		bank.transfer(justin.getHand(), ResourceType.BRICK, 2);
+		bank.transfer(justin.getHand(), ResourceType.WOOD, 3);
+		
+		assertEquals(null, model.getLongestRoad());
+		assertEquals(2, justin.getPlayer().getVictoryPoints());
+
+		m.buildRoad(justin, new EdgeLocation(0, 0, EdgeDirection.South));
+		m.buildRoad(justin, new EdgeLocation(0, 1, EdgeDirection.NorthEast));
+		
+		// Road isn't long enough yet
+		assertEquals(null, model.getLongestRoad());
+		
+		m.buildRoad(justin, new EdgeLocation(0, 1, EdgeDirection.South));
+		
+		// now it is.
+		assertEquals(justin, model.getLongestRoad());
+		assertEquals(4, justin.getPlayer().getVictoryPoints());
+		
+		m.finishTurn(justin);
+		
+		// Also rudimentarily test longest road algorithm
+		dice.enqueueRoll(4);
+		m.rollDice(steve);
+
+		bank.transfer(steve.getHand(), ResourceType.BRICK, 3);
+		bank.transfer(steve.getHand(), ResourceType.WOOD, 4);
+
+		// This makes a hexagonal path
+		m.buildRoad(steve, new EdgeLocation(1, -1, EdgeDirection.SouthWest));
+		m.buildRoad(steve, new EdgeLocation(1, -1, EdgeDirection.SouthEast));
+		m.buildRoad(steve, new EdgeLocation(1, -1, EdgeDirection.NorthWest));
+		m.buildRoad(steve, new EdgeLocation(1, -1, EdgeDirection.NorthEast));
+		
+		assertEquals(steve, model.getLongestRoad());
+		assertEquals(4, steve.getPlayer().getVictoryPoints());
+		
+		m.finishTurn(steve);
+		
+		dice.enqueueRoll(6);
+		m.rollDice(jordan);
+		
+		bank.transfer(jordan.getHand(), ResourceType.BRICK, 4);
+		bank.transfer(jordan.getHand(), ResourceType.WOOD, 4);
+
+		// Another hexagonal path
+		m.buildRoad(jordan, new EdgeLocation(-2, 2, EdgeDirection.North));
+		m.buildRoad(jordan, new EdgeLocation(-2, 2, EdgeDirection.NorthWest));
+		m.buildRoad(jordan, new EdgeLocation(-2, 2, EdgeDirection.SouthWest));
+		m.buildRoad(jordan, new EdgeLocation(-2, 2, EdgeDirection.South));
+		m.buildRoad(jordan, new EdgeLocation(-2, 2, EdgeDirection.SouthEast));
+		
+		// Steve should still have the longest road, even though Jordan has more roads
+		assertEquals(steve, model.getLongestRoad());
+		
+		// w00t! it works!
 	}
 	
 	@Test
 	public void testCanBuildSettlement() {
 		
-		HexLocation hexLoc = new HexLocation(0, 0);
-		VertexLocation vertexLoc = new VertexLocation(hexLoc, VertexDirection.East);
-		boolean can = m.canBuildSettlement(vertexLoc);
-		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
-		Map<EdgeLocation, Road> roads = m.getCatanModel().getMap().getRoadMap();
-		EdgeLocation edgeLoc = new EdgeLocation(hexLoc, EdgeDirection.NorthEast);
-		
-		//test no connection
-		assertFalse(can);
-		
-		//test connecting road
-		Road road = new Road(edgeLoc, currentPlayer);
-		roads.put(road.getLocation(), road);
-		m.getCatanModel().getMap().setRoads(roads);
-		can = m.canBuildSettlement(vertexLoc);
-		assertTrue(can);
-		
-		//test with connecting road, but adjacent municipality
-		Map<VertexLocation, Municipality> municipalities = m.getCatanModel().getMap().getMunicipalityMap();
-		Municipality municipality = new Municipality(vertexLoc, MunicipalityType.SETTLEMENT, currentPlayer);
-		municipalities.put(municipality.getLocation(), municipality);
-		m.getCatanModel().getMap().setMunicipalities(municipalities);
-		vertexLoc = new VertexLocation(hexLoc, VertexDirection.NorthEast);
-		can = m.canBuildSettlement(vertexLoc);
-		assertFalse(can);
-		
 	}
 	
 	@Test
 	public void testCanBuildCity() throws Exception {
+		dice.enqueueRoll(8);
+		m.rollDice(justin);
 		
 		//test nothing at current location
 		HexLocation hexLoc = new HexLocation(0, 0);
@@ -327,7 +359,7 @@ public class ModelFacadeTest {
 		
 		HexLocation hexLoc = new HexLocation(0, 0);
 		VertexLocation vertexLoc = new VertexLocation(hexLoc, VertexDirection.East);
-		m.buildSettlement(m.getCurrentPlayer(), vertexLoc);
+		//m.buildSettlement(m.getCurrentPlayer(), vertexLoc);
 	}
 	
 	@Test

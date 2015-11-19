@@ -164,6 +164,9 @@ public class ModelFacade {
 	 * @return false if otherwise
 	 */
 	public synchronized boolean canBuyDevelopmentCard(PlayerReference player) {
+		if (!getCurrentPlayer().equals(player)) {
+			return false;
+		}
 		// Make sure there are development cards in the bank.
 		if (getCatanModel().getBank().getDevCards().count() <= 0) {
 			return false;
@@ -191,11 +194,23 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {			
-				
+		return canBuildRoad(getCurrentPlayer(), edgeLoc);
+	}
+
+	/**
+	 * 
+	 * @param edgeLoc The location (one of the 6 sides of one hex on the board)
+	 *  where the road is to be placed.
+	 * @return true if the given edge location is adjacent to at least one of
+	 * the player's roads or municipalities (city or settlement), and that there is
+	 * no currently placed road at that location.
+	 * @return false otherwise
+	 */
+	public synchronized boolean canBuildRoad(PlayerReference player, EdgeLocation edgeLoc) {			
+		
 		try {
-			Board map = model.getMap();
-			PlayerReference currentPlayer = getCurrentPlayer();
-			return map.canBuildRoadAt(currentPlayer, edgeLoc);
+			return player.getPlayer().canBuildRoad() &&
+					model.getMap().canBuildRoadAt(player, edgeLoc);
 		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
@@ -884,6 +899,7 @@ public class ModelFacade {
 		}
 		
 		Player newPlayer = new Player(player, color, model.getPlayers().size());
+		//Player newPlayer = new Player(model.getPlayers().size(), player, color);
 		model.addPlayer(newPlayer);
 	}
 
