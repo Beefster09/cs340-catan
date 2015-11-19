@@ -153,7 +153,7 @@ public class Server implements IServer {
 	@Override
 	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		CatanModel game = games.get(gameID).getCatanModel();
-		Player newPlayer = new Player(player, color);
+		Player newPlayer = new Player(0, player, color);
 		if(game.getPlayers().contains(newPlayer)){
 			return true;
 		}

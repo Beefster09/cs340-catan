@@ -81,15 +81,16 @@ public class Player {
 		playerIndex = index;
 		
 		setUUID(uuid);
-	}
-	
-	public Player(Session player, CatanColor color) {
-		setUUID(player.getPlayerUUID());
-		name = player.getUsername();
-		this.color = color;
 		resources = new ResourceList(0);
 		newDevCards = new DevCardList();
 		oldDevCards = new DevCardList();
+	}
+	
+	public Player(int index, Session player, CatanColor color) {
+		this(index);
+		setUUID(player.getPlayerUUID());
+		name = player.getUsername();
+		this.color = color;
 	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {

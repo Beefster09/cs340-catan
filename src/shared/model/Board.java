@@ -811,12 +811,11 @@ public class Board {
 	public int lengthOfLongestRoute(PlayerReference player) {
 		int best = 0;
 		
-		// TODO Optimization!
-		// TODO Roads being cut off by enemies
 		// TODO Testing!
 		
 		// Reduce to a graph problem
 		Set<EdgeLocation> ownedRoads = getRoadsOwnedByPlayer(player);
+		
 		// Used to give priority to nodes that are likely to be endpoints of a path
 		//Set<VertexLocation> nodes = new HashSet<>(); // 0, 1, 2, 3
 		@SuppressWarnings("unchecked") // I can't figure out another way
@@ -842,14 +841,15 @@ public class Board {
 					}
 				}
 				nodesByEdgeCounts[count].add(node);
-				//nodes.add(node);
 			}
 		}
+		
 		
 		// This will be used later to significantly reduce combinatorial explosion.
 		Set<EdgeLocation> unvisited = new HashSet<>(ownedRoads);
 		
-		for (Set<VertexLocation> nodes : nodesByEdgeCounts) {
+		for (int i : new int[]{1, 3, 2}) {
+			Set<VertexLocation> nodes = nodesByEdgeCounts[i];
 			for (VertexLocation node : nodes) {
 				List<EdgeLocation> path = dfsPath(node, ownedRoads, new ArrayList<EdgeLocation>(), player);
 				
@@ -866,9 +866,10 @@ public class Board {
 	private List<EdgeLocation> dfsPath(VertexLocation node,
 			Set<EdgeLocation> edges, List<EdgeLocation> visitedEdges,
 			PlayerReference player) {
+		// enemies cut up roads
 		Municipality town = getMunicipalityAt(node);
 		if (town != null &&
-			town.getOwner().equals(player)) {
+			!town.getOwner().equals(player)) {
 			return visitedEdges; // you can't go farther
 		}
 		
