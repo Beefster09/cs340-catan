@@ -18,9 +18,14 @@ public class VertexLocation
 	private VertexDirection dir;
 	
 	public VertexLocation(JSONObject json) throws SchemaMismatchException {
-		hexLoc = new HexLocation(json);
+		if (json.containsKey("hexLoc"))
+			hexLoc = new HexLocation((JSONObject)json.get("hexLoc"));
+		else
+			hexLoc = new HexLocation(json);
 		if (json.containsKey("direction"))
 			dir = VertexDirection.getDirectionFromString((String) json.get("direction"));
+		else if (json.containsKey("dir"))
+			dir = VertexDirection.getDirectionFromString((String) json.get("dir"));
 		//else throw schema exception.
 	}
 	

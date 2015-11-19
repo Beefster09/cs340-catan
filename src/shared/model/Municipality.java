@@ -1,6 +1,7 @@
 package shared.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
@@ -38,9 +39,12 @@ public class Municipality {
 	}
 	
 	public Municipality(List<Player> players, JSONObject json) throws SchemaMismatchException {
-			int playerOwner = (int) (long) json.get("owner");
+//			int playerOwner = (int) (long) json.get("owner");
+			JSONObject playerOwner = (JSONObject)json.get("owner");
+			UUID ownerUUID = UUID.fromString((String)playerOwner.get("playerUUID"));
+			owner = new PlayerReference(ownerUUID);
 			location = new VertexLocation((JSONObject)(json.get("location")));
-			this.type = (MunicipalityType) json.get("type");
+			this.type = MunicipalityType.getMunicipalityTypeFromString((String) json.get("type"));
 	}
 
 	/**
