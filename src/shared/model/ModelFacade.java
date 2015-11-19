@@ -75,9 +75,9 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canRoll(PlayerReference player) {
-		
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		return currentPlayer.equals(player.getPlayer()) && !currentPlayer.hasRolled();
+		return currentPhase() == TurnStatus.Rolling &&
+				getCurrentPlayer().equals(player) &&
+				!player.getPlayer().hasRolled();
 	}
 
 	public synchronized void rollDice(PlayerReference player) throws NotYourTurnException {
@@ -97,6 +97,20 @@ public class ModelFacade {
 	 */
 	public synchronized boolean canMoveRobberTo(HexLocation hexLoc) {		
 		return model.getMap().canMoveRobberTo(hexLoc);
+	}
+
+	public synchronized boolean canRob(PlayerReference player, HexLocation loc, PlayerReference victim) {
+		if (canMoveRobberTo(loc) && isTurn(player) &&
+				currentPhase() == TurnStatus.Robbing &&
+				!player.equals(victim)) {
+			for (Municipality town : model.getMap().getMunicipalitiesAround(loc)) {
+				if (town.getOwner().equals(victim)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		else return false;
 	}
 
 	public synchronized void rob(PlayerReference player, HexLocation loc, PlayerReference victim)
@@ -430,11 +444,10 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canOfferTrade(TradeOffer offer) {
-		if (!isTurn(offer.getSender())) {
-			return false;
-		}
-		
-		if (model.getTradeOffer() != null) {
+		if (offer.isEmpty() || !isTurn(offer.getSender()) ||
+				model.getTradeOffer() != null ||
+				currentPhase() != TurnStatus.Playing ||
+				offer.getSender().equals(offer.getReceiver())) {
 			return false;
 		}
 		
@@ -799,7 +812,7 @@ public class ModelFacade {
 			JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
 			TradeOffer otherOffer;
 			try {
-				otherOffer = new TradeOffer(players,tradeOffer);
+				otherOffer = new TradeOffer(tradeOffer);
 				if (model.getTradeOffer() == null || !model.getTradeOffer().equals(otherOffer)) {
 					model.setTradeOffer(otherOffer);
 					for (IModelListener listener : listeners) {

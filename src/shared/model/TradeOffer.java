@@ -16,10 +16,25 @@ public class TradeOffer {
 	private ResourceTradeList offer;
 
 	public TradeOffer() {
-		
+		sender = null;
+		receiver = null;
+		offer = null;
 	}
 	
-	public TradeOffer(List<Player> players, JSONObject json) throws SchemaMismatchException {
+	/**
+	 * @param sender
+	 * @param receiver
+	 * @param offer
+	 */
+	TradeOffer(PlayerReference sender, PlayerReference receiver,
+			ResourceTradeList offer) {
+		super();
+		this.sender = sender;
+		this.receiver = receiver;
+		this.offer = offer;
+	}
+
+	public TradeOffer(JSONObject json) throws SchemaMismatchException {
 		try {
 			offer = new ResourceTradeList((JSONObject) json.get("offer"));
 			sender = new PlayerReference((String) json.get("sender"));
@@ -72,6 +87,10 @@ public class TradeOffer {
 		}
 		
 		return true;
+	}
+	
+	public boolean isEmpty() {
+		return offer.isEmpty();
 	}
 	
 	/** Accepts the offer

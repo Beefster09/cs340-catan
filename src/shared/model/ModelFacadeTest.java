@@ -25,6 +25,7 @@ import shared.definitions.CatanColor;
 import shared.definitions.DevCardType;
 import shared.definitions.MunicipalityType;
 import shared.definitions.ResourceType;
+import shared.definitions.TurnStatus;
 import shared.exceptions.GameInitializationException;
 import shared.exceptions.InsufficientResourcesException;
 import shared.exceptions.InvalidActionException;
@@ -102,50 +103,124 @@ public class ModelFacadeTest {
 	public void testCanRoll() {
 		
 		//test if it's players current turn and he hasn't rolled
-		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
-		assertTrue(m.canRoll(currentPlayer));
+		assertTrue(m.canRoll(justin));
 		
 		//test if it is player's turn but he has already rolled
-		Player cur = currentPlayer.getPlayer();
-		cur.setHasRolled(true);
-		assertFalse(m.canRoll(currentPlayer));
+		justin.getPlayer().setHasRolled(true);
+		assertFalse(m.canRoll(justin));
 		
 		//test if its not player's current turn
-		PlayerReference otherPlayer = new PlayerReference(m.getCatanModel(), 3);
-		assertFalse(m.canRoll(otherPlayer));
+		assertFalse(m.canRoll(grant));
 	}
 	
 	@Test
-	public void testRollDice() throws NotYourTurnException {
-		dice.enqueueRoll(8);
+	public void testRollDice() throws Exception {
+		dice.enqueueRoll(10);		
+		m.rollDice(justin);
 		
-		PlayerReference currentPlayer = m.getCurrentPlayer();
+		//test that resources have been correctly distributed
+		assertEquals(1, justin.getHand().count(ResourceType.BRICK));
+		assertEquals(2, jordan.getHand().count(ResourceType.BRICK));
+		assertEquals(2, grant.getHand().count(ResourceType.SHEEP));
 		
-		m.rollDice(currentPlayer);
+		// Give Justin a bunch of junk to discard
 		
-		//TODO: test that resources have been correctly distributed
+		model.getBank().getResources().transfer(justin.getHand(), ResourceType.SHEEP, 5);
+		assertEquals(9, justin.getHand().count());
+		
+		m.finishTurn(justin);
+		
+		dice.enqueueRoll(7);
+		m.rollDice(steve);
+
+		assertEquals(TurnStatus.Discarding, model.getTurnTracker().getStatus());
+		Map<ResourceType, Integer> discardMap = new HashMap<>();
+		discardMap.put(ResourceType.SHEEP, 4);
+		m.discard(justin, discardMap);
+		
+		assertEquals(TurnStatus.Robbing, model.getTurnTracker().getStatus());
+		m.rob(steve, new HexLocation(0, -2), null);
+		
+		m.finishTurn(steve);
+		
+		dice.enqueueRoll(7);
+		m.rollDice(jordan);
+		
+		assertEquals(TurnStatus.Robbing, model.getTurnTracker().getStatus());
 	}
 	
 	@Test
-	public void testCanRob() {
+	public void testCanRob() throws Exception {
 		
-		//test if robber is already there
-		HexLocation hexLoc = m.getCatanModel().getMap().getRobberLocation();
-		assertFalse(m.canMoveRobberTo(hexLoc));
+		// Valid place/victim, but you haven't rolled a 7 yet.
+		assertFalse(m.canRob(justin, new HexLocation(1,-1), steve));
 		
-		//test if hex is desert
-		hexLoc = m.getCatanModel().getMap().getDesertLocation();
-		assertFalse(m.canMoveRobberTo(hexLoc));
+		// Give Grant a bunch of junk to discard
 		
-		//test any other hex
-		assertTrue(m.canMoveRobberTo(new HexLocation(0, 0)));
+		model.getBank().getResources().transfer(grant.getHand(), ResourceType.ORE, 5);
+		assertEquals(8, grant.getHand().count());
+
+		dice.enqueueRoll(7);
+		m.rollDice(justin);
+		
+		// Grant still needs to discard
+		assertFalse(m.canRob(justin, new HexLocation(1,-1), steve));
+		
+		Map<ResourceType, Integer> discardMap = new HashMap<>();
+		discardMap.put(ResourceType.SHEEP, 4);
+		// can Grant discard stuff he doesn't have?
+		assertFalse(m.canDiscard(grant, discardMap));
+		
+		discardMap.clear();
+		discardMap.put(ResourceType.ORE, 4);
+		assertTrue(m.canDiscard(grant, discardMap));
+		m.discard(grant, discardMap);
+		assertEquals(4, grant.getHand().count());
+		
+		// Not Steve's turn
+		assertFalse(m.canRob(steve, new HexLocation(0, 0), justin));
+
+		// now it's okay to discard
+		assertTrue(m.canRob(justin, new HexLocation(1,-1), steve));
+		// test player that isn't around the given hex
+		assertFalse(m.canRob(justin, new HexLocation(1,-1), grant));
+		// you can't steal from yourself
+		assertFalse(m.canRob(justin, new HexLocation(0, 0), justin));
+		m.rob(justin, new HexLocation(1,-1), steve);
+		
+		m.finishTurn(justin);
+		
+		dice.enqueueRoll(7);
+		m.rollDice(steve);
+		
+		// two choices
+		assertTrue(m.canRob(steve, new HexLocation(-1,1), justin));
+		assertTrue(m.canRob(steve, new HexLocation(-1,1), jordan));
 		
 	}
 	
 	@Test 
-	public void testDoRob() {
+	public void testDoRob() throws Exception {
+
+		dice.enqueueRoll(7);
+		m.rollDice(justin);
 		
-		//m.rob();
+		m.rob(justin, new HexLocation(1,-1), steve);
+		
+		assertEquals(new HexLocation(1,-1), model.getMap().getRobberLocation());
+		
+		assertEquals(4, justin.getHand().count());
+		assertEquals(2, steve.getHand().count());
+		assertEquals(3, justin.getHand().count(ResourceType.ORE) +
+				steve.getHand().count(ResourceType.ORE));
+		assertEquals(1, justin.getHand().count(ResourceType.SHEEP) +
+				steve.getHand().count(ResourceType.SHEEP));
+		assertEquals(2, justin.getHand().count(ResourceType.WHEAT) +
+				steve.getHand().count(ResourceType.WHEAT));
+		assertEquals(0, justin.getHand().count(ResourceType.BRICK) +
+				steve.getHand().count(ResourceType.BRICK));
+		assertEquals(0, justin.getHand().count(ResourceType.WOOD) +
+				steve.getHand().count(ResourceType.WOOD));
 	}
 	
 	@Test
@@ -364,18 +439,25 @@ public class ModelFacadeTest {
 	
 	@Test
 	public void testCanYearOfPlenty() throws InvalidActionException {
+		dice.enqueueRoll(8);
+		m.rollDice(justin);
 		
 		//test with empty hand
-		assertFalse(m.canYearOfPlenty(m.getCurrentPlayer(), ResourceType.BRICK, ResourceType.WOOD));
+		assertFalse(m.canYearOfPlenty(justin,
+				ResourceType.BRICK, ResourceType.WOOD));
 		
 		//test with yearOfPlenty card in hand
-		Player currentPlayer = model.getTurnTracker().getCurrentPlayer().getPlayer();
-		DevCardList hand = currentPlayer.getOldDevCards();
-		DevCardList bank = m.getCatanModel().getBank().getDevCards();
-		bank = new DevCardList(1,1,1);
-		bank.transferCardTo(hand, DevCardType.YEAR_OF_PLENTY);
-		//can = m.canYearOfPlenty();
-		assertTrue(m.canYearOfPlenty(m.getCurrentPlayer(), ResourceType.BRICK, ResourceType.WOOD));
+		DevCardList bank = new DevCardList(2,2,2);
+		bank.transferCardTo(justin.getPlayer().getOldDevCards(),
+				DevCardType.YEAR_OF_PLENTY);
+		bank.transferCardTo(steve.getPlayer().getOldDevCards(),
+				DevCardType.YEAR_OF_PLENTY);
+
+		assertTrue(m.canYearOfPlenty(justin,
+				ResourceType.BRICK, ResourceType.WOOD));
+		// not Steve's turn
+		assertFalse(m.canYearOfPlenty(steve,
+				ResourceType.BRICK, ResourceType.WOOD));
 	}
 	
 	@Test
@@ -475,82 +557,109 @@ public class ModelFacadeTest {
 	}
 	
 	@Test
-	public void testCanOfferTrade() throws InsufficientResourcesException {
-		//test with insufficient cards in hand for trade
-		//boolean can = m.canOfferTrade();
-		//assertFalse(can);
+	public void testCanOfferTrade() throws Exception {
 		
-		//test with sufficient cards in hand for trade
-		TradeOffer tradeOffer = m.getCatanModel().getTradeOffer();
-		Player offeringPlayer = tradeOffer.getSender().getPlayer();
-		ResourceList hand = offeringPlayer.getResources();
-		ResourceList bank = m.getCatanModel().getBank().getResources();
-		bank.transfer(hand, ResourceType.BRICK, 1);
-		bank.transfer(hand, ResourceType.WHEAT, 1);
-		bank.transfer(hand, ResourceType.WOOD, 1);
-		bank.transfer(hand, ResourceType.SHEEP, 1);
-		bank.transfer(hand, ResourceType.ORE, 1);
-		//can = m.canOfferTrade();
-		//assertTrue(can);
+		Map<ResourceType, Integer> offered = new HashMap<>();
+		Map<ResourceType, Integer> wanted = new HashMap<>();
+		ResourceTradeList trade = new ResourceTradeList(offered, wanted);
+		offered.put(ResourceType.ORE, 1);
+		wanted.put(ResourceType.BRICK, 1);
+		
+		// you can't offer trades before rolling the dice.
+		assertFalse(m.canOfferTrade(new TradeOffer(justin, grant, trade)));
+		
+		dice.enqueueRoll(8);
+		m.rollDice(justin);
+		
+		offered.clear();
+		wanted.clear();
+		
+		// you may not trade nothing for nothing
+		assertFalse(m.canOfferTrade(new TradeOffer(justin, grant, trade)));
+		
+		// Valid Trade offer
+		offered.put(ResourceType.ORE, 1);
+		wanted.put(ResourceType.BRICK, 1);
+		assertTrue(m.canOfferTrade(new TradeOffer(justin, grant, trade)));
+		// Offer to trade for something they don't have
+		assertTrue(m.canOfferTrade(new TradeOffer(justin, steve, trade)));
+		// Attempt to trade with yourself
+		assertFalse(m.canOfferTrade(new TradeOffer(justin, justin, trade)));
+		// It isn't Steve's turn
+		assertFalse(m.canOfferTrade(new TradeOffer(steve, justin, trade)));
+		
+		// You don't have what you offered
+		offered.put(ResourceType.WOOD, 1);
+		offered.put(ResourceType.ORE, 0);
+		assertFalse(m.canOfferTrade(new TradeOffer(justin, grant, trade)));
 	}
 	
 	@Test
-	public void testDoOfferTrade() {
+	public void testDoOfferTrade() throws Exception {
+
+		dice.enqueueRoll(8);
+		m.rollDice(justin);
 		
-		//m.offerTrade();
+		Map<ResourceType, Integer> offered = new HashMap<>();
+		Map<ResourceType, Integer> wanted = new HashMap<>();
+		ResourceTradeList trade = new ResourceTradeList(offered, wanted);
+		offered.put(ResourceType.ORE, 1);
+		wanted.put(ResourceType.BRICK, 1);
+		
+		m.offerTrade(new TradeOffer(justin, grant, trade));
+		
+		assertFalse(m.canFinishTurn(justin));
 	}
 	
 	@Test
-	public void testCanAcceptTrade() throws InsufficientResourcesException {
-			
-		TradeOffer tradeOffer = m.getCatanModel().getTradeOffer();
-		Player acceptingPlayer = tradeOffer.getReceiver().getPlayer();
+	public void testCanAcceptTrade() throws Exception {
+
+		dice.enqueueRoll(8);
+		m.rollDice(justin);
 		
-		//test with insufficient cards in hand for trade
-		Map<ResourceType, Integer> wanted = new HashMap<ResourceType, Integer>();
-		wanted.put(ResourceType.ORE, 1);
-		tradeOffer.getOffer().setWanted(wanted);
+		Map<ResourceType, Integer> offered = new HashMap<>();
+		Map<ResourceType, Integer> wanted = new HashMap<>();
+		ResourceTradeList trade = new ResourceTradeList(offered, wanted);
+		offered.put(ResourceType.ORE, 1);
+		wanted.put(ResourceType.BRICK, 1);
 		
-		boolean can = m.canAcceptTrade();
-		assertFalse(can);
+		m.offerTrade(new TradeOffer(justin, grant, trade));
 		
-		//test with sufficient cards in hand for trade
-		
-		ResourceList hand = acceptingPlayer.getResources();
-		ResourceList bank = m.getCatanModel().getBank().getResources();
-		bank.transfer(hand, ResourceType.BRICK, 1);
-		bank.transfer(hand, ResourceType.WHEAT, 1);
-		bank.transfer(hand, ResourceType.WOOD, 1);
-		bank.transfer(hand, ResourceType.SHEEP, 1);
-		bank.transfer(hand, ResourceType.ORE, 1);
-		can = m.canAcceptTrade();
-		assertTrue(can);
-		
+		assertTrue(m.canAcceptTrade());
 	}
 	
 	@Test
-	public void testDoAcceptTrade() {
+	public void testDoAcceptTrade() throws Exception {
+
+		dice.enqueueRoll(8);
+		m.rollDice(justin);
 		
-		//m.acceptTrade();
+		Map<ResourceType, Integer> offered = new HashMap<>();
+		Map<ResourceType, Integer> wanted = new HashMap<>();
+		ResourceTradeList trade = new ResourceTradeList(offered, wanted);
+		offered.put(ResourceType.ORE, 1);
+		wanted.put(ResourceType.BRICK, 1);
+		
+		m.offerTrade(new TradeOffer(justin, grant, trade));
+		
+		m.acceptTrade();
+
+		assertEquals(1, grant.getHand().count(ResourceType.ORE));
+		assertEquals(1, grant.getHand().count(ResourceType.SHEEP));
+		assertEquals(1, grant.getHand().count(ResourceType.WHEAT));
+		assertEquals(0, grant.getHand().count(ResourceType.BRICK));
+		assertEquals(0, grant.getHand().count(ResourceType.WOOD));
+		
+		assertEquals(1, justin.getHand().count(ResourceType.ORE));
+		assertEquals(1, justin.getHand().count(ResourceType.BRICK));
+		assertEquals(1, justin.getHand().count(ResourceType.WHEAT));
+		assertEquals(1, justin.getHand().count(ResourceType.SHEEP));
+		assertEquals(0, justin.getHand().count(ResourceType.WOOD));
 	}
 	
 	@Test
 	public void testCanMaritimeTrade() {
 		
-		//test without municipality on port
-		boolean can = m.ownsPort();
-		assertFalse(can);
-		
-		//test with municipality on port
-		PlayerReference currentPlayer = m.getCatanModel().getTurnTracker().getCurrentPlayer();
-		HexLocation hexLoc = new HexLocation(0, 3);
-		VertexLocation vertexLoc = new VertexLocation(hexLoc, VertexDirection.NorthEast);
-		Map<VertexLocation, Municipality> municipalities = m.getCatanModel().getMap().getMunicipalityMap();
-		Municipality municipality = new Municipality(vertexLoc, MunicipalityType.SETTLEMENT, currentPlayer);
-		municipalities.put(municipality.getLocation(), municipality);
-		m.getCatanModel().getMap().setMunicipalities(municipalities);
-		can = m.ownsPort();
-		assertTrue(can);
 		
 	}
 	

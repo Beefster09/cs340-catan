@@ -37,8 +37,8 @@ public class Player {
 	private ResourceList resources;
 	
 	private boolean playedDevCard 	= false;
-	private boolean discarded 		= false;
-	private boolean hasRolled 		= false;
+	private boolean discarded 		= true;
+	private boolean hasRolled 		= true;
 	
 	private int cities 			= 4;
 	private int settlements 	= 5;

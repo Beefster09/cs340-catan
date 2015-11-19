@@ -120,6 +120,7 @@ public class TurnTracker {
 		case SecondRound:
 			if (currentPlayerIndex == 0) {
 				status = TurnStatus.Rolling;
+				currentPlayer.getPlayer().setHasRolled(false);
 			}
 			else {
 				currentPlayer = players.get((currentPlayerIndex + 3) % 4).getReference();

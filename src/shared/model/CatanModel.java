@@ -484,12 +484,18 @@ public class CatanModel {
 			if (isSoldierCard) {
 				useSoldierCard(player);
 			}
+			else {
+				turnTracker.setStatus(TurnStatus.Playing);
+			}
 		
 			log.add(player.getName(), player.getName() + " robbed " + victim.getName());
 		}
 		else {
 			if (isSoldierCard) {
 				useSoldierCard(player);
+			}
+			else {
+				turnTracker.setStatus(TurnStatus.Playing);
 			}
 			
 			log.add(player.getName(), player.getName() + " moved the robber.");
@@ -678,12 +684,16 @@ public class CatanModel {
 		
 		ResourceList hand = player.getHand();
 	
+		int totalCards = 0;
 		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
 			if (hand.count(card.getKey()) < card.getValue()) {
 				return false;
 			}
+			totalCards += card.getValue();
 		}
-		return true;
+		
+		// Make sure this is discarding the correct number of cards
+		return totalCards == hand.count() / 2;
 	}
 
 	void discard(PlayerReference player,
@@ -700,6 +710,16 @@ public class CatanModel {
 		}
 		
 		player.getPlayer().setHasDiscarded(true);
+		
+		boolean allDiscarded = true;
+		for (Player playr : players) {
+			if (!playr.hasDiscarded()) {
+				allDiscarded = false;
+			}
+		}
+		if (allDiscarded) {
+			turnTracker.setStatus(TurnStatus.Robbing);
+		}
 		
 		log.add(player.getName(), player.getName() + " discarded " +
 				numDiscarded + " cards.");
