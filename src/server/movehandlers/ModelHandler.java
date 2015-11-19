@@ -46,8 +46,8 @@ public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 				OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
 				output.write(header);
 				output.flush();
+				arg0.getResponseBody().close();
 			}
-			arg0.getResponseBody().close();
 			
 		} catch (ServerException | UserException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);

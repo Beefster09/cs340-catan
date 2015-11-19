@@ -181,6 +181,7 @@ public class ClientCommunicator {
 	 */
 	public String send(JSONObject o)
 			throws ServerException, UserException {
+
 		if(userCookie == null || gameCookie == null){
 			throw new UserException();
 		}
@@ -234,6 +235,7 @@ public class ClientCommunicator {
 			throw new UserException();
 		}
 		catch(IOException e){
+			e.printStackTrace();
 			throw new ServerException();
 		}
 	}

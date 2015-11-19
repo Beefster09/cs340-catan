@@ -76,7 +76,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 			getView().setPlayers(playerList);
 			
 			getView().setAIChoices(AIChoices);
-			
+			getView().closeModal();
 			getView().showModal();
 			
 			if(playerList.length > 3)
