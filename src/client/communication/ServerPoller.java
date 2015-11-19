@@ -91,12 +91,11 @@ public class ServerPoller {
 							}
 							
 						});
-						System.out.println("Polling gave results. Handling updates on EDT.");
 					}
 					
 				} catch (ServerException | UserException e) {
-					System.out.println("Server error, could not connect");
-					e.printStackTrace();
+					log.severe("Server error, could not connect");
+					//e.printStackTrace();
 				}
 			}
 			

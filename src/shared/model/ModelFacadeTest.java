@@ -48,7 +48,7 @@ public class ModelFacadeTest {
 	public void setup() throws Exception {
 		
 		dice = new CheatEnabledDice();
-		model = new CatanModel();
+		model = new CatanModel(false, false, false);
 		m = new ModelFacade(model, dice);
 		model.setHeader(new GameHeader("Dummy Game", 
 				UUID.fromString("3d4f073d-7acd-4cf8-8b81-5eb097b58d79"),

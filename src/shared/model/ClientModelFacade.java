@@ -15,7 +15,7 @@ public class ClientModelFacade extends ModelFacade {
 		
 		public ClientModelFacade() throws GameInitializationException {
 			//when does any of this get initialized?
-			this(new CatanModel());
+			this(new CatanModel(false, false, false));
 		}
 		
 		public ClientModelFacade(CatanModel startingModel) {
@@ -47,7 +47,7 @@ public class ClientModelFacade extends ModelFacade {
 				poller.stop();
 			}
 			try {
-				this.model = new CatanModel();
+				this.model = new CatanModel(false, false, false);
 			} catch (GameInitializationException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

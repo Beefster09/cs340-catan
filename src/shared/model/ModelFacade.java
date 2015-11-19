@@ -40,7 +40,7 @@ public class ModelFacade {
 	protected List<IModelListener> listeners;
 
 	public ModelFacade() throws GameInitializationException {
-		this(new CatanModel(), new NormalDice());
+		this(new CatanModel(false, false, false), new NormalDice());
 	}
 
 	public ModelFacade(CatanModel startingModel) {

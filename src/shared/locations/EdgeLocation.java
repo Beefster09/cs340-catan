@@ -237,12 +237,16 @@ public class EdgeLocation
 			case SouthWest:
 			case South:
 			case SouthEast:
-				return new EdgeLocation(hexLoc.getNeighborLoc(dir),
-										dir.getOppositeDirection());
+				return flip();
 			default:
 				assert false;
 				return null;
 		}
+	}
+	
+	public EdgeLocation flip() {
+		return new EdgeLocation(hexLoc.getNeighborLoc(dir),
+				dir.getOppositeDirection());
 	}
 
 	public Collection<EdgeLocation> getNeighbors() {

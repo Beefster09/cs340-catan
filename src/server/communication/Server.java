@@ -144,7 +144,8 @@ public class Server implements IServer {
 			throws GameInitializationException, UserException, ServerException {
 		UUID gameUUID = UUID.randomUUID();
 		GameHeader header = new GameHeader(name, gameUUID, null);
-		ModelFacade newGame = new ModelFacade();
+		ModelFacade newGame = new ModelFacade(
+				new CatanModel(randomTiles, randomNumbers, randomPorts));
 		newGame.getCatanModel().setHeader(header);
 		newGame.getCatanModel().setVersion(0);
 		games.put(gameUUID, newGame);

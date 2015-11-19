@@ -122,4 +122,8 @@ public class Port {
 			return false;
 		return true;
 	}
+
+	void setLocation(EdgeLocation loc) {
+		location = loc;
+	}
 }

@@ -47,6 +47,17 @@ public class CatanModel {
 	 * 
 	 */
 	public CatanModel() throws GameInitializationException {
+		this(false, false, false);
+	}
+
+	/** Makes a brand spanking new Model
+	 * @param randomHexes TODO
+	 * @param randomNumbers TODO
+	 * @param randomPorts TODO
+	 * @throws GameInitializationException 
+	 * 
+	 */
+	public CatanModel(boolean randomHexes, boolean randomNumbers, boolean randomPorts) throws GameInitializationException {
 		version = 0;
 		winner = null;
 		
@@ -58,7 +69,7 @@ public class CatanModel {
 		chat.add("", "First Round");
 		log = new MessageList();
 		
-		map = new Board();
+		map = new Board(randomHexes, randomNumbers, randomPorts);
 		longestRoad = null; //new PlayerReference(UUID.randomUUID(),-1);
 		largestArmy = null; //new PlayerReference(UUID.randomUUID(),-1);
 	}
@@ -754,7 +765,7 @@ public class CatanModel {
 	}
 
 	public boolean hasStarted() {
-		return turnTracker != null;
+		return turnTracker != null && version > 0;
 	}
 	
 	/** Tells you if the game is ready to play

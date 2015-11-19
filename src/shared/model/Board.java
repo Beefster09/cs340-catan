@@ -50,7 +50,7 @@ public class Board {
 		this(false, false, false);
 	}
 	
-	public Board(boolean hasRandomNumbers, boolean hasRandomHexes,
+	public Board(boolean hasRandomHexes, boolean hasRandomNumbers,
 			boolean hasRandomPorts) throws GameInitializationException {
 		List<ResourceType> hexTypes;
 		if (!hasRandomHexes) {
@@ -71,7 +71,6 @@ public class Board {
 		else {
 			initRandomPorts();
 		}
-		ports = new HashMap<EdgeLocation, Port>();
 		roads = new HashMap<EdgeLocation, Road>();
 		municipalities = new HashMap<VertexLocation, Municipality>();
 	}
@@ -304,6 +303,9 @@ public class Board {
 			// Ensure there aren't two ports at the same location
 			if (ports.containsKey(location)) {
 				throw new DuplicateKeyException();
+			}
+			if (location.getHexLoc().getDistanceFromCenter() == radius) {
+				port.setLocation(location.flip());
 			}
 			ports.put(location, port);
 		}
