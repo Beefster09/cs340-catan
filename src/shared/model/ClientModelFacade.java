@@ -33,6 +33,8 @@ public class ClientModelFacade extends ModelFacade {
 		}
 		
 		// It's implemented a little differently client-side
+		/*This function might need to be changed.
+		*/
 		@Override
 		public synchronized void rollDice(PlayerReference player) {
 			Player currentPlayer = getCurrentPlayer().getPlayer();

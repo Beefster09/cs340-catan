@@ -87,13 +87,16 @@ public class Player {
 	}
 	
 	public Player(Session player, CatanColor color, int index) {
+		if (playerTable.containsKey(player.getPlayerUUID())) {
+			this.playerIndex = playerTable.get(player.getPlayerUUID()).getPlayerIndex();
+		} else
+			playerIndex = index;
 		setUUID(player.getPlayerUUID());
 		name = player.getUsername();
 		this.color = color;
 		resources = new ResourceList(0);
 		newDevCards = new DevCardList();
 		oldDevCards = new DevCardList();
-		playerIndex = index;
 
 	}	
 	
@@ -133,7 +136,7 @@ public class Player {
 					"for a Player:\n" + json.toJSONString());
 		}
 	}
-	
+
 	public JSONObject toJSONObject() {
 		JSONObject json = new JSONObject();
 		
