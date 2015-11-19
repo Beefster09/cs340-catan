@@ -77,7 +77,7 @@ public class ServerPoller {
 				try {
 					//JSONObject modelRequest = new JSONObject();
 					int version = modelHandler.getVersion();
-					int game = modelHandler.getGameHeader().getId();
+					//int game = modelHandler.getGameHeader().getId();
 					UUID gameUUID = modelHandler.getGameHeader().getUUID();
 					
 					final String modelStr = server.getModel(gameUUID, version);

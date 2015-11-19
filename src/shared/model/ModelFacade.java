@@ -62,6 +62,8 @@ public class ModelFacade {
 	}
 
 	public synchronized PlayerReference getCurrentPlayer() {
+		if (model.getTurnTracker() == null)
+			return null;
 		return model.getTurnTracker().getCurrentPlayer();
 	}
 
@@ -623,7 +625,7 @@ public class ModelFacade {
 			updatePlayersFromJSON(json);
 			return model;
 		}
-		if (getVersion() == newVersion) {
+		if (getVersion() == newVersion && newVersion != 0) {
 			return null;
 		}
 		model.setVersion(newVersion);
@@ -909,7 +911,8 @@ public class ModelFacade {
 			throw new GameInitializationException();
 		}
 		
-		Player newPlayer = new Player(model.getPlayers().size(), player, color);
+		Player newPlayer = new Player(player, color, model.getPlayers().size());
+		//Player newPlayer = new Player(model.getPlayers().size(), player, color);
 		model.addPlayer(newPlayer);
 	}
 

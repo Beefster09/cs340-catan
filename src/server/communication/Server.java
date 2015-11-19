@@ -154,10 +154,17 @@ public class Server implements IServer {
 	@Override
 	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		CatanModel game = games.get(gameID).getCatanModel();
-		Player newPlayer = new Player(0, player, color);
-		if(game.getPlayers().contains(newPlayer)){
-			return true;
+		List<Player> players = game.getPlayers();
+		//Put in the next player with an index one above the last.
+		Player newPlayer = new Player(player, color, players.size());
+		for (Player currentPlayer : players) {
+			if (currentPlayer.getUUID().equals(newPlayer.getUUID()))
+				return true;
 		}
+//		Player newPlayer = new Player(0, player, color);
+//		if(game.getPlayers().contains(newPlayer)){
+//			return true;
+//		}
 		game.getPlayers().add(newPlayer);
 		if (game.getPlayers().size() == NUMPLAYERS) {
 			this.beginGame(game);
@@ -198,8 +205,10 @@ public class Server implements IServer {
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
 		ModelFacade modelFacade = games.get(gameID);
 		CatanModel model = modelFacade.getCatanModel();
-		if (version == model.getVersion())
-			return null;
+		//This is currently causing the client to never update, we need to find
+		//a way to fix this.
+//		if (version == model.getVersion())
+//			return null;
 		Gson gson = new Gson();
 		return gson.toJson(model);
 	}
@@ -243,11 +252,11 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			tempModel = games.get(gameID);
 			command.execute(tempModel);
-			return null;
+			return this.getModel(gameID, -1);
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -259,18 +268,19 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -282,18 +292,19 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -304,18 +315,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -327,18 +338,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -350,18 +361,19 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -373,18 +385,19 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -395,18 +408,19 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -417,18 +431,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -440,18 +454,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -486,18 +500,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -509,18 +523,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -532,18 +546,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -560,18 +574,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -583,18 +597,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -606,18 +620,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	@Override
@@ -628,18 +642,18 @@ public class Server implements IServer {
 			try {
 				tempModel = games.get(gameID);
 				command.execute(tempModel);
+				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return null;
+		return this.getModel(gameID, -1);
 	}
 
 	
