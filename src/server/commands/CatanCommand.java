@@ -125,11 +125,12 @@ public class CatanCommand implements ICatanCommand {
 		try {
 			model.getCatanModel().toString();
 			method.invoke(model, arguments);
-		} catch (IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
+			//e.printStackTrace();
+			throw new InvalidActionException(e.getCause().getMessage());
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-			throw new InvalidActionException(e.getMessage());
-		}
+		} // Let through IllegalArgumentExceptions
 	}
 
 	@SuppressWarnings("unchecked")

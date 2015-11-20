@@ -172,6 +172,13 @@ public class ModelFacadeTest {
 		assertFalse(m.canDiscard(grant, discardMap));
 		
 		discardMap.clear();
+		// Discard 1 card too few
+		discardMap.put(ResourceType.ORE, 3);
+		assertFalse(m.canDiscard(grant, discardMap));
+		// Discard 1 card too many
+		discardMap.put(ResourceType.ORE, 5);
+		assertFalse(m.canDiscard(grant, discardMap));
+		// Discard the correct number of cards
 		discardMap.put(ResourceType.ORE, 4);
 		assertTrue(m.canDiscard(grant, discardMap));
 		m.discard(grant, discardMap);
@@ -224,7 +231,7 @@ public class ModelFacadeTest {
 	}
 	
 	@Test
-	public void testCanFinishTurn() throws NotYourTurnException {
+	public void testCanFinishTurn() throws Exception {
 		
 		dice.enqueueRoll(8);
 		

@@ -82,14 +82,12 @@ public class ModelFacade {
 				!player.getPlayer().hasRolled();
 	}
 
-	public synchronized void rollDice(PlayerReference player) throws NotYourTurnException {
-		if (!isTurn(player)) {
-			throw new NotYourTurnException();
+	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
+		if (!canRoll(player)) {
+			throw new InvalidActionException();
 		}
 		
 		model.roll(dice.roll());
-		
-		player.getPlayer().setHasRolled(true);
 	}
 
 	/**
