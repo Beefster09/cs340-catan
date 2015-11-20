@@ -326,6 +326,9 @@ public class CatanModel {
 				}
 			}
 		}
+
+		player.getPlayer().useRoad();
+		player.getPlayer().useSettlement();
 		
 		turnTracker.passTurn();
 		
@@ -351,6 +354,7 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.WOOD, 1);
 		hand.transfer(bank, ResourceType.BRICK, 1);
 		getMap().buildRoad(player, loc);
+		player.getPlayer().useRoad();
 		
 		checkLongestRoad(player);
 		
@@ -375,6 +379,7 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.SHEEP, 1);
 		hand.transfer(bank, ResourceType.WHEAT, 1);
 		map.buildSettlement(player, loc);
+		player.getPlayer().useSettlement();
 		
 		updateScores();
 		
@@ -410,6 +415,7 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.WHEAT, 2);
 		
 		getMap().upgradeSettlementAt(player, loc);
+		player.getPlayer().useCity();
 		
 		updateScores();
 	
@@ -623,6 +629,9 @@ public class CatanModel {
 
 		map.buildRoad(player, road1);
 		map.buildRoad(player, road2);
+		
+		player.getPlayer().useRoad();
+		player.getPlayer().useRoad();
 		
 		checkLongestRoad(player);
 		

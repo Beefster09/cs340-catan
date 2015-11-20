@@ -483,10 +483,23 @@ public class Player {
 		}
 	}
 
-	public void playMonument() throws InvalidActionException {
+	void playMonument() throws InvalidActionException {
 		oldDevCards.useCard(DevCardType.MONUMENT);
 		
 		++monuments;
+	}
+
+	void useRoad() {
+		--roads;
+	}
+
+	void useSettlement() {
+		--settlements;
+	}
+
+	void useCity() {
+		--cities;
+		++settlements;
 	}
 
 }
