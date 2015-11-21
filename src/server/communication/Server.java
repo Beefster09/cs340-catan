@@ -70,7 +70,6 @@ public class Server implements IServer {
 			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
 			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
 			games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
-			System.out.println(gameUUID.toString());
 	
 			model = new ModelFacade();
 			gameUUID = model.getGameHeader().getUUID();
@@ -78,7 +77,6 @@ public class Server implements IServer {
 			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
 			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
 			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-			System.out.println(gameUUID.toString());
 	
 			model = new ModelFacade();
 			gameUUID = model.getGameHeader().getUUID();
@@ -86,7 +84,6 @@ public class Server implements IServer {
 			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
 			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
 			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-			System.out.println(gameUUID.toString());
 	
 			model = new ModelFacade();
 			gameUUID = model.getGameHeader().getUUID();
@@ -94,7 +91,6 @@ public class Server implements IServer {
 			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
 			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
 			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-			System.out.println(gameUUID.toString());
 	
 			model = new ModelFacade();
 			gameUUID = model.getGameHeader().getUUID();
@@ -102,7 +98,6 @@ public class Server implements IServer {
 			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
 			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
 			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-			System.out.println(gameUUID.toString());
 		} catch (GameInitializationException e) {
 			e.printStackTrace();
 		}
