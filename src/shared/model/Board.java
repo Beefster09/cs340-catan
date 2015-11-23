@@ -215,7 +215,7 @@ public class Board {
 			 * PLEASE NOTE: REMOVED RADIUS - 1, MIGHT CAUSE
 			 * PROBLEMS LATER ON.
 			 */
-			radius = (int) (long) json.get("radius"); // Remove center from radius
+			radius = (int) (long) json.get("radius"); 
 			if (json.containsKey("hexes")) {
 				List<Hex> hexData = new ArrayList<>();
 				//TODO: Fix this line, can't can't lists from JSON!
