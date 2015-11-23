@@ -59,10 +59,12 @@ public class OfferTradeHandler extends AbstractMoveHandler implements HttpHandle
 			String gson = server.offerTrade(index, gameUUID, offer, receiver);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(gson.toString());
-			output.flush();
-			arg0.getResponseBody().close();
+			if (gson != null) {
+				OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
+				output.write(gson);
+				output.flush();
+				arg0.getResponseBody().close();
+			}
 		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			arg0.getResponseBody().close();

@@ -55,6 +55,9 @@ public class ResourceList {
 				if (json.containsKey(key)) {
 					self.resources.put(type, (int) (long) json.get(key));
 				}
+				else if (json.containsKey(key.toLowerCase())) {
+					self.resources.put(type, (int) (long) json.get(key.toLowerCase()));
+				}
 				else {
 					throw new SchemaMismatchException("A resource count is missing from the " +
 							"given JSONObject:\n" + json.toJSONString());

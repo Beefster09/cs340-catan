@@ -227,7 +227,8 @@ public class ClientCommunicator {
 			while(-1 != (len = input.read(buffer))){
 				str.append(new String(buffer, 0, len));
 			}
-
+			if(str.length() == 0)
+				throw new UserException();
 			if(str.charAt(0) == '['){
 				str = new StringBuilder("{\"list\":" + str + "}");
 			}
