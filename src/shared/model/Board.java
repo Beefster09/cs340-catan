@@ -50,7 +50,7 @@ public class Board {
 		this(false, false, false);
 	}
 	
-	public Board(boolean hasRandomNumbers, boolean hasRandomHexes,
+	public Board(boolean hasRandomHexes, boolean hasRandomNumbers,
 			boolean hasRandomPorts) throws GameInitializationException {
 		List<ResourceType> hexTypes;
 		if (!hasRandomHexes) {
@@ -71,7 +71,6 @@ public class Board {
 		else {
 			initRandomPorts();
 		}
-		ports = new HashMap<EdgeLocation, Port>();
 		roads = new HashMap<EdgeLocation, Road>();
 		municipalities = new HashMap<VertexLocation, Municipality>();
 	}
@@ -240,7 +239,7 @@ public class Board {
 //			}
 			Map<Object, Object> obj = (Map<Object, Object>)json.get("ports");
 			for (Object value : obj.values()) {
-				portData.add(new Port((JSONObject) obj));
+				portData.add(new Port((JSONObject) value));
 			}
 			initializePortsFromList(portData);
 			
@@ -250,7 +249,7 @@ public class Board {
 //			}
 			obj = (Map<Object, Object>)json.get("roads");
 			for (Object value : obj.values()) {
-				roadData.add(new Road(players, (JSONObject) obj));
+				roadData.add(new Road(players, (JSONObject) value));
 			}
 			initializeRoadsFromList(roadData);
 			
@@ -304,6 +303,9 @@ public class Board {
 			// Ensure there aren't two ports at the same location
 			if (ports.containsKey(location)) {
 				throw new DuplicateKeyException();
+			}
+			if (location.getHexLoc().getDistanceFromCenter() == radius) {
+				port.setLocation(location.flip());
 			}
 			ports.put(location, port);
 		}
@@ -811,12 +813,11 @@ public class Board {
 	public int lengthOfLongestRoute(PlayerReference player) {
 		int best = 0;
 		
-		// TODO Optimization!
-		// TODO Roads being cut off by enemies
 		// TODO Testing!
 		
 		// Reduce to a graph problem
 		Set<EdgeLocation> ownedRoads = getRoadsOwnedByPlayer(player);
+		
 		// Used to give priority to nodes that are likely to be endpoints of a path
 		//Set<VertexLocation> nodes = new HashSet<>(); // 0, 1, 2, 3
 		@SuppressWarnings("unchecked") // I can't figure out another way
@@ -842,14 +843,15 @@ public class Board {
 					}
 				}
 				nodesByEdgeCounts[count].add(node);
-				//nodes.add(node);
 			}
 		}
+		
 		
 		// This will be used later to significantly reduce combinatorial explosion.
 		Set<EdgeLocation> unvisited = new HashSet<>(ownedRoads);
 		
-		for (Set<VertexLocation> nodes : nodesByEdgeCounts) {
+		for (int i : new int[]{1, 3, 2}) {
+			Set<VertexLocation> nodes = nodesByEdgeCounts[i];
 			for (VertexLocation node : nodes) {
 				List<EdgeLocation> path = dfsPath(node, ownedRoads, new ArrayList<EdgeLocation>(), player);
 				
@@ -866,9 +868,10 @@ public class Board {
 	private List<EdgeLocation> dfsPath(VertexLocation node,
 			Set<EdgeLocation> edges, List<EdgeLocation> visitedEdges,
 			PlayerReference player) {
+		// enemies cut up roads
 		Municipality town = getMunicipalityAt(node);
 		if (town != null &&
-			town.getOwner().equals(player)) {
+			!town.getOwner().equals(player)) {
 			return visitedEdges; // you can't go farther
 		}
 		
@@ -964,5 +967,29 @@ public class Board {
 		
 		return result;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Board [hexes=");
+		builder.append(getHexes());
+		builder.append(", radius=");
+		builder.append(radius);
+		builder.append(", ports=");
+		builder.append(getPorts());
+		builder.append(", roads=");
+		builder.append(getRoads());
+		builder.append(", municipalities=");
+		builder.append(getMunicipalities());
+		builder.append(", robber=");
+		builder.append(robber);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 
 }

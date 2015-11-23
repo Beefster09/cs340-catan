@@ -77,7 +77,7 @@ public class ServerPoller {
 				try {
 					//JSONObject modelRequest = new JSONObject();
 					int version = modelHandler.getVersion();
-					int game = modelHandler.getGameHeader().getId();
+					//int game = modelHandler.getGameHeader().getId();
 					UUID gameUUID = modelHandler.getGameHeader().getUUID();
 					
 					final String modelStr = server.getModel(gameUUID, version);
@@ -91,12 +91,11 @@ public class ServerPoller {
 							}
 							
 						});
-						System.out.println("Polling gave results. Handling updates on EDT.");
 					}
 					
 				} catch (ServerException | UserException e) {
-					System.out.println("Server error, could not connect");
-					e.printStackTrace();
+					log.severe("Server error, could not connect");
+					//e.printStackTrace();
 				}
 			}
 			

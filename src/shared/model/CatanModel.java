@@ -47,20 +47,31 @@ public class CatanModel {
 	 * 
 	 */
 	public CatanModel() throws GameInitializationException {
+		this(false, false, false);
+	}
+
+	/** Makes a brand spanking new Model
+	 * @param randomHexes TODO
+	 * @param randomNumbers TODO
+	 * @param randomPorts TODO
+	 * @throws GameInitializationException 
+	 * 
+	 */
+	public CatanModel(boolean randomHexes, boolean randomNumbers, boolean randomPorts) throws GameInitializationException {
 		version = 0;
 		winner = null;
 		
 		id = UUID.randomUUID();
 		players = new ArrayList<Player>();
-		turnTracker = new TurnTracker();
+		turnTracker = null; //new TurnTracker();
 		bank = new Bank();
 		chat = new MessageList();
 		chat.add("", "First Round");
 		log = new MessageList();
 		
-		map = new Board();
-		longestRoad = new PlayerReference(UUID.randomUUID(),-1);
-		largestArmy = new PlayerReference(UUID.randomUUID(),-1);
+		map = new Board(randomHexes, randomNumbers, randomPorts);
+		longestRoad = null; //new PlayerReference(UUID.randomUUID(),-1);
+		largestArmy = null; //new PlayerReference(UUID.randomUUID(),-1);
 	}
 	
 	public UUID getID() {
@@ -178,7 +189,7 @@ public class CatanModel {
 		this.map = map;
 	}
 
-	void setTurnTracker(TurnTracker turnTracker) {
+	public void setTurnTracker(TurnTracker turnTracker) {
 		this.turnTracker = turnTracker;
 	}
 
@@ -315,6 +326,9 @@ public class CatanModel {
 				}
 			}
 		}
+
+		player.getPlayer().useRoad();
+		player.getPlayer().useSettlement();
 		
 		turnTracker.passTurn();
 		
@@ -332,7 +346,7 @@ public class CatanModel {
 		}
 		// Check resource counts
 		ResourceList hand = player.getHand();
-		if (player.getPlayer().canBuildRoad()) {
+		if (!player.getPlayer().canBuildRoad()) {
 			throw new InsufficientResourcesException("Insufficient " +
 					"resources for a road.");
 		}
@@ -340,6 +354,7 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.WOOD, 1);
 		hand.transfer(bank, ResourceType.BRICK, 1);
 		getMap().buildRoad(player, loc);
+		player.getPlayer().useRoad();
 		
 		checkLongestRoad(player);
 		
@@ -364,6 +379,7 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.SHEEP, 1);
 		hand.transfer(bank, ResourceType.WHEAT, 1);
 		map.buildSettlement(player, loc);
+		player.getPlayer().useSettlement();
 		
 		updateScores();
 		
@@ -399,6 +415,7 @@ public class CatanModel {
 		hand.transfer(bank, ResourceType.WHEAT, 2);
 		
 		getMap().upgradeSettlementAt(player, loc);
+		player.getPlayer().useCity();
 		
 		updateScores();
 	
@@ -484,12 +501,18 @@ public class CatanModel {
 			if (isSoldierCard) {
 				useSoldierCard(player);
 			}
+			else {
+				turnTracker.setStatus(TurnStatus.Playing);
+			}
 		
 			log.add(player.getName(), player.getName() + " robbed " + victim.getName());
 		}
 		else {
 			if (isSoldierCard) {
 				useSoldierCard(player);
+			}
+			else {
+				turnTracker.setStatus(TurnStatus.Playing);
 			}
 			
 			log.add(player.getName(), player.getName() + " moved the robber.");
@@ -607,6 +630,9 @@ public class CatanModel {
 		map.buildRoad(player, road1);
 		map.buildRoad(player, road2);
 		
+		player.getPlayer().useRoad();
+		player.getPlayer().useRoad();
+		
 		checkLongestRoad(player);
 		
 		log.add(player.getName(), player.getName() + " played a road building card.");
@@ -632,6 +658,10 @@ public class CatanModel {
 		if (length > currentBest) {
 			currentBest = length;
 			setLongestRoad(player);
+		}
+		
+		if (currentBest == 4) {
+			setLongestRoad(null);
 		}
 	}
 
@@ -674,12 +704,16 @@ public class CatanModel {
 		
 		ResourceList hand = player.getHand();
 	
+		int totalCards = 0;
 		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
 			if (hand.count(card.getKey()) < card.getValue()) {
 				return false;
 			}
+			totalCards += card.getValue();
 		}
-		return true;
+		
+		// Make sure this is discarding the correct number of cards
+		return totalCards == hand.count() / 2;
 	}
 
 	void discard(PlayerReference player,
@@ -696,6 +730,16 @@ public class CatanModel {
 		}
 		
 		player.getPlayer().setHasDiscarded(true);
+		
+		boolean allDiscarded = true;
+		for (Player playr : players) {
+			if (!playr.hasDiscarded()) {
+				allDiscarded = false;
+			}
+		}
+		if (allDiscarded) {
+			turnTracker.setStatus(TurnStatus.Robbing);
+		}
 		
 		log.add(player.getName(), player.getName() + " discarded " +
 				numDiscarded + " cards.");
@@ -720,6 +764,23 @@ public class CatanModel {
 			player.setVictoryPoints(score);
 		}
 	}
+
+	public void addPlayer(Player newPlayer) {
+		players.add(newPlayer);
+		
+		if (players.size() == 4) {
+			turnTracker = new TurnTracker(players);
+		}
+	}
+
+	public boolean hasStarted() {
+		return turnTracker != null && version > 0;
+	}
 	
-	
+	/** Tells you if the game is ready to play
+	 * @return
+	 */
+	public boolean ready() {
+		return turnTracker != null && players.size() == 4;
+	}
 }

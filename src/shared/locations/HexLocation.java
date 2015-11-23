@@ -33,6 +33,9 @@ public class HexLocation
 	
 	public HexLocation(JSONObject json) throws SchemaMismatchException {
 		try {
+			if (json.containsKey("hexLoc")) {
+				json = (JSONObject)json.get("hexLoc");
+			}
 			x = (int) (long) json.get("x");
 			y = (int) (long) json.get("y");
 		}

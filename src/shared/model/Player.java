@@ -37,8 +37,8 @@ public class Player {
 	private ResourceList resources;
 	
 	private boolean playedDevCard 	= false;
-	private boolean discarded 		= false;
-	private boolean hasRolled 		= false;
+	private boolean discarded 		= true;
+	private boolean hasRolled 		= true;
 	
 	private int cities 			= 4;
 	private int settlements 	= 5;
@@ -70,23 +70,41 @@ public class Player {
 		playerTable.put(uuid, this);
 	}
 	
-	public Player() {
+	public Player(int index, String name, CatanColor color) {
+		this(index);
 		
+		this.name = name;
+		this.color = color;
 	}
 	
 	public Player(int index) {
 		playerIndex = index;
 		
 		setUUID(uuid);
+		resources = new ResourceList(0);
+		newDevCards = new DevCardList();
+		oldDevCards = new DevCardList();
 	}
 	
-	public Player(Session player, CatanColor color) {
+	public Player(Session player, CatanColor color, int index) {
+		if (playerTable.containsKey(player.getPlayerUUID())) {
+			this.playerIndex = playerTable.get(player.getPlayerUUID()).getPlayerIndex();
+		} else
+			playerIndex = index;
 		setUUID(player.getPlayerUUID());
 		name = player.getUsername();
 		this.color = color;
 		resources = new ResourceList(0);
 		newDevCards = new DevCardList();
 		oldDevCards = new DevCardList();
+
+	}	
+	
+	public Player(int index, Session player, CatanColor color) {
+		this(index);
+		setUUID(player.getPlayerUUID());
+		name = player.getUsername();
+		this.color = color;
 	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {
@@ -118,7 +136,7 @@ public class Player {
 					"for a Player:\n" + json.toJSONString());
 		}
 	}
-	
+
 	public JSONObject toJSONObject() {
 		JSONObject json = new JSONObject();
 		
@@ -135,7 +153,7 @@ public class Player {
 	 * @return a corresponding PlayerReference
 	 */
 	public PlayerReference getReference() {
-		return new PlayerReference(uuid);
+		return new PlayerReference(uuid,playerIndex);
 	}
 	
 	public static Player getPlayerByUUID(UUID uuid) {
@@ -465,10 +483,23 @@ public class Player {
 		}
 	}
 
-	public void playMonument() throws InvalidActionException {
+	void playMonument() throws InvalidActionException {
 		oldDevCards.useCard(DevCardType.MONUMENT);
 		
 		++monuments;
+	}
+
+	void useRoad() {
+		--roads;
+	}
+
+	void useSettlement() {
+		--settlements;
+	}
+
+	void useCity() {
+		--cities;
+		++settlements;
 	}
 
 }

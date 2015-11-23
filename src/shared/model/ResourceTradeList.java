@@ -22,17 +22,6 @@ public class ResourceTradeList {
 	Map<ResourceType, Integer> offered;
 	Map<ResourceType, Integer> wanted;
 	
-	public static void main(String[] args) throws Exception {
-		JSONParser parser = new JSONParser();
-		Reader r = new BufferedReader(new FileReader("trade.json"));
-		Object parseResult = parser.parse(r);
-		ResourceTradeList trade = new ResourceTradeList((JSONObject) parseResult);
-
-		System.out.println(parseResult);
-		System.out.println(trade);
-		
-	}
-	
 	public ResourceTradeList(JSONObject json) throws SchemaMismatchException {
 		offered = new HashMap<>();
 		wanted = new HashMap<>();
@@ -62,6 +51,12 @@ public class ResourceTradeList {
 	
 	public ResourceTradeList() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public ResourceTradeList(Map<ResourceType, Integer> offered,
+			Map<ResourceType, Integer> wanted) {
+		this.offered = offered;
+		this.wanted = wanted;
 	}
 
 	/**
@@ -187,6 +182,19 @@ public class ResourceTradeList {
 				return false;
 		} else if (!wanted.equals(other.wanted))
 			return false;
+		return true;
+	}
+
+	public boolean isEmpty() {
+		if (offered == null || wanted == null) {
+			return true;
+		}
+		for (int count : offered.values()) {
+			if (count > 0) return false;
+		}
+		for (int count : wanted.values()) {
+			if (count > 0) return false;
+		}
 		return true;
 	}
 	

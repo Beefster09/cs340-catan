@@ -20,8 +20,13 @@ public class EdgeLocation
 	private EdgeDirection dir;
 	
 	public EdgeLocation(JSONObject json) throws SchemaMismatchException {
-		hexLoc = new HexLocation(json);
-		if (json.containsKey("direction"))
+		if (json.containsKey("hexLoc"))
+			hexLoc = new HexLocation((JSONObject)json.get("hexLoc"));
+		else
+			hexLoc = new HexLocation(json);
+		if (json.containsKey("dir"))
+			dir = EdgeDirection.getDirectionFromString((String) json.get("dir"));
+		else if (json.containsKey("direction"))
 			dir = EdgeDirection.getDirectionFromString((String) json.get("direction"));
 		//else throw schema exception.
 	}
@@ -232,12 +237,16 @@ public class EdgeLocation
 			case SouthWest:
 			case South:
 			case SouthEast:
-				return new EdgeLocation(hexLoc.getNeighborLoc(dir),
-										dir.getOppositeDirection());
+				return flip();
 			default:
 				assert false;
 				return null;
 		}
+	}
+	
+	public EdgeLocation flip() {
+		return new EdgeLocation(hexLoc.getNeighborLoc(dir),
+				dir.getOppositeDirection());
 	}
 
 	public Collection<EdgeLocation> getNeighbors() {

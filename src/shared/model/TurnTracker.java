@@ -27,7 +27,7 @@ public class TurnTracker {
 	}
 
 	public TurnTracker(List<Player> players) {
-		players = new ArrayList<>(players);
+		this.players = new ArrayList<>(players);
 		
 		currentPlayer = players.get(0).getReference();
 		status = TurnStatus.FirstRound;
@@ -106,7 +106,6 @@ public class TurnTracker {
 	 */
 	public void passTurn() throws InvalidActionException {
 		assert players != null;
-		assert currentPlayer.getPlayer().hasRolled();
 		
 		int currentPlayerIndex = currentPlayer.getIndex();
 		switch(status) {
@@ -121,12 +120,14 @@ public class TurnTracker {
 		case SecondRound:
 			if (currentPlayerIndex == 0) {
 				status = TurnStatus.Rolling;
+				currentPlayer.getPlayer().setHasRolled(false);
 			}
 			else {
 				currentPlayer = players.get((currentPlayerIndex + 3) % 4).getReference();
 			}
 			break;
 		case Playing:
+			assert currentPlayer.getPlayer().hasRolled();
 			currentPlayer.getPlayer().ageDevCards();
 			currentPlayer = players.get((currentPlayerIndex + 1) % 4).getReference();
 			status = TurnStatus.Rolling;

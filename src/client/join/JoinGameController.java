@@ -255,7 +255,7 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 				
 				String model = ClientManager.getServer().getModel(gameUUID, -1);
 				
-				modelFacade.updateFromJSON(ClientManager.getServer().getModel(gameUUID, -1));
+				modelFacade.updateFromJSON(model);
 			}
 			if (ClientManager.getSession() != null) {
 				ServerPoller poller = new ServerPoller(serverProxy,ClientManager.getSession());

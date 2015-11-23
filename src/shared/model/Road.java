@@ -1,6 +1,7 @@
 package shared.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 
@@ -22,8 +23,9 @@ public class Road {
 	
 	public Road(List<Player> players, JSONObject json) throws SchemaMismatchException {
 		try {
-			int playerOwner = (int) (long) (json.get("owner"));
-			owner = players.get(playerOwner).getReference();
+			JSONObject playerJSON = (JSONObject) (json.get("owner"));
+			UUID playerUUID = UUID.fromString((String)playerJSON.get("playerUUID"));
+			owner = new PlayerReference(playerUUID);
 			location = new EdgeLocation( (JSONObject)(json.get("location")));
 		} catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();

@@ -49,9 +49,20 @@ public class Port {
 			else {
 				resource = null;
 			}
-			HexLocation hexLoc = new HexLocation((JSONObject) json.get("location"));
-			EdgeDirection direction = EdgeDirection.getDirectionFromString(
+			JSONObject JSONLocation = (JSONObject) json.get("location");
+			HexLocation hexLoc = new HexLocation(JSONLocation);
+			EdgeDirection direction;
+			if (JSONLocation.containsKey("direction")) {
+				direction = EdgeDirection.getDirectionFromString(
 					(String) json.get("direction"));
+			}
+			else if (JSONLocation.containsKey("dir")) {
+				direction = EdgeDirection.getDirectionFromString(
+					(String) JSONLocation.get("dir"));
+			}
+			else {
+				throw new SchemaMismatchException("Missing info");
+			}
 			location = new EdgeLocation(hexLoc, direction);
 			ratio = (int) (long) json.get("ratio");
 		}
@@ -121,5 +132,9 @@ public class Port {
 		if (resource != other.resource)
 			return false;
 		return true;
+	}
+
+	void setLocation(EdgeLocation loc) {
+		location = loc;
 	}
 }

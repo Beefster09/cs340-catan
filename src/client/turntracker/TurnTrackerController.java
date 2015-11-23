@@ -132,7 +132,8 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 		int armyIndex;
 		
 		if (ClientManager.getModel().getCatanModel() != null &&
-				ClientManager.getModel().getCatanModel().getTurnTracker() != null) {
+				ClientManager.getModel().getCatanModel().getTurnTracker() != null &&
+				ClientManager.getModel().getCatanModel().getLargestArmy() != null) {
 			
 			armyIndex = ClientManager.getModel().getCatanModel().getLargestArmy().getIndex();
 		}

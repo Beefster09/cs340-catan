@@ -40,7 +40,7 @@ public class ModelFacade {
 	protected List<IModelListener> listeners;
 
 	public ModelFacade() throws GameInitializationException {
-		this(new CatanModel(), new NormalDice());
+		this(new CatanModel(false, false, false), new NormalDice());
 	}
 
 	public ModelFacade(CatanModel startingModel) {
@@ -62,6 +62,8 @@ public class ModelFacade {
 	}
 
 	public synchronized PlayerReference getCurrentPlayer() {
+		if (model.getTurnTracker() == null)
+			return null;
 		return model.getTurnTracker().getCurrentPlayer();
 	}
 
@@ -75,19 +77,17 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canRoll(PlayerReference player) {
-		
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		return currentPlayer.equals(player.getPlayer()) && !currentPlayer.hasRolled();
+		return currentPhase() == TurnStatus.Rolling &&
+				getCurrentPlayer().equals(player) &&
+				!player.getPlayer().hasRolled();
 	}
 
-	public synchronized void rollDice(PlayerReference player) throws NotYourTurnException {
-		if (!isTurn(player)) {
-			throw new NotYourTurnException();
+	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
+		if (!canRoll(player)) {
+			throw new InvalidActionException();
 		}
 		
 		model.roll(dice.roll());
-		
-		player.getPlayer().setHasRolled(true);
 	}
 
 	/**
@@ -97,6 +97,20 @@ public class ModelFacade {
 	 */
 	public synchronized boolean canMoveRobberTo(HexLocation hexLoc) {		
 		return model.getMap().canMoveRobberTo(hexLoc);
+	}
+
+	public synchronized boolean canRob(PlayerReference player, HexLocation loc, PlayerReference victim) {
+		if (canMoveRobberTo(loc) && isTurn(player) &&
+				currentPhase() == TurnStatus.Robbing &&
+				!player.equals(victim)) {
+			for (Municipality town : model.getMap().getMunicipalitiesAround(loc)) {
+				if (town.getOwner().equals(victim)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		else return false;
 	}
 
 	public synchronized void rob(PlayerReference player, HexLocation loc, PlayerReference victim)
@@ -162,6 +176,9 @@ public class ModelFacade {
 	 * @return false if otherwise
 	 */
 	public synchronized boolean canBuyDevelopmentCard(PlayerReference player) {
+		if (!getCurrentPlayer().equals(player)) {
+			return false;
+		}
 		// Make sure there are development cards in the bank.
 		if (getCatanModel().getBank().getDevCards().count() <= 0) {
 			return false;
@@ -189,11 +206,23 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildRoad(EdgeLocation edgeLoc) {			
-				
+		return canBuildRoad(getCurrentPlayer(), edgeLoc);
+	}
+
+	/**
+	 * 
+	 * @param edgeLoc The location (one of the 6 sides of one hex on the board)
+	 *  where the road is to be placed.
+	 * @return true if the given edge location is adjacent to at least one of
+	 * the player's roads or municipalities (city or settlement), and that there is
+	 * no currently placed road at that location.
+	 * @return false otherwise
+	 */
+	public synchronized boolean canBuildRoad(PlayerReference player, EdgeLocation edgeLoc) {			
+		
 		try {
-			Board map = model.getMap();
-			PlayerReference currentPlayer = getCurrentPlayer();
-			return map.canBuildRoadAt(currentPlayer, edgeLoc);
+			return player.getPlayer().canBuildRoad() &&
+					model.getMap().canBuildRoadAt(player, edgeLoc);
 		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
@@ -415,11 +444,10 @@ public class ModelFacade {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canOfferTrade(TradeOffer offer) {
-		if (!isTurn(offer.getSender())) {
-			return false;
-		}
-		
-		if (model.getTradeOffer() != null) {
+		if (offer.isEmpty() || !isTurn(offer.getSender()) ||
+				model.getTradeOffer() != null ||
+				currentPhase() != TurnStatus.Playing ||
+				offer.getSender().equals(offer.getReceiver())) {
 			return false;
 		}
 		
@@ -595,7 +623,7 @@ public class ModelFacade {
 			updatePlayersFromJSON(json);
 			return model;
 		}
-		if (getVersion() == newVersion) {
+		if (getVersion() == newVersion && newVersion != 0) {
 			return null;
 		}
 		model.setVersion(newVersion);
@@ -784,7 +812,7 @@ public class ModelFacade {
 			JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
 			TradeOffer otherOffer;
 			try {
-				otherOffer = new TradeOffer(players,tradeOffer);
+				otherOffer = new TradeOffer(tradeOffer);
 				if (model.getTradeOffer() == null || !model.getTradeOffer().equals(otherOffer)) {
 					model.setTradeOffer(otherOffer);
 					for (IModelListener listener : listeners) {
@@ -876,9 +904,23 @@ public class ModelFacade {
 		}
 	}
 	
-	public synchronized void addPlayer(Session player, CatanColor color) {
-		Player newPlayer = new Player(player, color);
-		this.getCatanModel().getPlayers().add(newPlayer);
+	public synchronized void addPlayer(Session player, CatanColor color) throws GameInitializationException {
+		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
+			throw new GameInitializationException();
+		}
+		
+		Player newPlayer = new Player(player, color, model.getPlayers().size());
+		//Player newPlayer = new Player(model.getPlayers().size(), player, color);
+		model.addPlayer(newPlayer);
+	}
+
+	public synchronized void addPlayer(String name, CatanColor color) throws GameInitializationException {
+		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
+			throw new GameInitializationException();
+		}
+		
+		Player newPlayer = new Player(model.getPlayers().size(), name, color);
+		model.addPlayer(newPlayer);
 	}
 
 	@Override
