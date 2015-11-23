@@ -89,6 +89,14 @@ public class ModelFacade {
 		
 		model.roll(dice.roll());
 	}
+	
+	public synchronized void rollDice(PlayerReference player, int num) throws InvalidActionException {
+		if (!canRoll(player)) {
+			throw new InvalidActionException();
+		}
+		
+		model.roll(dice.roll(num));
+	}
 
 	/**
 	 * @param hexLoc The location on the map where the robber is to be placed

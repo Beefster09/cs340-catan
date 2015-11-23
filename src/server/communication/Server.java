@@ -200,6 +200,8 @@ public class Server implements IServer {
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
 		ModelFacade modelFacade = games.get(gameID);
+		if (modelFacade == null)
+			throw new ServerException();
 		CatanModel model = modelFacade.getCatanModel();
 		//This is currently causing the client to never update, we need to find
 		//a way to fix this.
@@ -247,6 +249,9 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("doSendChat",message);
 			ModelFacade tempModel;
 			tempModel = games.get(gameID);
+			if (tempModel == null)
+				throw new ServerException();
+			
 			command.execute(tempModel);
 			return this.getModel(gameID, -1);
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
@@ -259,10 +264,12 @@ public class Server implements IServer {
 	public String rollDice(UUID user, UUID gameID, int number) throws ServerException, UserException {
 
 		try {
-			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user));
+			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), number);
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -287,6 +294,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -310,6 +319,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -333,6 +344,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -356,6 +369,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -380,6 +395,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -403,6 +420,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -426,6 +445,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -449,6 +470,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -470,6 +493,8 @@ public class Server implements IServer {
 		try {
 			ICatanCommand command = new CatanCommand("buildSettlement", new PlayerReference(user), location);
 			ModelFacade game = games.get(gameID);
+			if (game == null)
+				throw new ServerException();
 			command.execute(game);
 			return this.getModel(gameID, -1);
 		} catch (NoSuchMethodException e) {
@@ -495,6 +520,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -518,6 +545,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -541,6 +570,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -569,6 +600,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -592,6 +625,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -615,6 +650,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
@@ -637,6 +674,8 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
+				if (tempModel == null)
+					throw new ServerException();
 				command.execute(tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {

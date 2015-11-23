@@ -11,4 +11,10 @@ public class NormalDice implements IDice {
 		return rand.nextInt(6) + rand.nextInt(6) + 2;
 	}
 
+	@Override
+	public int roll(int num) {
+		// TODO Auto-generated method stub
+		return num;
+	}
+
 }
