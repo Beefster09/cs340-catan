@@ -104,6 +104,9 @@ public class ServerCommunicator {
 		server.createContext("/moves/Monument", monumentHandler);
 		server.createContext("/moves/buildStartingPieces", buildStartingPiecesHandler);
 		
+		server.createContext("/docs/api/data", new Handlers.JSONAppender(""));
+		server.createContext("/docs/api/view", new Handlers.BasicFile(""));
+
 		logger.info("Starting HTTP Server");
 
 		server.start();

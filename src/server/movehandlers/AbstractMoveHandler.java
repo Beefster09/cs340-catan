@@ -16,6 +16,7 @@ public abstract class AbstractMoveHandler {
 
 	@SuppressWarnings("deprecation")
 	public UUID checkCookies(HttpExchange exchange, IServer server){
+		exchange.getResponseHeaders().set("Content-type:", "application/text");
 		List<String> cookies = exchange.getRequestHeaders().get("Cookie");
 		if(cookies.size() != 1){
 			return null;

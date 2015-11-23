@@ -34,6 +34,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 	
 	@Override
 	public void handle(HttpExchange arg0) throws IOException {
+		arg0.getResponseHeaders().set("Content-type:", "application/text");
 		String address = arg0.getRequestURI().toString();
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 

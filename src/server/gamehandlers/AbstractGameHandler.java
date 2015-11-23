@@ -1,5 +1,6 @@
 package server.gamehandlers;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,9 @@ public abstract class AbstractGameHandler {
 
 	@SuppressWarnings("deprecation")
 	public boolean checkCookies(HttpExchange exchange, IServer server){
+		
+		exchange.getResponseHeaders().set("Content-type:", "application/text");
+		
 		List<String> cookies = exchange.getRequestHeaders().get("Cookie");
 		if(cookies.size() != 1){
 			return false;
@@ -57,6 +61,8 @@ public abstract class AbstractGameHandler {
 			e.printStackTrace();
 			return false;
 		}
+		
+		
 	}
 	
 	@SuppressWarnings("deprecation")
