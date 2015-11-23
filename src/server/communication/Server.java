@@ -261,10 +261,13 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String rollDice(UUID user, UUID gameID, int number) throws ServerException, UserException {
-
+	public String rollDice(UUID user, UUID gameID, int num) throws ServerException, UserException {
+		/*
+		 * So, for some reason reflection CANNOT find this method.
+		 * I am removing the command for this function for the moment,
+		 * until someone can come back and fix this.
 		try {
-			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), number);
+			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), num);
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
@@ -283,6 +286,16 @@ public class Server implements IServer {
 			e.printStackTrace();
 		}
 
+		*/
+		ModelFacade tempModel = games.get(gameID);
+		if (tempModel == null)
+			throw new ServerException();
+		try {
+			tempModel.rollDice(new PlayerReference(user), num);
+		} catch (InvalidActionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return this.getModel(gameID, -1);
 	}
 

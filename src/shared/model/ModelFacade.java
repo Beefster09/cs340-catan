@@ -81,6 +81,14 @@ public class ModelFacade {
 				getCurrentPlayer().equals(player) &&
 				!player.getPlayer().hasRolled();
 	}
+	
+	public synchronized void rollDice(PlayerReference player, int num) throws InvalidActionException {
+		if (!canRoll(player)) {
+			throw new InvalidActionException();
+		}
+		
+		model.roll(dice.roll(num));
+	}
 
 	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
 		if (!canRoll(player)) {
@@ -90,13 +98,6 @@ public class ModelFacade {
 		model.roll(dice.roll());
 	}
 	
-	public synchronized void rollDice(PlayerReference player, int num) throws InvalidActionException {
-		if (!canRoll(player)) {
-			throw new InvalidActionException();
-		}
-		
-		model.roll(dice.roll(num));
-	}
 
 	/**
 	 * @param hexLoc The location on the map where the robber is to be placed
