@@ -940,6 +940,10 @@ public class ModelFacade {
 		Player newPlayer = new Player(model.getPlayers().size(), name, color);
 		model.addPlayer(newPlayer);
 	}
+	
+	public synchronized void sendChat(PlayerReference source, String message) {
+		model.addChat(source, message);
+	}
 
 	@Override
 	public String toString(){

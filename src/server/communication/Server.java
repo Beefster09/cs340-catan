@@ -271,7 +271,7 @@ public class Server implements IServer {
 	public String sendChat(UUID user, UUID gameID, String message) throws ServerException, UserException {
 		// TODO Auto-generated method stub
 		try {
-			ICatanCommand command = new CatanCommand("doSendChat",message);
+			ICatanCommand command = new CatanCommand("sendChat",new PlayerReference(user),message);
 			ModelFacade tempModel;
 			tempModel = games.get(gameID);
 			if (tempModel == null)

@@ -180,6 +180,11 @@ public class CatanModel {
 	void setChat(MessageList chat) {
 		this.chat = chat;
 	}
+	
+	public void addChat(PlayerReference source, String message) {
+		chat.add(source.getName(), message);
+		version++;
+	}
 
 	void setLog(MessageList log) {
 		this.log = log;
