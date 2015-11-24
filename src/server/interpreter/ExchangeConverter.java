@@ -22,6 +22,7 @@ public class ExchangeConverter {
 		}
 
 		JSONParser parser = new JSONParser();
+		System.out.println(string.toString());
 		JSONObject json = (JSONObject) parser.parse(string.toString());
 		
 		return json;

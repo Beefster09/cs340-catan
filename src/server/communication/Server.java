@@ -170,6 +170,9 @@ public class Server implements IServer {
 	@Override
 	public Session joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		ModelFacade game = games.get(gameID);
+		if (game == null) {
+			throw new JoinGameException();
+		}
 		List<Player> players = game.getCatanModel().getPlayers();
 		for (Player currentPlayer : players) {
 			if (currentPlayer.getName().equals(player.getUsername())) {
