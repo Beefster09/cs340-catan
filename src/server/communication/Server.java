@@ -328,7 +328,11 @@ public class Server implements IServer {
 	public String robPlayer(UUID user, UUID gameID, HexLocation newRobberLocation, UUID victim)
 			throws ServerException, UserException {
 		try {
-			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
+			PlayerReference victimReference = null;
+			if (victim != null) {
+				victimReference = new PlayerReference(victim);
+			}
+			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, victimReference);
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);

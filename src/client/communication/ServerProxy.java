@@ -327,7 +327,9 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "robPlayer");
 		o.put("playerIndex", user.toString());
-		o.put("victimIndex", victim.toString());
+		if (victim != null) {
+			o.put("victimIndex", victim.toString());
+		}
 		JSONObject location = new JSONObject();
 		location.put("x", newRobberLocation.getX());
 		location.put("y", newRobberLocation.getY());
