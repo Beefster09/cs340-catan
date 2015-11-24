@@ -63,7 +63,7 @@ public class CreateHandler extends AbstractGameHandler implements HttpHandler {
 			arg0.getResponseBody().close();
 			
 		} catch (ParseException | GameInitializationException | UserException | ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 
 	}

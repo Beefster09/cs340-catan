@@ -41,8 +41,13 @@ public abstract class AbstractGameHandler {
 			String gameCookie = cookieDecoded.substring(indexOfGameCookie+14);
 			cookieDecoded = cookieDecoded.substring(0,indexOfGameCookie).concat(",").concat(gameCookie);
 		}
-		//cookieDecoded = cookieDecoded.replaceAll("};Catan.game={", ",");
-		System.out.println(cookieDecoded);
+		else {
+			indexOfGameCookie = cookieDecoded.indexOf("}; Catan.game={");
+			if (indexOfGameCookie != -1) {
+				String gameCookie = cookieDecoded.substring(indexOfGameCookie+15);
+				cookieDecoded = cookieDecoded.substring(0,indexOfGameCookie).concat(",").concat(gameCookie);
+			}
+		}
 		
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
@@ -66,7 +71,7 @@ public abstract class AbstractGameHandler {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public Session getPlayerSessionFromCookie(HttpExchange arg0) {
+	public Session getPlayerSessionFromCookie(HttpExchange arg0, IServer server) {
 		List<String> cookies = arg0.getRequestHeaders().get("Cookie");
 		if(cookies.size() != 1){
 			return null;
@@ -78,9 +83,21 @@ public abstract class AbstractGameHandler {
 		String cookieDecoded = URLDecoder.decode(cookieEncoded);
 		cookieDecoded = cookieDecoded.substring(11);
 		
+		int indexOfGameCookie = cookieDecoded.indexOf("};Catan.game={");
+		if (indexOfGameCookie != -1) {
+			String gameCookie = cookieDecoded.substring(indexOfGameCookie+14);
+			cookieDecoded = cookieDecoded.substring(0,indexOfGameCookie).concat(",").concat(gameCookie);
+		}
+		else {
+			indexOfGameCookie = cookieDecoded.indexOf("}; Catan.game={");
+			if (indexOfGameCookie != -1) {
+				String gameCookie = cookieDecoded.substring(indexOfGameCookie+15);
+				cookieDecoded = cookieDecoded.substring(0,indexOfGameCookie).concat(",").concat(gameCookie);
+			}
+		}
+		
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
-			IServer server = Server.getSingleton();
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
 			//UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
@@ -88,11 +105,12 @@ public abstract class AbstractGameHandler {
 			Session user = server.login(username, password);
 			
 //			if(!userID.equals(user.getPlayerUUID())){
-//				return null;
+//				return false;
 //			}
 			return user;
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			return null;
 		}
 	}

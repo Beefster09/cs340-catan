@@ -52,7 +52,7 @@ public class ListHandler extends AbstractGameHandler implements HttpHandler {
 		} catch (UserException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		} catch (ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
 
