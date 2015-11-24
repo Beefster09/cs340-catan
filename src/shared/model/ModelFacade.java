@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -760,6 +761,12 @@ public class ModelFacade {
 			
 			JSONObject object = (JSONObject) json.get("turnTracker");
 			try {
+				//LARGEST ARMY
+				updateLargestArmyFromJSON(json);
+				
+				//LONGEST ROAD
+				updateLongestRoadFromJSON(json);
+				
 				TurnTracker otherTurnTracker = new TurnTracker(players,object);
 				if (model.getTurnTracker() == null || 
 					!model.getTurnTracker().equals(otherTurnTracker)) {
@@ -774,12 +781,6 @@ public class ModelFacade {
 					}
 				}
 				
-				//LARGEST ARMY
-				updateLargestArmyFromJSON(object);
-				
-				//LONGEST ROAD
-				updateLongestRoadFromJSON(object);
-				
 			} catch (SchemaMismatchException e) {
 				e.printStackTrace();
 			}
@@ -787,12 +788,13 @@ public class ModelFacade {
 	}
 
 	private void updateLargestArmyFromJSON(JSONObject json) {
+		System.out.println(json.toJSONString());
 		if (json.containsKey("largestArmy")) {
-			int largestArmyPlayer = (int) (long) json.get("largestArmy");
-			PlayerReference otherPlayer = new PlayerReference(model, largestArmyPlayer);
-			if (model.getLargestArmy() == null || 
-				!model.getLargestArmy().equals(otherPlayer)) {
+			UUID largestArmyUUID = UUID.fromString((String) ((JSONObject) json.get("largestArmy")).get("playerUUID"));
+			PlayerReference otherPlayer = new PlayerReference(largestArmyUUID);
+			PlayerReference original = model.getLargestArmy();
 				model.setLongestRoad(otherPlayer);
+			if (original == null || original.equals(otherPlayer)) {
 				for (IModelListener listener : listeners) {
 					try {
 						listener.largestArmyChanged(otherPlayer);
@@ -803,15 +805,20 @@ public class ModelFacade {
 				}
 			}
 		}
+		else {
+			model.setLargestArmy(null);
+		}
 	}
 
 	private void updateLongestRoadFromJSON(JSONObject json) {
+		System.out.println(json.toJSONString());
 		if (json.containsKey("longestRoad")) {
-			int longestRoadPlayer = (int) (long) json.get("longestRoad");
-			PlayerReference otherPlayer = new PlayerReference(model, longestRoadPlayer);
-			if (model.getLongestRoad() == null ||
-				!model.getLongestRoad().equals(otherPlayer)) {
-				model.setLongestRoad(otherPlayer);
+			UUID longestRoadUUID = UUID.fromString((String) ((JSONObject) json.get("longestRoad")).get("playerUUID"));
+			PlayerReference otherPlayer = new PlayerReference(longestRoadUUID);
+			PlayerReference original = model.getLongestRoad();
+			model.setLongestRoad(otherPlayer);
+			System.out.println("* The longest road belongs to " + model.getLongestRoad().getName());
+			if (original == null || original.equals(otherPlayer)) {
 				for (IModelListener listener : listeners) {
 					try {
 						listener.longestRoadChanged(otherPlayer);
@@ -821,6 +828,9 @@ public class ModelFacade {
 					}
 				}
 			}
+		}
+		else {
+			model.setLongestRoad(null);
 		}
 	}
 

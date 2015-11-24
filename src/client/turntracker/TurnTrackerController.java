@@ -8,6 +8,7 @@ import javax.swing.SwingWorker;
 
 import shared.definitions.CatanColor;
 import shared.model.Player;
+import shared.model.PlayerReference;
 import shared.model.TurnTracker;
 import client.base.*;
 import client.misc.ClientManager;
@@ -37,14 +38,10 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 		new SwingWorker<String, Object> () {
 
 			@Override
-			protected String doInBackground() throws Exception {
-				int gameID = ClientManager.getModel().getGameHeader().getId();
-				
+			protected String doInBackground() throws Exception {				
 				UUID playerUUID = ClientManager.getLocalPlayer().getPlayerUUID();
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				return ClientManager.getServer().finishTurn(playerUUID, gameUUID);
-				
-//				return ClientManager.getServer().finishTurn(ClientManager.getLocalPlayer().getIndex(), gameID);
 			}
 
 			@Override
@@ -89,7 +86,7 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 			return;
 		}
 		else {
-			updatePlayerScoreView(ClientManager.getModel().getCurrentPlayer().getIndex());
+			updatePlayerScoreView(ClientManager.getModel().getCurrentPlayer());
 		}
 	}
 	
@@ -98,7 +95,7 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 		
 		Player player = turnTracker.getCurrentPlayer().getPlayer();
 
-		updatePlayerScoreView(turnTracker.getCurrentPlayer().getIndex());
+		updatePlayerScoreView(turnTracker.getCurrentPlayer());
 		
 		if (!player.equals(ClientManager.getLocalPlayer().getPlayer())) {
 			getView().updateGameState("It is currently " + player.getColor() + "'s turn", false);
@@ -125,44 +122,21 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 		}
 	}
 	
-	private void updatePlayerScoreView(int currentIndex) {
-//		if (ClientManager.getModel().getVersion() <= 0)
-//			return;
+	private void updatePlayerScoreView(PlayerReference currentPlayer) {
 
-		int armyIndex;
+		PlayerReference armyRef = ClientManager.getModel().getCatanModel().getLargestArmy();
+		PlayerReference roadRef = ClientManager.getModel().getCatanModel().getLongestRoad();
 		
-		if (ClientManager.getModel().getCatanModel() != null &&
-				ClientManager.getModel().getCatanModel().getTurnTracker() != null &&
-				ClientManager.getModel().getCatanModel().getLargestArmy() != null) {
+		System.out.println("Longest Road: " + roadRef);
 			
-			armyIndex = ClientManager.getModel().getCatanModel().getLargestArmy().getIndex();
-		}
-		else
-			armyIndex = -1;
-		
-		int roadIndex;
-		try {
-			roadIndex = ClientManager.getModel().getCatanModel()
-					.getLongestRoad().getIndex();
-		} catch(NullPointerException e) {
-			roadIndex = -1;
-		}
+		for (Player player : ClientManager.getModel().getCatanModel().getPlayers()) {		
+			boolean largestArmy = player.getReference().equals(armyRef);
+			boolean longestRoad = player.getReference().equals(roadRef);
+			boolean isTurn = player.getReference().equals(currentPlayer);
 			
-		int i = 0;
-		for (Player player : ClientManager.getModel().getCatanModel().getPlayers()) {
-			
-			boolean largestArmy = false;
-			boolean longestRoad = false;
-			boolean isTurn = false;
-			if (armyIndex == i)
-				largestArmy = true;
-			if (roadIndex == i)
-				longestRoad = true;
-			if (currentIndex == i)
-				isTurn = true;
+			System.out.println(player.getName() + (longestRoad? " has ": " does not have ") + "the longest road");
 
-			getView().updatePlayer(i, player.getVictoryPoints(), isTurn, largestArmy, longestRoad);
-			i++;
+			getView().updatePlayer(player.getPlayerIndex(), player.getVictoryPoints(), isTurn, largestArmy, longestRoad);
 		}
 	}
 
