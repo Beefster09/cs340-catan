@@ -26,20 +26,15 @@ public class ResourceTradeList {
 		offered = new HashMap<>();
 		wanted = new HashMap<>();
 		try {
+			JSONObject JSONOffered = (JSONObject) json.get("offered");
+			JSONObject JSONWanted = (JSONObject) json.get("wanted");
 			for (ResourceType type : ResourceType.values()) {
-				String key = type.toString().toLowerCase();
-				if (json.containsKey(key)) {
-					int count = (int) (long) json.get(key);
-					if (count > 0) {
-						offered.put(type, count);
-					}
-					if (count < 0) {
-						wanted.put(type, -count);
-					}
+				String resource = type.toString();
+				if (JSONOffered.containsKey(resource)) {
+					offered.put(type, (int) (long) JSONOffered.get(resource));
 				}
-				else {
-					throw new SchemaMismatchException("A resource count is missing from the " +
-							"given JSONObject:\n" + json.toJSONString());
+				if (JSONWanted.containsKey(resource)) {
+					wanted.put(type, (int) (long) JSONWanted.get(resource));
 				}
 			}
 		} catch (ClassCastException | IllegalArgumentException e) {

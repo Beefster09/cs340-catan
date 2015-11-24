@@ -491,7 +491,7 @@ public class ServerProxy implements IServer {
 		o.put("requestType", "POST");
 		o.put("type", "offerTrade");
 		o.put("playerIndex", user.toString());
-		o.put("offer", gson.toJson(offer.toJSONObject()));
+		o.put("offer", gson.toJson(offer));
 		o.put("receiver", receiver.toString());
 		
 		return communicator.send(o);

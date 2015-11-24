@@ -37,6 +37,7 @@ import shared.model.Player;
 import shared.model.PlayerReference;
 import shared.model.ResourceList;
 import shared.model.ResourceTradeList;
+import shared.model.TradeOffer;
 import shared.model.TurnTracker;
 
 public class Server implements IServer {
@@ -329,9 +330,7 @@ public class Server implements IServer {
 			throws ServerException, UserException {
 		try {
 			PlayerReference victimReference = null;
-			if (victim != null) {
-				victimReference = new PlayerReference(victim);
-			}
+			victimReference = new PlayerReference(victim);
 			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, victimReference);
 			ModelFacade tempModel;
 			try {
@@ -608,7 +607,8 @@ public class Server implements IServer {
 	public String offerTrade(UUID user, UUID gameID, ResourceTradeList offer, UUID receiver)
 			throws ServerException, UserException {
 		try {
-			ICatanCommand command = new CatanCommand("buildCity", offer);
+			TradeOffer tradeOffer = new TradeOffer(new PlayerReference(user), new PlayerReference(receiver), offer);
+			ICatanCommand command = new CatanCommand("offerTrade", tradeOffer);
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
