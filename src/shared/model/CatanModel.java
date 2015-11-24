@@ -79,7 +79,7 @@ public class CatanModel {
 	}
 	
 	public int getShortID() {
-		return id.hashCode();
+		return Math.abs(id.hashCode()) % 1000;
 	}
 
 	/**

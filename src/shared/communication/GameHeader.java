@@ -63,7 +63,7 @@ public class GameHeader {
 	 * @return the id
 	 */
 	public int getId() {
-		return uuid.hashCode();
+		return Math.abs(uuid.hashCode()) % 1000;
 	}
 	
 	public UUID getUUID() {
