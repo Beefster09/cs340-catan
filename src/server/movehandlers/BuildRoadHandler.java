@@ -51,7 +51,7 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject jsonObject = (JSONObject)parser.parse((String)json.get("roadLocation"));
 			EdgeLocation location = new EdgeLocation(jsonObject);
 			
-			boolean free = (boolean)json.get("free");
+			//boolean free = (boolean)json.get("free");
 			
 			UUID index = UUID.fromString((String)json.get("playerIndex"));
 			String gson = server.buildRoad(index, gameUUID, location);
