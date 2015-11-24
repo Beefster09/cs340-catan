@@ -734,7 +734,7 @@ public class CatanModel {
 		int numDiscarded = 0;
 		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
 			hand.transfer(bankRes, card.getKey(), card.getValue());
-			++numDiscarded;
+			numDiscarded += card.getValue();
 		}
 		
 		player.getPlayer().setHasDiscarded(true);

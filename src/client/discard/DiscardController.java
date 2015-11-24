@@ -64,13 +64,14 @@ public class DiscardController extends Controller implements IDiscardController 
 			List<Player> players = modelFacade.getCatanModel().getPlayers();
 			Player localPlayer = null;
 			
-			for(Player p : players) 
+			for(Player p : players) {
 				if(p.getUUID().equals(playerID))
 					localPlayer = p;
+			}
 			
 			ResourceList hand = localPlayer.getResources();
 			
-			if(hand.count() > 7) {
+			if(hand.count() > 7 && !localPlayer.hasDiscarded()) {
 				
 				if(!getDiscardView().isModalShowing()) {
 					getDiscardView().showModal();
@@ -78,7 +79,7 @@ public class DiscardController extends Controller implements IDiscardController 
 				}
 				
 			}
-			if(hand.count() <= 7) {
+			else {
 				if(!getWaitView().isModalShowing())
 					getWaitView().showModal();
 			}
