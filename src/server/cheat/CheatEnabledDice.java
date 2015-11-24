@@ -44,4 +44,10 @@ public class CheatEnabledDice implements IDice {
 		}
 	}
 
+	@Override
+	public int roll(int num) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
