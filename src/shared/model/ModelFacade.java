@@ -149,6 +149,7 @@ public class ModelFacade {
 	public synchronized void discard(PlayerReference player,
 			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
 		if (!canDiscard(player, toDiscard)) {
+			canDiscard(player, toDiscard);
 			throw new InsufficientResourcesException();
 		}
 		model.discard(player, toDiscard);		
@@ -157,7 +158,7 @@ public class ModelFacade {
 	// This is needed for reflection to work
 	public synchronized void discard(PlayerReference player,
 			HashMap<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
-		discard(player, toDiscard);
+		discard(player, (Map<ResourceType, Integer>) toDiscard);
 	}
 	/**
 	 * 

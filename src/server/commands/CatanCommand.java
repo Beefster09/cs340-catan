@@ -126,7 +126,7 @@ public class CatanCommand implements ICatanCommand {
 			model.getCatanModel().toString();
 			method.invoke(model, arguments);
 		} catch (InvocationTargetException e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			throw new InvalidActionException(e.getCause().getMessage());
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
