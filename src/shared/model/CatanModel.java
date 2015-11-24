@@ -456,17 +456,11 @@ public class CatanModel {
 		// Give resources to the appropriate players
 		ResourceList resBank = bank.getResources();
 		for (Hex hex : map.getHexesByNumber(roll)) {
-			for (Municipality town : map.getMunicipalitiesAround(hex.getLocation())) {
-				//ResourceList before = town.getOwner().getPlayer().getResources();
-				resBank.transferAtMost(town.getOwner().getPlayer().getResources(),
-						hex.getResource(), town.getIncome());
-//				ResourceList after = town.getOwner().getPlayer().getResources();
-//				try {
-//					players.get(town.getOwner().getIndex()).setResources(after);
-//				} catch (InsufficientResourcesException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+			if (!map.getRobberLocation().equals(hex.getLocation())) { // Check for the robber
+				for (Municipality town : map.getMunicipalitiesAround(hex.getLocation())) {
+					resBank.transferAtMost(town.getOwner().getPlayer().getResources(),
+							hex.getResource(), town.getIncome());
+				}
 				// Note that you may not get your full amount, which is expected behavior
 				// Who gets resources first is currently undefined.
 			}
