@@ -22,8 +22,6 @@ public class MapController extends Controller implements IMapController {
 
 	private MapControllerState state;
 
-	private boolean boardBuilt = false;
-
 	public MapController(IMapView view, IRobView robView) {
 		// The superclass now registers this as a listener to the client's
 		// instance of the model.
@@ -42,7 +40,6 @@ public class MapController extends Controller implements IMapController {
 
 	@Override
 	public void winnerChanged(PlayerReference winner) {
-		boardBuilt = false;
 		getView().resetBoard();
 	}
 
@@ -50,9 +47,9 @@ public class MapController extends Controller implements IMapController {
 	public void mapChanged(Board newMap) {
 
 		System.out.println("MapController: updating map");
-
-		if (!boardBuilt)
-			buildBoard(newMap);
+		
+		getView().resetBoard();
+		buildBoard(newMap);
 
 		// Assume (for now) that only pieces will change
 		// MUAHAHAHA I WILL DESTROY THIS ASSUMPTION!!!!
@@ -64,6 +61,7 @@ public class MapController extends Controller implements IMapController {
 
 		System.out.println("MapController: initializing map from server data");
 
+		getView().resetBoard();
 		this.initFromModel();
 	}
 
@@ -167,8 +165,6 @@ public class MapController extends Controller implements IMapController {
 			view.addPort(port.getLocation(),
 					PortType.fromResourceType(port.getResource()));
 		}
-
-		boardBuilt = true;
 	}
 
 	private void placePieces(Board board) {

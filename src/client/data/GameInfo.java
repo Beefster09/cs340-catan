@@ -40,7 +40,7 @@ public class GameInfo
 
 	public int getId()
 	{
-		return uuid.hashCode();
+		return Math.abs(uuid.hashCode()) % 100;
 	}
 	
 	public UUID getUUID() {
