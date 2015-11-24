@@ -939,8 +939,11 @@ public class ModelFacade {
 		
 		Player newPlayer = new Player(model.getPlayers().size(), name, color);
 		model.addPlayer(newPlayer);
+		
 	}
 
+	
+	
 	@Override
 	public String toString(){
 		Gson gson = new Gson();
