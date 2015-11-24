@@ -29,7 +29,11 @@ public abstract class AbstractMoveHandler {
 		cookieDecoded = cookieDecoded.substring(11);
 		int locationOfSemicolon = cookieDecoded.indexOf(';');
 		String userCookie = cookieDecoded.substring(0,locationOfSemicolon);
-		String gameCookie = cookieDecoded.substring(locationOfSemicolon + 12);;
+		String gameCookie = cookieDecoded.substring(locationOfSemicolon + 12);
+		while (gameCookie.length() > 0 &&
+				gameCookie.charAt(0) != '{') {
+			gameCookie = gameCookie.substring(1);
+		}
 				
 		try{
 			JSONObject cookie = (JSONObject) parser.parse(userCookie);
@@ -40,7 +44,7 @@ public abstract class AbstractMoveHandler {
 			
 			Session user = server.login(username, password);
 			
-			if(!userID.equals(user.getPlayerUUID())){
+			if(user == null){
 				return null;
 			}
 			return UUID.fromString((String)game.get("gameUUID"));

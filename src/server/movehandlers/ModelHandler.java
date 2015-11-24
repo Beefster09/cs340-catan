@@ -50,8 +50,9 @@ public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 				arg0.getResponseBody().close();
 			}
 			
-		} catch (ServerException | UserException e) {
+		} catch (Exception e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
+			e.printStackTrace();
 		}
 	}
 

@@ -63,9 +63,9 @@ public class BuildRoadHandler extends AbstractMoveHandler implements HttpHandler
 				output.flush();
 				arg0.getResponseBody().close();
 			}
-		} catch (ParseException | ServerException | UserException | SchemaMismatchException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			arg0.getResponseBody().close();
+		} catch (Exception e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
+			e.printStackTrace();
 		}
 	}
 }

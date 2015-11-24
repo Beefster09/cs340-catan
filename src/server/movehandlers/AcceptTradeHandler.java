@@ -58,8 +58,9 @@ public class AcceptTradeHandler extends AbstractMoveHandler implements HttpHandl
 				output.flush();
 				arg0.getResponseBody().close();
 			}
-		} catch (ParseException | ServerException | UserException e) {
+		}  catch (Exception e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
+			e.printStackTrace();
 		}
 	}
 

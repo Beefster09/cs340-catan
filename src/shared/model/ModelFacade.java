@@ -2,6 +2,7 @@ package shared.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class ModelFacade {
 				!player.getPlayer().hasRolled();
 	}
 	
-	public synchronized void rollDice(PlayerReference player, int num) throws InvalidActionException {
+	public synchronized void rollDice(PlayerReference player, Integer num) throws InvalidActionException {
 		if (!canRoll(player)) {
 			throw new InvalidActionException();
 		}
@@ -151,6 +152,12 @@ public class ModelFacade {
 			throw new InsufficientResourcesException();
 		}
 		model.discard(player, toDiscard);		
+	}
+	
+	// This is needed for reflection to work
+	public synchronized void discard(PlayerReference player,
+			HashMap<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		discard(player, toDiscard);
 	}
 	/**
 	 * 
@@ -913,7 +920,7 @@ public class ModelFacade {
 		}
 	}
 	
-	public synchronized void addPlayer(Session player, CatanColor color) throws GameInitializationException {
+	public synchronized Player addPlayer(Session player, CatanColor color) throws GameInitializationException {
 		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
 			throw new GameInitializationException();
 		}
@@ -921,6 +928,7 @@ public class ModelFacade {
 		Player newPlayer = new Player(player, color, model.getPlayers().size());
 		//Player newPlayer = new Player(model.getPlayers().size(), player, color);
 		model.addPlayer(newPlayer);
+		return newPlayer;
 	}
 
 	public synchronized void addPlayer(String name, CatanColor color) throws GameInitializationException {

@@ -110,6 +110,20 @@ public class PlayerInfo
 		
 		return this.uuid.equals(other.uuid);
 	}
+	
+	public boolean otherEquals(Object obj) {
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final PlayerInfo other = (PlayerInfo) obj;
+		
+		return this.name.equals(other.name);
+	}
 
 	public UUID getUUID() {
 		return uuid;

@@ -16,6 +16,7 @@ import com.sun.net.httpserver.HttpHandler;
 import server.communication.Server;
 import server.interpreter.ExchangeConverter;
 import shared.communication.IServer;
+import shared.exceptions.InvalidActionException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 
@@ -58,14 +59,8 @@ public class RollNumberHandler extends AbstractMoveHandler implements HttpHandle
 				output.flush();
 				arg0.getResponseBody().close();
 			}
-		} catch (ParseException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (ServerException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
-			e.printStackTrace();
-		} catch (UserException e) {
-			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
+		} catch (Exception e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			e.printStackTrace();
 		}
 	}

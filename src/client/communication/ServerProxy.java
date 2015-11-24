@@ -50,15 +50,7 @@ public class ServerProxy implements IServer {
 	}
 	
 	public static void main(String[] args) throws JoinGameException, ServerException, UserException, GameInitializationException {
-		ServerProxy test = new ServerProxy("localhost",8081);
-		Session player = test.login("Sam", "sam");
-		GameHeader header = test.createGame("test", false, false, false);
-		UUID gameID = header.getUUID();
-		if (test.joinGame(player, header.getUUID(), CatanColor.BLUE)) {
-			test.getModel(gameID, -1);
-			test.buildStartingPieces(player.getPlayerUUID(), header.getUUID(), new VertexLocation(0,0,VertexDirection.East),
-										new EdgeLocation(new HexLocation(0,0),EdgeDirection.North));
-		}
+		
 	}
 
 	private ClientCommunicator communicator = new ClientCommunicator();
@@ -84,8 +76,8 @@ public class ServerProxy implements IServer {
 		JSONObject returned = communicator.login(o);
 		String returnedName = (String) returned.get("name");
 		String returnedPassword = (String) returned.get("password");
-		UUID playerUUID = UUID.fromString((String)returned.get("playerUUID"));
-		return new Session(returnedName, returnedPassword, playerUUID);
+		//UUID playerUUID = UUID.fromString((String)returned.get("playerUUID"));
+		return new Session(returnedName, returnedPassword, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -162,21 +154,27 @@ public class ServerProxy implements IServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean joinGame(Session player, UUID gameID, CatanColor color)
+	public Session joinGame(Session player, UUID gameID, CatanColor color)
 			throws JoinGameException, ServerException {
 		JSONObject o = new JSONObject();
 		o.put("url","http://" + host + ":" + Integer.toString(port) + "/games/join");
 		o.put("requestType", "POST");
 		o.put("id", gameID.toString());
-		o.put("playerUUID", player.getPlayerUUID().toString());
+		//o.put("playerUUID", player.getPlayerUUID().toString());
 		o.put("color", (color.toString()).toLowerCase());
 		
-		JSONObject returned = communicator.joinGame(o);
-		
-		if(returned.get("success").equals("Success")){
-			return true;
+		JSONObject returned;
+		try {
+			returned = communicator.joinGame(o);
+			if(returned.get("success").equals("Success")){
+				return communicator.getPlayerSession();
+			}
+		} catch (UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return false;
+		
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -577,6 +575,10 @@ public class ServerProxy implements IServer {
 		o.put("playerIndex", user.toString());
 		
 		return communicator.send(o);
+	}
+	
+	public Session getPlayerSession() {
+		return communicator.getPlayerSession();
 	}
 
 }

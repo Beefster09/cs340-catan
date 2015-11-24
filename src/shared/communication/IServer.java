@@ -54,7 +54,7 @@ public interface IServer {
 	 * @post player joins the game
 	 * @author-Grant
 	 */
-	public boolean joinGame(Session player, UUID gameID, CatanColor color)
+	public Session joinGame(Session player, UUID gameID, CatanColor color)
 			throws JoinGameException, ServerException;
 	/**
 	 * @pre game filename must not be empty string
@@ -257,5 +257,6 @@ public interface IServer {
 	 */
 	public void changeLogLevel(LogLevel level)
 			throws ServerException, UserException;
+	public Session getPlayerSession();
 	
 }

@@ -75,6 +75,9 @@ public class TurnTracker {
 					player.setHasDiscarded(false);
 					break;
 				}
+				else {
+					player.setHasDiscarded(true);
+				}
 			}
 			if (discardNeeded) {
 				setStatus(TurnStatus.Discarding);
