@@ -485,7 +485,7 @@ public class CatanModel {
 		assert !player.equals(victim);
 		assert turnTracker.getStatus() == TurnStatus.Robbing;
 		
-		if (victim != null) {
+		if (victim.getPlayerUUID() != null) {
 			boolean valid = false;
 			for (Municipality town : map.getMunicipalitiesAround(loc)) {
 				if (town.getOwner().equals(victim)) {

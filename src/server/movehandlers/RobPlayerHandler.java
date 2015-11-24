@@ -54,7 +54,10 @@ public class RobPlayerHandler extends AbstractMoveHandler implements HttpHandler
 			JSONObject location = (JSONObject)parser.parse((String)json.get("location"));
 			
 			HexLocation hex = new HexLocation(location);
-			UUID victim = UUID.fromString((String)json.get("victimIndex"));
+			UUID victim = null;
+			if (json.containsKey("victimIndex")) {
+				victim = UUID.fromString((String)json.get("victimIndex"));
+			}
 			
 			String gson = server.robPlayer(index, gameUUID, hex, victim);
 			
