@@ -209,10 +209,14 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 		modelFacade.setGameInfo(game);
 		
 		for (PlayerInfo player : game.getPlayers()) {
-			if (!player.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
+//			if (!player.getUUID().equals(ClientManager.getSession().getPlayerUUID())) {
+//				getSelectColorView().setColorEnabled(player.getColor(), false);
+//			}
+			if (!player.getName().equals(ClientManager.getSession().getUsername())) {
 				getSelectColorView().setColorEnabled(player.getColor(), false);
 			}
 			else{
+				
 				joinGame(player.getColor());
 				return;
 			}
@@ -236,7 +240,9 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	public void joinGame(CatanColor color) {
 		try{
 			Session user = ClientManager.getSession();
-			if (serverProxy.joinGame(user, modelFacade.getGameInfo().getUUID(), color)) {
+			Session afterJoin = serverProxy.joinGame(user, modelFacade.getGameInfo().getUUID(), color);
+			if (afterJoin != null) {
+				ClientManager.setSession(afterJoin);
 				if (getJoinGameView().isModalShowing()) getJoinGameView().closeModal();
 				if (getSelectColorView().isModalShowing()) {
 					getSelectColorView().closeModal();

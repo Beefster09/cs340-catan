@@ -53,10 +53,12 @@ public class SendChatHandler extends AbstractMoveHandler implements HttpHandler 
 			//String gson = new Server().sendChat(index, gameUUID, message);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-			output.write(gson.toString());
-			output.flush();
-			arg0.getResponseBody().close();
+			if (gson != null) {
+				OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
+				output.write(gson);
+				output.flush();
+				arg0.getResponseBody().close();
+			}
 		} catch (ParseException e) {
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, 500);
 			e.printStackTrace();

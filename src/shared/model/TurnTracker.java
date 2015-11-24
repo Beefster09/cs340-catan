@@ -73,7 +73,9 @@ public class TurnTracker {
 				if (player.getResources().count() >= 8) {
 					discardNeeded = true;
 					player.setHasDiscarded(false);
-					break;
+				}
+				else {
+					player.setHasDiscarded(true);
 				}
 			}
 			if (discardNeeded) {

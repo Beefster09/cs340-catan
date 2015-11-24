@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -32,6 +33,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 //	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(HttpExchange arg0) throws IOException {
 		arg0.getResponseHeaders().set("Content-type:", "application/text");
@@ -47,20 +49,32 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
 			
 			Session player = this.getPlayerSessionFromCookie(arg0);
-			boolean success = server.joinGame(player, gameUUID, color);
+			Session returnedPlayer = server.joinGame(player, gameUUID, color);
+			
 			String outputMsg = "";
-			if (success)
+			if (returnedPlayer != null)
 				outputMsg = "Success";
 			else
 				outputMsg = "Failed";
 			
 			JSONObject header = new JSONObject();
-			header.put("gameUUID", gameUUID.toString());
+			header.put("name", returnedPlayer.getUsername());
+			header.put("password", returnedPlayer.getPassword());
+			header.put("playerUUID", returnedPlayer.getPlayerUUID().toString());
 			StringBuilder str = new StringBuilder();
-			str.append("Catan.game=");
+			str.append("catan.user=");
 			str.append(URLEncoder.encode(header.toJSONString()));
 			str.append(";Path=/;");
 			String cookie = str.toString();
+			
+			JSONObject header2 = new JSONObject();
+			header2.put("gameUUID", gameUUID.toString());
+			str = new StringBuilder();
+			str.append("Catan.game=");
+			str.append(URLEncoder.encode(header2.toJSONString()));
+			str.append(";Path=/;");
+			cookie += str.toString();
+			
 			arg0.getResponseHeaders().add("Set-cookie", cookie);
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 			OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());

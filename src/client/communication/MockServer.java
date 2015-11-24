@@ -83,10 +83,10 @@ public class MockServer implements IServer {
 	}
 
 	@Override
-	public boolean joinGame(Session player, UUID gameID, CatanColor color)
+	public Session joinGame(Session player, UUID gameID, CatanColor color)
 			throws JoinGameException, ServerException {
 		
-		return true;
+		return null;
 	}
 
 	@Override
@@ -361,6 +361,12 @@ public class MockServer implements IServer {
 	public String buildStartingPieces(UUID user, UUID gameID,
 			VertexLocation settlementLoc, EdgeLocation roadLoc)
 			throws ServerException, UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Session getPlayerSession() {
 		// TODO Auto-generated method stub
 		return null;
 	}

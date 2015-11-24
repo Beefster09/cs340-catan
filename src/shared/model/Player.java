@@ -80,31 +80,25 @@ public class Player {
 	public Player(int index) {
 		playerIndex = index;
 		
-		setUUID(uuid);
+		setUUID(UUID.randomUUID());
 		resources = new ResourceList(0);
 		newDevCards = new DevCardList();
 		oldDevCards = new DevCardList();
 	}
 	
 	public Player(Session player, CatanColor color, int index) {
+		this(index);
 		if (playerTable.containsKey(player.getPlayerUUID())) {
 			this.playerIndex = playerTable.get(player.getPlayerUUID()).getPlayerIndex();
 		} else
 			playerIndex = index;
-		setUUID(player.getPlayerUUID());
 		name = player.getUsername();
 		this.color = color;
-		resources = new ResourceList(0);
-		newDevCards = new DevCardList();
-		oldDevCards = new DevCardList();
 
 	}	
 	
 	public Player(int index, Session player, CatanColor color) {
-		this(index);
-		setUUID(player.getPlayerUUID());
-		name = player.getUsername();
-		this.color = color;
+		this(player, color, index);
 	}
 
 	public Player(JSONObject json) throws SchemaMismatchException {

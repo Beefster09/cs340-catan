@@ -48,13 +48,13 @@ public abstract class AbstractGameHandler {
 			JSONObject cookie = (JSONObject) parser.parse(cookieDecoded);
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
-			UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
+			//UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
 			
 			Session user = server.login(username, password);
 			
-			if(!userID.equals(user.getPlayerUUID())){
-				return false;
-			}
+//			if(!userID.equals(user.getPlayerUUID())){
+//				return false;
+//			}
 			return true;
 		}
 		catch(Exception e){
@@ -83,13 +83,13 @@ public abstract class AbstractGameHandler {
 			IServer server = Server.getSingleton();
 			String username = (String) cookie.get("name");
 			String password = (String) cookie.get("password");
-			UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
+			//UUID userID = UUID.fromString((String) cookie.get("playerUUID"));
 			
 			Session user = server.login(username, password);
 			
-			if(!userID.equals(user.getPlayerUUID())){
-				return null;
-			}
+//			if(!userID.equals(user.getPlayerUUID())){
+//				return null;
+//			}
 			return user;
 		}
 		catch(Exception e){

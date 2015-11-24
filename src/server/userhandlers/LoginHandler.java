@@ -50,7 +50,7 @@ public class LoginHandler implements HttpHandler {
 			JSONObject header = new JSONObject();
 			header.put("name", user.getUsername());
 			header.put("password", user.getPassword());
-			header.put("playerUUID", user.getPlayerUUID().toString());
+			//header.put("playerUUID", user.getPlayerUUID().toString());
 			StringBuilder str = new StringBuilder();
 			str.append("catan.user=");
 			str.append(URLEncoder.encode(header.toJSONString()));
@@ -66,6 +66,7 @@ public class LoginHandler implements HttpHandler {
 		}
 		catch(ParseException | UserException | ServerException e){
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
+			e.printStackTrace();
 		}
 	}
 

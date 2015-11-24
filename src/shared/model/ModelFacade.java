@@ -2,6 +2,7 @@ package shared.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +82,14 @@ public class ModelFacade {
 				getCurrentPlayer().equals(player) &&
 				!player.getPlayer().hasRolled();
 	}
+	
+	public synchronized void rollDice(PlayerReference player, Integer num) throws InvalidActionException {
+		if (!canRoll(player)) {
+			throw new InvalidActionException();
+		}
+		
+		model.roll(dice.roll(num));
+	}
 
 	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
 		if (!canRoll(player)) {
@@ -90,13 +99,6 @@ public class ModelFacade {
 		model.roll(dice.roll());
 	}
 	
-	public synchronized void rollDice(PlayerReference player, int num) throws InvalidActionException {
-		if (!canRoll(player)) {
-			throw new InvalidActionException();
-		}
-		
-		model.roll(dice.roll(num));
-	}
 
 	/**
 	 * @param hexLoc The location on the map where the robber is to be placed
@@ -147,9 +149,16 @@ public class ModelFacade {
 	public synchronized void discard(PlayerReference player,
 			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
 		if (!canDiscard(player, toDiscard)) {
+			canDiscard(player, toDiscard);
 			throw new InsufficientResourcesException();
 		}
 		model.discard(player, toDiscard);		
+	}
+	
+	// This is needed for reflection to work
+	public synchronized void discard(PlayerReference player,
+			HashMap<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
+		discard(player, (Map<ResourceType, Integer>) toDiscard);
 	}
 	/**
 	 * 
@@ -912,7 +921,7 @@ public class ModelFacade {
 		}
 	}
 	
-	public synchronized void addPlayer(Session player, CatanColor color) throws GameInitializationException {
+	public synchronized Player addPlayer(Session player, CatanColor color) throws GameInitializationException {
 		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
 			throw new GameInitializationException();
 		}
@@ -920,6 +929,7 @@ public class ModelFacade {
 		Player newPlayer = new Player(player, color, model.getPlayers().size());
 		//Player newPlayer = new Player(model.getPlayers().size(), player, color);
 		model.addPlayer(newPlayer);
+		return newPlayer;
 	}
 
 	public synchronized void addPlayer(String name, CatanColor color) throws GameInitializationException {

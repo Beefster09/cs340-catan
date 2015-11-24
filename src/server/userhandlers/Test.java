@@ -39,7 +39,7 @@ public class Test {
 		Session user;
 		GameHeader game;
 		List<GameHeader> games;
-		boolean returned;
+		Session returned;
 		String model;
 		ServerProxy server = new ServerProxy("localhost", 8081);
 		HexLocation hLocation = new HexLocation(0, 0);
@@ -76,7 +76,7 @@ public class Test {
 		System.out.println("Size: " + games.size() + "\n");
 		//joinGame
 		returned = server.joinGame(user, gameUUID, CatanColor.RED);
-		System.out.println(returned + "\n");
+		//System.out.println(returned + "\n");
 		
 		//moves
 		//AcceptTrade

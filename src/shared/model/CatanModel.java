@@ -457,8 +457,16 @@ public class CatanModel {
 		ResourceList resBank = bank.getResources();
 		for (Hex hex : map.getHexesByNumber(roll)) {
 			for (Municipality town : map.getMunicipalitiesAround(hex.getLocation())) {
+				//ResourceList before = town.getOwner().getPlayer().getResources();
 				resBank.transferAtMost(town.getOwner().getPlayer().getResources(),
 						hex.getResource(), town.getIncome());
+//				ResourceList after = town.getOwner().getPlayer().getResources();
+//				try {
+//					players.get(town.getOwner().getIndex()).setResources(after);
+//				} catch (InsufficientResourcesException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				// Note that you may not get your full amount, which is expected behavior
 				// Who gets resources first is currently undefined.
 			}
@@ -726,7 +734,7 @@ public class CatanModel {
 		int numDiscarded = 0;
 		for (Map.Entry<ResourceType, Integer> card : toDiscard.entrySet()) {
 			hand.transfer(bankRes, card.getKey(), card.getValue());
-			++numDiscarded;
+			numDiscarded += card.getValue();
 		}
 		
 		player.getPlayer().setHasDiscarded(true);

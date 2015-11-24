@@ -14,6 +14,7 @@ import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
 import server.logging.LogLevel;
+import server.model.User;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
@@ -24,6 +25,7 @@ import shared.exceptions.GameInitializationException;
 import shared.exceptions.GamePersistenceException;
 import shared.exceptions.InvalidActionException;
 import shared.exceptions.JoinGameException;
+import shared.exceptions.NameAlreadyInUseException;
 import shared.exceptions.ServerException;
 import shared.exceptions.UserException;
 import shared.locations.EdgeLocation;
@@ -54,50 +56,62 @@ public class Server implements IServer {
 	}
 	
 	Map<UUID,ModelFacade> games = new HashMap<UUID,ModelFacade>();
-	Map<String,UUID> users = new HashMap<String,UUID>();
+	//Map<String,UUID> users = new HashMap<String,UUID>();
 	
 	private Server(){
-		users.put("Sam", UUID.randomUUID());
-		users.put("Brooke", UUID.randomUUID());
-		users.put("Pete", UUID.randomUUID());
-		users.put("Mark", UUID.randomUUID());
-
+//		users.put("Sam", UUID.randomUUID());
+//		users.put("Brooke", UUID.randomUUID());
+//		users.put("Pete", UUID.randomUUID());
+//		users.put("Mark", UUID.randomUUID());
+		try {
+			User.register("Sam", "sam");
+			User.register("Brooke", "brooke");
+			User.register("Pete", "pete");
+			User.register("Mark", "mark");
+		} catch (NameAlreadyInUseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		try {
 			ModelFacade model = new ModelFacade();
 			UUID gameUUID = model.getGameHeader().getUUID();
 			games.put(gameUUID, model);
-			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-			games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
+			model.addPlayer("Sam", CatanColor.RED);
+			model.addPlayer("Brooke", CatanColor.ORANGE);
+			model.addPlayer("Pete", CatanColor.YELLOW);
+			model.addPlayer("Mark", CatanColor.GREEN);
+//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+//			games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
 	
-			model = new ModelFacade();
-			gameUUID = model.getGameHeader().getUUID();
-			games.put(gameUUID, model);
-			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-	
-			model = new ModelFacade();
-			gameUUID = model.getGameHeader().getUUID();
-			games.put(gameUUID, model);
-			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-	
-			model = new ModelFacade();
-			gameUUID = model.getGameHeader().getUUID();
-			games.put(gameUUID, model);
-			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-	
-			model = new ModelFacade();
-			gameUUID = model.getGameHeader().getUUID();
-			games.put(gameUUID, model);
-			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+//			model = new ModelFacade();
+//			gameUUID = model.getGameHeader().getUUID();
+//			games.put(gameUUID, model);
+//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+//	
+//			model = new ModelFacade();
+//			gameUUID = model.getGameHeader().getUUID();
+//			games.put(gameUUID, model);
+//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+//	
+//			model = new ModelFacade();
+//			gameUUID = model.getGameHeader().getUUID();
+//			games.put(gameUUID, model);
+//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+//	
+//			model = new ModelFacade();
+//			gameUUID = model.getGameHeader().getUUID();
+//			games.put(gameUUID, model);
+//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
+//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
+//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
 		} catch (GameInitializationException e) {
 			e.printStackTrace();
 		}
@@ -106,23 +120,28 @@ public class Server implements IServer {
 
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
-		//VERY TEMPORARY, NEED VALIDATION HERE
-		if (users.containsKey(username))
-			return new Session(username, password, users.get(username));
-		throw new UserException();
+//		if (users.containsKey(username))
+//			return new Session(username, password, users.get(username));
+//		throw new UserException();
+		User user = User.login(username, password);
+		Session newSession = new Session(user.getUsername(), user.getPassword(), null);
+		return newSession;
 	}
 
 	@Override
 	public Session register(String username, String password) throws UserException, ServerException {
-		if (users.containsKey(username)) {
-			throw new UserException();
-		}
-		else {
-			UUID uuid = UUID.randomUUID();
-			Session session = new Session(username,password,uuid);
-			users.put(username, uuid);
-			return session;
-		}
+//		if (users.containsKey(username)) {
+//			throw new UserException();
+//		}
+//		else {
+//			UUID uuid = UUID.randomUUID();
+//			Session session = new Session(username,password,uuid);
+//			users.put(username, uuid);
+//			return session;
+//		}
+		User user = User.register(username, password);
+		Session newSession = new Session(user.getUsername(), user.getPassword(), null);
+		return newSession;
 	}
 
 	@Override
@@ -148,24 +167,29 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public boolean joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
-		CatanModel game = games.get(gameID).getCatanModel();
-		List<Player> players = game.getPlayers();
-		//Put in the next player with an index one above the last.
-		Player newPlayer = new Player(player, color, players.size());
+	public Session joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
+		ModelFacade game = games.get(gameID);
+		List<Player> players = game.getCatanModel().getPlayers();
 		for (Player currentPlayer : players) {
-			if (currentPlayer.getUUID().equals(newPlayer.getUUID()))
-				return true;
+			if (currentPlayer.getName().equals(player.getUsername())) {
+				return new Session(player.getUsername(),player.getPassword(),currentPlayer.getUUID());
+			}
 		}
 //		Player newPlayer = new Player(0, player, color);
 //		if(game.getPlayers().contains(newPlayer)){
 //			return true;
 //		}
-		game.getPlayers().add(newPlayer);
-		if (game.getPlayers().size() == NUMPLAYERS) {
-			this.beginGame(game);
+		Player addedPlayer;
+		try {
+			addedPlayer = game.addPlayer(player, color);
+		} catch (GameInitializationException e) {
+			e.printStackTrace();
+			return null;
 		}
-		return true;
+		if (game.getCatanModel().getPlayers().size() == NUMPLAYERS) {
+			this.beginGame(game.getCatanModel());
+		}
+		return new Session(player.getUsername(),player.getPassword(),addedPlayer.getUUID());
 	}
 	
 	private void beginGame(CatanModel game) throws ServerException {
@@ -261,10 +285,15 @@ public class Server implements IServer {
 	}
 
 	@Override
-	public String rollDice(UUID user, UUID gameID, int number) throws ServerException, UserException {
-
+	public String rollDice(UUID user, UUID gameID, int num) throws ServerException, UserException {
+		/*
+		 * So, for some reason reflection CANNOT find this method.
+		 * I am removing the command for this function for the moment,
+		 * until someone can come back and fix this.
+		 * 
+		*/
 		try {
-			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), number);
+			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), num);
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
@@ -283,6 +312,15 @@ public class Server implements IServer {
 			e.printStackTrace();
 		}
 
+//		ModelFacade tempModel = games.get(gameID);
+//		if (tempModel == null)
+//			throw new ServerException();
+//		try {
+//			tempModel.rollDice(new PlayerReference(user), num);
+//		} catch (InvalidActionException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return this.getModel(gameID, -1);
 	}
 
@@ -290,7 +328,11 @@ public class Server implements IServer {
 	public String robPlayer(UUID user, UUID gameID, HexLocation newRobberLocation, UUID victim)
 			throws ServerException, UserException {
 		try {
-			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
+			PlayerReference victimReference = null;
+			if (victim != null) {
+				victimReference = new PlayerReference(victim);
+			}
+			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, victimReference);
 			ModelFacade tempModel;
 			try {
 				tempModel = games.get(gameID);
@@ -649,6 +691,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("discard", new PlayerReference(user), cards.getResources());
 			ModelFacade tempModel;
 			try {
+				
 				tempModel = games.get(gameID);
 				if (tempModel == null)
 					throw new ServerException();
@@ -696,6 +739,12 @@ public class Server implements IServer {
 	public void changeLogLevel(LogLevel level) throws ServerException, UserException {
 		// NOT NEEDED IN PHASE 3
 		
+	}
+
+	@Override
+	public Session getPlayerSession() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 
