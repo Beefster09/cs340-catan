@@ -251,13 +251,12 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		
 		//If we can't find the player...things are seriously wrong.
 		if (receiver == null)
-			assert 1 == 0;
+			assert false;
 		
 		reset();
 		
 		
 		try {
-			int gameID = ClientManager.getModel().getGameHeader().getId();
 			
 			UUID playerUUID = user.getPlayerUUID();
 			UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();

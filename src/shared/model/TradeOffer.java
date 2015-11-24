@@ -26,7 +26,7 @@ public class TradeOffer {
 	 * @param receiver
 	 * @param offer
 	 */
-	TradeOffer(PlayerReference sender, PlayerReference receiver,
+	public TradeOffer(PlayerReference sender, PlayerReference receiver,
 			ResourceTradeList offer) {
 		super();
 		this.sender = sender;
@@ -37,8 +37,8 @@ public class TradeOffer {
 	public TradeOffer(JSONObject json) throws SchemaMismatchException {
 		try {
 			offer = new ResourceTradeList((JSONObject) json.get("offer"));
-			sender = new PlayerReference((String) json.get("sender"));
-			receiver = new PlayerReference((String) json.get("receiver"));
+			sender = new PlayerReference(UUID.fromString((String) json.get("sender")));
+			receiver = new PlayerReference(UUID.fromString((String) json.get("receiver")));
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
