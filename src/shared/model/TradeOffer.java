@@ -37,8 +37,10 @@ public class TradeOffer {
 	public TradeOffer(JSONObject json) throws SchemaMismatchException {
 		try {
 			offer = new ResourceTradeList((JSONObject) json.get("offer"));
-			sender = new PlayerReference(UUID.fromString((String) json.get("sender")));
-			receiver = new PlayerReference(UUID.fromString((String) json.get("receiver")));
+			JSONObject JSONSender = (JSONObject) json.get("sender");
+			sender = new PlayerReference(UUID.fromString((String) JSONSender.get("playerUUID")));
+			JSONObject JSONReceiver = (JSONObject) json.get("receiver");
+			receiver = new PlayerReference(UUID.fromString((String) JSONReceiver.get("playerUUID")));
 		}
 		catch (ClassCastException | IllegalArgumentException e) {
 			e.printStackTrace();
