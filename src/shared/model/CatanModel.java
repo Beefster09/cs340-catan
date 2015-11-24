@@ -373,7 +373,7 @@ public class CatanModel {
 		if (!map.canBuildSettlement(player, loc)) {
 			throw new InvalidActionException("Invalid Road Placement");
 		}
-		if (player.getPlayer().canBuildSettlement()) {
+		if (!player.getPlayer().canBuildSettlement()) {
 			throw new InsufficientResourcesException("Insufficient resources " +
 					"for a settlement.");
 		}
