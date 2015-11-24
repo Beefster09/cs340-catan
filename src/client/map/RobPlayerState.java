@@ -41,21 +41,21 @@ public class RobPlayerState extends MapControllerState {
 			@Override
 			protected String doInBackground() throws Exception {
 			
-				PlayerReference victim =  PlayerReference.getDummyPlayerReference(-1);
+				UUID victim =  null;
 				
 				if (victimInfo != null) {
 					victim = new PlayerReference(ClientManager
 						.getModel().getCatanModel(),
-						victimInfo.getPlayerIndex());
+						victimInfo.getPlayerIndex()).getPlayerUUID();
 				}
 
 				UUID gameUUID = ClientManager.getModel().getGameHeader().getUUID();
 				if (previous instanceof SoldierMoveState) {
 					return ClientManager.getServer().soldier(getYourself().getPlayerUUID(), gameUUID,
-							newRobberLoc, victim.getPlayerUUID());
+							newRobberLoc, victim);
 				} else if (previous instanceof MoveRobberState) {
 					return ClientManager.getServer().robPlayer(getYourself().getPlayerUUID(), gameUUID,
-							newRobberLoc, victim.getPlayerUUID());
+							newRobberLoc, victim);
 				} else return null;
 			}
 
