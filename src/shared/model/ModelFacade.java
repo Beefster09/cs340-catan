@@ -941,6 +941,10 @@ public class ModelFacade {
 		model.addPlayer(newPlayer);
 		
 	}
+	
+	public synchronized void sendChat(PlayerReference source, String message) {
+		model.addChat(source, message);
+	}
 
 	
 	
