@@ -15,6 +15,7 @@ public interface IAbstractFactory {
 
 	public IUserDAO getUserDAO();
 	public IGameDAO getGameDAO();
-	public void beginTransaction();
-	public void endTransaction();
+	public ICommandDAO getCommandDAO();
+	public void startTransaction() throws DatabaseException;
+	public void endTransaction(boolean commit) throws DatabaseException;
 }

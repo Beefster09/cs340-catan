@@ -1,6 +1,7 @@
 package server.DAOs;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import shared.model.ModelFacade;
 
@@ -11,6 +12,21 @@ import shared.model.ModelFacade;
  *
  */
 public class SQLGameDAO implements IGameDAO {
+
+	private static Logger logger;
+	
+	static {
+		logger = Logger.getLogger("RecordIndexer");
+	}
+
+	private SQLDatabase db;
+	
+	/**
+	 * Creates an instance of a CellDAO to interact with the database.
+	 */
+	public SQLGameDAO(SQLDatabase db) {
+		this.db = db;
+	}
 
 	@Override
 	public boolean addGame(ModelFacade model) {

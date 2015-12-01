@@ -12,8 +12,8 @@ import server.model.User;
  */
 public interface IUserDAO {
 
-	public boolean addUser(User user);
-	public boolean deleteUser(User user);
-	public boolean updateUserbyUUID(UUID playerUUID, User user);
-	public User getUser(UUID playerUUID);
+	public void addUser(User user) throws DatabaseException;
+	public void deleteUser(User user) throws DatabaseException;
+	public void updateUserPassword(User user) throws DatabaseException;
+	public User getUser(UUID playerUUID) throws DatabaseException;
 }

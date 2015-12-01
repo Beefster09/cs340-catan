@@ -1,60 +1,61 @@
-package server.Factories;
+package server.DAOs;
 
 import java.io.File;
 import java.sql.*;
+import java.util.logging.*;
 
-import server.DAOs.*;
+public class SQLDatabase {
 
-/**
- * This factory contains references to all the
- * DAOs necessary to store the necessary model into
- * a SQL based, relational database.
- * @author jchip
- *
- */
-public class SQLFactory implements IAbstractFactory {
-
+	
 	private static final String DATABASE_DIRECTORY = "database";
 	private static final String DATABASE_FILE = "RecordIndexer.sqlite";
 	private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_DIRECTORY +
 												File.separator + DATABASE_FILE;
+
+	private static Logger logger;
 	
-	IUserDAO userDAO;
-	IGameDAO gameDAO;
-	ICommandDAO commandDAO;
+	static {
+		logger = Logger.getLogger("RecordIndexer");
+	}
+
+	public static void initialize() throws DatabaseException {
+		try {
+			final String driver = "org.sqlite.JDBC";
+			Class.forName(driver);
+		}
+		catch(ClassNotFoundException e) {
+			
+			DatabaseException serverEx = new DatabaseException("Could not load database driver", e);
+			
+			logger.throwing("server.database.Database", "initialize", serverEx);
+
+			throw serverEx; 
+		}
+	}
 	
 	Connection connection;
+	//BatchDAO batchDAO;
 	
-	public SQLFactory() {
-		try {
-			SQLDatabase.initialize();
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}
-		SQLDatabase db = new SQLDatabase();
-		userDAO = new SQLUserDAO(db);
-		gameDAO = new SQLGameDAO(db);
-		commandDAO = new SQLCommandDAO(db);
+	public SQLDatabase() {
+		connection = null;
+		//batchDAO = new BatchDAO(this);
 	}
 	
-	@Override
-	public IUserDAO getUserDAO() {
-		return userDAO;
-	}
-
-	@Override
-	public IGameDAO getGameDAO() {
-		return gameDAO;
-	}
-
-	@Override
-	public ICommandDAO getCommandDAO() {
-		return commandDAO;
-	}
 	
+	/**
+	 * @return the connection
+	 */
 	public Connection getConnection() {
 		return connection;
 	}
+
+	/**
+	 * @return the batchDAO
+	 */
+//	public BatchDAO getBatchDAO() {
+//		return batchDAO;
+//	}
+	
 	
 	public void startTransaction() throws DatabaseException {
 		try {
@@ -134,4 +135,5 @@ public class SQLFactory implements IAbstractFactory {
 		}
 	}
 
+	
 }

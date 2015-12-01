@@ -12,8 +12,8 @@ import shared.model.ModelFacade;
  */
 public interface IGameDAO {
 
-	public boolean addGame(ModelFacade model);
-	public boolean removeGame(UUID gameUUID);
-	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model);
-	public ModelFacade getGame(UUID gameUUID);
+	public boolean addGame(ModelFacade model) throws DatabaseException;
+	public boolean removeGame(UUID gameUUID) throws DatabaseException;
+	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model) throws DatabaseException;
+	public ModelFacade getGame(UUID gameUUID) throws DatabaseException;
 }

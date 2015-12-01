@@ -13,21 +13,21 @@ import server.model.User;
 public class FileUserDAO implements IUserDAO {
 
 	@Override
-	public boolean addUser(User user) {
+	public void addUser(User user) {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
-	public boolean deleteUser(User user) {
+	public void deleteUser(User user) {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
-	public boolean updateUserbyUUID(UUID playerUUID, User user) {
+	public void updateUserPassword(User user) throws DatabaseException {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
@@ -35,5 +35,6 @@ public class FileUserDAO implements IUserDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

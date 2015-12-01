@@ -1,5 +1,6 @@
 package server.Factories;
 
+import server.DAOs.ICommandDAO;
 import server.DAOs.IGameDAO;
 import server.DAOs.IUserDAO;
 
@@ -25,13 +26,19 @@ public class FileFactory implements IAbstractFactory {
 	}
 
 	@Override
-	public void beginTransaction() {
+	public ICommandDAO getCommandDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void startTransaction() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void endTransaction() {
+	public void endTransaction(boolean commit) {
 		// TODO Auto-generated method stub
 		
 	}
