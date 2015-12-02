@@ -1,11 +1,13 @@
 package server.plugins;
 
+import java.io.File;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class PluginMetadata
 	implements Serializable {
-	private static final long serialVersionUID = 100000L;
+	private static final long serialVersionUID = 100000;
 	
 	private String name;
 	private String jarFileLocation;
@@ -28,26 +30,35 @@ public class PluginMetadata
 	/**
 	 * @return the name
 	 */
-	String getName() {
+	public String getName() {
 		return name;
 	}
 	
 	/**
 	 * @return the jarFileLocation
 	 */
-	String getJarFileLocation() {
+	public String getJarFileLocation() {
 		return jarFileLocation;
 	}
 	
-	URL getJarURL() {
-		return null;
+	public URL getJarURL() throws MalformedURLException {
+		return new File("plugins/" + jarFileLocation).toURI().toURL();
 	}
 	
 	/**
 	 * @return the className
 	 */
-	String getClassName() {
+	public String getClassName() {
 		return className;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "PluginMetadata [name=" + name + ", jarFileLocation="
+				+ jarFileLocation + ", className=" + className + "]";
 	}
 	
 }
