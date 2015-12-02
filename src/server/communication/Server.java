@@ -10,7 +10,7 @@ import client.misc.ClientManager;
 
 import com.google.gson.Gson;
 
-import server.Factories.IAbstractFactory;
+import server.Factories.IDAOFactory;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
@@ -58,7 +58,7 @@ public class Server implements IServer {
 	}
 	
 	Map<UUID,ModelFacade> games = new HashMap<UUID,ModelFacade>();
-	IAbstractFactory factory;
+	IDAOFactory factory;
 	//Map<String,UUID> users = new HashMap<String,UUID>();
 	
 	private Server(){

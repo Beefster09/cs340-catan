@@ -17,6 +17,8 @@ client.resources
 client.roll
 client.turntracker
 client.utils
+server.DAOs
+server.Factories
 server.ai
 server.cheat
 server.commands
@@ -34,3 +36,4 @@ shared.definitions
 shared.exceptions
 shared.locations
 shared.model
+test

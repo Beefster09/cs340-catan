@@ -29,7 +29,7 @@ public class Handlers {
 			
 			ArrayList<String> mimetypes = new ArrayList<String>();
 			mimetypes.add(FileUtils.getMimeType(filepath));
-			exchange.getResponseHeaders().put("Content­type", mimetypes);
+			exchange.getResponseHeaders().put("Content-type", mimetypes);
 			
 			exchange.sendResponseHeaders(200,response.length);
 			OutputStream os = exchange.getResponseBody();
