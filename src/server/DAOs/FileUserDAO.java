@@ -31,7 +31,7 @@ public class FileUserDAO implements IUserDAO {
 	}
 
 	@Override
-	public User getUser(UUID playerUUID) {
+	public User getUser(User user) {
 		// TODO Auto-generated method stub
 		return null;
 	}

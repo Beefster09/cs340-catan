@@ -64,9 +64,12 @@ public class LoginHandler implements HttpHandler {
 			arg0.getResponseBody().close();
 
 		}
-		catch(ParseException | UserException | ServerException e){
+		catch(ParseException |ServerException e){
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 			e.printStackTrace();
+		}
+		catch (UserException e) {
+			arg0.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
 		}
 	}
 

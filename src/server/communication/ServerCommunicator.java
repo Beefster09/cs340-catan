@@ -47,24 +47,15 @@ public class ServerCommunicator {
 
 	
 	private HttpServer server;
+	String persistenceType;
 	
 	public ServerCommunicator() {
 		return;
 	}
 	
 	public void run() {
-		
-//		logger.info("Initializing Model");
-//		
-//		try {
-//			ServerFacade.initialize();		
-//		}
-//		catch (ServerException e) {
-//			logger.log(Level.SEVERE, e.getMessage(), e);
-//			return;
-//		}
-//		
-		logger.info("Initializing HTTP Server");
+	
+		logger.info("Initializing HTTP Server using: " + persistenceType + "database.");
 		
 		try {
 			server = HttpServer.create(new InetSocketAddress(SERVER_PORT_NUMBER),
@@ -137,17 +128,24 @@ public class ServerCommunicator {
 	private HttpHandler soldierHandler = new SoldierHandler();
 	private HttpHandler yearOfPlentyHandler = new YearOfPlentyHandler();
 	
+	
 	public static void main(String[] args) {
 		ServerCommunicator server = new ServerCommunicator();
-		if (args.length > 0)
+		if (args.length == 1) {
 			server.initPortNum(Integer.parseInt(args[0]));
+			server.setPersistenceType("sql");
+		}
 		else
 			server.initPortNum(SERVER_PORT_NUMBER);
-		new ServerCommunicator().run();
+		server.run();
 	}
 
 	private void initPortNum(int port) {
 		SERVER_PORT_NUMBER = port;
+	}
+	
+	private void setPersistenceType(String type) {
+		persistenceType = type;
 	}
 	
 }

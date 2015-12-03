@@ -22,7 +22,7 @@ public class User {
 	 * @param password
 	 * @throws NameAlreadyInUseException 
 	 */
-	private User(String username, String password) {
+	public User(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
@@ -40,6 +40,20 @@ public class User {
 		User user = new User(username, password);
 		userTable.put(username, user);
 		return user;
+	}
+	
+	/** Registers a user with the given username and password
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws NameAlreadyInUseException
+	 */
+	public static User register(User otherUser) throws NameAlreadyInUseException {
+		if (userTable.containsKey(otherUser.username)) {
+			throw new NameAlreadyInUseException(otherUser.username);
+		}
+		userTable.put(otherUser.username, otherUser);
+		return otherUser;
 	}
 	
 	/**
@@ -75,6 +89,11 @@ public class User {
 	 */
 	public String getPassword() {
 		return password;
+	}
+	
+	@Override
+	public String toString() {
+		return "username: " + username + "; password: " + password;
 	}
 
 }

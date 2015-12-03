@@ -1,9 +1,7 @@
 package server.Factories;
 
-import java.io.File;
-import java.sql.*;
-
 import server.DAOs.*;
+import server.model.User;
 
 /**
  * This factory contains references to all the
@@ -13,17 +11,29 @@ import server.DAOs.*;
  *
  */
 public class SQLDAOFactory implements IDAOFactory {
-
-	private static final String DATABASE_DIRECTORY = "database";
-	private static final String DATABASE_FILE = "RecordIndexer.sqlite";
-	private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_DIRECTORY +
-												File.separator + DATABASE_FILE;
 	
 	IUserDAO userDAO;
 	IGameDAO gameDAO;
 	ICommandDAO commandDAO;
 	
-	Connection connection;
+	SQLDatabase db;
+	
+	public static void main(String[] args) {
+		SQLDAOFactory factory = new SQLDAOFactory();
+		factory.testrun();
+	}
+	
+	private void testrun() {
+		User user = new User("Sam", "sam");
+		try {
+			db.startTransaction();
+			getUserDAO().addUser(user);
+			db.endTransaction(true);
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public SQLDAOFactory() {
 		try {
@@ -31,7 +41,7 @@ public class SQLDAOFactory implements IDAOFactory {
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 		}
-		SQLDatabase db = new SQLDatabase();
+		db = new SQLDatabase();
 		userDAO = new SQLUserDAO(db);
 		gameDAO = new SQLGameDAO(db);
 		commandDAO = new SQLCommandDAO(db);
@@ -51,87 +61,16 @@ public class SQLDAOFactory implements IDAOFactory {
 	public ICommandDAO getCommandDAO() {
 		return commandDAO;
 	}
-	
-	public Connection getConnection() {
-		return connection;
-	}
-	
+
+	@Override
 	public void startTransaction() throws DatabaseException {
-		try {
-			connection = DriverManager.getConnection(DATABASE_URL);
-			connection.setAutoCommit(false);
-		}
-		catch (SQLException e) {
-			throw new DatabaseException("Could not connect to database. Make sure " + 
-					DATABASE_FILE + " is available in ./" + DATABASE_DIRECTORY, e);
-		}
+		db.startTransaction();
 	}
-	
+
+	@Override
 	public void endTransaction(boolean commit) {
-		try {
-			if (commit) {
-				connection.commit();
-			}
-			else {
-				connection.rollback();
-			}
-		}
-		catch(SQLException e) {
-			System.out.println("Could not end transaction.");
-			e.printStackTrace();
-		}
-		finally {
-			safeClose(connection);
-			connection = null;
-		}
+		db.endTransaction(commit);
 	}
-	
-	public static void safeClose(Connection connection) {
-		if (connection != null) {
-			try {
-				connection.close();
-			}
-			catch (SQLException e) {
-				System.out.println("Could not close connection");
-				e.getStackTrace();
-			}
-		}
-	}
-	
-	public static void safeClose(Statement stmt) {
-		if (stmt != null) {
-			try {
-				stmt.close();
-			}
-			catch (SQLException e) {
-				System.out.println("Could not close connection");
-				e.getStackTrace();
-			}
-		}
-	}
-	
-	public static void safeClose(PreparedStatement stmt) {
-		if (stmt != null) {
-			try {
-				stmt.close();
-			}
-			catch (SQLException e) {
-				System.out.println("Could not close connection");
-				e.getStackTrace();
-			}
-		}
-	}
-	
-	public static void safeClose(ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			}
-			catch (SQLException e) {
-				System.out.println("Could not close connection");
-				e.getStackTrace();
-			}
-		}
-	}
+
 
 }

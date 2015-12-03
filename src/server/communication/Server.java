@@ -9,8 +9,11 @@ import java.util.UUID;
 import client.misc.ClientManager;
 
 import com.google.gson.Gson;
+import com.sun.media.jfxmedia.logging.Logger;
 
+import server.DAOs.DatabaseException;
 import server.Factories.IDAOFactory;
+import server.Factories.SQLDAOFactory;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
@@ -58,23 +61,40 @@ public class Server implements IServer {
 	}
 	
 	Map<UUID,ModelFacade> games = new HashMap<UUID,ModelFacade>();
-	IDAOFactory factory;
+	//TODO: We absolutely need to remove this line, a factory will be dynamically
+	//loaded in, not hard coded.  Using this for initial debugging purposes
+	IDAOFactory factory = new SQLDAOFactory();
 	//Map<String,UUID> users = new HashMap<String,UUID>();
 	
 	private Server(){
-//		users.put("Sam", UUID.randomUUID());
-//		users.put("Brooke", UUID.randomUUID());
-//		users.put("Pete", UUID.randomUUID());
-//		users.put("Mark", UUID.randomUUID());
+
+		User sam = new User("Sam", "sam");
+		User brooke = new User("Brooke", "brooke");
+		User pete = new User("Pete", "pete");
+		User mark = new User("Mark", "mark");
+		
 		try {
-			User.register("Sam", "sam");
-			User.register("Brooke", "brooke");
-			User.register("Pete", "pete");
-			User.register("Mark", "mark");
+			User.register(sam);
+			User.register(brooke);
+			User.register(pete);
+			User.register(mark);
+			
 		} catch (NameAlreadyInUseException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		try {
+			factory.startTransaction();
+			factory.getUserDAO().addUser(sam);
+			factory.getUserDAO().addUser(brooke	);
+			factory.getUserDAO().addUser(pete);
+			factory.getUserDAO().addUser(mark);
+			factory.endTransaction(true);
+		} catch (DatabaseException e1) {
+			Logger.logMsg(Logger.INFO, "Users probably already exist in database, skipping register");
+			
+		}
+		
 		try {
 			ModelFacade model = new ModelFacade();
 			UUID gameUUID = model.getGameHeader().getUUID();
@@ -83,10 +103,6 @@ public class Server implements IServer {
 			model.addPlayer("Brooke", CatanColor.ORANGE);
 			model.addPlayer("Pete", CatanColor.YELLOW);
 			model.addPlayer("Mark", CatanColor.GREEN);
-//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-//			games.get(gameUUID).addPlayer(new Session("Mark", "mark", users.get("Mark")), CatanColor.GREEN);
 	
 //			model = new ModelFacade();
 //			gameUUID = model.getGameHeader().getUUID();
@@ -101,20 +117,7 @@ public class Server implements IServer {
 //			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
 //			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
 //			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-//	
-//			model = new ModelFacade();
-//			gameUUID = model.getGameHeader().getUUID();
-//			games.put(gameUUID, model);
-//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-//	
-//			model = new ModelFacade();
-//			gameUUID = model.getGameHeader().getUUID();
-//			games.put(gameUUID, model);
-//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
+
 		} catch (GameInitializationException e) {
 			e.printStackTrace();
 		}
@@ -123,9 +126,6 @@ public class Server implements IServer {
 
 	@Override
 	public Session login(String username, String password) throws UserException, ServerException {
-//		if (users.containsKey(username))
-//			return new Session(username, password, users.get(username));
-//		throw new UserException();
 		User user = User.login(username, password);
 		Session newSession = new Session(user.getUsername(), user.getPassword(), null);
 		return newSession;
@@ -133,15 +133,6 @@ public class Server implements IServer {
 
 	@Override
 	public Session register(String username, String password) throws UserException, ServerException {
-//		if (users.containsKey(username)) {
-//			throw new UserException();
-//		}
-//		else {
-//			UUID uuid = UUID.randomUUID();
-//			Session session = new Session(username,password,uuid);
-//			users.put(username, uuid);
-//			return session;
-//		}
 		User user = User.register(username, password);
 		Session newSession = new Session(user.getUsername(), user.getPassword(), null);
 		return newSession;
@@ -203,9 +194,7 @@ public class Server implements IServer {
 			//Never should occur, but in case
 			throw new ServerException();
 		}
-		//Might want to randomize this, possibly for later.
-//		Player firstPlayer = game.getPlayers().get(0);
-//		PlayerReference player = new PlayerReference(firstPlayer.getUUID(),0);
+		//Might want to randomize this .
 		game.setTurnTracker(new TurnTracker(game.getPlayers()));
 		int i = 0;
 		for (Player curPlay : game.getPlayers()) {
@@ -274,7 +263,6 @@ public class Server implements IServer {
 
 	@Override
 	public String sendChat(UUID user, UUID gameID, String message) throws ServerException, UserException {
-		// TODO Auto-generated method stub
 		try {
 			ICatanCommand command = new CatanCommand("sendChat",new PlayerReference(user),message);
 			ModelFacade tempModel;
@@ -292,12 +280,6 @@ public class Server implements IServer {
 
 	@Override
 	public String rollDice(UUID user, UUID gameID, int num) throws ServerException, UserException {
-		/*
-		 * So, for some reason reflection CANNOT find this method.
-		 * I am removing the command for this function for the moment,
-		 * until someone can come back and fix this.
-		 * 
-		*/
 		try {
 			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), num);
 			ModelFacade tempModel;
@@ -314,7 +296,6 @@ public class Server implements IServer {
 			return this.getModel(gameID, -1);
 			
 		} catch (NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

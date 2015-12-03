@@ -13,7 +13,8 @@ import server.model.User;
  *
  */
 public class SQLUserDAO implements IUserDAO {
-
+	
+	
 	private static Logger logger;
 	
 	static {
@@ -31,6 +32,7 @@ public class SQLUserDAO implements IUserDAO {
 	
 	@Override
 	public void addUser(User user) throws DatabaseException {
+		logger.fine("Adding user: " + user.toString() + "\n" + "to database");
 		PreparedStatement stmt = null;
 		ResultSet keyRS = null;
 		try {
@@ -39,11 +41,14 @@ public class SQLUserDAO implements IUserDAO {
 			stmt.setString(1, user.getUsername());
 			stmt.setString(2, user.getPassword());
 			if (stmt.executeUpdate() != 1) {
-				throw new DatabaseException("Could not add cell");
+				throw new DatabaseException("Could not add cell.");
 			}
 		}
 		catch (SQLException e) {
 			throw new DatabaseException("Could not add cell", e);
+		}
+		catch (NullPointerException e) {
+			throw new NullPointerException("Connection object is null (Did you forget start/end transaction?)");
 		}
 		finally{
 			SQLDatabase.safeClose(keyRS);
@@ -94,9 +99,34 @@ public class SQLUserDAO implements IUserDAO {
 	}
 
 	@Override
-	public User getUser(UUID playerUUID) {
-		// TODO Auto-generated method stub
-		return null;
+	public User getUser(User user) throws DatabaseException {
+		
+		User returnUser = null;
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;		
+		
+		try {
+			String query = "select * from user where username = ?";
+			stmt = db.getConnection().prepareStatement(query);
+			stmt.setString(1, user.getUsername());
+			rs = stmt.executeQuery();
+			
+			if (rs.next()) {
+				String username = rs.getString(1);
+				String password = rs.getString(2);
+				
+				returnUser = new User(username, password);
+			}
+		}
+		catch (SQLException e) {
+			throw new DatabaseException("Could not get cells", e);
+		}
+		finally {
+			SQLDatabase.safeClose(rs);
+			SQLDatabase.safeClose(stmt);
+		}
+		return returnUser;
 	}
 
 }

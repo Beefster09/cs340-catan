@@ -5,10 +5,9 @@ import java.sql.*;
 import java.util.logging.*;
 
 public class SQLDatabase {
-
 	
-	private static final String DATABASE_DIRECTORY = "database";
-	private static final String DATABASE_FILE = "RecordIndexer.sqlite";
+	private static final String DATABASE_DIRECTORY = "db";
+	private static final String DATABASE_FILE = "Catan.sqlite";
 	private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_DIRECTORY +
 												File.separator + DATABASE_FILE;
 
@@ -34,13 +33,10 @@ public class SQLDatabase {
 	}
 	
 	Connection connection;
-	//BatchDAO batchDAO;
 	
 	public SQLDatabase() {
 		connection = null;
-		//batchDAO = new BatchDAO(this);
 	}
-	
 	
 	/**
 	 * @return the connection
@@ -48,15 +44,13 @@ public class SQLDatabase {
 	public Connection getConnection() {
 		return connection;
 	}
-
+	
 	/**
-	 * @return the batchDAO
+	 * Begins a transaction on the database.  A transaction allows to commit multiple
+	 * statements without committing them to the database.  Once all the statements
+	 * needed have been queued, use endTransaction(true) to commit them to the database.
+	 * @throws DatabaseException
 	 */
-//	public BatchDAO getBatchDAO() {
-//		return batchDAO;
-//	}
-	
-	
 	public void startTransaction() throws DatabaseException {
 		try {
 			connection = DriverManager.getConnection(DATABASE_URL);
