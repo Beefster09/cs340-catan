@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -20,7 +21,10 @@ import shared.exceptions.SchemaMismatchException;
  * @author Jordan
  *
  */
-public class Player {
+public class Player 
+implements Serializable {
+	private static final long serialVersionUID = 6674063652886019203L;
+
 	// Table for retrieving players by UUID
 	private static Map<UUID, Player> playerTable = new HashMap<>();
 	

@@ -25,10 +25,18 @@ public class PluginRegistry {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		PluginRegistry registry = getSingleton();
-		//registry.registerPlugin("sql", "catan-sql.jar", "server.Factories.SQLDAOFactory");
-		//registry.registerPlugin("file", "catan-file.jar", "server.Factories.FileDAOFactory");
-		//System.out.println(registry.plugins);
-		IDAOFactory df = registry.getDAOFactory("sql");
+		
+		if (args.length == 0) {
+			System.out.println(registry.plugins);
+			return;
+		}
+		
+		switch (args[0]) {
+		case "register":
+			registry.registerPlugin(args[1], args[2], args[3]);
+		default:
+			System.out.println("Command not recognized " + args[0]);
+		}
 	}
 	
 	private static PluginRegistry singleton = null;

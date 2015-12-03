@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,9 @@ import shared.exceptions.SchemaMismatchException;
  * @author Jordan
  *
  */
-public class Bank {
+public class Bank 
+implements Serializable {
+	private static final long serialVersionUID = 498488890050221002L;
 	
 	private static final int NUM_MONOPOLY_CARDS = 2;
 	private static final int NUM_MONUMENT_CARDS = 5;

@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,13 +34,15 @@ import shared.locations.EdgeLocation;
 import shared.locations.HexLocation;
 import shared.locations.VertexLocation;
 
-public class ModelFacade {
-	
+public class ModelFacade 
+implements Serializable {
+	private static final long serialVersionUID = -8878435068519246110L;
+
 	private final int NUMPLAYERS = 4;
 
 	protected CatanModel model;
 	private IDice dice;
-	protected List<IModelListener> listeners;
+	protected transient List<IModelListener> listeners;
 
 	public ModelFacade() throws GameInitializationException {
 		this(new CatanModel(false, false, false), new NormalDice());
@@ -972,5 +975,10 @@ public class ModelFacade {
 		json.add("turnTracker", gson.toJsonTree(model.getTurnTracker()));
 		json.add("version", gson.toJsonTree(model.getVersion()));
 		return gson.toJson(json);
+	}
+	
+	// Ridiculous test method
+	public void print(ModelFacade mf, String message) {
+		System.out.println(message);
 	}
 }

@@ -1,5 +1,7 @@
 package shared.model;
 
+import java.io.Serializable;
+
 import org.json.simple.JSONObject;
 
 import shared.definitions.ResourceType;
@@ -12,7 +14,10 @@ import shared.locations.HexLocation;
  * @author Jordan
  *
  */
-public class Hex {
+public class Hex 
+implements Serializable {
+	private static final long serialVersionUID = 5709089448387940400L;
+	
 	public static final int EMPTY_NUMBER = -1;
 	private HexLocation location;
 	private ResourceType resource;

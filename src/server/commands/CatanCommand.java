@@ -7,7 +7,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.json.simple.JSONObject;
-import shared.Utils;
 import shared.exceptions.InvalidActionException;
 import shared.locations.EdgeDirection;
 import shared.locations.EdgeLocation;
@@ -30,15 +29,15 @@ import shared.model.ModelFacade;
 public class CatanCommand implements ICatanCommand {
 
 	public static void main(String[] args) throws Exception {
-		ModelFacade model = new ClientModelFacade();
-		ICatanCommand command_old = new CatanCommand("doBuildRoad",
-				new EdgeLocation(0, 0, EdgeDirection.North), "asdffdsa!");
+		ModelFacade model = new ModelFacade();
+		ICatanCommand command_old = new CatanCommand("print", model,
+				"If this works, then CatanCommand serialization is probably working!");
 		
-		String jsonString = CommandSerializer.serialize(command_old);
+		String serializedString = CommandSerializer.serialize(command_old);
 
-		System.out.println(jsonString);
+		System.out.println(serializedString);
 
-		ICatanCommand command = CommandSerializer.deserialize(jsonString);
+		ICatanCommand command = CommandSerializer.deserialize(serializedString);
 
 		command.execute(model);
 	}
@@ -133,50 +132,13 @@ public class CatanCommand implements ICatanCommand {
 		} // Let through IllegalArgumentExceptions
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONObject toJSONObject() {
-		JSONObject json = new JSONObject();
-
-		List<Object> args = new ArrayList<>();
-		for (Object arg : arguments) {
-			args.add(makeJSONCompatible(arg));
-		}
-
-		json.put("method", method.getName());
-		json.put("arguments", args);
-
-		return json;
+	public CatanCommandInfo getInfo() {
+		return new CatanCommandInfo(method.getName(), arguments);
 	}
 
-	@SuppressWarnings("unchecked")
-	private Object makeJSONCompatible(Object arg) {
-		Class<?> type = arg.getClass();
-		if (type.isArray()) {
-			return Arrays.asList((Object[]) arg);
-		} else if (Utils.isBuiltinType(type)) {
-			return arg; // The JSON serializer handles this properly
-		} else {
-			try {
-				// Time to fake duck typing! YAAAY!
-				Method converter = type.getMethod("toJSONObject");
-
-				assert converter.getReturnType().equals(JSONObject.class);
-				JSONObject json = (JSONObject) converter.invoke(arg);
-
-				// Make sure to put in type information so we can get the data
-				// back later
-				json.put("<class>", type.getName());
-
-				return json;
-			} catch (NoSuchMethodException | SecurityException
-					| IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				e.printStackTrace();
-				assert false;
-				return null;
-			}
-		}
+	@Override
+	public SerializableCatanCommand getSerializable() {
+		return getInfo();
 	}
 
 }

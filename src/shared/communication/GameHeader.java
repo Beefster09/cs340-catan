@@ -1,5 +1,6 @@
 package shared.communication;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +11,10 @@ import client.data.GameInfo;
 import client.data.PlayerInfo;
 import shared.exceptions.SchemaMismatchException;
 
-public class GameHeader {
+public class GameHeader 
+implements Serializable {
+	private static final long serialVersionUID = 4969244734403385713L;
+	
 	private String title;
 	private UUID uuid;
 	private List<PlayerHeader> players;

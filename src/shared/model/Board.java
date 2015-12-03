@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +32,10 @@ import shared.locations.VertexLocation;
  * @author Jordan
  *
  */
-public class Board {
+public class Board 
+implements Serializable {
+	private static final long serialVersionUID = 2690058481554653945L;
+	
 	// IMPORTANT: mutator functions should ALWAYS be package private (no modifier).
 	// All modifications to model elements should be done through the Facade
 	

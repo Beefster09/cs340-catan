@@ -1,6 +1,8 @@
 package shared;
 
-public interface IDice {
+import java.io.Serializable;
+
+public interface IDice extends Serializable {
 
 	int roll();
 

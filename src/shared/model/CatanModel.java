@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import client.data.GameInfo;
@@ -24,7 +25,8 @@ import shared.locations.VertexLocation;
  * @author Jordan
  *
  */
-public class CatanModel {	
+public class CatanModel 
+	implements Serializable {	
 	private UUID id;
 	private String title;
 	

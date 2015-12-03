@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,10 @@ import shared.exceptions.SchemaMismatchException;
  * @author beefster
  *
  */
-public class MessageList {
+public class MessageList 
+implements Serializable {
+	private static final long serialVersionUID = 8846728195965070930L;
+	
 	private List<String> message;
 	private List<String> source;
 

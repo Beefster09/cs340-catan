@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import shared.definitions.CatanColor;
@@ -9,12 +10,15 @@ import shared.definitions.CatanColor;
  * @author Justin
  *
  */
-public class PlayerReference {
+public class PlayerReference 
+implements Serializable {
+	private static final long serialVersionUID = -828849747690575558L;
+	
 	private static final int INVALID_INDEX = -1337;
 	//private CatanModel game;
 	private transient int playerIndex; // Cached
 	private UUID playerUUID;
-	private String playerUUIDString;
+	private transient String playerUUIDString;
 	
 	public PlayerReference() {
 		

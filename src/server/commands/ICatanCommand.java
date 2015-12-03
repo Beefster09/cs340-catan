@@ -1,7 +1,5 @@
 package server.commands;
 
-import org.json.simple.JSONObject;
-
 import shared.exceptions.InvalidActionException;
 import shared.model.ModelFacade;
 
@@ -19,9 +17,6 @@ public interface ICatanCommand {
 	 */
 	void execute(ModelFacade model) throws InvalidActionException;
 	
-	/** Converts the command to a JSONObject representation
-	 * @return a JSON representation of this command
-	 */
-	JSONObject toJSONObject();
+	SerializableCatanCommand getSerializable();
 	
 }

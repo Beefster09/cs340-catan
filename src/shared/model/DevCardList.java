@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +20,10 @@ import shared.exceptions.SchemaMismatchException;
  * Manages the development cards that a player or the bank has.
  * Amounts must be non-negative
  */
-public class DevCardList {
+public class DevCardList 
+implements Serializable {
+	private static final long serialVersionUID = -4295620160911054300L;
+	
 	private Map<DevCardType, Integer> cards;
 
 	/** Creates an empty DevCardList

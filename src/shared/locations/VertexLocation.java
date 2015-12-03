@@ -1,5 +1,6 @@
 package shared.locations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +13,9 @@ import shared.exceptions.SchemaMismatchException;
  * Represents the location of a vertex on a hex map
  */
 public class VertexLocation
+implements Serializable 
 {
+	private static final long serialVersionUID = -2721996254584938224L;
 	
 	private HexLocation hexLoc;
 	private VertexDirection dir;

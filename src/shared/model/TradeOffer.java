@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.json.simple.JSONObject;
@@ -10,7 +11,10 @@ import shared.exceptions.TradeException;
 /**
  * Manages the current trade offer between two players
  */
-public class TradeOffer {
+public class TradeOffer 
+implements Serializable {
+	private static final long serialVersionUID = 8391770859360734060L;
+	
 	private PlayerReference sender;
 	private PlayerReference receiver;
 	private ResourceTradeList offer;

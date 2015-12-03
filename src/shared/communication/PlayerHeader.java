@@ -1,5 +1,6 @@
 package shared.communication;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.json.simple.JSONObject;
@@ -9,7 +10,11 @@ import client.data.PlayerInfo;
 import shared.definitions.CatanColor;
 import shared.exceptions.SchemaMismatchException;
 
-public class PlayerHeader {
+public class PlayerHeader
+implements Serializable {
+
+	private static final long serialVersionUID = -5111975177124567347L;
+	
 	private int playerIndex;
 	private CatanColor color;
 	private String name;

@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +17,10 @@ import shared.locations.VertexLocation;
  * @author Jordan
  *
  */
-public class Municipality {
+public class Municipality 
+implements Serializable {
+	private static final long serialVersionUID = 1169769148605917108L;
+	
 	private PlayerReference owner;
 	private VertexLocation location;
 	private MunicipalityType type;

@@ -1,5 +1,6 @@
 package shared.locations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,7 +15,9 @@ import shared.exceptions.SchemaMismatchException;
  * Represents the location of an edge on a hex map
  */
 public class EdgeLocation
+implements Serializable 
 {
+	private static final long serialVersionUID = -4159809329290147972L;
 	
 	private HexLocation hexLoc;
 	private EdgeDirection dir;

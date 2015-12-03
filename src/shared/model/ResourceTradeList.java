@@ -17,7 +17,10 @@ import shared.exceptions.TradeException;
  * @author beefster
  *
  */
-public class ResourceTradeList {
+public class ResourceTradeList 
+implements Serializable {
+	
+	private static final long serialVersionUID = -716474559929703075L;
 	
 	Map<ResourceType, Integer> offered;
 	Map<ResourceType, Integer> wanted;

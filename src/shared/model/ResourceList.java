@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import shared.definitions.ResourceType;
@@ -18,7 +19,10 @@ import org.json.simple.JSONObject;
  * @author beefster
  *
  */
-public class ResourceList {
+public class ResourceList 
+implements Serializable {
+	private static final long serialVersionUID = 327842772934319600L;
+	
 	private Map<ResourceType, Integer> resources;
 	
 	/** Creates an empty ResourceList- e.g. for a player

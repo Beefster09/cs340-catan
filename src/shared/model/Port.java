@@ -16,7 +16,10 @@ import shared.locations.*;
  * @author Jordan
  *
  */
-public class Port {
+public class Port 
+implements Serializable {
+	private static final long serialVersionUID = -6129974687409102099L;
+	
 	private ResourceType resource; // null = any resource
 	private EdgeLocation location;
 	private int ratio;

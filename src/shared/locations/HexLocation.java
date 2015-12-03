@@ -1,5 +1,6 @@
 package shared.locations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,7 +15,9 @@ import shared.exceptions.SchemaMismatchException;
  * An immutable representation of the location of a hex on a hex map
  */
 public class HexLocation
+implements Serializable 
 {
+	private static final long serialVersionUID = -6878967596753764682L;
 	
 	private int x;
 	private int y;

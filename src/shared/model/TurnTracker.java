@@ -1,5 +1,6 @@
 package shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +17,10 @@ import shared.exceptions.SchemaMismatchException;
  * @author Jordan
  *
  */
-public class TurnTracker {
+public class TurnTracker 
+	implements Serializable {
+	private static final long serialVersionUID = -5039715952423064946L;
+
 	private transient List<Player> players;
 	
 	private PlayerReference currentPlayer;
