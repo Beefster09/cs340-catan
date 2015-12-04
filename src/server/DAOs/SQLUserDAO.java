@@ -143,7 +143,7 @@ public class SQLUserDAO implements IUserDAO {
 			stmt = db.getConnection().prepareStatement(query);
 			rs = stmt.executeQuery();
 			
-			if (rs.next()) {
+			while (rs.next()) {
 				String username = rs.getString(1);
 				String password = rs.getString(2);
 				
