@@ -976,4 +976,8 @@ implements Serializable {
 	public void print(ModelFacade mf, String message) {
 		System.out.println(message);
 	}
+
+	public UUID getUUID() {
+		return model.getID();
+	}
 }

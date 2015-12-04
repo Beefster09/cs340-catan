@@ -12,13 +12,16 @@ import client.misc.ClientManager;
 import com.google.gson.Gson;
 
 import server.DAOs.DatabaseException;
+import server.DAOs.ICommandDAO;
+import server.DAOs.IGameDAO;
+import server.DAOs.MockDAOFactory;
 import server.Factories.IDAOFactory;
-import server.Factories.SQLDAOFactory;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
 import server.logging.LogLevel;
 import server.model.User;
+import server.plugins.PluginRegistry;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
@@ -48,7 +51,9 @@ public class Server implements IServer {
 	
 	private static Logger logger = Logger.getLogger("Server");
 	
-	private final int NUMPLAYERS = 4;
+	private static final int NUMPLAYERS = 4;
+
+	private static final int COMMAND_FLUSH_FREQUENCY = 10;
 	
 	private static IServer instance = null;
 	public static IServer getSingleton() {
@@ -62,13 +67,28 @@ public class Server implements IServer {
 		return instance;
 	}
 	
-	Map<UUID,ModelFacade> games = new HashMap<UUID,ModelFacade>();
 	//TODO: We absolutely need to remove this line, a factory will be dynamically
 	//loaded in, not hard coded.  Using this for initial debugging purposes
-	IDAOFactory factory = new SQLDAOFactory();
-	//Map<String,UUID> users = new HashMap<String,UUID>();
+	private static IDAOFactory factory;
 	
-	private Server(){
+	public static void initializeFactory(String pluginName) {
+		PluginRegistry registry = PluginRegistry.getSingleton();
+		
+		try {
+			factory = registry.getDAOFactory(pluginName);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+			factory = new MockDAOFactory();
+		}
+	}
+	
+	private Map<UUID, ModelFacade> activeGames = new HashMap<>();
+	private Map<UUID, GameHeader> knownGames = new HashMap<>();
+	
+	private Server() {
+		
+		loadGames();
+		loadUsers();
 
 		User sam = new User("Sam", "sam");
 		User brooke = new User("Brooke", "brooke");
@@ -80,7 +100,6 @@ public class Server implements IServer {
 			User.register(brooke);
 			User.register(pete);
 			User.register(mark);
-			
 		} catch (NameAlreadyInUseException e1) {
 			e1.printStackTrace();
 		}
@@ -100,30 +119,65 @@ public class Server implements IServer {
 		try {
 			ModelFacade model = new ModelFacade();
 			UUID gameUUID = model.getGameHeader().getUUID();
-			games.put(gameUUID, model);
+			activeGames.put(gameUUID, model);
 			model.addPlayer("Sam", CatanColor.RED);
 			model.addPlayer("Brooke", CatanColor.ORANGE);
 			model.addPlayer("Pete", CatanColor.YELLOW);
 			model.addPlayer("Mark", CatanColor.GREEN);
-	
-//			model = new ModelFacade();
-//			gameUUID = model.getGameHeader().getUUID();
-//			games.put(gameUUID, model);
-//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-//	
-//			model = new ModelFacade();
-//			gameUUID = model.getGameHeader().getUUID();
-//			games.put(gameUUID, model);
-//			games.get(gameUUID).addPlayer(new Session("Sam", "sam", users.get("Sam")), CatanColor.RED);
-//			games.get(gameUUID).addPlayer(new Session("Brooke", "brooke", users.get("Brooke")), CatanColor.ORANGE);
-//			games.get(gameUUID).addPlayer(new Session("Pete", "pete", users.get("Pete")), CatanColor.YELLOW);
-
 		} catch (GameInitializationException e) {
 			e.printStackTrace();
 		}
 		
+	}
+
+	private void loadGames() {
+		IGameDAO gameDAO = factory.getGameDAO();
+		List<GameHeader> gameList = gameDAO.getGameList();
+		
+		for (GameHeader game : gameList) {
+			knownGames.put(game.getUUID(), game);
+		}
+	}
+
+	private void loadUsers() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private ModelFacade getGame(UUID gameid) {
+		if (activeGames.containsKey(gameid)) {
+			return activeGames.get(gameid);
+		}
+		else if (knownGames.containsKey(gameid)) {
+			try {
+				ModelFacade game = factory.getGameDAO().getGame(gameid);
+				List<ICatanCommand> commands = factory.getCommandDAO().getAll(gameid);
+				for (ICatanCommand command : commands) {
+					command.execute(game);
+				}
+				activeGames.put(gameid, game);
+				return game;
+			} catch (DatabaseException | InvalidActionException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		else return null;
+	}
+
+	private void execCommand(ICatanCommand command, ModelFacade game)
+		throws InvalidActionException {
+		command.execute(game);
+		try {
+			ICommandDAO cmdDAO = factory.getCommandDAO();
+			cmdDAO.addCommand(game.getUUID(), command);
+			if (cmdDAO.getAll(game.getUUID()).size() >= COMMAND_FLUSH_FREQUENCY) {
+				factory.getGameDAO().addGame(game);
+				cmdDAO.clearCommands(game.getUUID());
+			}
+		} catch (DatabaseException e) {
+			logger.warning(e.getMessage());
+		}
 	}
 
 	@Override
@@ -143,7 +197,7 @@ public class Server implements IServer {
 	@Override
 	public List<GameHeader> getGameList() throws ServerException, UserException {
 		List<GameHeader> gamesList = new ArrayList<GameHeader>();
-		for(ModelFacade model : games.values()){
+		for(ModelFacade model : activeGames.values()){
 			gamesList.add(model.getGameHeader());
 		}
 		return gamesList;
@@ -158,13 +212,14 @@ public class Server implements IServer {
 				new CatanModel(randomTiles, randomNumbers, randomPorts));
 		newGame.getCatanModel().setHeader(header);
 		newGame.getCatanModel().setVersion(0);
-		games.put(gameUUID, newGame);
+		activeGames.put(gameUUID, newGame);
+		knownGames.put(gameUUID, header);
 		return header;
 	}
 
 	@Override
 	public Session joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
-		ModelFacade game = games.get(gameID);
+		ModelFacade game = getGame(gameID);
 		if (game == null) {
 			throw new JoinGameException();
 		}
@@ -220,7 +275,7 @@ public class Server implements IServer {
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		ModelFacade modelFacade = games.get(gameID);
+		ModelFacade modelFacade = getGame(gameID);
 		if (modelFacade == null)
 			throw new ServerException();
 		CatanModel model = modelFacade.getCatanModel();
@@ -268,11 +323,13 @@ public class Server implements IServer {
 		try {
 			ICatanCommand command = new CatanCommand("sendChat",new PlayerReference(user),message);
 			ModelFacade tempModel;
-			tempModel = games.get(gameID);
+			tempModel = getGame(gameID);
 			if (tempModel == null)
 				throw new ServerException();
 			
-			command.execute(tempModel);
+			//command.execute(tempModel);
+			execCommand(command, tempModel);
+			
 			return this.getModel(gameID, -1);
 		} catch (NoSuchMethodException | SecurityException | InvalidActionException e) {
 			e.printStackTrace();
@@ -286,7 +343,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("rollDice", new PlayerReference(user), num);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -322,7 +379,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("rob", new PlayerReference(user), newRobberLocation, victimReference);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -347,7 +404,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buyDevelopmentCard", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -372,7 +429,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("yearOfPlenty", new PlayerReference(user), type1, type2);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -397,7 +454,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("roadBuildingCard", new PlayerReference(user), road1, road2);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -423,7 +480,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("soldier", new PlayerReference(user), newRobberLocation, new PlayerReference(victim));
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -448,7 +505,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("monopoly", new PlayerReference(user), type);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -473,7 +530,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("monument", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -498,7 +555,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildRoad", new PlayerReference(user), location);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -521,7 +578,7 @@ public class Server implements IServer {
 			throws ServerException, UserException {
 		try {
 			ICatanCommand command = new CatanCommand("buildSettlement", new PlayerReference(user), location);
-			ModelFacade game = games.get(gameID);
+			ModelFacade game = getGame(gameID);
 			if (game == null)
 				throw new ServerException();
 			command.execute(game);
@@ -548,7 +605,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildStartingPieces", new PlayerReference(user), settlementLoc, roadLoc);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -573,7 +630,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("buildCity", new PlayerReference(user), location);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -599,7 +656,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("offerTrade", tradeOffer);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -629,7 +686,7 @@ public class Server implements IServer {
 			}
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -654,7 +711,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("maritimeTrade", new PlayerReference(user), inResource, outResource);
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -680,7 +737,7 @@ public class Server implements IServer {
 			ModelFacade tempModel;
 			try {
 				
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);
@@ -704,7 +761,7 @@ public class Server implements IServer {
 			ICatanCommand command = new CatanCommand("finishTurn", new PlayerReference(user));
 			ModelFacade tempModel;
 			try {
-				tempModel = games.get(gameID);
+				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
 				command.execute(tempModel);

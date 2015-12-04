@@ -18,4 +18,5 @@ public interface IDAOFactory {
 	public ICommandDAO getCommandDAO();
 	public void startTransaction() throws DatabaseException;
 	public void endTransaction(boolean commit) throws DatabaseException;
+	
 }

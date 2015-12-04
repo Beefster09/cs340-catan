@@ -1,8 +1,10 @@
 package server.DAOs;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import shared.communication.GameHeader;
 import shared.model.ModelFacade;
 
 /**
@@ -48,6 +50,12 @@ public class SQLGameDAO implements IGameDAO {
 
 	@Override
 	public ModelFacade getGame(UUID gameUUID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<GameHeader> getGameList() {
 		// TODO Auto-generated method stub
 		return null;
 	}
