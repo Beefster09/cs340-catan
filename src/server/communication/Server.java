@@ -169,13 +169,19 @@ public class Server implements IServer {
 		throws InvalidActionException {
 		command.execute(game);
 		try {
+			factory.startTransaction();
 			ICommandDAO cmdDAO = factory.getCommandDAO();
 			cmdDAO.addCommand(game.getUUID(), command);
 			if (cmdDAO.getAll(game.getUUID()).size() >= COMMAND_FLUSH_FREQUENCY) {
 				factory.getGameDAO().addGame(game);
 				cmdDAO.clearCommands(game.getUUID());
 			}
+			factory.endTransaction(true);
 		} catch (DatabaseException e) {
+			try {
+				factory.endTransaction(false);
+			} catch (DatabaseException e1) {
+			}
 			logger.warning(e.getMessage());
 		}
 	}
@@ -197,8 +203,13 @@ public class Server implements IServer {
 	@Override
 	public List<GameHeader> getGameList() throws ServerException, UserException {
 		List<GameHeader> gamesList = new ArrayList<GameHeader>();
-		for(ModelFacade model : activeGames.values()){
-			gamesList.add(model.getGameHeader());
+		for(GameHeader game : knownGames.values()){
+			if (activeGames.containsKey(game.getUUID())) {
+				gamesList.add(getGame(game.getUUID()).getGameHeader());
+			}
+			else {
+				gamesList.add(game);
+			}
 		}
 		return gamesList;
 	}
