@@ -11,38 +11,64 @@ public class SQLDatabase {
 	private static final String DATABASE_URL = "jdbc:sqlite:" + DATABASE_DIRECTORY +
 												File.separator + DATABASE_FILE;
 
-	private static Logger logger;
-	
-	static {
-		logger = Logger.getLogger("RecordIndexer");
-	}
+	private static Logger logger = Logger.getLogger("Catan-SQL");
+	private static boolean initialized = false;
 
 	public static void initialize() throws DatabaseException {
-		try {
-			final String driver = "org.sqlite.JDBC";
-			Class.forName(driver);
-		}
-		catch(ClassNotFoundException e) {
-			
-			DatabaseException serverEx = new DatabaseException("Could not load database driver", e);
-			
-			logger.throwing("server.database.Database", "initialize", serverEx);
-
-			throw serverEx; 
+		if (!initialized) {
+			try {
+				final String driver = "org.sqlite.JDBC";
+				Class.forName(driver);
+			}
+			catch(ClassNotFoundException e) {
+				
+				DatabaseException serverEx = new DatabaseException("Could not load database driver", e);
+				
+				logger.throwing("server.database.Database", "initialize", serverEx);
+	
+				throw serverEx; 
+			}
 		}
 	}
 	
 	Connection connection;
 	
+	// simulate nested transactions so that parts can be kept independent.
+	int transactionDepth;
+	
 	public SQLDatabase() {
-		connection = null;
+		if (!initialized) {
+			try {
+				initialize();
+			} catch (DatabaseException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+		connection = getConnection();
 	}
 	
 	/**
 	 * @return the connection
 	 */
 	public Connection getConnection() {
-		return connection;
+		try {
+			if (connection == null) {
+				connection = DriverManager.getConnection(DATABASE_URL);
+			}
+			return connection;
+		} catch (SQLException e) {
+			logger.info(e.getMessage());
+			return null;
+		}
+	}
+	
+	/**
+	 * @return the connection
+	 */
+	public void closeConnection() {
+		safeClose(connection);
+		connection = null;
 	}
 	
 	/**
@@ -52,32 +78,38 @@ public class SQLDatabase {
 	 * @throws DatabaseException
 	 */
 	public void startTransaction() throws DatabaseException {
-		try {
-			connection = DriverManager.getConnection(DATABASE_URL);
-			connection.setAutoCommit(false);
-		}
-		catch (SQLException e) {
-			throw new DatabaseException("Could not connect to database. Make sure " + 
-					DATABASE_FILE + " is available in ./" + DATABASE_DIRECTORY, e);
+		if (transactionDepth == 0) {
+			++transactionDepth;
+			try {
+				connection = DriverManager.getConnection(DATABASE_URL);
+				connection.setAutoCommit(false);
+			}
+			catch (SQLException e) {
+				throw new DatabaseException("Could not connect to database. Make sure " + 
+						DATABASE_FILE + " is available in ./" + DATABASE_DIRECTORY, e);
+			}
 		}
 	}
 	
 	public void endTransaction(boolean commit) {
-		try {
-			if (commit) {
-				connection.commit();
+		--transactionDepth;
+		if (transactionDepth == 0) {
+			try {
+				if (commit) {
+					connection.commit();
+				}
+				else {
+					connection.rollback();
+				}
 			}
-			else {
-				connection.rollback();
+			catch(SQLException e) {
+				System.out.println("Could not end transaction.");
+				e.printStackTrace();
 			}
-		}
-		catch(SQLException e) {
-			System.out.println("Could not end transaction.");
-			e.printStackTrace();
-		}
-		finally {
-			safeClose(connection);
-			connection = null;
+			finally {
+				safeClose(connection);
+				connection = null;
+			}
 		}
 	}
 	

@@ -8,9 +8,6 @@ import java.util.*;
 
 import org.json.simple.JSONObject;
 import shared.exceptions.InvalidActionException;
-import shared.locations.EdgeDirection;
-import shared.locations.EdgeLocation;
-import shared.model.ClientModelFacade;
 import shared.model.ModelFacade;
 
 /**

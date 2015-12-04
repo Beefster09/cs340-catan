@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import client.misc.ClientManager;
 
 import com.google.gson.Gson;
-import com.sun.media.jfxmedia.logging.Logger;
 
 import server.DAOs.DatabaseException;
 import server.Factories.IDAOFactory;
@@ -45,6 +45,8 @@ import shared.model.TradeOffer;
 import shared.model.TurnTracker;
 
 public class Server implements IServer {
+	
+	private static Logger logger = Logger.getLogger("Server");
 	
 	private final int NUMPLAYERS = 4;
 	
@@ -91,7 +93,7 @@ public class Server implements IServer {
 			factory.getUserDAO().addUser(mark);
 			factory.endTransaction(true);
 		} catch (DatabaseException e1) {
-			Logger.logMsg(Logger.INFO, "Users probably already exist in database, skipping register");
+			logger.info("Users probably already exist in database, skipping register");
 			
 		}
 		

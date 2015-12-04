@@ -439,9 +439,6 @@ implements Serializable {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canMonument(PlayerReference player) {
-		Player currentPlayer = getCurrentPlayer().getPlayer();
-		DevCardList list = currentPlayer.getOldDevCards();
-		
 		return isTurn(player) && !player.getPlayer().hasPlayedDevCard() &&
 				player.getPlayer().getOldDevCards().count(DevCardType.MONUMENT) > 0;
 	}
@@ -727,7 +724,6 @@ implements Serializable {
 	@SuppressWarnings("rawtypes")
 	private List<Player> updatePlayersFromJSON(JSONObject json) {
 		List<Player> players = new ArrayList<Player>();
-		int i = 0;
 		for (Object obj : (List) json.get("players")) {
 			JSONObject player = (JSONObject) obj;
 			if (player != null) {
@@ -741,7 +737,6 @@ implements Serializable {
 					e.printStackTrace();
 				}
 			}
-			i++;
 		}
 		if (model.getPlayers() == null || !model.getPlayers().equals(players)) {
 			model.setPlayers(players);
