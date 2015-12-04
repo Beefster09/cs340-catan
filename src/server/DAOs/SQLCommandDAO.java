@@ -1,5 +1,6 @@
 package server.DAOs;
 
+import java.io.ByteArrayInputStream;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -86,12 +87,9 @@ public class SQLCommandDAO implements ICommandDAO {
 			PreparedStatement stmt = conn.prepareStatement(
 					"INSERT INTO commands (gameid, command) " +
 					"VALUES (?, ?)");
-			
-			Blob cmdBlob = conn.createBlob();
-			cmdBlob.setBytes(0, CommandSerializer.serializeBytes(command));
 
 			stmt.setString(1, gameid.toString());
-			stmt.setBlob(2, cmdBlob);
+			stmt.setBytes(2, CommandSerializer.serializeBytes(command));
 			if (stmt.executeUpdate() != 1) {
 				throw new DatabaseException("Failed to store the command.");
 			}
@@ -112,9 +110,7 @@ public class SQLCommandDAO implements ICommandDAO {
 			
 			stmt.setString(1, gameid.toString());
 
-			if (stmt.executeUpdate() != 1) {
-				throw new DatabaseException("Failed to delete commands from the game.");
-			}
+			stmt.executeUpdate();
 			
 			stmt.close();
 
@@ -136,9 +132,7 @@ public class SQLCommandDAO implements ICommandDAO {
 			ResultSet results = stmt.executeQuery();
 			
 			while(results.next()) {
-				Blob cmdBlob = results.getBlob(1);
-				commands.add(CommandSerializer.deserializeBytes(
-						cmdBlob.getBytes(0, (int) cmdBlob.length())));
+				commands.add(CommandSerializer.deserializeBytes(results.getBytes(1)));
 			}
 			
 			results.close();

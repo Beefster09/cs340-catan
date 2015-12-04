@@ -4,3 +4,4 @@
 /bin1/
 log.txt
 log.*
+*.sqlite

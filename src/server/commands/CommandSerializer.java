@@ -24,7 +24,6 @@ public class CommandSerializer {
 			oStream.writeObject(serCommand);
 			oStream.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			throw new CommandSerializationException("Could not serialize the command.", e);
 		}
 		
