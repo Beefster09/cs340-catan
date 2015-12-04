@@ -1,5 +1,6 @@
 package server.DAOs;
 
+import java.util.List;
 import java.util.UUID;
 
 import shared.model.ModelFacade;
@@ -32,6 +33,12 @@ public class FileGameDAO implements IGameDAO {
 
 	@Override
 	public ModelFacade getGame(UUID gameUUID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ModelFacade> getAllGames() throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,5 +1,6 @@
 package server.DAOs;
 
+import java.util.List;
 import java.util.UUID;
 
 import server.model.User;
@@ -16,4 +17,5 @@ public interface IUserDAO {
 	public void deleteUser(User user) throws DatabaseException;
 	public void updateUserPassword(User user) throws DatabaseException;
 	public User getUser(User user) throws DatabaseException;
+	public List<User> getAllUsers() throws DatabaseException;
 }
