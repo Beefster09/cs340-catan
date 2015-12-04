@@ -26,7 +26,9 @@ import shared.locations.VertexLocation;
  *
  */
 public class CatanModel 
-	implements Serializable {	
+	implements Serializable {
+	private static final long serialVersionUID = 2103176853646879835L;
+	
 	private UUID id;
 	private String title;
 	

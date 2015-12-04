@@ -137,5 +137,10 @@ public class CatanCommand implements ICatanCommand {
 	public SerializableCatanCommand getSerializable() {
 		return getInfo();
 	}
+	
+	@Override
+	public String toString() {
+		return getInfo().toString();
+	}
 
 }

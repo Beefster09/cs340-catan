@@ -1,5 +1,7 @@
 package server.commands;
 
+import java.util.Arrays;
+
 public class CatanCommandInfo implements SerializableCatanCommand {
 	private static final long serialVersionUID = 6090393259487372910L;
 	
@@ -38,6 +40,15 @@ public class CatanCommandInfo implements SerializableCatanCommand {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "CatanCommand [methodName=" + methodName + ", args="
+				+ Arrays.toString(args) + "]";
 	}
 	
 }

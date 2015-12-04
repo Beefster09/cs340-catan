@@ -10,16 +10,64 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import server.Factories.IDAOFactory;
+import server.Factories.SQLDAOFactory;
+import server.commands.CatanCommand;
 import server.commands.CommandSerializationException;
 import server.commands.CommandSerializer;
 import server.commands.ICatanCommand;
+import shared.locations.EdgeDirection;
+import shared.locations.EdgeLocation;
+import shared.locations.VertexDirection;
+import shared.locations.VertexLocation;
+import shared.model.PlayerReference;
 
 public class SQLCommandDAO implements ICommandDAO {
 
 	private static Logger logger = Logger.getLogger("Catan-SQL");
 	
-	public static void main(String[] args) {
-		SQLDatabase database = new SQLDatabase();
+	public static void main(String[] args) throws Exception {		
+		IDAOFactory factory = new SQLDAOFactory();
+		
+		ICommandDAO dao = factory.getCommandDAO();
+
+		UUID gameid = UUID.randomUUID();
+		PlayerReference justin, jordan, grant, steve;
+		justin = new PlayerReference(UUID.randomUUID());
+		jordan = new PlayerReference(UUID.randomUUID());
+		grant = new PlayerReference(UUID.randomUUID());
+		steve = new PlayerReference(UUID.randomUUID());
+		
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", justin,
+				new VertexLocation(0, 0, VertexDirection.West),
+				new EdgeLocation(0, 0, EdgeDirection.NorthWest)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", jordan,
+				new VertexLocation(0, 0, VertexDirection.NorthEast),
+				new EdgeLocation(0, 0, EdgeDirection.North)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", grant,
+				new VertexLocation(0, 0, VertexDirection.SouthEast),
+				new EdgeLocation(0, 0, EdgeDirection.South)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", steve,
+				new VertexLocation(1, 1, VertexDirection.West),
+				new EdgeLocation(1, 1, EdgeDirection.NorthWest)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", steve,
+				new VertexLocation(1, 1, VertexDirection.SouthEast),
+				new EdgeLocation(1, 1, EdgeDirection.South)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", grant,
+				new VertexLocation(1, 1, VertexDirection.NorthEast),
+				new EdgeLocation(1, 1, EdgeDirection.North)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", jordan,
+				new VertexLocation(-1, -1, VertexDirection.West),
+				new EdgeLocation(-1, -1, EdgeDirection.NorthWest)));
+		dao.addCommand(gameid, new CatanCommand("buildStartingPieces", justin,
+				new VertexLocation(-1, -1, VertexDirection.NorthEast),
+				new EdgeLocation(-1, -1, EdgeDirection.North)));
+		
+		System.out.println(dao.getAll(gameid));
+		
+		dao.clearCommands(gameid);
+		
+		System.out.println(dao.getAll(gameid));
 	}
 
 	private SQLDatabase db;
