@@ -67,11 +67,9 @@ public class Server implements IServer {
 		return instance;
 	}
 	
-	//TODO: We absolutely need to remove this line, a factory will be dynamically
-	//loaded in, not hard coded.  Using this for initial debugging purposes
 	private static IDAOFactory factory;
 	
-	public static void initializeFactory(String pluginName) {
+	public static void setPersistenceType(String pluginName) {
 		PluginRegistry registry = PluginRegistry.getSingleton();
 		
 		try {
@@ -105,12 +103,10 @@ public class Server implements IServer {
 		}
 		
 		try {
-			factory.startTransaction();
 			factory.getUserDAO().addUser(sam);
 			factory.getUserDAO().addUser(brooke	);
 			factory.getUserDAO().addUser(pete);
 			factory.getUserDAO().addUser(mark);
-			factory.endTransaction(true);
 		} catch (DatabaseException e1) {
 			logger.info("Users probably already exist in database, skipping register");
 			
@@ -127,11 +123,8 @@ public class Server implements IServer {
 			knownGames.put(gameUUID, model.getGameHeader());
 			
 			try {
-				factory.startTransaction();
 				factory.getGameDAO().addGame(gameUUID, model);
-				factory.endTransaction(true);
 			} catch (DatabaseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -142,11 +135,11 @@ public class Server implements IServer {
 	}
 
 	private void loadGames() {
-		IGameDAO gameDAO = factory.getGameDAO();
-		List<GameHeader> gameList;
 		try {
-			gameList = gameDAO.getGameList();
-		
+			List<GameHeader> gameList = factory.getGameDAO().getGameList();
+			if (gameList == null) {
+				return;
+			}
 			for (GameHeader game : gameList) {
 				knownGames.put(game.getUUID(), game);
 			}
@@ -156,8 +149,13 @@ public class Server implements IServer {
 	}
 
 	private void loadUsers() {
-		// TODO Auto-generated method stub
-		
+		try {
+			for (User user : factory.getUserDAO().getAllUsers()) {
+				User.register(user);
+			}
+		} catch (DatabaseException | NameAlreadyInUseException e) {
+			logger.warning(e.getMessage());
+		}
 	}
 	
 	private ModelFacade getGame(UUID gameid) {
@@ -185,19 +183,14 @@ public class Server implements IServer {
 		throws InvalidActionException {
 		command.execute(game);
 		try {
-			factory.startTransaction();
 			ICommandDAO cmdDAO = factory.getCommandDAO();
 			cmdDAO.addCommand(game.getUUID(), command);
 			if (cmdDAO.getAll(game.getUUID()).size() >= COMMAND_FLUSH_FREQUENCY) {
-				factory.getGameDAO().addGame(game.getUUID(), game);
+				logger.fine("Flushing commands to game " + game.getUUID());
+				factory.getGameDAO().updateGamebyUUID(game.getUUID(), game);
 				cmdDAO.clearCommands(game.getUUID());
 			}
-			factory.endTransaction(true);
 		} catch (DatabaseException e) {
-			try {
-				factory.endTransaction(false);
-			} catch (DatabaseException e1) {
-			}
 			logger.warning(e.getMessage());
 		}
 	}
@@ -212,6 +205,11 @@ public class Server implements IServer {
 	@Override
 	public Session register(String username, String password) throws UserException, ServerException {
 		User user = User.register(username, password);
+		try {
+			factory.getUserDAO().addUser(user);
+		} catch (DatabaseException e) {
+			logger.warning("Failed to register the user in the persistent store");
+		}
 		Session newSession = new Session(user.getUsername(), user.getPassword(), null);
 		return newSession;
 	}
@@ -354,7 +352,6 @@ public class Server implements IServer {
 			if (tempModel == null)
 				throw new ServerException();
 			
-			//command.execute(tempModel);
 			execCommand(command, tempModel);
 			
 			return this.getModel(gameID, -1);
@@ -373,7 +370,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -409,7 +406,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -434,7 +431,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -459,7 +456,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -484,7 +481,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -510,7 +507,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -535,7 +532,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -560,7 +557,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -585,7 +582,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -635,7 +632,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -660,7 +657,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -686,7 +683,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -716,7 +713,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -741,7 +738,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -767,7 +764,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block
@@ -791,7 +788,7 @@ public class Server implements IServer {
 				tempModel = getGame(gameID);
 				if (tempModel == null)
 					throw new ServerException();
-				command.execute(tempModel);
+				execCommand(command, tempModel);
 				return this.getModel(gameID, -1);
 			} catch (InvalidActionException e) {
 				// TODO Auto-generated catch block

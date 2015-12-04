@@ -16,7 +16,7 @@ public interface IDAOFactory {
 	public IUserDAO getUserDAO();
 	public IGameDAO getGameDAO();
 	public ICommandDAO getCommandDAO();
-	public void startTransaction() throws DatabaseException;
-	public void endTransaction(boolean commit) throws DatabaseException;
+	public void startTransaction() throws DatabaseException; // Not needed
+	public void endTransaction(boolean commit) throws DatabaseException; // Not needed
 	
 }

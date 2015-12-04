@@ -2,6 +2,7 @@ package server.communication;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.util.logging.*;
 
 import server.userhandlers.*;
@@ -130,13 +131,20 @@ public class ServerCommunicator {
 	
 	
 	public static void main(String[] args) {
+		System.out.println(Arrays.asList(args));
+		Server.setPersistenceType("sql");
 		ServerCommunicator server = new ServerCommunicator();
-		if (args.length == 1) {
+		if (args.length >= 2) {
 			server.initPortNum(Integer.parseInt(args[0]));
-			server.setPersistenceType("sql");
+			server.setPersistenceType(args[1]);
 		}
-		else
+		else if (args.length == 1) {
+			server.initPortNum(Integer.parseInt(args[0]));
+			server.setPersistenceType(null);
+		}
+		else {
 			server.initPortNum(SERVER_PORT_NUMBER);
+		}
 		server.run();
 	}
 
@@ -145,6 +153,7 @@ public class ServerCommunicator {
 	}
 	
 	private void setPersistenceType(String type) {
+		Server.setPersistenceType(type);
 		persistenceType = type;
 	}
 	

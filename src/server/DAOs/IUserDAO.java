@@ -14,8 +14,8 @@ import server.model.User;
 public interface IUserDAO {
 
 	public void addUser(User user) throws DatabaseException;
-	public void deleteUser(User user) throws DatabaseException;
-	public void updateUserPassword(User user) throws DatabaseException;
-	public User getUser(User user) throws DatabaseException;
+	public void deleteUser(User user) throws DatabaseException; // Not needed
+	public void updateUserPassword(User user) throws DatabaseException; // Not needed
+	public User getUser(User user) throws DatabaseException; // Not needed
 	public List<User> getAllUsers() throws DatabaseException;
 }
