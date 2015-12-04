@@ -15,21 +15,15 @@ import shared.model.ModelFacade;
 public class FileGameDAO implements IGameDAO {
 
 	@Override
-	public boolean addGame(ModelFacade model) {
-		// TODO Auto-generated method stub
-		return false;
+	public void addGame(UUID uuid, ModelFacade model) {
 	}
 
 	@Override
-	public boolean removeGame(UUID gameUUID) {
-		// TODO Auto-generated method stub
-		return false;
+	public void removeGame(UUID gameUUID) {
 	}
 
 	@Override
-	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model) {
-		// TODO Auto-generated method stub
-		return false;
+	public void updateGamebyUUID(UUID gameUUID, ModelFacade model) {
 	}
 
 	@Override

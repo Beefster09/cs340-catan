@@ -1,5 +1,10 @@
 package server.DAOs;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,21 +42,46 @@ public class SQLGameDAO implements IGameDAO {
 	}
 
 	@Override
-	public boolean addGame(ModelFacade model) {
-		// TODO Auto-generated method stub
-		return false;
+	public void addGame(UUID uuid, ModelFacade model) throws DatabaseException {
+		PreparedStatement stmt = null;
+		ResultSet keyRS = null;
+		try {
+			String query = "insert into games (uuid, game) values (?, ?)";
+			stmt = db.getConnection().prepareStatement(query);
+			stmt.setString(1, uuid.toString());
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(model);
+			byte[] bytes = baos.toByteArray();
+			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+			
+			stmt.setBinaryStream(2, bais, bytes.length);
+			if (stmt.executeUpdate() != 1) {
+				throw new DatabaseException("Could not add game.");
+			}
+		}
+		catch (SQLException e) {
+			throw new DatabaseException("Could not add game", e);
+		}
+		catch (NullPointerException e) {
+			throw new NullPointerException("Connection object is null (Did you forget start/end transaction?)");
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new DatabaseException("IOException");
+		}
+		finally{
+			SQLDatabase.safeClose(keyRS);
+			SQLDatabase.safeClose(stmt);
+		}
 	}
 
 	@Override
-	public boolean removeGame(UUID gameUUID) {
-		// TODO Auto-generated method stub
-		return false;
+	public void removeGame(UUID gameUUID) {
 	}
 
 	@Override
-	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model) {
-		// TODO Auto-generated method stub
-		return false;
+	public void updateGamebyUUID(UUID gameUUID, ModelFacade model) {
 	}
 
 	@Override

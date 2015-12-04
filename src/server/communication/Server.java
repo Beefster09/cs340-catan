@@ -105,7 +105,16 @@ public class Server implements IServer {
 			model.addPlayer("Brooke", CatanColor.ORANGE);
 			model.addPlayer("Pete", CatanColor.YELLOW);
 			model.addPlayer("Mark", CatanColor.GREEN);
-	
+			
+			try {
+				factory.startTransaction();
+				factory.getGameDAO().addGame(gameUUID, model);
+				factory.endTransaction(true);
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 //			model = new ModelFacade();
 //			gameUUID = model.getGameHeader().getUUID();
 //			games.put(gameUUID, model);
