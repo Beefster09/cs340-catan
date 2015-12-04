@@ -133,7 +133,7 @@ public class SQLUserDAO implements IUserDAO {
 
 	@Override
 	public List<User> getAllUsers() throws DatabaseException {
-		List<User> returnUsers = new ArrayList<User>;
+		List<User> returnUsers = new ArrayList<User>();
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;		
