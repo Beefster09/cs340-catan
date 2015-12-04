@@ -1,6 +1,6 @@
 package server.DAOs;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import shared.model.ModelFacade;
@@ -17,5 +17,5 @@ public interface IGameDAO {
 	public boolean removeGame(UUID gameUUID) throws DatabaseException;
 	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model) throws DatabaseException;
 	public ModelFacade getGame(UUID gameUUID) throws DatabaseException;
-	public List<ModelFacade> getAllGames() throws DatabaseException;
+	public Map<UUID, ModelFacade> getAllGames() throws DatabaseException;
 }

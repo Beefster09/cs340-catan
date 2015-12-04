@@ -1,6 +1,7 @@
 package server.DAOs;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import shared.model.ModelFacade;
@@ -38,7 +39,7 @@ public class FileGameDAO implements IGameDAO {
 	}
 
 	@Override
-	public List<ModelFacade> getAllGames() throws DatabaseException {
+	public Map<UUID, ModelFacade> getAllGames() throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}

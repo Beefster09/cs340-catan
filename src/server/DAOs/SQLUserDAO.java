@@ -133,7 +133,7 @@ public class SQLUserDAO implements IUserDAO {
 
 	@Override
 	public List<User> getAllUsers() throws DatabaseException {
-		List<User> returnUsers = new ArrayList<User>;
+		List<User> returnUsers = new ArrayList<User>();
 		
 		PreparedStatement stmt = null;
 		ResultSet rs = null;		
@@ -143,7 +143,7 @@ public class SQLUserDAO implements IUserDAO {
 			stmt = db.getConnection().prepareStatement(query);
 			rs = stmt.executeQuery();
 			
-			if (rs.next()) {
+			while (rs.next()) {
 				String username = rs.getString(1);
 				String password = rs.getString(2);
 				
