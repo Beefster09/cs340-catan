@@ -2,6 +2,7 @@ package server.DAOs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import shared.communication.GameHeader;
@@ -10,22 +11,8 @@ import shared.model.ModelFacade;
 public class MockGameDAO implements IGameDAO {
 
 	@Override
-	public boolean addGame(ModelFacade model) throws DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeGame(UUID gameUUID) throws DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model)
+	public void updateGamebyUUID(UUID gameUUID, ModelFacade model)
 			throws DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -37,6 +24,24 @@ public class MockGameDAO implements IGameDAO {
 	@Override
 	public List<GameHeader> getGameList() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public void addGame(UUID uuid, ModelFacade model) throws DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeGame(UUID gameUUID) throws DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<UUID, ModelFacade> getAllGames() throws DatabaseException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,6 +1,8 @@
 package server.DAOs;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -127,6 +129,35 @@ public class SQLUserDAO implements IUserDAO {
 			SQLDatabase.safeClose(stmt);
 		}
 		return returnUser;
+	}
+
+	@Override
+	public List<User> getAllUsers() throws DatabaseException {
+		List<User> returnUsers = new ArrayList<User>();
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;		
+		
+		try {
+			String query = "select * from user";
+			stmt = db.getConnection().prepareStatement(query);
+			rs = stmt.executeQuery();
+			
+			while (rs.next()) {
+				String username = rs.getString(1);
+				String password = rs.getString(2);
+				
+				returnUsers.add(new User(username, password));
+			}
+		}
+		catch (SQLException e) {
+			throw new DatabaseException("Could not get cells", e);
+		}
+		finally {
+			SQLDatabase.safeClose(rs);
+			SQLDatabase.safeClose(stmt);
+		}
+		return returnUsers;
 	}
 
 }

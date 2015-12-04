@@ -1,5 +1,6 @@
 package server.DAOs;
 
+import java.util.List;
 import java.util.UUID;
 
 import server.model.User;
@@ -32,6 +33,12 @@ public class FileUserDAO implements IUserDAO {
 
 	@Override
 	public User getUser(User user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<User> getAllUsers() throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}

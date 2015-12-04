@@ -1,6 +1,7 @@
 package server.DAOs;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import shared.communication.GameHeader;
@@ -15,21 +16,15 @@ import shared.model.ModelFacade;
 public class FileGameDAO implements IGameDAO {
 
 	@Override
-	public boolean addGame(ModelFacade model) {
-		// TODO Auto-generated method stub
-		return false;
+	public void addGame(UUID uuid, ModelFacade model) {
 	}
 
 	@Override
-	public boolean removeGame(UUID gameUUID) {
-		// TODO Auto-generated method stub
-		return false;
+	public void removeGame(UUID gameUUID) {
 	}
 
 	@Override
-	public boolean updateGamebyUUID(UUID gameUUID, ModelFacade model) {
-		// TODO Auto-generated method stub
-		return false;
+	public void updateGamebyUUID(UUID gameUUID, ModelFacade model) {
 	}
 
 	@Override
@@ -38,8 +33,13 @@ public class FileGameDAO implements IGameDAO {
 		return null;
 	}
 
+	public List<GameHeader> getGameList() throws DatabaseException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	@Override
-	public List<GameHeader> getGameList() {
+	public Map<UUID, ModelFacade> getAllGames() throws DatabaseException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -14,8 +14,8 @@ import com.google.gson.Gson;
 import server.DAOs.DatabaseException;
 import server.DAOs.ICommandDAO;
 import server.DAOs.IGameDAO;
-import server.DAOs.MockDAOFactory;
 import server.Factories.IDAOFactory;
+import server.Factories.MockDAOFactory;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
@@ -119,11 +119,22 @@ public class Server implements IServer {
 		try {
 			ModelFacade model = new ModelFacade();
 			UUID gameUUID = model.getGameHeader().getUUID();
-			activeGames.put(gameUUID, model);
 			model.addPlayer("Sam", CatanColor.RED);
 			model.addPlayer("Brooke", CatanColor.ORANGE);
 			model.addPlayer("Pete", CatanColor.YELLOW);
 			model.addPlayer("Mark", CatanColor.GREEN);
+			activeGames.put(gameUUID, model);
+			knownGames.put(gameUUID, model.getGameHeader());
+			
+			try {
+				factory.startTransaction();
+				factory.getGameDAO().addGame(gameUUID, model);
+				factory.endTransaction(true);
+			} catch (DatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		} catch (GameInitializationException e) {
 			e.printStackTrace();
 		}
@@ -132,10 +143,15 @@ public class Server implements IServer {
 
 	private void loadGames() {
 		IGameDAO gameDAO = factory.getGameDAO();
-		List<GameHeader> gameList = gameDAO.getGameList();
+		List<GameHeader> gameList;
+		try {
+			gameList = gameDAO.getGameList();
 		
-		for (GameHeader game : gameList) {
-			knownGames.put(game.getUUID(), game);
+			for (GameHeader game : gameList) {
+				knownGames.put(game.getUUID(), game);
+			}
+		} catch (DatabaseException e) {
+			logger.warning(e.getMessage());
 		}
 	}
 
@@ -173,7 +189,7 @@ public class Server implements IServer {
 			ICommandDAO cmdDAO = factory.getCommandDAO();
 			cmdDAO.addCommand(game.getUUID(), command);
 			if (cmdDAO.getAll(game.getUUID()).size() >= COMMAND_FLUSH_FREQUENCY) {
-				factory.getGameDAO().addGame(game);
+				factory.getGameDAO().addGame(game.getUUID(), game);
 				cmdDAO.clearCommands(game.getUUID());
 			}
 			factory.endTransaction(true);
