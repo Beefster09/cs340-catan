@@ -85,9 +85,30 @@ public class SQLGameDAO implements IGameDAO {
 	}
 
 	@Override
-	public ModelFacade getGame(UUID gameUUID) {
-		// TODO Auto-generated method stub
-		return null;
+	public ModelFacade getGame(UUID gameUUID) throws DatabaseException {
+		ModelFacade returnModelFacade = null;
+		
+		PreparedStatement stmt = null;
+		ResultSet rs = null;		
+		
+		try {
+			String query = "select * from games where uuid = ?";
+			stmt = db.getConnection().prepareStatement(query);
+			stmt.setString(1, gameUUID.toString());
+			rs = stmt.executeQuery();
+			
+			if (rs.next()) {
+				returnModelFacade = (ModelFacade)rs.getBlob(3);
+			}
+		}
+		catch (SQLException e) {
+			throw new DatabaseException("Could not get game", e);
+		}
+		finally {
+			SQLDatabase.safeClose(rs);
+			SQLDatabase.safeClose(stmt);
+		}
+		return returnModelFacade;
 	}
 
 	@Override
