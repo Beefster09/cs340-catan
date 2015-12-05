@@ -14,6 +14,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
+import server.Factories.FileDAOFactory;
 import server.Factories.IDAOFactory;
 
 public class PluginRegistry {
@@ -71,7 +72,8 @@ public class PluginRegistry {
 	public IDAOFactory getDAOFactory(String pluginName)
 			throws InstantiationException {
 		if (!plugins.containsKey(pluginName)) {
-			throw new IllegalArgumentException();
+			return new FileDAOFactory();
+//			throw new IllegalArgumentException();
 		}
 		
 		if (pluginCache.containsKey(pluginName)) {

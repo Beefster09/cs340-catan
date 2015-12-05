@@ -7,6 +7,7 @@ import java.util.logging.*;
 
 import server.userhandlers.*;
 import server.movehandlers.*;
+import server.plugins.PluginRegistry;
 import server.gamehandlers.*;
 
 import com.sun.net.httpserver.*;

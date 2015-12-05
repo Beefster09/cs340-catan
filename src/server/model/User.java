@@ -1,5 +1,6 @@
 package server.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 import shared.exceptions.NameAlreadyInUseException;
@@ -10,8 +11,14 @@ import shared.exceptions.UserException;
  * @author Justin Snyder
  *
  */
-public class User {
+public class User
+implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 373204178843485095L;
+
 	private static Map<String, User> userTable = new HashMap<String, User>();
 	
 	final private String username;

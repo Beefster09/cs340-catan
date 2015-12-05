@@ -1,5 +1,7 @@
 package server.Factories;
 
+import server.DAOs.FileGameDAO;
+import server.DAOs.FileUserDAO;
 import server.DAOs.ICommandDAO;
 import server.DAOs.IGameDAO;
 import server.DAOs.IUserDAO;
@@ -12,35 +14,34 @@ import server.DAOs.IUserDAO;
  *
  */
 public class FileDAOFactory implements IDAOFactory {
+	
+	IUserDAO userDAO;
+	IGameDAO gameDAO;
 
+	public FileDAOFactory(){
+		userDAO = new FileUserDAO();
+		gameDAO = new FileGameDAO();
+	}
+	
 	@Override
 	public IUserDAO getUserDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return userDAO;
 	}
 
 	@Override
 	public IGameDAO getGameDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return gameDAO;
 	}
 
 	@Override
 	public ICommandDAO getCommandDAO() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void startTransaction() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void startTransaction() {}
 
 	@Override
-	public void endTransaction(boolean commit) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void endTransaction(boolean commit) {}
 
 }
