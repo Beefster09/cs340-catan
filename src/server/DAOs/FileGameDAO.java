@@ -27,10 +27,10 @@ public class FileGameDAO implements IGameDAO {
 	private String gameHeaderExtension;
 
 	public FileGameDAO(){
-		filePath = "fileStorage/games";
-		gameHeaderExtension = "/gameHeaders.txt";
+		filePath = "fileStorage/games/";
+		gameHeaderExtension = "gameHeaders.txt";
 		try{
-			File f = new File(filePath);
+			File f = new File(filePath.substring(0,filePath.length() - 1));
 			if(!f.exists()){
 				Files.createDirectories(f.toPath());
 			}
@@ -47,13 +47,13 @@ public class FileGameDAO implements IGameDAO {
 	@Override
 	public void addGame(UUID uuid, ModelFacade model){
 		try{
-			FileOutputStream fileOut = new FileOutputStream(filePath + "/" + uuid.toString());
+			FileOutputStream fileOut = new FileOutputStream(filePath + uuid.toString());
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(model);
 			out.close();
 			fileOut.close();
 					
-			List<GameHeader> games = getGames();
+			List<GameHeader> games = getGameList();
 			
 			games.add(model.getGameHeader());
 			
@@ -63,7 +63,7 @@ public class FileGameDAO implements IGameDAO {
 			out.close();
 			fileOut.close();
 		}
-		catch(IOException e){
+		catch(IOException | DatabaseException e){
 			e.printStackTrace();
 		}
 	}
@@ -76,7 +76,7 @@ public class FileGameDAO implements IGameDAO {
 	@Override
 	public void updateGamebyUUID(UUID gameUUID, ModelFacade model) {
 		try{
-			FileOutputStream fileOut = new FileOutputStream(filePath + "/" + gameUUID.toString());
+			FileOutputStream fileOut = new FileOutputStream(filePath + gameUUID.toString());
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(model);
 			out.close();
@@ -91,7 +91,7 @@ public class FileGameDAO implements IGameDAO {
 	public ModelFacade getGame(UUID gameUUID) {
 		ModelFacade model = null;
 		try{
-			FileInputStream fileIn = new FileInputStream(filePath + "/" + gameUUID.toString());
+			FileInputStream fileIn = new FileInputStream(filePath + gameUUID.toString());
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 
 			model = (ModelFacade) in.readObject();
@@ -105,19 +105,8 @@ public class FileGameDAO implements IGameDAO {
 		return model;
 	}
 
-	public List<GameHeader> getGameList() throws DatabaseException {
-		return getGames();	
-	}
-
-	 //Not Needed
-	@Override
-	public Map<UUID, ModelFacade> getAllGames() throws DatabaseException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
-	private List<GameHeader> getGames(){
+	public List<GameHeader> getGameList() throws DatabaseException {
 		List<GameHeader> games = new ArrayList<GameHeader>();
 		try{
 			FileInputStream fileIn = new FileInputStream(filePath + gameHeaderExtension);
@@ -132,8 +121,15 @@ public class FileGameDAO implements IGameDAO {
 			System.out.println("File was empty");
 		}
 		catch (ClassNotFoundException e){
-			e.printStackTrace();
+			throw new DatabaseException();
 		}
 		return games;
+	}
+
+	 //Not Needed
+	@Override
+	public Map<UUID, ModelFacade> getAllGames() throws DatabaseException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

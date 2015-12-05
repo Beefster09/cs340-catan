@@ -1,12 +1,15 @@
 package server.DAOs;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
 import server.model.User;
 
 /**
@@ -18,9 +21,26 @@ import server.model.User;
 public class FileUserDAO implements IUserDAO {
 
 	private String filePath;
+	private String fileExtension;
 	
 	public FileUserDAO(){
-		filePath = "fileStorage/users/users.txt";
+		filePath = "fileStorage/users/";
+		fileExtension = "users.txt";
+		try{
+			File f = new File(filePath.substring(0,filePath.length() - 1));
+			if(!f.exists()){
+				Files.createDirectories(f.toPath());
+			}
+			filePath = filePath + fileExtension;
+			f = new File(filePath);
+			if(!f.exists()){
+				Files.createFile(f.toPath());
+			}
+			
+		}
+		catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
