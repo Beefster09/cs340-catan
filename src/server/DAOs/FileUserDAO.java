@@ -25,7 +25,7 @@ public class FileUserDAO implements IUserDAO {
 	
 	public FileUserDAO(){
 		filePath = "fileStorage/users/";
-		fileExtension = "users.txt";
+		fileExtension = "users";
 		try{
 			File f = new File(filePath.substring(0,filePath.length() - 1));
 			if(!f.exists()){

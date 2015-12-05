@@ -15,7 +15,6 @@ import shared.communication.GameHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.model.ModelFacade;
-import shared.model.Player;
 import shared.model.PlayerReference;
 
 /**
@@ -53,6 +52,11 @@ public class FileDAOFactory implements IDAOFactory {
 			System.out.println("getGameList:");
 			System.out.println(games);
 			System.out.println();
+			
+			System.out.println("games[0]:");
+			System.out.println(games.get(0).getUUID().toString());
+			System.out.println();
+			
 			System.out.println("getGame:");
 			System.out.println(game.getGame(uuid));
 			System.out.println();
