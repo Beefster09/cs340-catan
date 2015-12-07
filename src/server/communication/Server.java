@@ -113,6 +113,7 @@ public class Server implements IServer {
 		}
 		
 		if (knownGames.isEmpty()) {
+			logger.info("There are no known games. Creating the default game.");
 			try {
 				ModelFacade model = new ModelFacade();
 				UUID gameUUID = model.getGameHeader().getUUID();

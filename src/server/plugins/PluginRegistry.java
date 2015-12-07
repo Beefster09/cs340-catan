@@ -16,6 +16,7 @@ import java.util.Map;
 
 import server.Factories.FileDAOFactory;
 import server.Factories.IDAOFactory;
+import server.Factories.MockDAOFactory;
 
 public class PluginRegistry {
 
@@ -72,7 +73,8 @@ public class PluginRegistry {
 	public IDAOFactory getDAOFactory(String pluginName)
 			throws InstantiationException {
 		if (!plugins.containsKey(pluginName)) {
-			return new FileDAOFactory();
+//			return new FileDAOFactory();
+			return new MockDAOFactory();
 //			throw new IllegalArgumentException();
 		}
 		

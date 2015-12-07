@@ -133,15 +133,18 @@ public class ServerCommunicator {
 	
 	public static void main(String[] args) {
 		System.out.println(Arrays.asList(args));
-		Server.setPersistenceType("sql");
+		if (args.length >= 2) {
+			Server.setPersistenceType(args[1]);
+		}
+		else {
+			Server.setPersistenceType(null);
+		}
 		ServerCommunicator server = new ServerCommunicator();
 		if (args.length >= 2) {
 			server.initPortNum(Integer.parseInt(args[0]));
-			server.setPersistenceType(args[1]);
 		}
 		else if (args.length == 1) {
 			server.initPortNum(Integer.parseInt(args[0]));
-			server.setPersistenceType(null);
 		}
 		else {
 			server.initPortNum(SERVER_PORT_NUMBER);
