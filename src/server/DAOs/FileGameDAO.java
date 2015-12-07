@@ -51,6 +51,7 @@ public class FileGameDAO implements IGameDAO {
 	
 	@Override
 	public void addGame(UUID uuid, ModelFacade model){
+		Gson gson = new Gson();
 		try{
 			FileOutputStream fileOut = new FileOutputStream(filePath + uuid.toString());
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -64,7 +65,7 @@ public class FileGameDAO implements IGameDAO {
 			
 			fileOut = new FileOutputStream(filePath + gameHeaderExtension);
 			out = new ObjectOutputStream(fileOut);
-			out.writeObject(games);
+			out.writeObject(gson.toJson(games));
 			out.close();
 			fileOut.close();
 		}
@@ -112,12 +113,19 @@ public class FileGameDAO implements IGameDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<GameHeader> getGameList() throws DatabaseException {
+		Gson gson = new Gson();
 		List<GameHeader> games = new ArrayList<GameHeader>();
 		try{
 			FileInputStream fileIn = new FileInputStream(filePath + gameHeaderExtension);
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 
-			games = (List<GameHeader>) in.readObject();
+			String gamesString = (String) in.readObject();
+			
+			List<Object> gameList = gson.fromJson(gamesString, List.class);
+			
+			for(Object o : gameList){
+				games.add(gson.fromJson(o.toString(), GameHeader.class));
+			}
 
 			in.close();
 			fileIn.close();
