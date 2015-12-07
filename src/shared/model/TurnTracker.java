@@ -93,6 +93,11 @@ public class TurnTracker
 			setStatus(TurnStatus.Playing);
 		}
 	}
+	
+	// Needed because players is transient
+	public void setPlayerList(List<Player> players) {
+		this.players = players;
+	}
 
 	/**
 	 * @return the currentPlayer

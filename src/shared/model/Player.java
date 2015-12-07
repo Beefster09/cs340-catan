@@ -66,6 +66,10 @@ implements Serializable {
 		return UUID.nameUUIDFromBytes(data);
 	}
 	
+	public static void registerPlayer(Player player) {
+		playerTable.put(player.getUUID(), player);
+	}
+	
 	private void setUUID(UUID uuid) {
 		if (uuid == null) {
 			uuid = UUID.randomUUID();

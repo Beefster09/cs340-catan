@@ -112,29 +112,31 @@ public class Server implements IServer {
 			
 		}
 		
-		try {
-			ModelFacade model = new ModelFacade();
-			UUID gameUUID = model.getGameHeader().getUUID();
-			model.addPlayer("Sam", CatanColor.RED);
-			model.addPlayer("Brooke", CatanColor.ORANGE);
-			model.addPlayer("Pete", CatanColor.YELLOW);
-			model.addPlayer("Mark", CatanColor.GREEN);
-			activeGames.put(gameUUID, model);
-			knownGames.put(gameUUID, model.getGameHeader());
-			
+		if (knownGames.isEmpty()) {
 			try {
-				factory.getGameDAO().addGame(gameUUID, model);
-			} catch (DatabaseException e) {
+				ModelFacade model = new ModelFacade();
+				UUID gameUUID = model.getGameHeader().getUUID();
+				model.addPlayer("Sam", CatanColor.RED);
+				model.addPlayer("Brooke", CatanColor.ORANGE);
+				model.addPlayer("Pete", CatanColor.YELLOW);
+				model.addPlayer("Mark", CatanColor.GREEN);
+				activeGames.put(gameUUID, model);
+				knownGames.put(gameUUID, model.getGameHeader());
+				
+				try {
+					factory.getGameDAO().addGame(gameUUID, model);
+				} catch (DatabaseException e) {
+					e.printStackTrace();
+				}
+				
+			} catch (GameInitializationException e) {
 				e.printStackTrace();
 			}
-			
-		} catch (GameInitializationException e) {
-			e.printStackTrace();
 		}
-		
 	}
 
 	private void loadGames() {
+		logger.info("Getting games");
 		try {
 			List<GameHeader> gameList = factory.getGameDAO().getGameList();
 			if (gameList == null) {
@@ -142,9 +144,11 @@ public class Server implements IServer {
 			}
 			for (GameHeader game : gameList) {
 				knownGames.put(game.getUUID(), game);
+				logger.info(game.toString());
 			}
 		} catch (DatabaseException e) {
 			logger.warning(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -165,6 +169,11 @@ public class Server implements IServer {
 		else if (knownGames.containsKey(gameid)) {
 			try {
 				ModelFacade game = factory.getGameDAO().getGame(gameid);
+				for (Player player : game.getCatanModel().getPlayers()) {
+					Player.registerPlayer(player);
+				}
+				game.getCatanModel().getTurnTracker().setPlayerList(game.getCatanModel().getPlayers());
+				logger.info("Game version: " + game.getVersion());
 				List<ICatanCommand> commands = factory.getCommandDAO().getAll(gameid);
 				for (ICatanCommand command : commands) {
 					command.execute(game);

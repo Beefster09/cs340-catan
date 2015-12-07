@@ -8,6 +8,8 @@ import shared.communication.GameHeader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.sql.Blob;
 import java.sql.PreparedStatement;
@@ -51,7 +53,7 @@ public class SQLGameDAO implements IGameDAO {
 		PreparedStatement stmt = null;
 		ResultSet keyRS = null;
 		try {
-			String query = "insert into games (uuid, game) values (?, ?)";
+			String query = "insert into games (uuid, game, header) values (?, ?, ?)";
 			stmt = db.getConnection().prepareStatement(query);
 			stmt.setString(1, uuid.toString());
 			
@@ -62,6 +64,14 @@ public class SQLGameDAO implements IGameDAO {
 			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 			
 			stmt.setBinaryStream(2, bais, bytes.length);
+			
+			ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+			ObjectOutputStream oos2 = new ObjectOutputStream(baos2);
+			oos2.writeObject(model.getGameHeader());
+			byte[] bytes2 = baos2.toByteArray();
+			ByteArrayInputStream bais2 = new ByteArrayInputStream(bytes2);
+			
+			stmt.setBinaryStream(3, bais2, bytes2.length);
 			if (stmt.executeUpdate() != 1) {
 				throw new DatabaseException("Could not add game.");
 			}
@@ -82,11 +92,41 @@ public class SQLGameDAO implements IGameDAO {
 	}
 
 	@Override
-	public void removeGame(UUID gameUUID) {
+	public void removeGame(UUID gameUUID) throws DatabaseException {
+		PreparedStatement stmt = null;
+		ResultSet keyRS = null;
+		try {
+			String query = "delete from games where uuid=?";
+			stmt = db.getConnection().prepareStatement(query);
+			stmt.setString(1, gameUUID.toString());
+			
+			if (stmt.executeUpdate() != 1) {
+				throw new DatabaseException("Could not add game.");
+			}
+		}
+		catch (SQLException e) {
+			throw new DatabaseException("Could not add game", e);
+		}
+		catch (NullPointerException e) {
+			throw new NullPointerException("Connection object is null (Did you forget start/end transaction?)");
+		}
+		finally{
+			SQLDatabase.safeClose(keyRS);
+			SQLDatabase.safeClose(stmt);
+		}
 	}
 
 	@Override
 	public void updateGamebyUUID(UUID gameUUID, ModelFacade model) {
+		try {
+			db.startTransaction();
+			removeGame(gameUUID);
+			addGame(gameUUID, model);
+			db.endTransaction(true);
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -97,16 +137,18 @@ public class SQLGameDAO implements IGameDAO {
 		ResultSet rs = null;		
 		
 		try {
-			String query = "select * from games where uuid = ?";
+			String query = "select game from games where uuid = ?";
 			stmt = db.getConnection().prepareStatement(query);
 			stmt.setString(1, gameUUID.toString());
 			rs = stmt.executeQuery();
 			
 			if (rs.next()) {
-				returnModelFacade = (ModelFacade)rs.getBlob(3);
+				InputStream blobStream = new ByteArrayInputStream(rs.getBytes(1));
+				ObjectInputStream objStream = new ObjectInputStream(blobStream);
+				returnModelFacade = (ModelFacade) objStream.readObject();
 			}
 		}
-		catch (SQLException e) {
+		catch (SQLException | ClassNotFoundException | IOException e) {
 			throw new DatabaseException("Could not get game", e);
 		}
 		finally {
@@ -117,9 +159,30 @@ public class SQLGameDAO implements IGameDAO {
 	}
 
 	@Override
-	public List<GameHeader> getGameList() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<GameHeader> getGameList() throws DatabaseException {
+		List<GameHeader> headers = new ArrayList<>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;		
+		
+		try {
+			String query = "select header from games";
+			stmt = db.getConnection().prepareStatement(query);
+			rs = stmt.executeQuery();
+			
+			while (rs.next()) {
+				InputStream blobStream = new ByteArrayInputStream(rs.getBytes(1));
+				ObjectInputStream objStream = new ObjectInputStream(blobStream);
+				headers.add((GameHeader) objStream.readObject());
+			}
+		}
+		catch (SQLException | ClassNotFoundException | IOException e) {
+			throw new DatabaseException("Could not get games", e);
+		}
+		finally {
+			SQLDatabase.safeClose(rs);
+			SQLDatabase.safeClose(stmt);
+		}
+		return headers;
 	}
 
 	@Override
@@ -130,7 +193,7 @@ public class SQLGameDAO implements IGameDAO {
 		ResultSet rs = null;		
 		
 		try {
-			String query = "select * from games";
+			String query = "select game from games";
 			stmt = db.getConnection().prepareStatement(query);
 			rs = stmt.executeQuery();
 			

@@ -81,5 +81,13 @@ implements Serializable {
 		return players;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "GameHeader [title=" + title + ", uuid=" + uuid + ", players="
+				+ players + "]";
+	}
 	
 }
