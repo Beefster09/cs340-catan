@@ -8,8 +8,8 @@ import shared.model.TradeOffer;
 
 public abstract class AIPlayer {
 	
-	private ModelFacade game;
-	private Player player;
+	protected ModelFacade game;
+	protected Player player;
 	
 	/**
 	 * @param server
