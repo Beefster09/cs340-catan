@@ -119,7 +119,6 @@ public class CatanCommand implements ICatanCommand {
 	@Override
 	public void execute(ModelFacade model) throws InvalidActionException {
 		try {
-			model.getCatanModel().toString();
 			method.invoke(model, arguments);
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();

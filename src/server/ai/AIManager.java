@@ -45,66 +45,55 @@ public class AIManager extends AbstractModelListener {
 		return aiPlayers.values();
 	}
 
-	private boolean ttRecursionGuard = false;
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
-		// Keep this from being recursed (and thus, running certain logic twice)
-		if (ttRecursionGuard) {
-			return;
+		if (turnTracker.getStatus() == TurnStatus.Discarding) {
+			for (AIPlayer ai : aiPlayers.values()) {
+				if (!ai.getPlayer().hasDiscarded()) {
+					ai.discard();
+					return; // Only process one AI per call
+				}
+			}
 		}
-		ttRecursionGuard = true;
+		
 		UUID current = turnTracker.getCurrentPlayer().getPlayerUUID();
 		if (aiPlayers.containsKey(current)) {
 			try {
 				switch(turnTracker.getStatus()) {
 				case FirstRound:
-					ttRecursionGuard = false;
 					aiPlayers.get(current).firstRound();
 					break;
 				case SecondRound:
-					ttRecursionGuard = false;
 					aiPlayers.get(current).secondRound();
 					break;
 				case Rolling:
 					server.rollDice(current, getGameID(), dice.roll());
 					
 					turnTracker = game.getCatanModel().getTurnTracker();
-					// no break
-				case Discarding:
-					if (turnTracker.getStatus() == TurnStatus.Discarding) {
-						for (AIPlayer ai : aiPlayers.values()) {
-							ai.discard();
-						}
-						turnTracker = game.getCatanModel().getTurnTracker();
-						if (turnTracker.getStatus() == TurnStatus.Discarding) {
-							ttRecursionGuard = false;
-							return; // Some human players still need to discard
-						}
-					}
-					// no break
+					break;
 				case Robbing:
-					if (turnTracker.getStatus() == TurnStatus.Robbing) {
-						aiPlayers.get(current).robber();
-					}
-					// no break
+					aiPlayers.get(current).robber();
+					break;
 				case Playing:
 					aiPlayers.get(current).takeTurn();
-					
-					ttRecursionGuard = false;
 	
 					server.finishTurn(current, getGameID());
+					break;
+				default:
 					break;
 				}
 			} catch (ServerException | UserException e) {
 				e.printStackTrace();
 				// probably a bad thing
 			}
-			ttRecursionGuard = false;
 		}
 	}
 
 	@Override
 	public void tradeOfferChanged(TradeOffer offer) {
+		if (offer == null) {
+			return;
+		}
 		UUID receiver = offer.getReceiver().getPlayerUUID();
 		if (aiPlayers.containsKey(receiver)) {
 			boolean shouldAccept = aiPlayers.get(receiver).tradeOffered(offer);

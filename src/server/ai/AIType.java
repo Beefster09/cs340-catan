@@ -2,20 +2,19 @@ package server.ai;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.UUID;
 
 import shared.model.ModelFacade;
 import shared.model.Player;
 
 public enum AIType {
-	Random,
+	Idle,
 	Justin;
 	
 	private Class<? extends AIPlayer> aiClass;
 	
 	static {
 		Justin.aiClass = JustinAI.class;
-		Random.aiClass = RandomAI.class;
+		Idle.aiClass = IdleAI.class;
 	}
 	
 	static public AIType fromString(String input) throws IllegalArgumentException{

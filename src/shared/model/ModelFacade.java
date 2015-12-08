@@ -160,7 +160,6 @@ implements Serializable {
 	public synchronized void discard(PlayerReference player,
 			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
 		if (!canDiscard(player, toDiscard)) {
-			canDiscard(player, toDiscard);
 			throw new InsufficientResourcesException();
 		}
 		model.discard(player, toDiscard);		
@@ -534,6 +533,10 @@ implements Serializable {
 		}
 		
 		model.acceptTrade();
+		
+		for (IModelListener listener : listeners) {
+			listener.tradeOfferChanged(null);
+		}
 	}
 	
 	/**
@@ -543,6 +546,10 @@ implements Serializable {
 	 */
 	public synchronized void declineTrade() {
 		model.declineTrade();
+		
+		for (IModelListener listener : listeners) {
+			listener.tradeOfferChanged(null);
+		}
 	}
 
 	/**

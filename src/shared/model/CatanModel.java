@@ -308,7 +308,7 @@ public class CatanModel
 		
 		Map<ResourceType, Integer> ratios = getMaritimeRatios(player);
 		
-		return player.getPlayer().getResources().count(fromResource) >= ratios.get(fromResource);
+		return player.getHand().count(fromResource) >= ratios.get(fromResource);
 	}
 
 	void buildStartingPieces(PlayerReference player, VertexLocation settlement,

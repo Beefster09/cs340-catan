@@ -101,12 +101,14 @@ public class Server implements IServer {
 		User brooke = new User("Brooke", "brooke");
 		User pete = new User("Pete", "pete");
 		User mark = new User("Mark", "mark");
+		User aaa = new User("a", "a");
 		
 		try {
 			User.register(sam);
 			User.register(brooke);
 			User.register(pete);
 			User.register(mark);
+			User.register(aaa);
 		} catch (NameAlreadyInUseException e1) {
 			e1.printStackTrace();
 		}
@@ -126,10 +128,18 @@ public class Server implements IServer {
 			try {
 				ModelFacade model = new ModelFacade();
 				UUID gameUUID = model.getGameHeader().getUUID();
+				model.getCatanModel().setHeader(new GameHeader("<DEFAULT>", gameUUID, null));
 				model.addPlayer("Sam", CatanColor.RED);
 				model.addPlayer("Brooke", CatanColor.ORANGE);
 				model.addPlayer("Pete", CatanColor.YELLOW);
 				model.addPlayer("Mark", CatanColor.GREEN);
+				activeGames.put(gameUUID, model);
+				knownGames.put(gameUUID, model.getGameHeader());
+				
+				model = new ModelFacade();
+				gameUUID = model.getGameHeader().getUUID();
+				model.getCatanModel().setHeader(new GameHeader("Join Test", gameUUID, null));
+				model.addPlayer("a", CatanColor.BLUE);
 				activeGames.put(gameUUID, model);
 				knownGames.put(gameUUID, model.getGameHeader());
 				
@@ -329,7 +339,7 @@ public class Server implements IServer {
 		//This is currently causing the client to never update, we need to find
 		//a way to fix this.
 		if (version == model.getVersion() && model.hasStarted()) {
-			return null;
+			//return null;
 		}
 		
 		Gson gson = new Gson();
