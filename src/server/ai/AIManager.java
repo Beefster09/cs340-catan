@@ -1,5 +1,7 @@
 package server.ai;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,10 +34,11 @@ public class AIManager extends AbstractModelListener {
 	public void addAIPlayer(AIPlayer ai) {
 		aiPlayers.put(ai.getPlayerID(), ai);
 	}
+	
+	public Collection<AIPlayer> getPlayers() {
+		return aiPlayers.values();
+	}
 
-	/* (non-Javadoc)
-	 * @see shared.model.AbstractModelListener#turnTrackerChanged(shared.model.TurnTracker)
-	 */
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
 		UUID current = turnTracker.getCurrentPlayer().getPlayerUUID();
@@ -60,7 +63,7 @@ public class AIManager extends AbstractModelListener {
 						}
 						turnTracker = game.getCatanModel().getTurnTracker();
 						if (turnTracker.getStatus() == TurnStatus.Discarding) {
-							return;
+							return; // Some human players still need to discard
 						}
 					}
 					// no break
@@ -74,18 +77,14 @@ public class AIManager extends AbstractModelListener {
 	
 					server.finishTurn(current, getGameID());
 					break;
-				default:
 				}
 			} catch (ServerException | UserException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				// probably a bad thing
 			}
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see shared.model.AbstractModelListener#tradeOfferChanged(shared.model.TradeOffer)
-	 */
 	@Override
 	public void tradeOfferChanged(TradeOffer offer) {
 		UUID receiver = offer.getReceiver().getPlayerUUID();
@@ -95,7 +94,7 @@ public class AIManager extends AbstractModelListener {
 				server.respondToTrade(receiver, getGameID(), shouldAccept);
 			} catch (ServerException | UserException e) {
 				e.printStackTrace();
-				// This is probably really bad.
+				// This is probably bad.
 			}
 		}
 	}

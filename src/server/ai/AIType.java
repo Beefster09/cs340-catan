@@ -1,21 +1,47 @@
 package server.ai;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
+
+import shared.communication.IServer;
+import shared.model.Player;
+
 public enum AIType {
-	LARGEST_ARMY;
+	Justin;
 	
 	private String stringRepr;
+	private Class<? extends AIPlayer> aiClass;
 	
 	static {
-		LARGEST_ARMY.stringRepr = "LARGEST_ARMY";
+		Justin.stringRepr = "Justin";
+		Justin.aiClass = JustinAI.class;
 	}
 	
-	static public AIType getTypeFromString(String input) throws IllegalArgumentException{
-		String lowerInput = input.toLowerCase();
-		if (lowerInput.equals("largest_army")) return LARGEST_ARMY;
-		else throw new IllegalArgumentException();
+	static public AIType fromString(String input) throws IllegalArgumentException{
+		switch (input.toLowerCase()) {
+		case "justin":
+			return Justin;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public String toString() {
 		return stringRepr;
 	}
+	
+	public AIPlayer newInstance (IServer server, UUID gameid, Player player) {
+		try {
+			Constructor<? extends AIPlayer> ctor = (Constructor<? extends AIPlayer>)
+					aiClass.getConstructor(IServer.class, UUID.class, Player.class);
+			return ctor.newInstance(server, gameid, player);
+		} catch (NoSuchMethodException | SecurityException |
+				InstantiationException | IllegalAccessException |
+				IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 }

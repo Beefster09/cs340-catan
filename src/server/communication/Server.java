@@ -16,6 +16,7 @@ import server.DAOs.ICommandDAO;
 import server.DAOs.IGameDAO;
 import server.Factories.IDAOFactory;
 import server.Factories.MockDAOFactory;
+import server.ai.AIManager;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
@@ -52,8 +53,13 @@ public class Server implements IServer {
 	private static Logger logger = Logger.getLogger("Server");
 	
 	private static final int NUMPLAYERS = 4;
-
 	private static final int COMMAND_FLUSH_FREQUENCY = 10;
+	
+	private static final String[] AI_NAMES = new String[] {
+		"R2D2", "C3PO", "Wall-E", "AdamLink", "AstroBoy", "Marvin", "Data",
+		"K_9", "HAL", "OptimusPrime", "XJ9", "R4_P17", "Baymax", "Quote", "CurlyBrace",
+		"Bender", "AnneDroid", "Floyd", "Prometheus", "Atropos", "ROB", "GLaDOS"
+	};
 	
 	private static IServer instance = null;
 	public static IServer getSingleton() {
@@ -82,6 +88,7 @@ public class Server implements IServer {
 	
 	private Map<UUID, ModelFacade> activeGames = new HashMap<>();
 	private Map<UUID, GameHeader> knownGames = new HashMap<>();
+	private Map<UUID, AIManager> aiGames = new HashMap<>();
 	
 	private Server() {
 		
@@ -342,14 +349,19 @@ public class Server implements IServer {
 
 	@Override
 	public void addAIPlayer(UUID gameID, AIType type) throws ServerException, UserException {
-		// NOT NEEDED IN PHASE 3
+		ModelFacade game = getGame(gameID);
 		
+		if (!aiGames.containsKey(gameID)) {
+			aiGames.put(gameID, new AIManager());
+		}
 	}
 
 	@Override
 	public List<String> getAITypes() throws ServerException, UserException {
 		List<String> types = new ArrayList<String>();
-		types.add("aitype");
+		for (AIType aiType : AIType.values()) {
+			types.add(aiType.toString());
+		}
 		return types;
 	}
 

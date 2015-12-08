@@ -92,15 +92,15 @@ implements Serializable {
 			throw new InvalidActionException();
 		}
 		
-		model.roll(dice.roll(num));
+		model.roll(num);
+		
+		for (IModelListener listener : listeners) {
+			listener.turnTrackerChanged(model.getTurnTracker());
+		}
 	}
 
 	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
-		if (!canRoll(player)) {
-			throw new InvalidActionException();
-		}
-		
-		model.roll(dice.roll());
+		rollDice(player, dice.roll());
 	}
 	
 
@@ -143,6 +143,10 @@ implements Serializable {
 		}
 		
 		model.rob(player, loc, victim, false);
+		
+		for (IModelListener listener : listeners) {
+			listener.turnTrackerChanged(model.getTurnTracker());
+		}
 	}
 	
 	public synchronized boolean canDiscard(PlayerReference player,
@@ -157,6 +161,10 @@ implements Serializable {
 			throw new InsufficientResourcesException();
 		}
 		model.discard(player, toDiscard);		
+		
+		for (IModelListener listener : listeners) {
+			listener.turnTrackerChanged(model.getTurnTracker());
+		}
 	}
 	
 	// This is needed for reflection to work
@@ -188,6 +196,10 @@ implements Serializable {
 		}
 		
 		model.finishTurn();
+		
+		for (IModelListener listener : listeners) {
+			listener.turnTrackerChanged(model.getTurnTracker());
+		}
 	}
 
 	/**
@@ -342,6 +354,10 @@ implements Serializable {
 	public synchronized void buildStartingPieces(PlayerReference player, 
 			VertexLocation settlement, EdgeLocation road) throws InvalidActionException {
 		model.buildStartingPieces(player, settlement, road);
+
+		for (IModelListener listener : listeners) {
+			listener.turnTrackerChanged(model.getTurnTracker());
+		}
 	}
 
 	/**
@@ -489,6 +505,10 @@ implements Serializable {
 	 */
 	public synchronized void offerTrade(TradeOffer offer) throws InvalidActionException {
 		model.offerTrade(offer);
+		
+		for (IModelListener listener : listeners) {
+			listener.tradeOfferChanged(offer);
+		}
 	}
 
 	/**
