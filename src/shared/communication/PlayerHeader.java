@@ -22,7 +22,7 @@ implements Serializable {
 	
 	public PlayerHeader(JSONObject json) throws SchemaMismatchException {
 		try {
-			color = CatanColor.getColorFromString((String) json.get("color"));
+			color = CatanColor.fromString((String) json.get("color"));
 			name = (String) json.get("name");
 			uuid = UUID.fromString((String) json.get("uuid"));
 			playerIndex = (int)(long)json.get("playerIndex");

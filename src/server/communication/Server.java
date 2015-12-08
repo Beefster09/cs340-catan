@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -17,6 +18,7 @@ import server.DAOs.IGameDAO;
 import server.Factories.IDAOFactory;
 import server.Factories.MockDAOFactory;
 import server.ai.AIManager;
+import server.ai.AIPlayer;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
@@ -26,6 +28,7 @@ import server.plugins.PluginRegistry;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
@@ -262,6 +265,11 @@ public class Server implements IServer {
 	@Override
 	public Session joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		ModelFacade game = getGame(gameID);
+
+		if (game.getCatanModel().getPlayers().size() >= NUMPLAYERS) {
+			throw new ServerException("You may not add more players to this game");
+		}
+		
 		if (game == null) {
 			throw new JoinGameException();
 		}
@@ -350,10 +358,46 @@ public class Server implements IServer {
 	@Override
 	public void addAIPlayer(UUID gameID, AIType type) throws ServerException, UserException {
 		ModelFacade game = getGame(gameID);
+
+		if (game.getCatanModel().getPlayers().size() >= NUMPLAYERS) {
+			throw new UserException("You may not add more players to this game");
+		}
 		
 		if (!aiGames.containsKey(gameID)) {
-			aiGames.put(gameID, new AIManager());
+			aiGames.put(gameID, new AIManager(game));
 		}
+		
+		GameHeader header = game.getGameHeader();
+		List<String> usedNames = new ArrayList<>();
+		List<CatanColor> usedColors = new ArrayList<>();
+		for (PlayerHeader ph : header.getPlayers()) {
+			usedNames.add(ph.getName());
+			usedColors.add(ph.getColor());
+		}
+		
+		Random rand = new Random();
+		String aiName;
+		CatanColor color;
+		do {
+			aiName = AI_NAMES[rand.nextInt(AI_NAMES.length)];
+		} while (usedNames.contains(aiName));
+		
+		do {
+			color = CatanColor.values()[rand.nextInt(9)];
+		} while (usedColors.contains(color));
+		
+		Player player;
+		try {
+			player = game.addPlayer(aiName, color);
+			AIPlayer ai = type.newInstance(gameID, player);
+			aiGames.get(gameID).addAIPlayer(ai);
+			if (game.getCatanModel().getPlayers().size() == NUMPLAYERS) {
+				this.beginGame(game.getCatanModel());
+			}
+		} catch (GameInitializationException e) {
+			throw new ServerException("Could not add an AI", e);
+		}
+		
 	}
 
 	@Override

@@ -77,6 +77,7 @@ public class ServerCommunicator {
 		server.createContext("/games/join", joinHandler);
 		//Correct syntax is /games/model?version=
 		server.createContext("/game/model", modelHandler);
+		server.createContext("/game/addAI", addAIHandler);
 		server.createContext("/game/listAI", getAITypeHandler);
 		server.createContext("/moves/sendChat", sendChatHandler);
 		server.createContext("/moves/rollNumber", rollNumberHandler);
@@ -111,6 +112,7 @@ public class ServerCommunicator {
 	private HttpHandler listHandler = new ListHandler();
 	private HttpHandler modelHandler = new ModelHandler();
 	private HttpHandler getAITypeHandler = new GetAITypeHandler();
+	private HttpHandler addAIHandler = new AddAIHandler();
 	private HttpHandler acceptTradeHandler = new AcceptTradeHandler();
 	private HttpHandler buildCityHandler = new BuildCityHandler();
 	private HttpHandler buildRoadHandler = new BuildRoadHandler();

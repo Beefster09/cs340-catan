@@ -31,11 +31,11 @@ public enum AIType {
 		return stringRepr;
 	}
 	
-	public AIPlayer newInstance (IServer server, UUID gameid, Player player) {
+	public AIPlayer newInstance (UUID gameid, Player player) {
 		try {
 			Constructor<? extends AIPlayer> ctor = (Constructor<? extends AIPlayer>)
-					aiClass.getConstructor(IServer.class, UUID.class, Player.class);
-			return ctor.newInstance(server, gameid, player);
+					aiClass.getConstructor(UUID.class, Player.class);
+			return ctor.newInstance(gameid, player);
 		} catch (NoSuchMethodException | SecurityException |
 				InstantiationException | IllegalAccessException |
 				IllegalArgumentException | InvocationTargetException e) {

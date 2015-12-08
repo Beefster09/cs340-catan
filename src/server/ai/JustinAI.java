@@ -7,8 +7,8 @@ import shared.model.Player;
 
 public class JustinAI extends AIPlayer {
 
-	public JustinAI(IServer server, UUID gameid, Player player) {
-		super(server, gameid, player);
+	public JustinAI(UUID gameid, Player player) {
+		super(gameid, player);
 	}
 
 	@Override

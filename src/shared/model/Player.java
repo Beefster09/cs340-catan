@@ -116,7 +116,7 @@ implements Serializable {
 			setUUID(UUID.fromString((String) json.get("uuid")));
 			
 			name = (String) json.get("name");
-			color = CatanColor.getColorFromString((String) json.get("color"));
+			color = CatanColor.fromString((String) json.get("color"));
 			
 			resources = ResourceList.fromJSONObject((JSONObject) json.get("resources")); 
 			newDevCards = DevCardList.fromJSONObject((JSONObject) json.get("newDevCards")); 

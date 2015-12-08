@@ -46,7 +46,7 @@ public class JoinHandler extends AbstractGameHandler implements HttpHandler {
 			}
 			JSONObject json = ExchangeConverter.toJSON(arg0);
 			UUID gameUUID = UUID.fromString((String)json.get("id"));
-			CatanColor color = CatanColor.getColorFromString((String) json.get("color"));
+			CatanColor color = CatanColor.fromString((String) json.get("color"));
 			
 			Session player = this.getPlayerSessionFromCookie(arg0, server);
 			Session returnedPlayer = server.joinGame(player, gameUUID, color);

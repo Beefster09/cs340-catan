@@ -1,11 +1,11 @@
 package server.ai;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import server.communication.Server;
 import shared.IDice;
 import shared.NormalDice;
 import shared.communication.IServer;
@@ -19,10 +19,16 @@ import shared.model.TurnTracker;
 
 public class AIManager extends AbstractModelListener {
 	
-	private Map<UUID, AIPlayer> aiPlayers;
-	private ModelFacade game;
-	private IServer server;
+	private IServer server = Server.getSingleton();
+	
+	private Map<UUID, AIPlayer> aiPlayers = new HashMap<>();
 	private IDice dice = new NormalDice();
+	
+	private ModelFacade game;
+	
+	public AIManager (ModelFacade game) {
+		this.game = game;
+	}
 	
 	/**
 	 * @return the gameid
@@ -39,8 +45,14 @@ public class AIManager extends AbstractModelListener {
 		return aiPlayers.values();
 	}
 
+	private boolean ttRecursionGuard = false;
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
+		// Keep this from being recursed (and thus, running certain logic twice)
+		if (ttRecursionGuard) {
+			return;
+		}
+		ttRecursionGuard = true;
 		UUID current = turnTracker.getCurrentPlayer().getPlayerUUID();
 		if (aiPlayers.containsKey(current)) {
 			try {
@@ -63,6 +75,7 @@ public class AIManager extends AbstractModelListener {
 						}
 						turnTracker = game.getCatanModel().getTurnTracker();
 						if (turnTracker.getStatus() == TurnStatus.Discarding) {
+							ttRecursionGuard = false;
 							return; // Some human players still need to discard
 						}
 					}
@@ -82,6 +95,7 @@ public class AIManager extends AbstractModelListener {
 				e.printStackTrace();
 				// probably a bad thing
 			}
+			ttRecursionGuard = false;
 		}
 	}
 

@@ -2,13 +2,14 @@ package server.ai;
 
 import java.util.UUID;
 
+import server.communication.Server;
 import shared.communication.IServer;
 import shared.model.Player;
 import shared.model.TradeOffer;
 
 public abstract class AIPlayer {
 	
-	private final IServer server;
+	private final IServer server = Server.getSingleton();
 	private final UUID gameid;
 	private final Player player;
 	
@@ -16,9 +17,8 @@ public abstract class AIPlayer {
 	 * @param server
 	 * @param player
 	 */
-	public AIPlayer(IServer server, UUID gameid, Player player) {
+	public AIPlayer(UUID gameid, Player player) {
 		super();
-		this.server = server;
 		this.gameid = gameid;
 		this.player = player;
 	}
