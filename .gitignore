@@ -6,3 +6,4 @@ log.txt
 log.*
 *.sqlite
 fileStorage/*
+src/server/ai/SteveAI.java
