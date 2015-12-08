@@ -13,8 +13,7 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void firstRound() {
-		// TODO Auto-generated method stub
-
+		// TODO
 	}
 
 	@Override

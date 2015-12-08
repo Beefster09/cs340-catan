@@ -4,42 +4,41 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-import shared.communication.IServer;
+import shared.model.ModelFacade;
 import shared.model.Player;
 
 public enum AIType {
+	Random,
 	Justin;
 	
-	private String stringRepr;
 	private Class<? extends AIPlayer> aiClass;
 	
 	static {
-		Justin.stringRepr = "Justin";
 		Justin.aiClass = JustinAI.class;
+		Random.aiClass = RandomAI.class;
 	}
 	
 	static public AIType fromString(String input) throws IllegalArgumentException{
-		switch (input.toLowerCase()) {
-		case "justin":
-			return Justin;
-		default:
-			throw new IllegalArgumentException();
+		String lowerInput = input.toLowerCase();
+		for (AIType type : AIType.values()) {
+			if (type.toString().toLowerCase().equals(lowerInput)) {
+				return type;
+			}
 		}
-	}
-
-	public String toString() {
-		return stringRepr;
+		throw new IllegalArgumentException();
 	}
 	
-	public AIPlayer newInstance (UUID gameid, Player player) {
+	public AIPlayer newInstance (ModelFacade game, Player player) {
 		try {
 			Constructor<? extends AIPlayer> ctor = (Constructor<? extends AIPlayer>)
-					aiClass.getConstructor(UUID.class, Player.class);
-			return ctor.newInstance(gameid, player);
+					aiClass.getConstructor(ModelFacade.class, Player.class);
+			return ctor.newInstance(game, player);
 		} catch (NoSuchMethodException | SecurityException |
 				InstantiationException | IllegalAccessException |
 				IllegalArgumentException | InvocationTargetException e) {
+			System.out.println();
 			e.printStackTrace();
+			System.out.println("Returning null from AIType." + toString() + ".newInstance(...)");
 			return null;
 		}
 	}

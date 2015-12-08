@@ -58,9 +58,11 @@ public class AIManager extends AbstractModelListener {
 			try {
 				switch(turnTracker.getStatus()) {
 				case FirstRound:
+					ttRecursionGuard = false;
 					aiPlayers.get(current).firstRound();
 					break;
 				case SecondRound:
+					ttRecursionGuard = false;
 					aiPlayers.get(current).secondRound();
 					break;
 				case Rolling:
@@ -87,6 +89,8 @@ public class AIManager extends AbstractModelListener {
 					// no break
 				case Playing:
 					aiPlayers.get(current).takeTurn();
+					
+					ttRecursionGuard = false;
 	
 					server.finishTurn(current, getGameID());
 					break;

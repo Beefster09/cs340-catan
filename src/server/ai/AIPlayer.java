@@ -2,24 +2,21 @@ package server.ai;
 
 import java.util.UUID;
 
-import server.communication.Server;
-import shared.communication.IServer;
+import shared.model.ModelFacade;
 import shared.model.Player;
 import shared.model.TradeOffer;
 
 public abstract class AIPlayer {
 	
-	private final IServer server = Server.getSingleton();
-	private final UUID gameid;
-	private final Player player;
+	private ModelFacade game;
+	private Player player;
 	
 	/**
 	 * @param server
 	 * @param player
 	 */
-	public AIPlayer(UUID gameid, Player player) {
-		super();
-		this.gameid = gameid;
+	public AIPlayer(ModelFacade game, Player player) {
+		this.game = game;
 		this.player = player;
 	}
 	
@@ -28,14 +25,7 @@ public abstract class AIPlayer {
 	}
 
 	public UUID getGameID() {
-		return gameid;
-	}
-
-	/**
-	 * @return the server
-	 */
-	protected IServer getServer() {
-		return server;
+		return game.getUUID();
 	}
 
 	/**
@@ -43,6 +33,10 @@ public abstract class AIPlayer {
 	 */
 	protected Player getPlayer() {
 		return player;
+	}
+	
+	protected ModelFacade getGame() {
+		return game;
 	}
 
 	public abstract void firstRound();

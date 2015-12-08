@@ -14,7 +14,6 @@ import com.google.gson.Gson;
 
 import server.DAOs.DatabaseException;
 import server.DAOs.ICommandDAO;
-import server.DAOs.IGameDAO;
 import server.Factories.IDAOFactory;
 import server.Factories.MockDAOFactory;
 import server.ai.AIManager;
@@ -59,9 +58,9 @@ public class Server implements IServer {
 	private static final int COMMAND_FLUSH_FREQUENCY = 10;
 	
 	private static final String[] AI_NAMES = new String[] {
-		"R2D2", "C3PO", "Wall-E", "AdamLink", "AstroBoy", "Marvin", "Data",
-		"K_9", "HAL", "OptimusPrime", "XJ9", "R4_P17", "Baymax", "Quote", "CurlyBrace",
-		"Bender", "AnneDroid", "Floyd", "Prometheus", "Atropos", "ROB", "GLaDOS"
+		"R2-D2", "C-3PO", "Wall-E", "Astro Boy", "Marvin", "Data",
+		"HAL", "Optimus Prime", "Baymax", "Quote", "Curly Brace",
+		"Bender", "Prometheus", "Atropos", "R.O.B.", "GLaDOS"
 	};
 	
 	private static IServer instance = null;
@@ -265,14 +264,15 @@ public class Server implements IServer {
 	@Override
 	public Session joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		ModelFacade game = getGame(gameID);
+		
+		if (game == null) {
+			throw new JoinGameException();
+		}
 
 		if (game.getCatanModel().getPlayers().size() >= NUMPLAYERS) {
 			throw new ServerException("You may not add more players to this game");
 		}
 		
-		if (game == null) {
-			throw new JoinGameException();
-		}
 		List<Player> players = game.getCatanModel().getPlayers();
 		for (Player currentPlayer : players) {
 			if (currentPlayer.getName().equals(player.getUsername())) {
@@ -364,7 +364,9 @@ public class Server implements IServer {
 		}
 		
 		if (!aiGames.containsKey(gameID)) {
-			aiGames.put(gameID, new AIManager(game));
+			AIManager aiManager = new AIManager(game);
+			aiGames.put(gameID, aiManager);
+			game.registerListener(aiManager);
 		}
 		
 		GameHeader header = game.getGameHeader();
@@ -389,7 +391,7 @@ public class Server implements IServer {
 		Player player;
 		try {
 			player = game.addPlayer(aiName, color);
-			AIPlayer ai = type.newInstance(gameID, player);
+			AIPlayer ai = type.newInstance(game, player);
 			aiGames.get(gameID).addAIPlayer(ai);
 			if (game.getCatanModel().getPlayers().size() == NUMPLAYERS) {
 				this.beginGame(game.getCatanModel());
