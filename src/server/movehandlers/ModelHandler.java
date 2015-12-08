@@ -3,6 +3,7 @@ package server.movehandlers;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,28 +25,28 @@ import shared.exceptions.UserException;
 public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 
 	IServer server = Server.getSingleton();
-//	IServer server = new MockServer();
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	@Override
 	public void handle(HttpExchange arg0) throws IOException {
 		arg0.getResponseHeaders().set("Content-type:", "application/text");
-		String address = arg0.getRequestURI().toString();
-		logger.log(Level.INFO, "Connection to " + address + " established.");
+		URI uri = arg0.getRequestURI();
+		logger.log(Level.INFO, "Connection to " + uri + " established.");
 
 		try{
 			UUID gameUUID = super.checkCookies(arg0, server);
 			if(gameUUID == null){
 				throw new ServerException();
 			}
-			int versionID = Integer.valueOf(address.substring(20));
+			String query = uri.getQuery();
+			int versionID = Integer.parseInt(query.substring(query.indexOf('=') + 1));
 			
-			String header = server.getModel(gameUUID, versionID);
+			String model = server.getModel(gameUUID, versionID);
 			
 			arg0.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-			if (header != null) {
+			if (model != null) {
 				OutputStreamWriter output = new OutputStreamWriter(arg0.getResponseBody());
-				output.write(header);
+				output.write(model);
 				output.flush();
 				arg0.getResponseBody().close();
 			}

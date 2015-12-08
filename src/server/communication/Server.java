@@ -268,10 +268,6 @@ public class Server implements IServer {
 		if (game == null) {
 			throw new JoinGameException();
 		}
-
-		if (game.getCatanModel().getPlayers().size() >= NUMPLAYERS) {
-			throw new ServerException("You may not add more players to this game");
-		}
 		
 		List<Player> players = game.getCatanModel().getPlayers();
 		for (Player currentPlayer : players) {
@@ -325,16 +321,21 @@ public class Server implements IServer {
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		ModelFacade modelFacade = getGame(gameID);
-		if (modelFacade == null)
+		ModelFacade game = getGame(gameID);
+		if (game == null) {
 			throw new ServerException();
-		CatanModel model = modelFacade.getCatanModel();
+		}
+		CatanModel model = game.getCatanModel();
 		//This is currently causing the client to never update, we need to find
 		//a way to fix this.
-//		if (version == model.getVersion())
-//			return null;
+		if (version == model.getVersion() && model.hasStarted()) {
+			return null;
+		}
+		
 		Gson gson = new Gson();
-		return gson.toJson(model);
+		String result = gson.toJson(model);
+		logger.fine(result);
+		return result;
 	}
 
 	@Override

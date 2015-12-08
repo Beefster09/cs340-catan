@@ -2,13 +2,17 @@ package server.ai;
 
 import java.util.UUID;
 
+import server.communication.Server;
 import shared.communication.IServer;
+import shared.model.ModelFacade;
 import shared.model.Player;
 
 public class JustinAI extends AIPlayer {
+	
+	IServer server = Server.getSingleton();
 
-	public JustinAI(UUID gameid, Player player) {
-		super(gameid, player);
+	public JustinAI(ModelFacade game, Player player) {
+		super(game, player);
 	}
 
 	@Override

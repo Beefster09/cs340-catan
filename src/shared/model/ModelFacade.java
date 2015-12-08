@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,6 +37,8 @@ import shared.locations.VertexLocation;
 
 public class ModelFacade 
 implements Serializable {
+	private static final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	private static final long serialVersionUID = -8878435068519246110L;
 
 	private final int NUMPLAYERS = 4;
@@ -637,6 +640,7 @@ implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized CatanModel updateFromJSON(String jsonString) {
+		logger.info(jsonString);
 		if(jsonString==null)
 			return getCatanModel();
 		JSONObject json;
