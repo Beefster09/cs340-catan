@@ -95,15 +95,36 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void secondRound() {
-		// Select the location that will balance out resource production
+		// TODO Select the location that will balance out resource production
 		
-		firstRound(); // See what this looks like first
+		firstRound(); // TEMP
 	}
 
 	@Override
 	public void discard() {
-		// TODO Auto-generated method stub
-
+		ResourceList hand = getPlayer().getResources();
+		ResourceList dummyHand = new ResourceList(hand);
+		ResourceList discardChoices = new ResourceList(0);
+		int toDiscard = hand.count() / 2;
+		
+		for (int i=0; i<toDiscard; ++i) {
+			ResourceType bestRes = null;
+			int lowestCost = Integer.MAX_VALUE;
+			for (ResourceType res : ResourceType.values()) {
+				int cost = situationalCost(res, 1);
+				if (cost < lowestCost) {
+					bestRes = res;
+					lowestCost = cost;
+				}
+			}
+			dummyHand.transferAtMost(discardChoices, bestRes, 1);
+		}
+		
+		try {
+			server.discardCards(getPlayerID(), getGameID(), discardChoices);
+		} catch (ServerException | UserException e) {
+			logger.severe("RIP");
+		}
 	}
 
 	@Override
@@ -208,7 +229,7 @@ public class JustinAI extends AIPlayer {
 		vertexValues.clear();
 	
 		for (VertexLocation vertex : allVertexes) {
-			int totalValue = 0;
+			int totalValue = 0, totalPips = 0;
 			for (HexLocation hexLoc : vertex.getHexes()) {
 				if (hexLoc.getDistanceFromCenter() > 2) {
 					continue; // Outside board
@@ -219,10 +240,11 @@ public class JustinAI extends AIPlayer {
 				}
 				// TODO: port value
 				totalValue += Utils.numPips(hex.getNumber())
-						* Utils.numPips(hex.getNumber())
 						* resRelativeValue.get(hex.getResource());
+				totalPips += Utils.numPips(hex.getNumber());
 			}
 			vertexValues.put(vertex, totalValue);
+			vertexPips.put(vertex, totalPips);
 		}
 		
 		logger.info("Evaluated vertex valuability: " + vertexValues.toString());
@@ -239,7 +261,5 @@ public class JustinAI extends AIPlayer {
 			}
 		}
 	}
-	
-	
 
 }
