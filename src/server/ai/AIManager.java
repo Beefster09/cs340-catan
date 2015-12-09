@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import server.communication.Server;
 import shared.IDice;
@@ -18,6 +19,8 @@ import shared.model.TradeOffer;
 import shared.model.TurnTracker;
 
 public class AIManager extends AbstractModelListener {
+	
+	private static Logger logger = Logger.getLogger("AIManager");
 	
 	private IServer server = Server.getSingleton();
 	
@@ -39,6 +42,7 @@ public class AIManager extends AbstractModelListener {
 	
 	public void addAIPlayer(AIPlayer ai) {
 		aiPlayers.put(ai.getPlayerID(), ai);
+		logger.info("Added AI player of type " + ai.getClass().getSimpleName());
 	}
 	
 	public Collection<AIPlayer> getPlayers() {

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import shared.model.ModelFacade;
 import shared.model.Player;
+import shared.model.PlayerReference;
 import shared.model.TradeOffer;
 
 public abstract class AIPlayer {
@@ -22,6 +23,10 @@ public abstract class AIPlayer {
 	
 	public UUID getPlayerID() {
 		return player.getUUID();
+	}
+	
+	public PlayerReference getPlayerReference() {
+		return player.getReference();
 	}
 
 	public UUID getGameID() {
