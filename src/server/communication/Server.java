@@ -70,6 +70,7 @@ public class Server implements IServer {
 	private static IDAOFactory factory;
 	
 	public static void setPersistenceType(String pluginName) {
+		logger.info("Setting persistence type to " + pluginName);
 		PluginRegistry registry = PluginRegistry.getSingleton();
 		
 		try {

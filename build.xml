@@ -1,17 +1,15 @@
-﻿<project name="Catan!" default="server" basedir=".">
+﻿<project name="Catan!" default="server-sql" basedir=".">
 
 	<!-- PROPERTIES -->
 	<!-- ********** -->	
     
 	<!-- Directory paths for the java server, javascript, and dest dir for the student copy -->
     <property name="port.arg" value="8081"/>
-    <property name="web.arg" value="gameplay"/>
-    <property name="options.arg" value="ug"/>
      
     <!-- Input folders -->
     <property name="java.dir" value="."/>
-    <property name="java.src.dir" value="${java.dir}/src"/>
-    <property name="java.lib.dir" value="${java.dir}/lib"/>
+    <property name="java.src.dir" value="src"/>
+    <property name="java.lib.dir" value="lib"/>
     <!-- JavaScript source folder -->
     <property name="javascript.dir" value="gameplay/js"/>
     
@@ -19,8 +17,6 @@
     <property name="dest.dir" value="docs"/>
     <!-- Javadoc output folder -->
     <property name="javadoc.dir" value="${dest.dir}/java"/>
-    <!-- YUIDoc output folder -->
-    <property name="yuidoc.dir" value="${dest.dir}/javascript"/>
     <!-- Jar file path/name from here -->
 	<property name="demo.dir" value="demo"/>
     <property name="server.jar.file" value="${demo.dir}/server.jar"/>
@@ -38,7 +34,7 @@
 	<!-- TARGETS -->
 	<!-- ******* -->
      
-	<target name="server" description="Runs the demo server">
+	<target name="demo-server" description="Runs the demo server">
 		<java jar="${server.jar.file}" fork="true" dir="${demo.dir}">
 			<arg value="${port.arg}"/>
 			<arg value="${web.arg}"/>
@@ -49,7 +45,7 @@
 		</java>
 	</target>
     
-	<target name="client" description="Runs the demo client">
+	<target name="demo-client" description="Runs the demo client">
 		<java jar="${client.jar.file}" fork="true" dir="${demo.dir}">
 			<assertions>
 				<enable/>
@@ -68,19 +64,8 @@
 			</packageset>
 		</javadoc>
    </target>
-    
-    <!--
-    <target name="make-js-doc" description="Generate the JavaScript docs">
-        <echo> Making JavaScript documentation </echo>
-        <exec executable="yuidoc">
-            <arg value="-o"/>
-            <arg value="${yuidoc.dir}"/>
-            <arg value="${javascript.dir}"/>
-        </exec>
-	</target>
-    -->
 
-  	<property name="java.dir" location="java"/>
+  	<property name="java.dir" location="."/>
 	<property name="java.src" location="${java.dir}/src"/>
 	<property name="java.images" location="${java.dir}/images"/>
 	<property name="java.build" location="${java.dir}/build"/>
@@ -117,37 +102,68 @@
 				<include name="**"/>
 			</fileset>
 		</copy>
+		<mkdir dir="${java.dist}/plugins"/>
+		<copy todir="${java.dist}/plugins">
+			<fileset dir="plugins">
+				<include name="**"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${java.dist}/db"/>
+		<copy todir="${java.dist}/db">
+			<fileset dir="db">
+				<include name="Catan.sqlite"/>
+			</fileset>
+		</copy>
+		<manifestclasspath property="server.classpath" jarfile="${java.dist}/catan-server.jar">
+		    <classpath refid="java.lib.classpath"/>
+		</manifestclasspath>
+		<manifestclasspath property="client.classpath" jarfile="${java.dist}/catan-client.jar">
+		    <classpath refid="java.lib.classpath"/>
+		</manifestclasspath>
  		<jar jarfile="${java.dist}/catan-client.jar" basedir="${java.build}">
 			<manifest>
 				<attribute name="Main-Class" value="client.main.Catan"/>
-				<attribute name="Class-Path" 
-					value="lib/gson-2.2.4.jar" />
+				<attribute name="Class-Path" value="${client.classpath}" />
 			</manifest>
 		</jar>
  		<jar jarfile="${java.dist}/catan-server.jar" basedir="${java.build}">
 			<manifest>
-				<attribute name="Main-Class" value="PUT THE NAME OF YOUR SERVER'S MAIN CLASS HERE"/>
-				<attribute name="Class-Path" 
-					value="lib/gson-2.2.4.jar" />
+				<attribute name="Main-Class" value="server.communication.ServerCommunicator"/>
+				<attribute name="Class-Path" value="${server.classpath}" />
 			</manifest>
 		</jar>
 	</target>
 	
-	<target name="our-client" depends="package" description="compiles, packages, and runs the student client">
+	<target name="client" depends="package" description="compiles, packages, and runs the student client">
 		<java jar="${java.dist}/catan-client.jar" dir="${java.dist}" fork="yes">
 			<sysproperty key="com.sun.management.jmxremote" value=""/>
 			<assertions>
 				<enable/>
 			</assertions>
+			<arg value="localhost" />
+			<arg value="${port.arg}" />
 		</java>
 	</target>
  	
-	<target name="our-server" depends="package" description="compiles, packages, and runs the student server">
+	<target name="server-file" depends="package" description="compiles, packages, and runs the student server">
 		<java jar="${java.dist}/catan-server.jar" dir="${java.dist}" fork="yes">
 			<sysproperty key="com.sun.management.jmxremote" value=""/>
 			<assertions>
 				<enable/>
 			</assertions>
+			<arg value="${port.arg}" />
+			<arg value="file" />
+		</java>
+	</target>
+ 	
+	<target name="server-sql" depends="package" description="compiles, packages, and runs the student server">
+		<java jar="${java.dist}/catan-server.jar" dir="${java.dist}" fork="yes">
+			<sysproperty key="com.sun.management.jmxremote" value=""/>
+			<assertions>
+				<enable/>
+			</assertions>
+			<arg value="${port.arg}" />
+			<arg value="sql" />
 		</java>
 	</target>
     
