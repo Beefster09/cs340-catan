@@ -8,13 +8,15 @@ import shared.model.Player;
 
 public enum AIType {
 	Idle,
-	Justin;
+	Justin,
+	Steve;
 	
 	private Class<? extends AIPlayer> aiClass;
 	
 	static {
 		Justin.aiClass = JustinAI.class;
-		Idle.aiClass = IdleAI.class;
+		Steve.aiClass = SteveAI.class;
+//		Idle.aiClass = IdleAI.class;
 	}
 	
 	static public AIType fromString(String input) throws IllegalArgumentException{
