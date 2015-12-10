@@ -6,3 +6,5 @@ log.txt
 log.*
 *.sqlite
 fileStorage/*
+build/**/*
+dist/**/*
