@@ -133,6 +133,9 @@ public class ServerCommunicator {
 	
 	public static void main(String[] args) {
 		System.out.println(Arrays.asList(args));
+		if (args.length == 3) {
+			Server.setFlushFrequency(Integer.parseInt(args[2]));
+		}
 		if (args.length >= 2) {
 			Server.setPersistenceType(args[1]);
 		}
