@@ -72,23 +72,20 @@ public class AIManager extends AbstractModelListener {
 					break;
 				case Rolling:
 					server.rollDice(current, getGameID(), dice.roll());
-					
-					turnTracker = game.getCatanModel().getTurnTracker();
 					break;
 				case Robbing:
 					aiPlayers.get(current).robber();
 					break;
 				case Playing:
 					aiPlayers.get(current).takeTurn();
-	
 					server.finishTurn(current, getGameID());
 					break;
 				default:
 					break;
 				}
 			} catch (ServerException | UserException e) {
+				logger.severe("RIP");
 				e.printStackTrace();
-				// probably a bad thing
 			}
 		}
 	}
@@ -100,12 +97,19 @@ public class AIManager extends AbstractModelListener {
 		}
 		UUID receiver = offer.getReceiver().getPlayerUUID();
 		if (aiPlayers.containsKey(receiver)) {
-			boolean shouldAccept = aiPlayers.get(receiver).tradeOffered(offer);
+			boolean shouldAccept;
+			try {
+				shouldAccept = aiPlayers.get(receiver).tradeOffered(offer);
+			} catch (Exception e) {
+				shouldAccept = false;
+				logger.warning("Trade Failed");
+				e.printStackTrace();
+			}
 			try {
 				server.respondToTrade(receiver, getGameID(), shouldAccept);
 			} catch (ServerException | UserException e) {
+				logger.severe("RIP");
 				e.printStackTrace();
-				// This is probably bad.
 			}
 		}
 	}

@@ -53,8 +53,9 @@ implements Serializable {
 
 	public ResourceTradeList(Map<ResourceType, Integer> offered,
 			Map<ResourceType, Integer> wanted) {
-		this.offered = offered;
-		this.wanted = wanted;
+		// MUST copy to avoid bugs!
+		this.offered = new HashMap<>(offered);
+		this.wanted = new HashMap<>(wanted);
 	}
 
 	/**

@@ -68,7 +68,8 @@ public class ServerCommunicator {
 			return;
 		}
 
-		server.setExecutor(null); // use the default executor
+		// Set up server to use multiple threads...
+		server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
 
 		server.createContext("/user/login", loginHandler);
 		server.createContext("/user/register", registerHandler);

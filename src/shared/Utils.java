@@ -1,5 +1,10 @@
 package shared;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import shared.definitions.ResourceType;
+
 public class Utils {
 
 	public static boolean isBuiltinType(Class<?> type) {
@@ -20,6 +25,17 @@ public class Utils {
 		else {
 			return 0;
 		}
+	}
+	
+	public static Map<ResourceType, Integer> resourceMap(
+			int wood, int brick, int sheep, int wheat, int ore) {
+		Map<ResourceType, Integer> result = new HashMap<>();
+		result.put(ResourceType.WOOD, wood);
+		result.put(ResourceType.BRICK, brick);
+		result.put(ResourceType.SHEEP, sheep);
+		result.put(ResourceType.WHEAT, wheat);
+		result.put(ResourceType.ORE, ore);
+		return result;
 	}
 
 }

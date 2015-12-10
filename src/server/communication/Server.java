@@ -222,6 +222,7 @@ public class Server implements IServer {
 		} catch (DatabaseException e) {
 			logger.warning(e.getMessage());
 		}
+		game.processEvents();
 	}
 
 	@Override

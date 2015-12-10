@@ -16,7 +16,7 @@ public enum AIType {
 	static {
 		Justin.aiClass = JustinAI.class;
 		Steve.aiClass = SteveAI.class;
-//		Idle.aiClass = IdleAI.class;
+		Idle.aiClass = IdleAI.class;
 	}
 	
 	static public AIType fromString(String input) throws IllegalArgumentException{

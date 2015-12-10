@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
@@ -97,9 +98,10 @@ implements Serializable {
 		
 		model.roll(num);
 		
-		for (IModelListener listener : listeners) {
-			listener.turnTrackerChanged(model.getTurnTracker());
-		}
+//		for (IModelListener listener : listeners) {
+//			listener.turnTrackerChanged(model.getTurnTracker());
+//		}
+		turnChanged.set(true);
 	}
 
 	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
@@ -147,9 +149,7 @@ implements Serializable {
 		
 		model.rob(player, loc, victim, false);
 		
-		for (IModelListener listener : listeners) {
-			listener.turnTrackerChanged(model.getTurnTracker());
-		}
+		turnChanged.set(true);
 	}
 	
 	public synchronized boolean canDiscard(PlayerReference player,
@@ -164,9 +164,7 @@ implements Serializable {
 		}
 		model.discard(player, toDiscard);		
 		
-		for (IModelListener listener : listeners) {
-			listener.turnTrackerChanged(model.getTurnTracker());
-		}
+		turnChanged.set(true);
 	}
 	
 	// This is needed for reflection to work
@@ -199,9 +197,7 @@ implements Serializable {
 		
 		model.finishTurn();
 		
-		for (IModelListener listener : listeners) {
-			listener.turnTrackerChanged(model.getTurnTracker());
-		}
+		turnChanged.set(true);
 	}
 
 	/**
@@ -290,6 +286,11 @@ implements Serializable {
 	 */
 	public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
 		return model.getMap().canBuildSettlement(getCurrentPlayer(), vertexLoc);
+	}
+	
+	public synchronized boolean canBuildSettlement(
+			PlayerReference player, VertexLocation vertexLoc) {
+		return model.getMap().canBuildSettlement(player, vertexLoc);
 	}
 
 	public synchronized void buildSettlement(PlayerReference player, VertexLocation loc)
@@ -508,9 +509,11 @@ implements Serializable {
 	public synchronized void offerTrade(TradeOffer offer) throws InvalidActionException {
 		model.offerTrade(offer);
 		
-		for (IModelListener listener : listeners) {
-			listener.tradeOfferChanged(offer);
-		}
+		// Trades can be safely responded to by an AI
+//		for (IModelListener listener : listeners) {
+//			listener.tradeOfferChanged(offer);
+//		}
+		tradeOffered.set(true);
 	}
 
 	/**
@@ -534,8 +537,9 @@ implements Serializable {
 		
 		model.acceptTrade();
 		
-		for (IModelListener listener : listeners) {
-			listener.tradeOfferChanged(null);
+		synchronized (tradeLock) {
+			tradeResponse = true;
+			tradeLock.notify();
 		}
 	}
 	
@@ -546,9 +550,10 @@ implements Serializable {
 	 */
 	public synchronized void declineTrade() {
 		model.declineTrade();
-		
-		for (IModelListener listener : listeners) {
-			listener.tradeOfferChanged(null);
+
+		synchronized (tradeLock) {
+			tradeResponse = false;
+			tradeLock.notify();
 		}
 	}
 
@@ -865,6 +870,7 @@ implements Serializable {
 
 	private void updateTradeOfferFromJSON(JSONObject json, List<Player> players) {
 		if (json.containsKey("tradeOffer")) {
+			logger.info("There is a trade offer");
 			JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
 			TradeOffer otherOffer;
 			try {
@@ -884,14 +890,17 @@ implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		else{// if (model.getTradeOffer() != null) {
-			model.setTradeOffer(null);
-			for (IModelListener listener : listeners) {
-				try {
-					listener.tradeOfferChanged(null);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
+		else {
+			logger.info("No trade offer!");
+			if (model.getTradeOffer() != null) {
+				model.setTradeOffer(null);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.tradeOfferChanged(null);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -1011,5 +1020,56 @@ implements Serializable {
 
 	public UUID getUUID() {
 		return model.getID();
+	}
+	
+	private transient Object tradeLock = new Object();
+	private transient boolean tradeResponse = false;
+	public boolean getTradeResponse() {
+		if (model.getTradeOffer() != null) {
+			synchronized (tradeLock) {
+				logger.info("Waiting for trade response from " 
+						+ model.getTradeOffer().getReceiver().getName());
+				// A trade is pending...
+				try {
+					tradeLock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return tradeResponse;
+	}
+	
+	// This is needed to make the above method work
+	// Otherwise, outsiders will be unable to reach any data from this game
+	// because the synchronization blocks them out currently, as the above lock
+	// is currently hit by an event that was triggered by this very game.
+	// This will allow AIs and humans to play together. :D
+	// It will also prevent stack overflows when multiple AIs play together.
+	private transient AtomicBoolean eventLock = new AtomicBoolean(false);
+	private transient AtomicBoolean turnChanged = new AtomicBoolean(false);
+	private transient AtomicBoolean tradeOffered = new AtomicBoolean(false);
+	public void processEvents() {
+		// Prevent recursion
+		if (eventLock.compareAndSet(false, true)) {
+			boolean isEvent = true;
+			// Keep going until there are no events left to process.
+			while (isEvent) {
+				isEvent = false;
+				if (turnChanged.compareAndSet(true, false)) {
+					for (IModelListener listener : listeners) {
+						listener.turnTrackerChanged(model.getTurnTracker());
+					}
+					isEvent = true;
+				}
+				if (tradeOffered.compareAndSet(true, false)) {
+					for (IModelListener listener : listeners) {
+						listener.tradeOfferChanged(model.getTradeOffer());
+					}
+					isEvent = true;
+				}
+			}
+			eventLock.set(false);
+		}
 	}
 }

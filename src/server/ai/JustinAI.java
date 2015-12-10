@@ -1,13 +1,6 @@
 package server.ai;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import server.communication.Server;
@@ -42,11 +35,96 @@ public class JustinAI extends AIPlayer {
 	}
 	
 	private interface Move {
-		boolean isPossible();
 		Map<ResourceType, Integer> requirements();
+		boolean isPossible();
+		void play();
 	}
 	
-	private Random rand = new Random();
+	private class BuildRoad implements Move {
+		
+		EdgeLocation location;
+		
+		public BuildRoad(EdgeLocation location) {
+			this.location = location;
+		}
+
+		@Override
+		public Map<ResourceType, Integer> requirements() {
+			return Utils.resourceMap(1, 1, 0, 0, 0);
+		}
+
+		@Override
+		public boolean isPossible() {
+			return getGame().canBuildRoad(getPlayerReference(), location);
+		}
+
+		@Override
+		public void play() {
+			try {
+				server.buildRoad(getPlayerID(), getGameID(), location);
+			} catch (ServerException | UserException e) {
+				
+			}
+		}
+	}
+
+	private class BuildSettlement implements Move {
+		
+		VertexLocation location;
+		
+		public BuildSettlement(VertexLocation location) {
+			this.location = location;
+		}
+
+		@Override
+		public Map<ResourceType, Integer> requirements() {
+			return Utils.resourceMap(1, 1, 1, 1, 0);
+		}
+
+		@Override
+		public boolean isPossible() {
+			return getGame().canBuildSettlement(getPlayerReference(), location);
+		}
+
+		@Override
+		public void play() {
+			try {
+				server.buildSettlement(getPlayerID(), getGameID(), location);
+			} catch (ServerException | UserException e) {
+				
+			}
+		}
+	}
+	
+	private class UpgradeSettlement implements Move {
+		
+		VertexLocation location;
+		
+		public UpgradeSettlement(VertexLocation location) {
+			this.location = location;
+		}
+
+		@Override
+		public Map<ResourceType, Integer> requirements() {
+			return Utils.resourceMap(0, 0, 0, 2, 3);
+		}
+
+		@Override
+		public boolean isPossible() {
+			return getGame().canBuildCity(getPlayerReference(), location);
+		}
+
+		@Override
+		public void play() {
+			try {
+				server.buildCity(getPlayerID(), getGameID(), location);
+			} catch (ServerException | UserException e) {
+				
+			}
+		}
+	}
+	
+	//private Random rand = new Random();
 	private IServer server = Server.getSingleton();
 	
 	private Map<ResourceType, Integer> resourceValue = new HashMap<>();
@@ -119,10 +197,12 @@ public class JustinAI extends AIPlayer {
 			ResourceType bestRes = null;
 			int lowestCost = Integer.MAX_VALUE;
 			for (ResourceType res : ResourceType.values()) {
-				int cost = situationalCost(res, 1);
-				if (cost < lowestCost) {
-					bestRes = res;
-					lowestCost = cost;
+				if (dummyHand.count(res) > 0) { // Don't try to discard what you do not have...
+					int cost = situationalCost(res, 1);
+					if (cost < lowestCost) {
+						bestRes = res;
+						lowestCost = cost;
+					}
 				}
 			}
 			dummyHand.transferAtMost(discardChoices, bestRes, 1);
@@ -163,8 +243,20 @@ public class JustinAI extends AIPlayer {
 			}
 		}
 		
+		UUID bestVictim = null;
+		int bestEnemyScore = 0;
+		for (Municipality town : map.getMunicipalitiesAround(bestSpot)) {
+			PlayerReference owner = town.getOwner();
+			if (!owner.equals(getPlayerReference())) {
+				if (owner.getPlayer().getVictoryPoints() > bestEnemyScore) {
+					bestVictim = owner.getPlayerUUID();
+					bestEnemyScore = owner.getPlayer().getVictoryPoints();
+				}
+			}
+		}
+		
 		try {
-			server.robPlayer(getPlayerID(), getGameID(), bestSpot, null);
+			server.robPlayer(getPlayerID(), getGameID(), bestSpot, bestVictim);
 		} catch (ServerException | UserException e) {
 			logger.severe("RIP");
 		}
@@ -173,7 +265,23 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void takeTurn() {
-		
+		Player human = getGame().getCatanModel().getPlayers().get(0);
+		ResourceTradeList trade = new ResourceTradeList(
+				getPlayer().getResources().getResources(),
+				human.getResources().getResources());
+		try {
+			server.offerTrade(getPlayerID(), getGameID(), trade, human.getUUID());
+			if (getGame().getTradeResponse()) {
+				server.sendChat(getPlayerID(), getGameID(), "Teehee. We traded hands.");
+			}
+			else {
+				server.sendChat(getPlayerID(), getGameID(),
+						human.getName() + " is a jerk. He won't trade hands with me. ;'(");
+			}
+		} catch (ServerException | UserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
