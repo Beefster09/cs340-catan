@@ -53,7 +53,7 @@ public class Server implements IServer {
 	
 	private static final int NUMPLAYERS = 4;
 
-	private static final int COMMAND_FLUSH_FREQUENCY = 10;
+	private static int COMMAND_FLUSH_FREQUENCY = 10;
 	
 	private static IServer instance = null;
 	public static IServer getSingleton() {
@@ -79,6 +79,10 @@ public class Server implements IServer {
 			e.printStackTrace();
 			factory = new MockDAOFactory();
 		}
+	}
+	
+	public static void setFlushFrequency(int n) {
+		COMMAND_FLUSH_FREQUENCY = n;
 	}
 	
 	private Map<UUID, ModelFacade> activeGames = new HashMap<>();
