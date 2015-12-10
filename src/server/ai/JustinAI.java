@@ -66,6 +66,10 @@ public class JustinAI extends AIPlayer {
 				
 			}
 		}
+		
+		public EdgeLocation getLocation() {
+			return location;
+		}
 	}
 
 	private class BuildSettlement implements Move {
@@ -134,12 +138,10 @@ public class JustinAI extends AIPlayer {
 	private Map<ResourceType, Integer> productionPips = new HashMap<>();
 	private Map<VertexLocation, Integer> roadsNeeded = new HashMap<>();
 	private Set<VertexLocation> availableVertexes;
+	// spots owned by other players. Relevant because you can't build through them.
+	private Set<VertexLocation> deadVertexes; 
 	
 	private List<Move> plan;
-
-	private Set<VertexLocation> settledVertexes;
-
-	private Set<VertexLocation> deadVertexes;
 
 	public JustinAI(ModelFacade game, Player player) {
 		super(game, player);
@@ -303,6 +305,15 @@ public class JustinAI extends AIPlayer {
 	}
 	
 	private EdgeLocation chooseStartingRoadLocation(VertexLocation settlement) {
+		Map<VertexLocation, Integer> distances = calculateRoadsNeeded(
+				new HashSet<>(Arrays.asList(new VertexLocation[] {settlement})));
+		
+		// get the best target
+		
+		// point the road in the direction of the best target
+		
+		
+		// TEMP
 		for (EdgeLocation edge : settlement.getEdges()) {
 			return edge;
 		}
@@ -399,41 +410,54 @@ public class JustinAI extends AIPlayer {
 		logger.info("Evaluated vertex valuability: " + vertexValues.toString());
 	}
 	
-	private void calculateRoadsNeeded() {
+	private Map<VertexLocation, Integer> calculateRoadsNeeded() {
+		return calculateRoadsNeeded(getSettledVertexes());
+	}
+	
+	private Map<VertexLocation, Integer> calculateRoadsNeeded(Set<VertexLocation> startingPoints) {
 		Board map = getGame().getCatanModel().getMap();
-		
-		settledVertexes = new HashSet<>();
-		for (Road road : map.getRoadsOwnedBy(getPlayerReference())) {
-			settledVertexes.addAll(road.getLocation().getVertices());
-		}
 		
 		deadVertexes = new HashSet<>();
 		for (Municipality town : map.getMunicipalitiesNotOwnedBy(getPlayerReference())) {
 			deadVertexes.add(town.getLocation());
 		}
 		
-		roadsNeeded = new HashMap<>();
+		startingPoints.removeAll(deadVertexes);
 		
-		for (VertexLocation node : settledVertexes) {
-			distanceStep(node, 0);
+		Map<VertexLocation, Integer> distanceMap = new HashMap<>();
+		
+		for (VertexLocation node : startingPoints) {
+			distanceStep(distanceMap, node, 0);
 		}
+		
+		return distanceMap;
+	}
+
+	private Set<VertexLocation> getSettledVertexes() {
+		Set<VertexLocation> settledVertexes = new HashSet<>();
+		for (Road road : getGame().getCatanModel().getMap()
+				.getRoadsOwnedBy(getPlayerReference())) {
+			settledVertexes.addAll(road.getLocation().getVertices());
+		}
+		return settledVertexes;
 	}
 	
-	private void distanceStep(VertexLocation node, int distance) {
-		roadsNeeded.put(node, distance);
+	private void distanceStep(Map<VertexLocation, Integer> distanceMap, 
+			VertexLocation node, int distance) {
+		distanceMap.put(node, distance);
 		for (VertexLocation neighbor : node.getNeighbors()) {
 			if (neighbor.getDistanceFromCenter() > 2
 					|| deadVertexes.contains(neighbor)) {
 				continue;
 			}
 			if (roadsNeeded.containsKey(neighbor)) {
-				int otherdist = roadsNeeded.get(neighbor);
-				if (otherdist > distance + 1) {
-					distanceStep(neighbor, distance + 1);
+				int otherdist = distanceMap.get(neighbor);
+				if (distance + 1 < otherdist) {
+					distanceStep(distanceMap, neighbor, distance + 1);
 				}
 			}
 			else {
-				distanceStep(neighbor, distance + 1);
+				distanceStep(distanceMap, neighbor, distance + 1);
 			}
 		}
 	}
