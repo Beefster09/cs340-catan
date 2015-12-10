@@ -1,5 +1,6 @@
 package server.DAOs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import server.model.User;
@@ -33,7 +34,7 @@ public class MockUserDAO implements IUserDAO {
 	@Override
 	public List<User> getAllUsers() throws DatabaseException {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 }

@@ -1,5 +1,6 @@
 package server.DAOs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class MockCommandDAO implements ICommandDAO {
 	@Override
 	public List<ICatanCommand> getAll(UUID gameid) throws DatabaseException {
 		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>();
 	}
 
 }
