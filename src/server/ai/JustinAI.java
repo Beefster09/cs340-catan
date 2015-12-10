@@ -1,6 +1,7 @@
 package server.ai;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,16 +41,23 @@ public class JustinAI extends AIPlayer {
 		}
 	}
 	
+	private interface Move {
+		boolean isPossible();
+		Map<ResourceType, Integer> requirements();
+	}
+	
 	private Random rand = new Random();
 	private IServer server = Server.getSingleton();
 	
-	private Map<ResourceType, Integer> resRelativeValue = new HashMap<>();
+	private Map<ResourceType, Integer> resourceValue = new HashMap<>();
 	private Map<VertexLocation, Integer> vertexValues = new HashMap<>();
 	private Map<VertexLocation, Integer> vertexPips = new HashMap<>();
-	
-	private Map<ResourceType, Integer> productionPips = new HashMap<>();
 
-	private HashSet<VertexLocation> availableVertexes;
+	private Map<ResourceType, Integer> productionPips = new HashMap<>();
+	private Map<VertexLocation, Integer> roadsNeeded = new HashMap<>();
+	private Set<VertexLocation> availableVertexes;
+	
+	private List<Move> plan;
 
 	public JustinAI(ModelFacade game, Player player) {
 		super(game, player);
@@ -129,8 +137,37 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void robber() {
-		// TODO Auto-generated method stub
-
+		Board map = getGame().getCatanModel().getMap();
+		HexLocation bestSpot = null;
+		// Place the robber where it hurts others the most and hurts you the least.
+		int bestDamage = Integer.MIN_VALUE;
+		for (HexLocation hexLoc : HexLocation.locationsWithinRadius(2)) {
+			if (map.canMoveRobberTo(hexLoc)) {
+				Collection<Municipality> towns = map.getMunicipalitiesAround(hexLoc);
+				Hex hex = map.getHexAt(hexLoc);
+				ResourceType res = hex.getResource();
+				int pips = Utils.numPips(hex.getNumber());
+				int damage = 0;
+				for (Municipality town : towns) {
+					if (town.getOwner().equals(getPlayerReference())) {
+						damage -= resourceValue.get(res) * pips * town.getIncome();
+					}
+					else {
+						damage += resourceValue.get(res) * pips * town.getIncome();
+					}
+				}
+				if (damage > bestDamage) {
+					bestSpot = hexLoc;
+					bestDamage = damage;
+				}
+			}
+		}
+		
+		try {
+			server.robPlayer(getPlayerID(), getGameID(), bestSpot, null);
+		} catch (ServerException | UserException e) {
+			logger.severe("RIP");
+		}
 	}
 
 
@@ -161,13 +198,13 @@ public class JustinAI extends AIPlayer {
 	}
 
 	private int situationalValue(ResourceType resource, int current, int added) {
-		double multiplier = added * (3.0 / Math.max(current, 1));
+		double multiplier = added * (1.2 / Math.max(current, 1));
 		int bonus = 0;
 		if (current == 0 && added > 0) {
 			// TODO: determine if the resource is actually needed
 			bonus += 350;
 		}
-		return (int) (resRelativeValue.get(resource) * multiplier + bonus);
+		return (int) (resourceValue.get(resource) * multiplier + bonus);
 	}
 	
 	private int situationalBenefit(ResourceType resource, int added) {
@@ -195,10 +232,10 @@ public class JustinAI extends AIPlayer {
 		}
 	
 		for (ResourceType rt : ResourceType.values()) {
-			resRelativeValue.put(rt, resBaseValue.get(rt) / pipCount.get(rt));
+			resourceValue.put(rt, resBaseValue.get(rt) / pipCount.get(rt));
 		}
 		
-		logger.info("Evaluated resource valuability: " + resRelativeValue.toString());
+		logger.info("Evaluated resource valuability: " + resourceValue.toString());
 	}
 
 	private void evaluateProduction() {
@@ -240,7 +277,7 @@ public class JustinAI extends AIPlayer {
 				}
 				// TODO: port value
 				totalValue += Utils.numPips(hex.getNumber())
-						* resRelativeValue.get(hex.getResource());
+						* resourceValue.get(hex.getResource());
 				totalPips += Utils.numPips(hex.getNumber());
 			}
 			vertexValues.put(vertex, totalValue);
