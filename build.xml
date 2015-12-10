@@ -164,7 +164,6 @@
 			</assertions>
 			<arg value="${port.arg}" />
 			<arg value="sql" />
-			<arg line="${arg0}"/>
 		</java>
 	</target>
 	
@@ -176,12 +175,26 @@
 			</assertions>
 			<arg value="${port.arg}" />
 			<arg value="${arg0}" />
-			<arg value="${arg1}" />
 		</java>
 	</target>
     
     <target name="make-tester-zip" depends="package" description="makes a zip file for your testing team">
         <zip destfile="./tester.zip" basedir="${java.dist}" />
     </target>
+	
+	<target name="test" depends="compile">
+	  <junit printsummary="yes" haltonfailure="yes" fork="yes">
+	    <classpath>
+	      <pathelement location="${java.build}"/>
+	      <path refid="java.lib.classpath"/>
+	    </classpath>
+	  	<formatter type="plain" usefile="true" extension=".log" />
+	    <test name="shared.locations.HexLocationTest" haltonfailure="no"/>
+	    <test name="shared.locations.EdgeLocationTest" haltonfailure="no"/>
+	    <test name="shared.locations.VertexLocationTest" haltonfailure="no"/>
+	    <test name="shared.model.BoardTest" haltonfailure="no"/>
+	    <test name="shared.model.ModelFacadeTest" haltonfailure="no"/>
+	  </junit>
+	</target>
   
 </project>
