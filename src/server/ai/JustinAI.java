@@ -137,6 +137,10 @@ public class JustinAI extends AIPlayer {
 	
 	private List<Move> plan;
 
+	private Set<VertexLocation> settledVertexes;
+
+	private Set<VertexLocation> deadVertexes;
+
 	public JustinAI(ModelFacade game, Player player) {
 		super(game, player);
 		logger.info("Initializing...");
@@ -265,6 +269,7 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void takeTurn() {
+		// TODO
 		Player human = getGame().getCatanModel().getPlayers().get(0);
 		ResourceTradeList trade = new ResourceTradeList(
 				getPlayer().getResources().getResources(),
@@ -279,7 +284,6 @@ public class JustinAI extends AIPlayer {
 						human.getName() + " is a jerk. He won't trade hands with me. ;'(");
 			}
 		} catch (ServerException | UserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -393,6 +397,45 @@ public class JustinAI extends AIPlayer {
 		}
 		
 		logger.info("Evaluated vertex valuability: " + vertexValues.toString());
+	}
+	
+	private void calculateRoadsNeeded() {
+		Board map = getGame().getCatanModel().getMap();
+		
+		settledVertexes = new HashSet<>();
+		for (Road road : map.getRoadsOwnedBy(getPlayerReference())) {
+			settledVertexes.addAll(road.getLocation().getVertices());
+		}
+		
+		deadVertexes = new HashSet<>();
+		for (Municipality town : map.getMunicipalitiesNotOwnedBy(getPlayerReference())) {
+			deadVertexes.add(town.getLocation());
+		}
+		
+		roadsNeeded = new HashMap<>();
+		
+		for (VertexLocation node : settledVertexes) {
+			distanceStep(node, 0);
+		}
+	}
+	
+	private void distanceStep(VertexLocation node, int distance) {
+		roadsNeeded.put(node, distance);
+		for (VertexLocation neighbor : node.getNeighbors()) {
+			if (neighbor.getDistanceFromCenter() > 2
+					|| deadVertexes.contains(neighbor)) {
+				continue;
+			}
+			if (roadsNeeded.containsKey(neighbor)) {
+				int otherdist = roadsNeeded.get(neighbor);
+				if (otherdist > distance + 1) {
+					distanceStep(neighbor, distance + 1);
+				}
+			}
+			else {
+				distanceStep(neighbor, distance + 1);
+			}
+		}
 	}
 
 	private void filterAvailableVertexes() {
