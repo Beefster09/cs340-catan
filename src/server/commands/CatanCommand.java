@@ -63,12 +63,6 @@ public class CatanCommand implements ICatanCommand {
 		for (Object arg : args) {
 			argTypes.add(arg.getClass());
 		}
-		//
-		//I HAVE CHANGE FROM ClientModelFacade.class to ModelFacade.class
-		//Might need to change this back!!
-		// Nope. This should be fine. It just got caught by an automated
-		// Refactor that I did earlier.
-		//
 		this.method = ModelFacade.class.getMethod(method,
 				argTypes.toArray(new Class<?>[argTypes.size()]));
 		arguments = args;

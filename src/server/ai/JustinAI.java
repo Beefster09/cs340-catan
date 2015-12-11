@@ -14,6 +14,8 @@ import shared.model.*;
 
 public class JustinAI extends AIPlayer {
 	
+	private static final int MAX_DISTANCE = 15;
+
 	private static Logger logger = Logger.getLogger("JustinAI");
 	
 	// How much each resource is collectively worth.
@@ -70,6 +72,10 @@ public class JustinAI extends AIPlayer {
 		public EdgeLocation getLocation() {
 			return location;
 		}
+		@Override
+		public String toString() {
+			return "BuildRoad [location=" + location + "]";
+		}
 	}
 
 	private class BuildSettlement implements Move {
@@ -98,33 +104,10 @@ public class JustinAI extends AIPlayer {
 				
 			}
 		}
-	}
-	
-	private class UpgradeSettlement implements Move {
 		
-		VertexLocation location;
-		
-		public UpgradeSettlement(VertexLocation location) {
-			this.location = location;
-		}
-
 		@Override
-		public Map<ResourceType, Integer> requirements() {
-			return Utils.resourceMap(0, 0, 0, 2, 3);
-		}
-
-		@Override
-		public boolean isPossible() {
-			return getGame().canBuildCity(getPlayerReference(), location);
-		}
-
-		@Override
-		public void play() {
-			try {
-				server.buildCity(getPlayerID(), getGameID(), location);
-			} catch (ServerException | UserException e) {
-				
-			}
+		public String toString() {
+			return "BuildSettlement [location=" + location + "]";
 		}
 	}
 	
@@ -141,7 +124,8 @@ public class JustinAI extends AIPlayer {
 	// spots owned by other players. Relevant because you can't build through them.
 	private Set<VertexLocation> deadVertexes; 
 	
-	private List<Move> plan;
+	private Deque<Move> plan;
+	private VertexLocation nextUpgrade = null;
 
 	public JustinAI(ModelFacade game, Player player) {
 		super(game, player);
@@ -180,16 +164,49 @@ public class JustinAI extends AIPlayer {
 			e.printStackTrace();
 			// RIP
 		}
-		
-		evaluateProduction();
-		logger.info("...Done");
 	}
 
 	@Override
 	public void secondRound() {
-		// TODO Select the location that will balance out resource production
+		Board map = getGame().getCatanModel().getMap();
 		
-		firstRound(); // TEMP
+		evaluateProduction();
+		
+		filterAvailableVertexes();
+
+		// Select a location that balances out your resource production
+		VertexLocation settlement = null;
+		int bestSitValue = 0;
+		for (VertexLocation vertex : availableVertexes) {
+			int sitValue = 0;
+			for (HexLocation hexLoc : vertex.getHexes()) {
+				if (hexLoc.getDistanceFromCenter() > 2) {
+					continue; // Outside board
+				}
+				Hex hex = map.getHexAt(hexLoc);
+				if (hex.getResource() == null) {
+					continue;
+				}
+				// Prefer locations with more of the (better) missing resources
+				sitValue += Utils.numPips(hex.getNumber())
+						* resourceValue.get(hex.getResource())
+						/ (productionPips.get(hex.getResource()) + 1);
+			}
+			
+			if (sitValue > bestSitValue) {
+				settlement = vertex;
+				bestSitValue = sitValue;
+			}
+		}
+		
+		EdgeLocation road = chooseStartingRoadLocation(settlement);
+		
+		try {
+			server.buildStartingPieces(getPlayerID(), getGameID(), settlement, road);
+		} catch (ServerException | UserException e) {
+			e.printStackTrace();
+			// RIP
+		}
 	}
 
 	@Override
@@ -271,20 +288,19 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void takeTurn() {
-		// TODO
-		Player human = getGame().getCatanModel().getPlayers().get(0);
-		ResourceTradeList trade = new ResourceTradeList(
-				getPlayer().getResources().getResources(),
-				human.getResources().getResources());
+		devisePlan();
+		
 		try {
-			server.offerTrade(getPlayerID(), getGameID(), trade, human.getUUID());
-			if (getGame().getTradeResponse()) {
-				server.sendChat(getPlayerID(), getGameID(), "Teehee. We traded hands.");
+			// TODO: when to trade...
+			
+			while (!plan.isEmpty() && plan.peekFirst().isPossible()) {
+				plan.pollFirst().play();
 			}
-			else {
-				server.sendChat(getPlayerID(), getGameID(),
-						human.getName() + " is a jerk. He won't trade hands with me. ;'(");
+			
+			if (nextUpgrade != null && getGame().canBuildCity(nextUpgrade)) {
+				server.buildCity(getPlayerID(), getGameID(), nextUpgrade);
 			}
+			
 		} catch (ServerException | UserException e) {
 			e.printStackTrace();
 		}
@@ -304,20 +320,91 @@ public class JustinAI extends AIPlayer {
 		return benefit > cost;
 	}
 	
+	private void devisePlan() {
+		if (getPlayer().getSettlements() > 0) {
+			Map<VertexLocation, Integer> roadsNeeded = calculateRoadsNeeded();
+			VertexLocation goal = chooseGoal(roadsNeeded);
+			
+			plan = new ArrayDeque<>();
+			plan.addFirst(new BuildSettlement(goal));
+			
+			// Retrace back to a "settled" node.
+			VertexLocation node = goal;
+			while (true) {
+				int distance = roadsNeeded.get(node);
+				if (distance == 0) {
+					break;
+				}
+				for (VertexLocation neighbor : node.getNeighbors()) {
+					if (roadsNeeded.get(neighbor) != null
+						&& roadsNeeded.get(neighbor) < distance) {
+						plan.addFirst(new BuildRoad(node.getEdgeBetween(neighbor)));
+						node = neighbor;
+						break;
+					}
+				}
+			}
+			
+			logger.info("Plan: " + plan.toString());
+		}
+		if (getPlayer().getSettlements() < 2) {
+			nextUpgrade = null;
+			int bestValue = 0;
+			for (Municipality town : getGame().getCatanModel()
+					.getMap().getMunicipalitiesOwnedBy(getPlayerReference())) {
+				if (town.getType() == MunicipalityType.SETTLEMENT) {
+					VertexLocation location = town.getLocation();
+					if (vertexValues.get(location) > bestValue) {
+						nextUpgrade = location;
+						bestValue = vertexValues.get(location);
+					}
+				}
+			}
+		}
+	}
+
 	private EdgeLocation chooseStartingRoadLocation(VertexLocation settlement) {
-		Map<VertexLocation, Integer> distances = calculateRoadsNeeded(
-				new HashSet<>(Arrays.asList(new VertexLocation[] {settlement})));
+		Map<VertexLocation, Integer> distances = calculateRoadsNeeded(settlement);
 		
 		// get the best target
+		VertexLocation bestTarget = chooseGoal(distances, 2);
 		
 		// point the road in the direction of the best target
-		
-		
-		// TEMP
-		for (EdgeLocation edge : settlement.getEdges()) {
-			return edge;
+		Map<VertexLocation, Integer> reverseDistances = calculateRoadsNeeded(bestTarget);
+		int distance = reverseDistances.get(settlement);
+		for (VertexLocation neighbor : settlement.getNeighbors()) {
+			if (reverseDistances.get(neighbor) < distance) {
+				return settlement.getEdgeBetween(neighbor);
+			}
 		}
 		return null;
+	}
+
+	private VertexLocation chooseGoal(Map<VertexLocation, Integer> distances) {
+		return chooseGoal(distances, 0);
+	}
+
+	private VertexLocation chooseGoal(Map<VertexLocation, Integer> distances,
+			int minDistance) {
+		Board map = getGame().getCatanModel().getMap();
+		
+		VertexLocation bestTarget = null;
+		int bestPriority = 0;
+		
+		for (Map.Entry<VertexLocation, Integer> entry : distances.entrySet()) {
+			VertexLocation vertex = entry.getKey();
+			int distance = entry.getValue();
+			if (distance < minDistance
+				|| !map.canPlaceStartingSettlement(vertex)) {
+				continue;
+			}
+			int priority = vertexValues.get(vertex) / (distance + 1);
+			if (priority > bestPriority) {
+				bestTarget = vertex;
+				bestPriority = priority;
+			}
+		}
+		return bestTarget;
 	}
 
 	private int situationalValue(ResourceType resource, int current, int added) {
@@ -413,6 +500,10 @@ public class JustinAI extends AIPlayer {
 	private Map<VertexLocation, Integer> calculateRoadsNeeded() {
 		return calculateRoadsNeeded(getSettledVertexes());
 	}
+
+	private Map<VertexLocation, Integer> calculateRoadsNeeded(VertexLocation start) {
+		return calculateRoadsNeeded(new HashSet<>(Arrays.asList(start)));
+	}
 	
 	private Map<VertexLocation, Integer> calculateRoadsNeeded(Set<VertexLocation> startingPoints) {
 		Board map = getGame().getCatanModel().getMap();
@@ -424,10 +515,39 @@ public class JustinAI extends AIPlayer {
 		
 		startingPoints.removeAll(deadVertexes);
 		
+		// Doubles as the settled list
 		Map<VertexLocation, Integer> distanceMap = new HashMap<>();
+		Set<VertexLocation> currentLayer = startingPoints;
+		Set<VertexLocation> nextLayer;
 		
-		for (VertexLocation node : startingPoints) {
-			distanceStep(distanceMap, node, 0);
+		// Use a BFS search to get distances
+		for (int distance = 0; distance <= MAX_DISTANCE; ++distance) {
+			
+			nextLayer = new HashSet<>();
+			
+			// Settle the entire layer
+			for (VertexLocation node : currentLayer) {
+				distanceMap.put(node, distance);
+			}
+
+			for (VertexLocation node : currentLayer) {
+				// Populate the next layer
+				for (VertexLocation neighbor : node.getNeighbors()) {
+					if (neighbor.getDistanceFromCenter() > 2 ||
+							distanceMap.containsKey(neighbor)) {
+						continue;
+					}
+					else {
+						nextLayer.add(neighbor);
+					}
+				}
+			}
+			
+			if (nextLayer.isEmpty()) {
+				break;
+			}
+			
+			currentLayer = nextLayer;
 		}
 		
 		return distanceMap;
@@ -440,26 +560,6 @@ public class JustinAI extends AIPlayer {
 			settledVertexes.addAll(road.getLocation().getVertices());
 		}
 		return settledVertexes;
-	}
-	
-	private void distanceStep(Map<VertexLocation, Integer> distanceMap, 
-			VertexLocation node, int distance) {
-		distanceMap.put(node, distance);
-		for (VertexLocation neighbor : node.getNeighbors()) {
-			if (neighbor.getDistanceFromCenter() > 2
-					|| deadVertexes.contains(neighbor)) {
-				continue;
-			}
-			if (roadsNeeded.containsKey(neighbor)) {
-				int otherdist = distanceMap.get(neighbor);
-				if (distance + 1 < otherdist) {
-					distanceStep(distanceMap, neighbor, distance + 1);
-				}
-			}
-			else {
-				distanceStep(distanceMap, neighbor, distance + 1);
-			}
-		}
 	}
 
 	private void filterAvailableVertexes() {
