@@ -448,19 +448,22 @@ implements Serializable {
 
 	public boolean canBuildRoad() {
 		return resources.count(ResourceType.WOOD) >= 1 &&
-				resources.count(ResourceType.BRICK) >= 1;
+				resources.count(ResourceType.BRICK) >= 1
+				&& roads > 0;
 	}
 
 	public boolean canBuildSettlement() {
 		return resources.count(ResourceType.WOOD) >= 1 &&
 				resources.count(ResourceType.BRICK) >= 1 &&
 				resources.count(ResourceType.SHEEP) >= 1 &&
-				resources.count(ResourceType.WHEAT) >= 1;
+				resources.count(ResourceType.WHEAT) >= 1
+				&& settlements > 0;
 	}
 
 	public boolean canBuildCity() {
 		return resources.count(ResourceType.ORE) >= 3 &&
-				resources.count(ResourceType.WHEAT) >= 2;
+				resources.count(ResourceType.WHEAT) >= 2
+				&& cities > 0;
 	}
 
 	public boolean canBuyDevCard() {

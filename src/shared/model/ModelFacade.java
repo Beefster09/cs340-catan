@@ -250,14 +250,7 @@ implements Serializable {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildRoad(PlayerReference player, EdgeLocation edgeLoc) {			
-		
-		try {
-			return player.getPlayer().canBuildRoad() &&
-					model.getMap().canBuildRoadAt(player, edgeLoc);
-		} catch (IndexOutOfBoundsException e) {
-			return false;
-		}
-		
+		return model.canBuildRoad(player, edgeLoc);
 	}
 
 	public synchronized void buildRoad(PlayerReference player, EdgeLocation loc)
@@ -285,12 +278,12 @@ implements Serializable {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
-		return model.getMap().canBuildSettlement(getCurrentPlayer(), vertexLoc);
+		return canBuildSettlement(getCurrentPlayer(), vertexLoc);
 	}
 	
 	public synchronized boolean canBuildSettlement(
 			PlayerReference player, VertexLocation vertexLoc) {
-		return model.getMap().canBuildSettlement(player, vertexLoc);
+		return model.canBuildSettlement(player, vertexLoc);
 	}
 
 	public synchronized void buildSettlement(PlayerReference player, VertexLocation loc)
