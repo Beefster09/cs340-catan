@@ -1043,24 +1043,20 @@ implements Serializable {
 	private transient AtomicBoolean turnChanged = new AtomicBoolean(false);
 	private transient AtomicBoolean tradeOffered = new AtomicBoolean(false);
 	public void processEvents() {
+		if (tradeOffered.compareAndSet(true, false)) {
+			for (IModelListener listener : listeners) {
+				listener.tradeOfferChanged(model.getTradeOffer());
+			}
+		}
 		// Prevent recursion
 		if (eventLock.compareAndSet(false, true)) {
 			boolean isEvent = true;
 			// Keep going until there are no events left to process.
-			while (isEvent) {
-				isEvent = false;
-				if (turnChanged.compareAndSet(true, false)) {
-					for (IModelListener listener : listeners) {
-						listener.turnTrackerChanged(model.getTurnTracker());
-					}
-					isEvent = true;
+			while (turnChanged.compareAndSet(true, false)) {
+				for (IModelListener listener : listeners) {
+					listener.turnTrackerChanged(model.getTurnTracker());
 				}
-				if (tradeOffered.compareAndSet(true, false)) {
-					for (IModelListener listener : listeners) {
-						listener.tradeOfferChanged(model.getTradeOffer());
-					}
-					isEvent = true;
-				}
+				isEvent = true;
 			}
 			eventLock.set(false);
 		}

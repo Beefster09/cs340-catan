@@ -288,6 +288,15 @@ public class JustinAI extends AIPlayer {
 
 	@Override
 	public void takeTurn() {
+		for (Player p : getGame().getCatanModel().getPlayers()) {
+			if (p.getUUID().equals(getPlayerID())) {
+				continue;
+			}
+			offerTrade(p.getUUID(), new ResourceTradeList(
+							getPlayer().getResources().getResources(),
+							Utils.resourceMap(0, 0, 1, 0, 0)));
+		}
+		
 		devisePlan();
 		
 		try {
