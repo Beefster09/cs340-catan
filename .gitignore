@@ -7,3 +7,4 @@ log.*
 *.sqlite
 fileStorage/*
 src/server/ai/SteveAI.java
+plugins/catan-file.jar

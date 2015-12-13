@@ -26,6 +26,7 @@ import client.misc.*;
  */
 public class JoinGameController extends Controller implements IJoinGameController {
 
+	private String type;
 	private INewGameView newGameView;
 	private ISelectColorView selectColorView;
 	private IMessageView messageView;
@@ -139,8 +140,8 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 	}
 
 	@Override
-	public void startCreateNewGame() {
-		
+	public void startCreateNewGame(String type) {
+		this.type = type;
 		getNewGameView().showModal();
 	}
 
@@ -169,6 +170,13 @@ public class JoinGameController extends Controller implements IJoinGameControlle
 			getNewGameView().closeModal();
 			if (getJoinGameView().isModalShowing())  getJoinGameView().closeModal();
 			List<PlayerHeader> players = thisGame.getPlayers();
+			if(type.equals("AI")){
+				joinAction.execute();
+				ServerPoller poller = new ServerPoller(serverProxy,ClientManager.getSession());
+				modelFacade.setPoller(poller);
+				poller.start();
+				return;
+			}
 			for (PlayerHeader player : players) {
 				if (player.getUUID() == ClientManager.getLocalPlayer().getPlayerUUID()) {
 					joinAction.execute();

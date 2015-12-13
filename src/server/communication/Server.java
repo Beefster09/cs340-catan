@@ -267,6 +267,12 @@ public class Server implements IServer {
 				new CatanModel(randomTiles, randomNumbers, randomPorts));
 		newGame.getCatanModel().setHeader(header);
 		newGame.getCatanModel().setVersion(0);
+		try{
+			factory.getGameDAO().addGame(gameUUID, newGame);
+		}
+		catch(Exception e){
+			throw new GameInitializationException();
+		}
 		activeGames.put(gameUUID, newGame);
 		knownGames.put(gameUUID, header);
 		return header;

@@ -486,7 +486,8 @@ public class SteveAI extends AIPlayer{
 		offer = generateTrade(myResources, offer, chosen);
 		
 		try{
-			server.offerTrade(player.getUUID(), game.getUUID(), offer.getOffer(), recipient.getUUID());
+			super.offerTrade(recipient.getUUID(), offer.getOffer());
+//			server.offerTrade(player.getUUID(), game.getUUID(), offer.getOffer(), recipient.getUUID());
 		}
 		catch(Exception e){
 			System.out.println("Server Error: Could not offer trade");

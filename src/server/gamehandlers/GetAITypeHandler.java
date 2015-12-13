@@ -36,9 +36,9 @@ public class GetAITypeHandler extends AbstractGameHandler implements HttpHandler
 		logger.log(Level.INFO, "Connection to " + address + " established.");
 
 		try{
-			if(!super.checkCookies(arg0, server)){
-				throw new ServerException();
-			}
+//			if(!super.checkCookies(arg0, server)){
+//				throw new ServerException();
+//			}
 			
 			List<String> aitypes = server.getAITypes();
 			

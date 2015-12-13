@@ -1,12 +1,16 @@
 package server.movehandlers;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.json.simple.parser.JSONParser;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -34,9 +38,16 @@ public class ModelHandler extends AbstractMoveHandler implements HttpHandler {
 		logger.log(Level.INFO, "Connection to " + uri + " established.");
 
 		try{
-			UUID gameUUID = super.checkCookies(arg0, server);
+			UUID gameUUID = null;
 			if(gameUUID == null){
-				throw new ServerException();
+				List<String> gameInfo = arg0.getRequestHeaders().get("game");
+				if(gameInfo.size() != 1){
+					throw new ServerException();
+				}
+								
+				String gameString = gameInfo.get(0);
+
+				gameUUID = UUID.fromString(gameString);
 			}
 			String query = uri.getQuery();
 			int versionID = Integer.parseInt(query.substring(query.indexOf('=') + 1));

@@ -205,12 +205,20 @@ public class ClientCommunicator {
 	public String send(JSONObject o)
 			throws ServerException, UserException {
 
-		if(userCookie == null || gameCookie == null){
-			throw new UserException();
+		String urlString = (String) o.get("url");
+		if(!(urlString.substring(urlString.length() - 6).equals("listAI") || 
+			 Character.isDigit(urlString.charAt(urlString.length() - 1)))){
+			if(userCookie == null || gameCookie == null){
+				throw new UserException();
+			}			
 		}
 		try{
-			URL url = new URL((String) o.get("url"));
+			URL url = new URL(urlString);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			if(Character.isDigit(urlString.charAt(urlString.length() - 1))){
+				con.setRequestProperty("game", (String)o.get("gameUUID"));
+			}
+			
 			con.setRequestProperty("Cookie", cookies);
 			con.setRequestMethod((String) o.get("requestType"));
 			if((o.get("requestType")).equals("POST")){// || (o.get("url")).equals("http://localhost:8081/game/model")){

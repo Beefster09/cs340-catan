@@ -31,6 +31,7 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 
 	private JButton createButton;
 	private JButton refreshButton;
+	private JButton aiArena;
 
 	private JPanel labelPanel;
 	private JPanel gamePanel;
@@ -151,8 +152,8 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 		buttonFont = buttonFont.deriveFont(buttonFont.getStyle(), BUTTON_TEXT_SIZE);
 		refreshButton.setFont(buttonFont);
 
-		createButton = new JButton("Create Game");
-		createButton.addActionListener(actionListener);
+//		createButton = new JButton("Create Game");
+//		createButton.addActionListener(actionListener);
 		//createButton.setFont(buttonFont);
 
 		createButton = new JButton("Create Game");
@@ -160,11 +161,18 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 		buttonFont = createButton.getFont();
 		buttonFont = buttonFont.deriveFont(buttonFont.getStyle(), BUTTON_TEXT_SIZE);
 		createButton.setFont(buttonFont);
+		
+		aiArena = new JButton("AI Arena");
+		aiArena.addActionListener(actionListener);
+		buttonFont = aiArena.getFont();
+		buttonFont = buttonFont.deriveFont(buttonFont.getStyle(), BUTTON_TEXT_SIZE);
+		aiArena.setFont(buttonFont);
 
 		buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(createButton);
-		buttonPanel.add(refreshButton);		
+		buttonPanel.add(refreshButton);	
+		buttonPanel.add(aiArena);
 		this.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
@@ -190,11 +198,14 @@ public class JoinGameView extends OverlayView implements IJoinGameView
 		{
 			if (e.getSource() == createButton)
 			{
-				getController().startCreateNewGame();
+				getController().startCreateNewGame("Normal");
 			}
 			else if (e.getSource() == refreshButton)
 			{
 				getController().start();
+			}
+			else if (e.getSource() == aiArena){
+				getController().startCreateNewGame("AI");
 			}
 			else
 			{
