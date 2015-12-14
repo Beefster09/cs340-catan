@@ -59,9 +59,11 @@ public class PointsController extends Controller implements IPointsController {
 	@Override
 	public void playersChanged(List<Player> players) {
 		for (Player player : players) {
-			if (player.getPlayerID() == (ClientManager.getLocalPlayer().getPlayer().getPlayerID())) {
-				pointsChanged(player.getVictoryPoints());
-				break;
+			if(ClientManager.getLocalPlayer() != null){
+				if (player.getPlayerID() == (ClientManager.getLocalPlayer().getPlayer().getPlayerID())) {
+					pointsChanged(player.getVictoryPoints());
+					break;
+				}
 			}
 		}
 	}

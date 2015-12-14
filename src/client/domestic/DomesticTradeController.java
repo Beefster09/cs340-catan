@@ -365,6 +365,9 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 	
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if(ClientManager.getLocalPlayer() == null){
+			return;
+		}
 		if (turnTracker.getCurrentPlayer().getIndex() == 
 				ClientManager.getLocalPlayer().getIndex() &&
 				turnTracker.getStatus().equals(TurnStatus.Playing)) {
@@ -383,7 +386,11 @@ public class DomesticTradeController extends Controller implements IDomesticTrad
 		playerInfos = new PlayerInfo[players.size()-1];
 		int j = 0;
 		for (int i = 0; i < players.size(); i++) {
-			if (i != ClientManager.getLocalPlayer().getIndex()) {
+			if(ClientManager.getLocalPlayer() == null){
+				playerInfos[j] = new PlayerInfo(players.get(i));
+				j++;				
+			}
+			else if (i != ClientManager.getLocalPlayer().getIndex()) {
 				playerInfos[j] = new PlayerInfo(players.get(i));
 				j++;
 			}

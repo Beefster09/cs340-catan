@@ -413,6 +413,7 @@ public class Server implements IServer {
 			aiGames.get(gameID).addAIPlayer(ai);
 			if (game.getCatanModel().getPlayers().size() == NUMPLAYERS) {
 				this.beginGame(game.getCatanModel());
+				aiGames.get(gameID).turnTrackerChanged(activeGames.get(gameID).getCatanModel().getTurnTracker());
 			}
 		} catch (GameInitializationException e) {
 			throw new ServerException("Could not add an AI", e);
