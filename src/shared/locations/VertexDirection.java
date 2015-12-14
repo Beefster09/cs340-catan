@@ -32,15 +32,15 @@ public enum VertexDirection
 	public static VertexDirection getDirectionFromString(String input) {
 		String lowerInput = input.toLowerCase();
 		if      (lowerInput.equals("nw") || lowerInput.equals("northwest")) return NorthWest;
-		else if (lowerInput.equals("w")  || lowerInput.equals("north"))     return West;
+		else if (lowerInput.equals("w")  || lowerInput.equals("west"))      return West;
 		else if (lowerInput.equals("ne") || lowerInput.equals("northeast")) return NorthEast;
 		else if (lowerInput.equals("sw") || lowerInput.equals("southwest")) return SouthWest;
-		else if (lowerInput.equals("e")  || lowerInput.equals("south"))     return East;
+		else if (lowerInput.equals("e")  || lowerInput.equals("east"))      return East;
 		else if (lowerInput.equals("se") || lowerInput.equals("southeast")) return SouthEast;
 		else throw new IllegalArgumentException();
 	}
 
-	public Object getSymbolString() {
+	public String getSymbolString() {
 		return symbolString;
 	}
 }

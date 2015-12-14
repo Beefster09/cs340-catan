@@ -251,6 +251,9 @@ public class MaritimeTradeController extends Controller implements IMaritimeTrad
 	
 	@Override
 	public void turnTrackerChanged(TurnTracker turnTracker) {
+		if(ClientManager.getLocalPlayer() == null){
+			return;
+		}
 		if (turnTracker.getCurrentPlayer().getIndex() == 
 				ClientManager.getLocalPlayer().getIndex() &&
 				turnTracker.getStatus().equals(TurnStatus.Playing)) {

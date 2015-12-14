@@ -528,6 +528,26 @@ implements Serializable {
 		else return null;
 	}
 	
+	public Collection<Road> getRoadsOwnedBy(PlayerReference player) {
+		Set<Road> roads = new HashSet<>();
+		for (Road road : this.roads.values()) {
+			if (player.equals(road.getOwner())) {
+				roads.add(road);
+			}
+		}
+		return roads;
+	}
+	
+	public Collection<Road> getRoadsNotOwnedBy(PlayerReference player) {
+		Set<Road> roads = new HashSet<>();
+		for (Road road : this.roads.values()) {
+			if (!player.equals(road.getOwner())) {
+				roads.add(road);
+			}
+		}
+		return roads;
+	}
+	
 	/** Tells you if the given location is a valid place for the given player to build a road.
 	 * This does NOT check resource requirements!
 	 * @param player
@@ -583,6 +603,30 @@ implements Serializable {
 		else return null;
 	}
 	
+	public Collection<Municipality> getMunicipalitiesOwnedBy(PlayerReference player) {
+		Collection<Municipality> result = new ArrayList<>();
+		
+		for (Municipality town : municipalities.values()) {
+			if (player.equals(town.getOwner())) {
+				result.add(town);
+			}
+		}
+		
+		return result;
+	}
+	
+	public Collection<Municipality> getMunicipalitiesNotOwnedBy(PlayerReference player) {
+		Collection<Municipality> result = new ArrayList<>();
+		
+		for (Municipality town : municipalities.values()) {
+			if (!player.equals(town.getOwner())) {
+				result.add(town);
+			}
+		}
+		
+		return result;
+	}
+
 	/** Tells you if the given location is a valid place for the given player to build a settlement.
 	 * This does NOT check resource requirements!
 	 * @param player
@@ -958,18 +1002,6 @@ implements Serializable {
 		} else if (!robber.equals(other.robber))
 			return false;
 		return true;
-	}
-
-	public Collection<Municipality> getMunicipalitiesOwnedBy(PlayerReference player) {
-		Collection<Municipality> result = new ArrayList<>();
-		
-		for (Municipality town : municipalities.values()) {
-			if (player.equals(town.getOwner())) {
-				result.add(town);
-			}
-		}
-		
-		return result;
 	}
 
 	/* (non-Javadoc)

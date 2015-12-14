@@ -979,7 +979,7 @@ public class ServerProxyTest {
 		List<String> AIList = SP.getAITypes();
 		System.out.println("Got AITypes");
 		
-		AIType type = AIType.getTypeFromString(AIList.get(0));
+		AIType type = AIType.fromString(AIList.get(0));
 		SP.addAIPlayer(game.getUUID(), type);
 		System.out.println("Added AI to game");
 		SP.addAIPlayer(game.getUUID(), type);

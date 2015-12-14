@@ -97,7 +97,7 @@ public class PlayerWaitingController extends Controller implements IPlayerWaitin
 		
 		String AITypeName = getView().getSelectedAI();
 		
-		final AIType aitype = AIType.getTypeFromString(AITypeName);
+		final AIType aitype = AIType.fromString(AITypeName);
 		
 		new SwingWorker<Object, Object> () {
 

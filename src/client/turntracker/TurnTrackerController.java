@@ -73,8 +73,10 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 				ClientManager.getModel().getVersion() <= 0) {
 			int i = 0;
 			for (Player player : players) {
-				if (ClientManager.getLocalPlayer().getPlayer().equals(player)) {
-					getView().setLocalPlayerColor(player.getColor());
+				if(ClientManager.getLocalPlayer() != null){
+					if (ClientManager.getLocalPlayer().getPlayer().equals(player)) {
+						getView().setLocalPlayerColor(player.getColor());
+					}
 				}
 				getView().initializePlayer(i, player.getName(), player.getColor());
 				
@@ -97,7 +99,11 @@ public class TurnTrackerController extends Controller implements ITurnTrackerCon
 
 		updatePlayerScoreView(turnTracker.getCurrentPlayer());
 		
-		if (!player.equals(ClientManager.getLocalPlayer().getPlayer())) {
+		if(ClientManager.getLocalPlayer() == null){
+			getView().updateGameState("It is currently " + player.getColor() + "'s turn", false);
+			return;			
+		}
+		else if (!player.equals(ClientManager.getLocalPlayer().getPlayer())) {
 			getView().updateGameState("It is currently " + player.getColor() + "'s turn", false);
 			return;
 		}

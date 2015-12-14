@@ -8,3 +8,6 @@ log.*
 fileStorage/*
 build/**/*
 dist/**/*
+=======
+src/server/ai/SteveAI.java
+plugins/catan-file.jar

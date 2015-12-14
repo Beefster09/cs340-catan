@@ -19,7 +19,7 @@ public interface IJoinGameController extends IController
 	 * Called by the join game view when the user clicks "Create new game"
 	 * button. Displays the new game view.
 	 */
-	void startCreateNewGame();
+	void startCreateNewGame(String type);
 	
 	/**
 	 * Called by the new game view when the user clicks the "Cancel" button

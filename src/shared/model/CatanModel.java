@@ -259,6 +259,16 @@ public class CatanModel
 		this.title = title;
 	}
 
+	public boolean canBuildRoad(PlayerReference player, EdgeLocation edgeLoc) {
+		return isTurn(player) && player.getPlayer().canBuildRoad()
+				&& map.canBuildRoadAt(player, edgeLoc);
+	}
+
+	public boolean canBuildSettlement(PlayerReference player, VertexLocation vertexLoc) {
+		return isTurn(player) && player.getPlayer().canBuildSettlement()
+				&& map.canBuildSettlement(player, vertexLoc);
+	}
+
 	public boolean canBuildCity(PlayerReference player,	VertexLocation loc) {
 		return isTurn(player) && player.getPlayer().canBuildCity()
 				&& map.canBuildCity(player, loc);
@@ -308,7 +318,7 @@ public class CatanModel
 		
 		Map<ResourceType, Integer> ratios = getMaritimeRatios(player);
 		
-		return player.getPlayer().getResources().count(fromResource) >= ratios.get(fromResource);
+		return player.getHand().count(fromResource) >= ratios.get(fromResource);
 	}
 
 	void buildStartingPieces(PlayerReference player, VertexLocation settlement,

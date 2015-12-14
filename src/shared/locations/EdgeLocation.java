@@ -290,6 +290,7 @@ implements Serializable
 	}
 	
 	public VertexLocation getVertexBetween(EdgeLocation other) {
+		// TODO efficiency
 		if (!this.isAdjacent(other)) {
 			throw new IllegalArgumentException();
 		}

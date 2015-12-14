@@ -116,7 +116,7 @@ implements Serializable {
 			setUUID(UUID.fromString((String) json.get("uuid")));
 			
 			name = (String) json.get("name");
-			color = CatanColor.getColorFromString((String) json.get("color"));
+			color = CatanColor.fromString((String) json.get("color"));
 			
 			resources = ResourceList.fromJSONObject((JSONObject) json.get("resources")); 
 			newDevCards = DevCardList.fromJSONObject((JSONObject) json.get("newDevCards")); 
@@ -448,19 +448,22 @@ implements Serializable {
 
 	public boolean canBuildRoad() {
 		return resources.count(ResourceType.WOOD) >= 1 &&
-				resources.count(ResourceType.BRICK) >= 1;
+				resources.count(ResourceType.BRICK) >= 1
+				&& roads > 0;
 	}
 
 	public boolean canBuildSettlement() {
 		return resources.count(ResourceType.WOOD) >= 1 &&
 				resources.count(ResourceType.BRICK) >= 1 &&
 				resources.count(ResourceType.SHEEP) >= 1 &&
-				resources.count(ResourceType.WHEAT) >= 1;
+				resources.count(ResourceType.WHEAT) >= 1
+				&& settlements > 0;
 	}
 
 	public boolean canBuildCity() {
 		return resources.count(ResourceType.ORE) >= 3 &&
-				resources.count(ResourceType.WHEAT) >= 2;
+				resources.count(ResourceType.WHEAT) >= 2
+				&& cities > 0;
 	}
 
 	public boolean canBuyDevCard() {

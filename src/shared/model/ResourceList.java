@@ -87,6 +87,11 @@ implements Serializable {
 		resources = new HashMap<>(counts);
 	}
 
+	public ResourceList(ResourceList other) {
+		this.resources = new HashMap<>();
+		resources.putAll(other.resources);
+	}
+
 	/** Counts the total number of cards in this ResourceList
 	 * @return The number of cards of all types
 	 * @pre none
@@ -217,7 +222,7 @@ implements Serializable {
 	}
 
 	public void transferRandomCard(ResourceList destination) {
-		if (destination.count() == 0) return; // Nothing to steal.
+		if (count() == 0) return; // Nothing to steal.
 		List<ResourceType> choices = new ArrayList<>();
 		for (Map.Entry<ResourceType, Integer> cards : resources.entrySet()) {
 			for (int i=0; i<cards.getValue(); ++i) {

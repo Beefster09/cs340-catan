@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -13,9 +14,10 @@ import com.google.gson.Gson;
 
 import server.DAOs.DatabaseException;
 import server.DAOs.ICommandDAO;
-import server.DAOs.IGameDAO;
 import server.Factories.IDAOFactory;
 import server.Factories.MockDAOFactory;
+import server.ai.AIManager;
+import server.ai.AIPlayer;
 import server.ai.AIType;
 import server.commands.CatanCommand;
 import server.commands.ICatanCommand;
@@ -25,6 +27,7 @@ import server.plugins.PluginRegistry;
 import shared.communication.Command;
 import shared.communication.GameHeader;
 import shared.communication.IServer;
+import shared.communication.PlayerHeader;
 import shared.communication.Session;
 import shared.definitions.CatanColor;
 import shared.definitions.ResourceType;
@@ -52,8 +55,18 @@ public class Server implements IServer {
 	private static Logger logger = Logger.getLogger("Server");
 	
 	private static final int NUMPLAYERS = 4;
+<<<<<<< HEAD
 
 	private static int COMMAND_FLUSH_FREQUENCY = 10;
+=======
+	private static final int COMMAND_FLUSH_FREQUENCY = 10;
+>>>>>>> 6b59da070a7e2dfb0de1b68d41de793dc6f9938c
+	
+	private static final String[] AI_NAMES = new String[] {
+		"R2-D2", "C-3PO", "Wall-E", "Astro Boy", "Marvin", "Data",
+		"HAL", "Optimus Prime", "Baymax", "Quote", "Curly Brace",
+		"Bender", "Prometheus", "Atropos", "R.O.B.", "GLaDOS"
+	};
 	
 	private static IServer instance = null;
 	public static IServer getSingleton() {
@@ -87,6 +100,7 @@ public class Server implements IServer {
 	
 	private Map<UUID, ModelFacade> activeGames = new HashMap<>();
 	private Map<UUID, GameHeader> knownGames = new HashMap<>();
+	private Map<UUID, AIManager> aiGames = new HashMap<>();
 	
 	private Server() {
 		
@@ -97,12 +111,14 @@ public class Server implements IServer {
 		User brooke = new User("Brooke", "brooke");
 		User pete = new User("Pete", "pete");
 		User mark = new User("Mark", "mark");
+		User aaa = new User("a", "a");
 		
 		try {
 			User.register(sam);
 			User.register(brooke);
 			User.register(pete);
 			User.register(mark);
+			User.register(aaa);
 		} catch (NameAlreadyInUseException e1) {
 			e1.printStackTrace();
 		}
@@ -122,10 +138,18 @@ public class Server implements IServer {
 			try {
 				ModelFacade model = new ModelFacade();
 				UUID gameUUID = model.getGameHeader().getUUID();
+				model.getCatanModel().setHeader(new GameHeader("<DEFAULT>", gameUUID, null));
 				model.addPlayer("Sam", CatanColor.RED);
 				model.addPlayer("Brooke", CatanColor.ORANGE);
 				model.addPlayer("Pete", CatanColor.YELLOW);
 				model.addPlayer("Mark", CatanColor.GREEN);
+				activeGames.put(gameUUID, model);
+				knownGames.put(gameUUID, model.getGameHeader());
+				
+				model = new ModelFacade();
+				gameUUID = model.getGameHeader().getUUID();
+				model.getCatanModel().setHeader(new GameHeader("Join Test", gameUUID, null));
+				model.addPlayer("a", CatanColor.BLUE);
 				activeGames.put(gameUUID, model);
 				knownGames.put(gameUUID, model.getGameHeader());
 				
@@ -208,6 +232,7 @@ public class Server implements IServer {
 		} catch (DatabaseException e) {
 			logger.warning(e.getMessage());
 		}
+		game.processEvents();
 	}
 
 	@Override
@@ -252,6 +277,12 @@ public class Server implements IServer {
 				new CatanModel(randomTiles, randomNumbers, randomPorts));
 		newGame.getCatanModel().setHeader(header);
 		newGame.getCatanModel().setVersion(0);
+		try{
+			factory.getGameDAO().addGame(gameUUID, newGame);
+		}
+		catch(Exception e){
+			throw new GameInitializationException();
+		}
 		activeGames.put(gameUUID, newGame);
 		knownGames.put(gameUUID, header);
 		return header;
@@ -260,9 +291,11 @@ public class Server implements IServer {
 	@Override
 	public Session joinGame(Session player, UUID gameID, CatanColor color) throws JoinGameException, ServerException {
 		ModelFacade game = getGame(gameID);
+		
 		if (game == null) {
 			throw new JoinGameException();
 		}
+		
 		List<Player> players = game.getCatanModel().getPlayers();
 		for (Player currentPlayer : players) {
 			if (currentPlayer.getName().equals(player.getUsername())) {
@@ -315,16 +348,21 @@ public class Server implements IServer {
 
 	@Override
 	public String getModel(UUID gameID, int version) throws ServerException, UserException {
-		ModelFacade modelFacade = getGame(gameID);
-		if (modelFacade == null)
+		ModelFacade game = getGame(gameID);
+		if (game == null) {
 			throw new ServerException();
-		CatanModel model = modelFacade.getCatanModel();
+		}
+		CatanModel model = game.getCatanModel();
 		//This is currently causing the client to never update, we need to find
 		//a way to fix this.
-//		if (version == model.getVersion())
-//			return null;
+		if (version == model.getVersion() && model.hasStarted()) {
+			//return null;
+		}
+		
 		Gson gson = new Gson();
-		return gson.toJson(model);
+		String result = gson.toJson(model);
+		logger.fine(result);
+		return result;
 	}
 
 	@Override
@@ -347,14 +385,58 @@ public class Server implements IServer {
 
 	@Override
 	public void addAIPlayer(UUID gameID, AIType type) throws ServerException, UserException {
-		// NOT NEEDED IN PHASE 3
+		ModelFacade game = getGame(gameID);
+
+		if (game.getCatanModel().getPlayers().size() >= NUMPLAYERS) {
+			throw new UserException("You may not add more players to this game");
+		}
+		
+		if (!aiGames.containsKey(gameID)) {
+			AIManager aiManager = new AIManager(game);
+			aiGames.put(gameID, aiManager);
+			game.registerListener(aiManager);
+		}
+		
+		GameHeader header = game.getGameHeader();
+		List<String> usedNames = new ArrayList<>();
+		List<CatanColor> usedColors = new ArrayList<>();
+		for (PlayerHeader ph : header.getPlayers()) {
+			usedNames.add(ph.getName());
+			usedColors.add(ph.getColor());
+		}
+		
+		Random rand = new Random();
+		String aiName;
+		CatanColor color;
+		do {
+			aiName = AI_NAMES[rand.nextInt(AI_NAMES.length)];
+		} while (usedNames.contains(aiName));
+		
+		do {
+			color = CatanColor.values()[rand.nextInt(9)];
+		} while (usedColors.contains(color));
+		
+		Player player;
+		try {
+			player = game.addPlayer(aiName, color);
+			AIPlayer ai = type.newInstance(game, player);
+			aiGames.get(gameID).addAIPlayer(ai);
+			if (game.getCatanModel().getPlayers().size() == NUMPLAYERS) {
+				this.beginGame(game.getCatanModel());
+				aiGames.get(gameID).turnTrackerChanged(activeGames.get(gameID).getCatanModel().getTurnTracker());
+			}
+		} catch (GameInitializationException e) {
+			throw new ServerException("Could not add an AI", e);
+		}
 		
 	}
 
 	@Override
 	public List<String> getAITypes() throws ServerException, UserException {
 		List<String> types = new ArrayList<String>();
-		types.add("aitype");
+		for (AIType aiType : AIType.values()) {
+			types.add(aiType.toString());
+		}
 		return types;
 	}
 

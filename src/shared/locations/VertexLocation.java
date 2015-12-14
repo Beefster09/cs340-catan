@@ -3,7 +3,9 @@ package shared.locations;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -251,6 +253,49 @@ implements Serializable
 			throw new IllegalArgumentException("Expected adjacent edge.");
 		}
 		return null;
+	}
+	
+	public EdgeLocation getEdgeBetween(VertexLocation other) {
+		VertexLocation a, b;
+		a = getNormalizedLocation();
+		b = other.getNormalizedLocation();
+		if (a.dir == b.dir) {
+			throw new IllegalArgumentException();
+		}
+		if (a.hexLoc.equals(b.hexLoc)) {
+			return new EdgeLocation(a.hexLoc, EdgeDirection.North);
+		}
+		switch (a.dir) {
+		case NorthWest:
+			if (a.hexLoc.getX() != b.hexLoc.getX() + 1) {
+				throw new IllegalArgumentException();
+			}
+			switch (b.hexLoc.getY() - a.hexLoc.getY()) {
+			case 1:
+				return new EdgeLocation(a.hexLoc, EdgeDirection.NorthWest);
+			case 0:
+				return new EdgeLocation(a.hexLoc.getX() - 1, a.hexLoc.getY(),
+						EdgeDirection.NorthEast);
+			default:
+				throw new IllegalArgumentException();
+			}
+		case NorthEast:
+			if (a.hexLoc.getX() != b.hexLoc.getX() - 1) {
+				throw new IllegalArgumentException();
+			}
+			switch (b.hexLoc.getY() - a.hexLoc.getY()) {
+			case 0:
+				return new EdgeLocation(a.hexLoc, EdgeDirection.NorthEast);
+			case -1:
+				return new EdgeLocation(a.hexLoc.getX(), a.hexLoc.getY() - 1,
+						EdgeDirection.SouthEast);
+			default:
+				throw new IllegalArgumentException();
+			}
+		default:
+			assert false;
+			return null;
+		}
 	}
 }
 

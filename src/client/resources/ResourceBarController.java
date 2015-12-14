@@ -69,6 +69,9 @@ public class ResourceBarController extends Controller implements
 
 	@Override
 	public void playersChanged(List<Player> players) {
+		if(ClientManager.getLocalPlayer() == null){
+			return;
+		}
 		Player localPlayer = ClientManager.getLocalPlayer().getPlayer();
 
 		ResourceList resources = localPlayer.getResources();

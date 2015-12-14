@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,6 +38,8 @@ import shared.locations.VertexLocation;
 
 public class ModelFacade 
 implements Serializable {
+	private static final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	private static final long serialVersionUID = -8878435068519246110L;
 
 	private final int NUMPLAYERS = 4;
@@ -92,15 +96,16 @@ implements Serializable {
 			throw new InvalidActionException();
 		}
 		
-		model.roll(dice.roll(num));
+		model.roll(num);
+		
+//		for (IModelListener listener : listeners) {
+//			listener.turnTrackerChanged(model.getTurnTracker());
+//		}
+		turnChanged.set(true);
 	}
 
 	public synchronized void rollDice(PlayerReference player) throws InvalidActionException {
-		if (!canRoll(player)) {
-			throw new InvalidActionException();
-		}
-		
-		model.roll(dice.roll());
+		rollDice(player, dice.roll());
 	}
 	
 
@@ -143,6 +148,8 @@ implements Serializable {
 		}
 		
 		model.rob(player, loc, victim, false);
+		
+		turnChanged.set(true);
 	}
 	
 	public synchronized boolean canDiscard(PlayerReference player,
@@ -153,10 +160,11 @@ implements Serializable {
 	public synchronized void discard(PlayerReference player,
 			Map<ResourceType, Integer> toDiscard) throws InsufficientResourcesException {
 		if (!canDiscard(player, toDiscard)) {
-			canDiscard(player, toDiscard);
 			throw new InsufficientResourcesException();
 		}
 		model.discard(player, toDiscard);		
+		
+		turnChanged.set(true);
 	}
 	
 	// This is needed for reflection to work
@@ -188,6 +196,8 @@ implements Serializable {
 		}
 		
 		model.finishTurn();
+		
+		turnChanged.set(true);
 	}
 
 	/**
@@ -240,14 +250,7 @@ implements Serializable {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildRoad(PlayerReference player, EdgeLocation edgeLoc) {			
-		
-		try {
-			return player.getPlayer().canBuildRoad() &&
-					model.getMap().canBuildRoadAt(player, edgeLoc);
-		} catch (IndexOutOfBoundsException e) {
-			return false;
-		}
-		
+		return model.canBuildRoad(player, edgeLoc);
 	}
 
 	public synchronized void buildRoad(PlayerReference player, EdgeLocation loc)
@@ -275,7 +278,12 @@ implements Serializable {
 	 * @return false otherwise
 	 */
 	public synchronized boolean canBuildSettlement(VertexLocation vertexLoc) {
-		return model.getMap().canBuildSettlement(getCurrentPlayer(), vertexLoc);
+		return canBuildSettlement(getCurrentPlayer(), vertexLoc);
+	}
+	
+	public synchronized boolean canBuildSettlement(
+			PlayerReference player, VertexLocation vertexLoc) {
+		return model.canBuildSettlement(player, vertexLoc);
 	}
 
 	public synchronized void buildSettlement(PlayerReference player, VertexLocation loc)
@@ -342,6 +350,10 @@ implements Serializable {
 	public synchronized void buildStartingPieces(PlayerReference player, 
 			VertexLocation settlement, EdgeLocation road) throws InvalidActionException {
 		model.buildStartingPieces(player, settlement, road);
+
+		for (IModelListener listener : listeners) {
+			listener.turnTrackerChanged(model.getTurnTracker());
+		}
 	}
 
 	/**
@@ -489,6 +501,12 @@ implements Serializable {
 	 */
 	public synchronized void offerTrade(TradeOffer offer) throws InvalidActionException {
 		model.offerTrade(offer);
+		
+		// Trades can be safely responded to by an AI
+//		for (IModelListener listener : listeners) {
+//			listener.tradeOfferChanged(offer);
+//		}
+		tradeOffered.set(true);
 	}
 
 	/**
@@ -511,6 +529,11 @@ implements Serializable {
 		}
 		
 		model.acceptTrade();
+		
+		synchronized (tradeLock) {
+			tradeResponse = true;
+			tradeLock.notify();
+		}
 	}
 	
 	/**
@@ -520,6 +543,11 @@ implements Serializable {
 	 */
 	public synchronized void declineTrade() {
 		model.declineTrade();
+
+		synchronized (tradeLock) {
+			tradeResponse = false;
+			tradeLock.notify();
+		}
 	}
 
 	/**
@@ -617,6 +645,7 @@ implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized CatanModel updateFromJSON(String jsonString) {
+		logger.info(jsonString);
 		if(jsonString==null)
 			return getCatanModel();
 		JSONObject json;
@@ -834,6 +863,7 @@ implements Serializable {
 
 	private void updateTradeOfferFromJSON(JSONObject json, List<Player> players) {
 		if (json.containsKey("tradeOffer")) {
+			logger.info("There is a trade offer");
 			JSONObject tradeOffer = (JSONObject) json.get("tradeOffer");
 			TradeOffer otherOffer;
 			try {
@@ -853,14 +883,17 @@ implements Serializable {
 				e.printStackTrace();
 			}
 		}
-		else{// if (model.getTradeOffer() != null) {
-			model.setTradeOffer(null);
-			for (IModelListener listener : listeners) {
-				try {
-					listener.tradeOfferChanged(null);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
+		else {
+			logger.info("No trade offer!");
+			if (model.getTradeOffer() != null) {
+				model.setTradeOffer(null);
+				for (IModelListener listener : listeners) {
+					try {
+						listener.tradeOfferChanged(null);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -940,13 +973,14 @@ implements Serializable {
 		return newPlayer;
 	}
 
-	public synchronized void addPlayer(String name, CatanColor color) throws GameInitializationException {
+	public synchronized Player addPlayer(String name, CatanColor color) throws GameInitializationException {
 		if (model.getVersion() > 0 || model.getPlayers().size() >= 4) {
 			throw new GameInitializationException();
 		}
 		
 		Player newPlayer = new Player(model.getPlayers().size(), name, color);
 		model.addPlayer(newPlayer);
+		return newPlayer;
 	}
 	
 	public synchronized void sendChat(PlayerReference source, String message) {
@@ -979,5 +1013,52 @@ implements Serializable {
 
 	public UUID getUUID() {
 		return model.getID();
+	}
+	
+	private transient Object tradeLock = new Object();
+	private transient boolean tradeResponse = false;
+	public boolean getTradeResponse() {
+		if (model.getTradeOffer() != null) {
+			synchronized (tradeLock) {
+				logger.info("Waiting for trade response from " 
+						+ model.getTradeOffer().getReceiver().getName());
+				// A trade is pending...
+				try {
+					tradeLock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return tradeResponse;
+	}
+	
+	// This is needed to make the above method work
+	// Otherwise, outsiders will be unable to reach any data from this game
+	// because the synchronization blocks them out currently, as the above lock
+	// is currently hit by an event that was triggered by this very game.
+	// This will allow AIs and humans to play together. :D
+	// It will also prevent stack overflows when multiple AIs play together.
+	private transient AtomicBoolean eventLock = new AtomicBoolean(false);
+	private transient AtomicBoolean turnChanged = new AtomicBoolean(false);
+	private transient AtomicBoolean tradeOffered = new AtomicBoolean(false);
+	public void processEvents() {
+		if (tradeOffered.compareAndSet(true, false)) {
+			for (IModelListener listener : listeners) {
+				listener.tradeOfferChanged(model.getTradeOffer());
+			}
+		}
+		// Prevent recursion
+		if (eventLock.compareAndSet(false, true)) {
+			boolean isEvent = true;
+			// Keep going until there are no events left to process.
+			while (turnChanged.compareAndSet(true, false)) {
+				for (IModelListener listener : listeners) {
+					listener.turnTrackerChanged(model.getTurnTracker());
+				}
+				isEvent = true;
+			}
+			eventLock.set(false);
+		}
 	}
 }

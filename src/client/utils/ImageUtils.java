@@ -21,6 +21,7 @@ public class ImageUtils
 		}
 		catch(IOException e)
 		{
+			e.printStackTrace();
 			assert false;
 		}
 		
