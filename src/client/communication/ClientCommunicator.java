@@ -207,7 +207,8 @@ public class ClientCommunicator {
 
 		String urlString = (String) o.get("url");
 		if(!(urlString.substring(urlString.length() - 6).equals("listAI") || 
-			 Character.isDigit(urlString.charAt(urlString.length() - 1)))){
+			 Character.isDigit(urlString.charAt(urlString.length() - 1)) ||
+			 urlString.substring(urlString.length() - 5).equals("addAI"))){
 			if(userCookie == null || gameCookie == null){
 				throw new UserException();
 			}			
