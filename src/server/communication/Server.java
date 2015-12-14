@@ -55,12 +55,7 @@ public class Server implements IServer {
 	private static Logger logger = Logger.getLogger("Server");
 	
 	private static final int NUMPLAYERS = 4;
-<<<<<<< HEAD
-
 	private static int COMMAND_FLUSH_FREQUENCY = 10;
-=======
-	private static final int COMMAND_FLUSH_FREQUENCY = 10;
->>>>>>> 6b59da070a7e2dfb0de1b68d41de793dc6f9938c
 	
 	private static final String[] AI_NAMES = new String[] {
 		"R2-D2", "C-3PO", "Wall-E", "Astro Boy", "Marvin", "Data",
