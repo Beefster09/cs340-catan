@@ -9,13 +9,15 @@ import shared.model.Player;
 public enum AIType {
 	Idle,
 	Justin,
-	Steve;
+	Steve,
+	Jordan;
 	
 	private Class<? extends AIPlayer> aiClass;
 	
 	static {
 		Justin.aiClass = JustinAI.class;
 		Steve.aiClass = SteveAI.class;
+		Jordan.aiClass = JordanAI.class;
 		Idle.aiClass = IdleAI.class;
 	}
 	
