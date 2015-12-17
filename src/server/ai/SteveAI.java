@@ -114,6 +114,7 @@ public class SteveAI extends AIPlayer{
 	@Override
 	public void takeTurn(){
 		boolean trade = true;
+		boolean devCard = true;
 		while(true){
 			ResourceList resources = player.getResources();
 			DevCardList devCards = player.getOldDevCards();
@@ -134,16 +135,16 @@ public class SteveAI extends AIPlayer{
 			if(player.canBuyDevCard()){
 				actions.add("BuyDevCard");
 			}
-			if(devCards.count(DevCardType.YEAR_OF_PLENTY) > 0){
+			if(devCards.count(DevCardType.YEAR_OF_PLENTY) > 0 && devCard){
 				actions.add("YearOfPlenty");
 			}
-			if(devCards.count(DevCardType.SOLDIER) > 0){
+			if(devCards.count(DevCardType.SOLDIER) > 0 && devCard){
 				actions.add("Soldier");
 			}
-			if(devCards.count(DevCardType.MONOPOLY) > 0){
+			if(devCards.count(DevCardType.MONOPOLY) > 0 && devCard){
 				actions.add("Monopoly");
 			}
-			if(devCards.count(DevCardType.ROAD_BUILD) > 0){
+			if(devCards.count(DevCardType.ROAD_BUILD) > 0 && devCard){
 				actions.add("RoadBuilding");
 			}
 			if(player.canBuildRoad()){
@@ -156,7 +157,7 @@ public class SteveAI extends AIPlayer{
 				actions.add("BuildCity");
 			}
 			if(resources.count() > 0 && trade){
-				actions.add("OfferTrade");
+//				actions.add("OfferTrade");
 			}
 			for(ResourceType type : ResourceType.values()){
 				int count = resources.count(type);
@@ -200,16 +201,20 @@ public class SteveAI extends AIPlayer{
 				}
 				break;
 			case "YearOfPlenty":
+				devCard = false;
 				yearOfPlenty();
 				break;
 			case "Soldier":
+				devCard = false;
 				soldier = true;
 				robber();
 				break;
 			case "Monopoly":
+				devCard = false;
 				monopoly();
 				break;
 			case "RoadBuilding":
+				devCard = false;
 				roadBuilding();
 				break;
 			case "BuildRoad":
