@@ -468,14 +468,17 @@ implements Serializable {
 		}
 		Port port = null;
 		for (EdgeLocation loc: location.getEdges()) {
-			Port p = getPortAt(loc);
-			if (p != null) {
-				if (port == null) {
-					port = p;
+			try{
+				Port p = getPortAt(loc);
+				if (p != null) {
+					if (port == null) {
+						port = p;
+					}
+					else assert false; // This should not be allowed to happen
+					// ports should never be allowed to be on adjacent edges
 				}
-				else assert false; // This should not be allowed to happen
-				// ports should never be allowed to be on adjacent edges
 			}
+			catch(IndexOutOfBoundsException e){}
 		}
 		return port;
 	}
